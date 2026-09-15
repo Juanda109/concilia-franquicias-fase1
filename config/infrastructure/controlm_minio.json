@@ -1,0 +1,37 @@
+{
+  "version": "1.0.0",
+  "pais": "COLOMBIA",
+  "controlM": {
+    "nombre": "Control-M Local Colombia",
+    "hub": {
+      "os": "Linux"
+    },
+    "responsabilidades": [
+      "calendarizacion",
+      "disparadores",
+      "tiempos_ejecucion",
+      "dependencias"
+    ]
+  },
+  "transferencia": {
+    "protocolo": "SFTP",
+    "puerto": 22,
+    "origen": "Hub Control-M Local",
+    "destino": "MinIO"
+  },
+  "landing": {
+    "tecnologia": "MinIO",
+    "plataforma": "OKD",
+    "caracter": "transitorio_pre_homologacion_AWS"
+  },
+  "pendientes": [
+    "carpetas_Aranda_con_visto_bueno",
+    "acceso_logico_operaciones",
+    "usuario_credencial_SFTP",
+    "rutas_bucket_por_ambiente",
+    "convencion_carpetas",
+    "jobs_ControlM_definitivos",
+    "reglas_red_SFTP_22",
+    "mapa_datos_Podman_volumenes"
+  ]
+}

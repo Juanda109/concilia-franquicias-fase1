@@ -1,0 +1,55 @@
+version: "2.0.0"
+runtime:
+  ingesta: "Python 3.12"
+  api: "FastAPI"
+  database: "PostgreSQL"
+  frontend: "React + TypeScript"
+componentes:
+  -
+    insumo: "HA22"
+    status: "IMPLEMENTACION_PRIORITARIA"
+    mapping: "config/mappings/ha22.yaml"
+  -
+    insumo: "HA26"
+    status: "IMPLEMENTACION_PRIORITARIA"
+    mapping: "config/mappings/ha26.yaml"
+  -
+    insumo: "HA32"
+    status: "IMPLEMENTACION_PRIORITARIA"
+    mapping: "config/mappings/ha32.yaml"
+  -
+    insumo: "CAET"
+    status: "IMPLEMENTACION_PRIORITARIA"
+    mapping: "config/mappings/caet.yaml"
+  -
+    insumo: "CANT"
+    status: "IMPLEMENTACION_PRIORITARIA"
+    mapping: "config/mappings/cant.yaml"
+  -
+    insumo: "DEPO"
+    status: "IMPLEMENTACION_PRIORITARIA"
+    mapping: "config/mappings/depo.yaml"
+  -
+    insumo: "CARTA_COMPENSACION"
+    status: "IMPLEMENTACION_PRIORITARIA"
+    mapping: "config/mappings/carta_compensacion.yaml"
+  -
+    insumo: "PMD"
+    status: "IMPLEMENTACION_PRIORITARIA"
+    mapping: "config/mappings/pmd.yaml"
+  -
+    insumo: "MEP"
+    status: "IMPLEMENTACION_PRIORITARIA"
+    mapping: "config/mappings/mep.yaml"
+  -
+    insumo: "VSS"
+    status: "IMPLEMENTACION_PRIORITARIA"
+    mapping: "config/mappings/vss.yaml"
+  -
+    insumo: "PMPD1322"
+    status: "DEFERRED_FINAL_DEVELOPMENT"
+    mapping: "config/mappings/pmpd1322.yaml"
+  -
+    insumo: "PMRD8000"
+    status: "DEFERRED_FINAL_DEVELOPMENT"
+    mapping: "config/mappings/pmrd8000.yaml"

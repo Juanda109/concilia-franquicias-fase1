@@ -1,0 +1,18 @@
+stages: [validate, test, build]
+python-compile:
+  stage: validate
+  image: python:3.12-slim
+  script:
+    - python -m compileall -q backend/app
+unit-tests:
+  stage: test
+  image: python:3.12-slim
+  script:
+    - pip install -r backend/requirements.txt
+    - PYTHONPATH=backend python backend/tests/test_real_samples.py
+backend-image:
+  stage: build
+  image: docker:27
+  services: [docker:27-dind]
+  script:
+    - docker build -f backend/Dockerfile -t concilia-backend:$CI_COMMIT_SHA backend

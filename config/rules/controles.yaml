@@ -1,0 +1,28 @@
+version: "1.0.0"
+generales:
+  -
+    codigo: "ARCHIVO_NO_VACIO"
+    etapa: "VALIDACION"
+    severidad: "ERROR"
+  -
+    codigo: "HEADER_ESTRUCTURA"
+    etapa: "VALIDACION"
+    severidad: "ERROR"
+  -
+    codigo: "TOTAL_REGISTROS"
+    etapa: "CONTROL"
+    severidad: "ERROR"
+vss:
+  -
+    codigo: "VSS_110_115_NET"
+    regla: "VSS110.NET_SETTLEMENT_AMOUNT == VSS115.FINAL_SETTLEMENT_NET_AMOUNT"
+    severidad: "ERROR"
+  -
+    codigo: "VSS120_TOTAL_ORIGINAL_SALE"
+    regla: "sum(detalles ORIGINAL SALE) == TOTAL ORIGINAL SALE"
+    severidad: "ERROR"
+carta:
+  -
+    codigo: "CARTA_REPORTE"
+    regla: "hoja exacta CEI  240A y código CEI0240A"
+    severidad: "ERROR"

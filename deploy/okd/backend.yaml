@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: concilia-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: concilia-backend
+  template:
+    metadata:
+      labels:
+        app: concilia-backend
+    spec:
+      containers:
+        - name: backend
+          image: ${IMAGE_CONCILIA_BACKEND}
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: concilia-config
+            - secretRef:
+                name: concilia-secrets
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: concilia-backend
+spec:
+  selector:
+    app: concilia-backend
+  ports:
+    - port: 8080
+      targetPort: 8080

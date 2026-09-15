@@ -1,0 +1,103 @@
+{
+  "version": "1.0.0",
+  "items": [
+    {
+      "orden": 1,
+      "fuente": "HOST",
+      "tipoInsumo": "PMPD1322",
+      "patron": "GOF.MP.FISD1.MPD1322.MP132210.MPLC5434.D1%%ODATE",
+      "formato": "TXT_REPORT",
+      "desarrollo": "FINAL"
+    },
+    {
+      "orden": 2,
+      "fuente": "HOST",
+      "tipoInsumo": "PMRD8000",
+      "patron": "GOF.MP.FJSD1.MRD8000.MRLS7803.F%%ODATE",
+      "formato": "TXT_REPORT",
+      "desarrollo": "FINAL"
+    },
+    {
+      "orden": 3,
+      "fuente": "HOST",
+      "tipoInsumo": "HA22",
+      "patron": "DESCARHA22_*",
+      "formato": "TXT_PIPE",
+      "desarrollo": "PRIORITARIO"
+    },
+    {
+      "orden": 4,
+      "fuente": "HOST",
+      "tipoInsumo": "HA26",
+      "patron": "DESCARHA26_*",
+      "formato": "TXT_PIPE",
+      "desarrollo": "PRIORITARIO"
+    },
+    {
+      "orden": 5,
+      "fuente": "HOST",
+      "tipoInsumo": "HA32",
+      "patron": "DESCARHA32_*",
+      "formato": "TXT_PIPE",
+      "desarrollo": "PRIORITARIO"
+    },
+    {
+      "orden": 6,
+      "fuente": "CREDIBANCO",
+      "tipoInsumo": "CAET",
+      "patron": "*CAET*",
+      "formato": "FIXED_WIDTH",
+      "desarrollo": "PRIORITARIO"
+    },
+    {
+      "orden": 7,
+      "fuente": "CREDIBANCO",
+      "tipoInsumo": "CANT",
+      "patron": "*CANT*",
+      "formato": "FIXED_WIDTH",
+      "desarrollo": "PRIORITARIO"
+    },
+    {
+      "orden": 8,
+      "fuente": "CREDIBANCO",
+      "tipoInsumo": "DEPO",
+      "patron": "*DEPO*",
+      "formato": "FIXED_WIDTH",
+      "desarrollo": "PRIORITARIO"
+    },
+    {
+      "orden": 9,
+      "fuente": "CREDIBANCO",
+      "tipoInsumo": "CARTA_COMPENSACION",
+      "patron": "*.xlsx",
+      "formato": "XLSX_CEI_240A",
+      "hoja": "CEI  240A",
+      "desarrollo": "PRIORITARIO"
+    },
+    {
+      "orden": 10,
+      "fuente": "REDEBAN",
+      "tipoInsumo": "PMD",
+      "patron": "PMDDetalleTransacciones*.xlsx",
+      "formato": "XLSX",
+      "hoja": "PMD_Detalle",
+      "desarrollo": "PRIORITARIO"
+    },
+    {
+      "orden": 11,
+      "fuente": "REDEBAN",
+      "tipoInsumo": "MEP",
+      "patron": "MEP*.xlsx",
+      "formato": "XLSX",
+      "desarrollo": "PRIORITARIO"
+    },
+    {
+      "orden": 12,
+      "fuente": "VISA",
+      "tipoInsumo": "VSS",
+      "patron": "VSS*.txt",
+      "formato": "TXT_VSS",
+      "desarrollo": "PRIORITARIO"
+    }
+  ]
+}

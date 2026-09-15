@@ -1,0 +1,19 @@
+{
+  "version": "1.0.0",
+  "basePath": "/api/v1",
+  "mediaType": "application/json",
+  "correlationId": {
+    "headerTemporal": "X-Correlation-Id",
+    "estado": "PROPUESTO_PENDIENTE_NOMBRE_CORPORATIVO",
+    "propagar": true,
+    "persistirTrazabilidad": true
+  },
+  "authorization": {
+    "estado": "PENDIENTE_ARQUITECTURA_SEGURIDAD"
+  },
+  "pagination": {
+    "defaultPage": 0,
+    "defaultSize": 30,
+    "maxSize": 100
+  }
+}

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Concilia Franquicias | Fase 1</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar"><b>Baseline Fase 1:</b> 12 archivos esperados · 21 tablas activas · orquestación Control-M &rarr; Hub Linux &rarr; SFTP &rarr; MinIO/OKD.</div>
+
+<div class="app">
+  <aside class="side">
+    <div class="brand">CON<span>CILIA</span><small>RECEPCIÓN Y CARGA</small></div>
+    <div class="lbl">Operación</div>
+    <div class="nav"><button class="active">&#9679; &nbsp; Estado</button></div>
+  </aside>
+
+  <main>
+    <div class="top">
+      <b><span class="bbva">BBVA</span>&nbsp;&nbsp;|&nbsp;&nbsp; Concilia</b>
+      <div class="topR"><span id="apiStatus" class="badge info">API…</span><span id="jornadaActualBadge" class="badge info" title="Jornada más reciente registrada en CON_JORNADA">Jornada actual: …</span></div>
+    </div>
+
+    <div class="wrap">
+      <div class="head">
+        <div>
+          <h1>Estado de recepción</h1>
+          <p>Seguimiento de los 12 insumos esperados por jornada contable: recepción, validación, procesamiento y carga a las tablas de resultado.</p>
+        </div>
+        <div>
+          <input id="fecha" type="date">
+        </div>
+      </div>
+
+      <div class="card hero">
+        <div class="heroTop">
+          <h2 id="heroTitulo">Jornada —</h2>
+          <span id="heroBadge" class="badge info">—</span>
+        </div>
+        <div class="heroLine">
+          <div class="progressWrap">
+            <div class="progressMeta"><span>Avance de carga</span><b id="heroPct">0%</b></div>
+            <div class="progress"><span id="heroBar" style="width:0%"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpis section">
+        <div class="kpi"><small>Esperados</small><strong id="kpiEsperados">-</strong></div>
+        <div class="kpi"><small>Recibidos</small><strong id="kpiRecibidos">-</strong></div>
+        <div class="kpi"><small>Procesados</small><strong id="kpiProcesados">-</strong></div>
+        <div class="kpi"><small>Cargados</small><strong id="kpiCargados">-</strong></div>
+      </div>
+
+      <div class="card section">
+        <div class="title">Archivos de la jornada <span id="tblMeta"></span></div>
+        <div class="tableScroll">
+          <table>
+            <thead>
+              <tr><th>ID</th><th>Fuente</th><th>Tipo</th><th>Archivo</th><th>Registros</th><th>Recepción</th><th>Validación</th><th>Proceso</th><th>Carga</th><th>Disp.</th></tr>
+            </thead>
+            <tbody id="tblArchivos"><tr><td colspan="10" class="muted">Selecciona una fecha contable.</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card section">
+        <div class="title">Procesar insumo desde ruta estática <span>los archivos llegan por Control-M &rarr; SFTP a backend/data/incoming/ — aquí solo se dispara el procesamiento, no se sube nada desde el navegador</span></div>
+        <div class="field"><label>Tipo de insumo</label>
+          <select id="tipoInsumo">
+            <option value="HA22">HA22</option><option value="HA26">HA26</option><option value="HA32">HA32</option>
+            <option value="CAET">CAET</option><option value="CANT">CANT</option><option value="DEPO">DEPO</option>
+            <option value="CARTA_COMPENSACION">CARTA_COMPENSACION</option><option value="PMD">PMD</option>
+            <option value="MEP">MEP</option><option value="VSS">VSS</option>
+          </select>
+        </div>
+        <div class="actionbar"><button id="btnCargar" class="btn primary">Procesar desde ruta estática</button></div>
+        <div id="cargaResultado" class="muted"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="drawer" class="drawer">
+  <button class="btn" style="float:right" id="btnCerrarDrawer">Cerrar</button>
+  <div id="drawerContent"></div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<div id="noDataModal" class="modalBack">
+  <div class="modalBox">
+    <h3>Sin información para la fecha seleccionada</h3>
+    <p>El servicio respondió <b>HTTP 204 No Content</b>. No existen archivos registrados para la fecha contable consultada.</p>
+    <div class="actionbar"><button class="btn primary" id="btnCerrarModal">Entendido</button></div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+{
+  "version": "1.0.0",
+  "items": [
+    {
+      "http": 204,
+      "codigo": null,
+      "uso": "fecha contable sin información"
+    },
+    {
+      "http": 404,
+      "codigo": "ARCHIVO_NO_ENCONTRADO",
+      "uso": "idArchivo inexistente"
+    },
+    {
+      "http": 409,
+      "codigo": "ARCHIVO_NO_DISPONIBLE",
+      "uso": "archivo existe pero contenido aún no disponible"
+    },
+    {
+      "http": 409,
+      "codigo": "JORNADA_EXISTENTE",
+      "uso": "POST jornada duplicada"
+    },
+    {
+      "http": 401,
+      "codigo": "NO_AUTENTICADO",
+      "estado": "PENDIENTE_SECURITY_SCHEME_CORPORATIVO"
+    },
+    {
+      "http": 403,
+      "codigo": "NO_AUTORIZADO",
+      "estado": "PENDIENTE_ROLES_SCOPES_CORPORATIVOS"
+    }
+  ]
+}

@@ -1,0 +1,715 @@
+{
+  "version": "v61",
+  "files": [
+    {
+      "path": ".gitignore",
+      "bytes": 99,
+      "sha256": "97eacab123fb899750383abca1b04e9864f0b20f55edf5b65dbaf3d93c672bd8"
+    },
+    {
+      "path": ".gitlab-ci.yml",
+      "bytes": 491,
+      "sha256": "4ad628f67a6d1d3e66efce6a9091ed9269793194e62a241fc9834c67aa2c6766"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1922,
+      "sha256": "93c4ad2d5fe26468160a35ca079b085728c46274503ad8723eef7486176d9c02"
+    },
+    {
+      "path": "backend/.env.example",
+      "bytes": 152,
+      "sha256": "62c77a240742bee4882cbaaaa0d8e472a8873a2bd308571db37ca31f2e3e2459"
+    },
+    {
+      "path": "backend/Dockerfile",
+      "bytes": 189,
+      "sha256": "54c53d7b8fa9c0d0e49782bfda7ef89016f5bdb19d55868cbb86691aa3896403"
+    },
+    {
+      "path": "backend/app/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "backend/app/api/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "backend/app/api/main.py",
+      "bytes": 3050,
+      "sha256": "eff71c2eb552d118baa7e40d8a3bd91420a381df27064af38fde2e803b7567dd"
+    },
+    {
+      "path": "backend/app/core/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "backend/app/core/config.py",
+      "bytes": 464,
+      "sha256": "538603ce08e678f82e9e41fe0aae0133fdcee952a7a0992963f0f98711df9349"
+    },
+    {
+      "path": "backend/app/ingestion/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "backend/app/ingestion/orchestrator.py",
+      "bytes": 1829,
+      "sha256": "0cb6b35d229d31c07178bbccc407ebf0f3b75e2a1374a897b14c910e57328894"
+    },
+    {
+      "path": "backend/app/ingestion/registry.py",
+      "bytes": 748,
+      "sha256": "03517176c37ecb895139dffa8f53603eb2ab4614d6360695c3d2b2e379defa75"
+    },
+    {
+      "path": "backend/app/ingestion/result.py",
+      "bytes": 458,
+      "sha256": "752e8d00addf5964dbfa084a92a0ca28fbbcb3a92924a4734ac8f737f69c0622"
+    },
+    {
+      "path": "backend/app/ingestion/state_machine.py",
+      "bytes": 1107,
+      "sha256": "48590eed6d2d2d5c62141357b7c7feb27c80e0813fa6cf73eb7afbc99630a6ff"
+    },
+    {
+      "path": "backend/app/models/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "backend/app/parsers/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "backend/app/parsers/base.py",
+      "bytes": 185,
+      "sha256": "8611074e05669f5a032f8b2147337d536e38bcc5dc7e9fae611d12d01183c9ef"
+    },
+    {
+      "path": "backend/app/parsers/canje.py",
+      "bytes": 1227,
+      "sha256": "32b83ba3537fadf9efdf94165b3c7f3f98f6db51cae7d888b43b0b6adb60493d"
+    },
+    {
+      "path": "backend/app/parsers/carta_cei240a.py",
+      "bytes": 1390,
+      "sha256": "c3fe9e5764783a3899387988dbb5c598ebc9128a9eb8f517b5b880b402af0236"
+    },
+    {
+      "path": "backend/app/parsers/depo.py",
+      "bytes": 1971,
+      "sha256": "a9b119b913ccf35456a28068671fcd598f464bb84c9ba59940182f4d5ca5e3a2"
+    },
+    {
+      "path": "backend/app/parsers/ha22.py",
+      "bytes": 939,
+      "sha256": "7434984c223c25c4acf49a813875313fda9beb94978c199dc9b28f9fec9c881b"
+    },
+    {
+      "path": "backend/app/parsers/ha26.py",
+      "bytes": 939,
+      "sha256": "1422777b2f567f491d022f5ee9d9eacfc4b0d0d1df8471ab7164cb16f9e07104"
+    },
+    {
+      "path": "backend/app/parsers/ha32.py",
+      "bytes": 939,
+      "sha256": "72fe84bec16db7f4f6c05b49253583c758c37ebab332880a8f08262b37931d04"
+    },
+    {
+      "path": "backend/app/parsers/mep.py",
+      "bytes": 1099,
+      "sha256": "fb538824c3bc64aab051c1a4e7ece132ec91cf898454f732eb7109e20d4a4783"
+    },
+    {
+      "path": "backend/app/parsers/pmd.py",
+      "bytes": 1410,
+      "sha256": "5eb3e370ea7dd84febccbd9285129da0e604c72a87e5d8ddbee348f231928cc5"
+    },
+    {
+      "path": "backend/app/parsers/vss.py",
+      "bytes": 1273,
+      "sha256": "85fe34e26cb951ff86896aad6b3c5960aaab09f396605a9609662484d1942105"
+    },
+    {
+      "path": "backend/app/repositories/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "backend/app/repositories/archivo.py",
+      "bytes": 676,
+      "sha256": "9b46ae211761f593056145e75a32d3f96d3ef165d46cfe01a8ed580919932e9e"
+    },
+    {
+      "path": "backend/app/repositories/content.py",
+      "bytes": 1293,
+      "sha256": "44bbb21291f733669ff8c4c2292700df503760b05df646da9583eae1d11b698d"
+    },
+    {
+      "path": "backend/app/repositories/database.py",
+      "bytes": 276,
+      "sha256": "75439b6aec65ce5279e019dd90a5c06c002de5e3416344de866c08d400561ccb"
+    },
+    {
+      "path": "backend/app/repositories/error_registro.py",
+      "bytes": 441,
+      "sha256": "d64e169333166ae742d632944eab8e7e372569c60b5a75362a41e26bc2381ada"
+    },
+    {
+      "path": "backend/app/repositories/resultados/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "backend/app/repositories/resultados/generic.py",
+      "bytes": 862,
+      "sha256": "57bd8ffb0c94aa0cc685707bf2d02645969ba89c73a02b3a583829cef600024e"
+    },
+    {
+      "path": "backend/app/repositories/trazabilidad.py",
+      "bytes": 380,
+      "sha256": "0c71f6fcc08cc7c6ba20725e5cef5e721130c1f3a4b952e6d04da052522bb8b2"
+    },
+    {
+      "path": "backend/app/rules/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "backend/requirements.txt",
+      "bytes": 103,
+      "sha256": "46946caf2c87ec30332025720592e74cf65ef6b9f170a1b3709d71c130126bf9"
+    },
+    {
+      "path": "backend/tests/test_real_samples.py",
+      "bytes": 1054,
+      "sha256": "410e8d7b6efee89ee440089ba3c739a0f6541e5d47c57ae97769a0281e4f8545"
+    },
+    {
+      "path": "components/python/canje_depo_mapping_v3.zip",
+      "bytes": 36285,
+      "sha256": "a4bbd54f6d26ca8fb319275a428cdbe3707c7cffe6d0186f52eb004938822a94"
+    },
+    {
+      "path": "components/python/canje_parser.py",
+      "bytes": 827,
+      "sha256": "0f8f9ad7796b266fc765c87616adc3e216379d5c7d6bc0e4a18dbd3b1243a6d8"
+    },
+    {
+      "path": "components/python/carta_cei240a_parser.py",
+      "bytes": 860,
+      "sha256": "0f16799fc82ac4a9d747f03402d925eb3f33da81d63b23173570f776e9070048"
+    },
+    {
+      "path": "components/python/carta_vss_mapping_v1.zip",
+      "bytes": 17237,
+      "sha256": "33009f9faf7a58fa3f24ee3aeb16676459bd3286398d449ab7f07e14b4dd7ca1"
+    },
+    {
+      "path": "components/python/common.py",
+      "bytes": 137,
+      "sha256": "2d44e01f6c2d218d60eadd4b9c4b7afc6811b8ef8b3898e80f37a8c30f06659b"
+    },
+    {
+      "path": "components/python/concilia_mapping_code_v3.zip",
+      "bytes": 36285,
+      "sha256": "a4bbd54f6d26ca8fb319275a428cdbe3707c7cffe6d0186f52eb004938822a94"
+    },
+    {
+      "path": "components/python/depo_parser.py",
+      "bytes": 832,
+      "sha256": "f8a082ad509d026941f237cab74c8921f8d846ba6a8aeda7ec09dfe77b151f49"
+    },
+    {
+      "path": "components/python/ha22_parser.py",
+      "bytes": 876,
+      "sha256": "3a084682b66278ce2c02b4252b45d655f332f58c8720eaf90145e95064893a13"
+    },
+    {
+      "path": "components/python/ha26_parser.py",
+      "bytes": 876,
+      "sha256": "cebd7bcc4c767b752a2ca42847507c374b669572a78c166674eb83a362b29302"
+    },
+    {
+      "path": "components/python/ha32_parser.py",
+      "bytes": 876,
+      "sha256": "96d9fa570346727877dfc87985660aa53635337da1c74ec2f92c9b0c8571875b"
+    },
+    {
+      "path": "components/python/host_pmd_mep_mapping_v1.zip",
+      "bytes": 25123,
+      "sha256": "e1f8ff160a6dd8024ecadf7635be37f3ddc2ff8631c5f8ad96fd4ed3e605240f"
+    },
+    {
+      "path": "components/python/mep_parser.py",
+      "bytes": 799,
+      "sha256": "198e5e19c5fb83cb9bce05575342d28f54cdb3bff041fdf56773015e86d13ba5"
+    },
+    {
+      "path": "components/python/pmd_mapping_v1.zip",
+      "bytes": 10629,
+      "sha256": "f348704d07ef12fbd8867418d9da07b81f98e9b3db64bf07f3bfc6233898ca21"
+    },
+    {
+      "path": "components/python/pmd_parser.py",
+      "bytes": 811,
+      "sha256": "676b31f3ba3137d40ddbe950e1742fa7e1c7d3e8b3199cdb2a3569882ef6560f"
+    },
+    {
+      "path": "components/python/vss_parser.py",
+      "bytes": 846,
+      "sha256": "5f9679e4bdf61c1221832cc8da4830f469d9bc3c1184bc0a905a88e491aa09e8"
+    },
+    {
+      "path": "components/reference/concilia_mapping_CARTA_VSS_v1.zip",
+      "bytes": 17237,
+      "sha256": "33009f9faf7a58fa3f24ee3aeb16676459bd3286398d449ab7f07e14b4dd7ca1"
+    },
+    {
+      "path": "components/reference/concilia_mapping_HA22_HA26_HA32_PMD_MEP_v1.zip",
+      "bytes": 25123,
+      "sha256": "e1f8ff160a6dd8024ecadf7635be37f3ddc2ff8631c5f8ad96fd4ed3e605240f"
+    },
+    {
+      "path": "components/reference/concilia_mapping_PMD_v1.zip",
+      "bytes": 10629,
+      "sha256": "f348704d07ef12fbd8867418d9da07b81f98e9b3db64bf07f3bfc6233898ca21"
+    },
+    {
+      "path": "components/reference/concilia_mapping_code_v3.zip",
+      "bytes": 36285,
+      "sha256": "a4bbd54f6d26ca8fb319275a428cdbe3707c7cffe6d0186f52eb004938822a94"
+    },
+    {
+      "path": "config/api/api_config.json",
+      "bytes": 426,
+      "sha256": "7c8a310cac884064407b6f2a4e6118e748c413f045e19a3e261d7a967141922d"
+    },
+    {
+      "path": "config/api/api_config.yaml",
+      "bytes": 339,
+      "sha256": "aad37f6b8b51e0a7e42e07239d0426fe1e23096f5d6941f382a895bf8e274a27"
+    },
+    {
+      "path": "config/api/errores.json",
+      "bytes": 737,
+      "sha256": "617dc50ad140317984135d30b03ae8965ee34d4cfe8d1521bd9b5f486c36a77f"
+    },
+    {
+      "path": "config/api/errores.yaml",
+      "bytes": 582,
+      "sha256": "58500a53adad7f723dea2a7443944328597d4be6bd84d9b939857fad93080530"
+    },
+    {
+      "path": "config/baseline/fase1.json",
+      "bytes": 550,
+      "sha256": "0d1208955fc5c68f6a6cb30ab8e052c5212895a763d4467e03bada26c0072a71"
+    },
+    {
+      "path": "config/baseline/fase1.yaml",
+      "bytes": 402,
+      "sha256": "945bf92ff620f2a079e90eb8b436d018c4c9ae13e2c84be7fc6583004ca3a1aa"
+    },
+    {
+      "path": "config/components.json",
+      "bytes": 1760,
+      "sha256": "8e48f2951d101f3ddbc62a82fcfe14f4aa373666b175d54a2f96cb1d1d1b242e"
+    },
+    {
+      "path": "config/components.yaml",
+      "bytes": 1437,
+      "sha256": "46d24a08c1d38ea1128653989992623801fbd21306647b20d48801e24bb9d9ef"
+    },
+    {
+      "path": "config/database_model.json",
+      "bytes": 979,
+      "sha256": "e57339e27c240aa9485e022d520e82f5eb9a855a40e463afb75f8912009d255a"
+    },
+    {
+      "path": "config/database_model.yaml",
+      "bytes": 126,
+      "sha256": "ebe169df9ddba301aa03f31307c56bb5d27f3b8c89437e370cf176c4dc970cd5"
+    },
+    {
+      "path": "config/frontend/frontend.json",
+      "bytes": 685,
+      "sha256": "f853b6ea03dbc960732eb67f293fd928f4d5ec378bae4a8a61c6fd754a558b99"
+    },
+    {
+      "path": "config/frontend/frontend.yaml",
+      "bytes": 570,
+      "sha256": "005f2e31e003a7a4435dc172393ae422707121c81b3309fa62d3266fadeab1ec"
+    },
+    {
+      "path": "config/infrastructure/controlm_minio.json",
+      "bytes": 808,
+      "sha256": "aa62fdde5d16a008efdf46ddb5427f04c74e586f27e2a0d7d55ba1a0faa358b2"
+    },
+    {
+      "path": "config/infrastructure/controlm_minio.yaml",
+      "bytes": 675,
+      "sha256": "46d1794bb2491b4d001c4368f132f3b9c765b2c88804c34c3b64ba4b9c305963"
+    },
+    {
+      "path": "config/inventory/insumos_esperados.json",
+      "bytes": 2330,
+      "sha256": "34f7a43e645da560714027efd569eed512d0344b6b3cce9dbc75774da7f50de1"
+    },
+    {
+      "path": "config/inventory/insumos_esperados.yaml",
+      "bytes": 1847,
+      "sha256": "fc77be03ee65a6d19071ec2caefefcea3c8f36b1e5f31a291ec200c85745b04c"
+    },
+    {
+      "path": "config/mappings/caet.json",
+      "bytes": 10209,
+      "sha256": "111cbdd71806dd3692947dea48701d906375536feb4be55bf58ed841ee03a93a"
+    },
+    {
+      "path": "config/mappings/caet.yaml",
+      "bytes": 8796,
+      "sha256": "9193526b7e4f81db3d52b6e3b1c15c2f6acc45efa2d7c1491d03a6c4f332732b"
+    },
+    {
+      "path": "config/mappings/cant.json",
+      "bytes": 10209,
+      "sha256": "caa7a0d6ba7b5ed4924bfdc9c1ecb6530f78ec600ec80a0992ede9741e9e5dbc"
+    },
+    {
+      "path": "config/mappings/cant.yaml",
+      "bytes": 8796,
+      "sha256": "7aad0fe05a92c74f6a17929fa4c16db8afdd6b0a3cac53e0ff5fc38ec72ddbd5"
+    },
+    {
+      "path": "config/mappings/carta_compensacion.json",
+      "bytes": 4088,
+      "sha256": "159326d8a2125e0c2c495c6252aca3cb784593dd1c0911538b49d8823bc6e200"
+    },
+    {
+      "path": "config/mappings/carta_compensacion.yaml",
+      "bytes": 3757,
+      "sha256": "29b21e30aefbc3fd2b2490f027e9228b23e75142ab93e2024ee78accafaaf52c"
+    },
+    {
+      "path": "config/mappings/depo.json",
+      "bytes": 22535,
+      "sha256": "fbcfae8e9b8990c59ab4ad0469994994d0be2a8cca72e5a4ff19f343cb5130dc"
+    },
+    {
+      "path": "config/mappings/depo.yaml",
+      "bytes": 19363,
+      "sha256": "9ef1f3564e2420c41db52ddbb1538b786b7fa63ea8799bd9b02577c12c549498"
+    },
+    {
+      "path": "config/mappings/ha22.json",
+      "bytes": 10857,
+      "sha256": "034acf1545523ac600e8f70c22112f40feb63138f383769650ee9d4bd4bf16a4"
+    },
+    {
+      "path": "config/mappings/ha22.yaml",
+      "bytes": 9275,
+      "sha256": "d64bb7c373624bafe4f867ef2d32684345c0522c87de7fb1c430781c14e83c70"
+    },
+    {
+      "path": "config/mappings/ha26.json",
+      "bytes": 11526,
+      "sha256": "dd301c7888eda87448fa41531920e1bec12de0ac5668fcd3cc42ee5dbc7f850b"
+    },
+    {
+      "path": "config/mappings/ha26.yaml",
+      "bytes": 9866,
+      "sha256": "3c0457c2804709e16b4c1505c67b2f5da98ee69c5f2833066e9ad03a9f1de8db"
+    },
+    {
+      "path": "config/mappings/ha32.json",
+      "bytes": 5487,
+      "sha256": "7cfac9e9dca0290ca2a40cf3d195a0f3826959a6969cbd8f4d73d3c8a51653b9"
+    },
+    {
+      "path": "config/mappings/ha32.yaml",
+      "bytes": 4685,
+      "sha256": "493c90bc72d659bb277e3eb0f67bd3b87a9adf080cc4755ab8d92aaf96d736c4"
+    },
+    {
+      "path": "config/mappings/mep.json",
+      "bytes": 10061,
+      "sha256": "96a517b16d4fdded7feeb7ba98f32e3d0a2e6c3ef5a3a7cc7bf081e1028cbfa0"
+    },
+    {
+      "path": "config/mappings/mep.yaml",
+      "bytes": 8635,
+      "sha256": "1cba835266f5b0057780ad1bcaabd90993456919498f5d118426e513c89b684a"
+    },
+    {
+      "path": "config/mappings/pmd.json",
+      "bytes": 11260,
+      "sha256": "0532f9890ea96e43c92a09c219dba34f8eb7c9a65a7d5b27b85d7c2b0118bdf0"
+    },
+    {
+      "path": "config/mappings/pmd.yaml",
+      "bytes": 9585,
+      "sha256": "bd27e5b13861820f40435f58e95f33b65ab18556741cc28244df2c9fe9580045"
+    },
+    {
+      "path": "config/mappings/pmpd1322.json",
+      "bytes": 240,
+      "sha256": "f8aba6187aca0658ff1335968cb71682ddb873cf377e7d6683cdc77bd536cce1"
+    },
+    {
+      "path": "config/mappings/pmpd1322.yaml",
+      "bytes": 203,
+      "sha256": "398025482dbc429306578783c8df9d9a2b609b8dbbe0d9e6d863630c1aba1174"
+    },
+    {
+      "path": "config/mappings/pmrd8000.json",
+      "bytes": 240,
+      "sha256": "1017e9960339982d583ab77bc58d79dd8cd8d0c7d9c843be94746b355a478dd6"
+    },
+    {
+      "path": "config/mappings/pmrd8000.yaml",
+      "bytes": 203,
+      "sha256": "9e64f6f485f5b31891d34f3e5919c20bf9fbd61bee62113350dc4b8b6f12ff9a"
+    },
+    {
+      "path": "config/mappings/vss.json",
+      "bytes": 4192,
+      "sha256": "c97aa10e2d4287f8559e6ab3148c160cbdd7cc4aa70f1b318d009a188fb2c89e"
+    },
+    {
+      "path": "config/mappings/vss.yaml",
+      "bytes": 3780,
+      "sha256": "2d3afeaceea1cbb53d4667843b97762168730093cd77b74617a88a52dead789b"
+    },
+    {
+      "path": "config/rules/canje.json",
+      "bytes": 668,
+      "sha256": "1cfffef40ffb3ef1344feb15a1ad311297549b792c7c2523862f85e1c69b7134"
+    },
+    {
+      "path": "config/rules/canje.yaml",
+      "bytes": 583,
+      "sha256": "6a3c515c69317a20cc3119cc7e21bb8dddb9a5a02350daeb543e8dfff2f62d31"
+    },
+    {
+      "path": "config/rules/controles.json",
+      "bytes": 836,
+      "sha256": "e75bdd39687c6899328c69df58bde2da7b805fe938d5c7b595ec7c96a664ecb4"
+    },
+    {
+      "path": "config/rules/controles.yaml",
+      "bytes": 661,
+      "sha256": "0cd39ee186e6f5912547961f72ea035be5325688f49a0ab4a3e2c78155b85f5c"
+    },
+    {
+      "path": "config/rules/depo.json",
+      "bytes": 744,
+      "sha256": "c7874ad12e89d7e983a26e3a2365b1afd294fb7edcdf47a813f4dc1cbd1947c7"
+    },
+    {
+      "path": "config/rules/depo.yaml",
+      "bytes": 632,
+      "sha256": "5022505f5cb63f8130ed8378e66e9f23a325db6ba07f5e1934df54cc6f8583f5"
+    },
+    {
+      "path": "config/rules/estados.json",
+      "bytes": 1041,
+      "sha256": "4a47cb5e432c9d33b2950de7d60ea41498a8e6373635eaa2cb12102d43b8c709"
+    },
+    {
+      "path": "config/rules/estados.yaml",
+      "bytes": 930,
+      "sha256": "8b15b4476b77687d9edf3140f9837afa3a20d6d4212a25d47b9b6c35eb627921"
+    },
+    {
+      "path": "database/00_concilia_fase1_ddl_21_tablas.sql",
+      "bytes": 16098,
+      "sha256": "ea5f836a43c1e8222cd3ec27c5b8664c3c97361e8372fb4bc9d4af51c75bbdfd"
+    },
+    {
+      "path": "database/22_seed_insumos_esperados.sql",
+      "bytes": 1122,
+      "sha256": "538876f032b436dad93efa730f5ef6e9042ac3a5fc40e43ff3f54467161cd3ec"
+    },
+    {
+      "path": "database/ddl/01_con_jornada.sql",
+      "bytes": 601,
+      "sha256": "142763bae0b182fe8f08326bbcd1f837d0debdae4660ef818a7f985e20382c62"
+    },
+    {
+      "path": "database/ddl/02_con_insumo_esperado.sql",
+      "bytes": 447,
+      "sha256": "91c40c7f8ce764eb0b459bc9edd57f219814096bc66cad76d610cc2b312e425d"
+    },
+    {
+      "path": "database/ddl/03_con_archivo_carga.sql",
+      "bytes": 960,
+      "sha256": "58a301e85481d35b1d806d05048420243cd44a7cad4c746ac38865757327787e"
+    },
+    {
+      "path": "database/ddl/04_con_control_archivo.sql",
+      "bytes": 443,
+      "sha256": "ff6a96dc024dee4325aca8df53374bc67029892c2157d2bc7442b26c596a8c8d"
+    },
+    {
+      "path": "database/ddl/05_con_trazabilidad.sql",
+      "bytes": 464,
+      "sha256": "74e339d49e743ad43705261634ee4ca2699190e4f823910656c96240bbec8293"
+    },
+    {
+      "path": "database/ddl/06_con_error_registro.sql",
+      "bytes": 590,
+      "sha256": "daa68ede021ca24b98184a521a59ac2592ae29b333471f7a01b901ccfae6e85c"
+    },
+    {
+      "path": "database/ddl/07_con_parametro_bin_red.sql",
+      "bytes": 394,
+      "sha256": "3214dd02c652b4695ca502b4deb30d967b59ff78e871a7b667bbf6ae84dbc69a"
+    },
+    {
+      "path": "database/ddl/08_con_parametro_clasificacion.sql",
+      "bytes": 424,
+      "sha256": "1a2172d0281a9c66d79656374e57cc573ed9e58a1ded150b942aade784becf06"
+    },
+    {
+      "path": "database/ddl/09_con_ha22_resultado.sql",
+      "bytes": 820,
+      "sha256": "289239a03e781110d39249767a56bda314454f7cb753e4b0872fc31f7d4bfab8"
+    },
+    {
+      "path": "database/ddl/10_con_ha26_resultado.sql",
+      "bytes": 851,
+      "sha256": "89ad03500a50143a93a477d4c0a9e9f2f0a97fdb2034429b4dbf3077373d5b9b"
+    },
+    {
+      "path": "database/ddl/11_con_ha32_resultado.sql",
+      "bytes": 621,
+      "sha256": "3513570bc4db14bf34189b01c447e4a30448e4f0d9b63f836dd222d0e7e21032"
+    },
+    {
+      "path": "database/ddl/12_con_canje_resultado.sql",
+      "bytes": 964,
+      "sha256": "47094fe12b72c87347c68369abc2c8c1e211d89226e0936a1279be7d58f38200"
+    },
+    {
+      "path": "database/ddl/13_con_deposito_resultado.sql",
+      "bytes": 2010,
+      "sha256": "5254e12585bcafdb2cf4b51e6ff25b380ecf54f8522dac2bf0661fbeeb80f133"
+    },
+    {
+      "path": "database/ddl/14_con_carta_comp_resultado.sql",
+      "bytes": 923,
+      "sha256": "44f4b302a9e4bef4e63ab251f773426e572c18af9f96ed666a4df4594e95494b"
+    },
+    {
+      "path": "database/ddl/15_con_pmd_resultado.sql",
+      "bytes": 1067,
+      "sha256": "5e6c5aaf2fedda02bd5de6532d033e8d16ef25b56020ac6f05f5796926505495"
+    },
+    {
+      "path": "database/ddl/16_con_mep_resultado.sql",
+      "bytes": 869,
+      "sha256": "da52097cdf9e7e94e9334e8b23325836013da4d00f532c9fb51275d0340f536c"
+    },
+    {
+      "path": "database/ddl/17_con_vss_reporte.sql",
+      "bytes": 547,
+      "sha256": "4ce79fa1eed695ba233b5341894cd6a271cffb486010fbcc0a630ef534401565"
+    },
+    {
+      "path": "database/ddl/18_con_vss_detalle.sql",
+      "bytes": 711,
+      "sha256": "823e79145fdfc4d6f3adea49b175ed211929640a10616dbc1d170146cb86a871"
+    },
+    {
+      "path": "database/ddl/19_con_pmpd1322_incidencia.sql",
+      "bytes": 590,
+      "sha256": "2311c5fe336ccf2a58c785759c7f4d0d2190b33abda6d11b72270e9b94cea0c6"
+    },
+    {
+      "path": "database/ddl/20_con_pmpd1322_operacion.sql",
+      "bytes": 581,
+      "sha256": "1a8f6ce371846265ba004200e2d73c92029b548fb1c18be59aa3b4648d0799ff"
+    },
+    {
+      "path": "database/ddl/21_con_pmrd8000_resultado.sql",
+      "bytes": 656,
+      "sha256": "d2a7ea10427b2f020db682e7d6a9d506260a03d3bd88b0c94d1c3507c0042223"
+    },
+    {
+      "path": "database/migrations/V54__recalculo_fase1_21_tablas.sql",
+      "bytes": 746,
+      "sha256": "bb9db23c83bccc98af2d92eb82eedb4aff7d4eee2c43307998f1631c628fcc78"
+    },
+    {
+      "path": "demo/concilia_demo_fase1.html",
+      "bytes": 599832,
+      "sha256": "46cb3155b5449596d387d242013edee5fd61625dd7c7ace1b1ae3993d898c72b"
+    },
+    {
+      "path": "deploy/control-m/README.md",
+      "bytes": 373,
+      "sha256": "2c0afbb4d055d3d2c5acb643440faa44596c3bd62667e2cca86dded68ab1dab4"
+    },
+    {
+      "path": "deploy/okd/backend.yaml",
+      "bytes": 874,
+      "sha256": "f6da6c4b8e526a0d0779cff84754d804b7d25f9136510381dc28fe05eb7c0368"
+    },
+    {
+      "path": "deploy/okd/configmap.yaml",
+      "bytes": 184,
+      "sha256": "30017b37ef1b34729e1f0fbe7c1d0a0abb7cfc37ad84c1a30d0942140d15cc30"
+    },
+    {
+      "path": "deploy/okd/secret-template.yaml",
+      "bytes": 235,
+      "sha256": "f26fa0a0ec7c1c2078f5528f1c403c2b1b2e7876dceee6ba932114f97f261b37"
+    },
+    {
+      "path": "docs/INVENTARIO_COMPONENTES_FASE1.md",
+      "bytes": 640,
+      "sha256": "c302f30fd76735519a69853be74861813b1bfcd65cdb1f559b0afbbac0400d3b"
+    },
+    {
+      "path": "docs/mappings/matriz_mapping_CARTA_CEI240A_VSS_v1.xlsx",
+      "bytes": 12475,
+      "sha256": "a5cf68ebf7a53b3a3ee3d55bfecbbbb5276399ba9ef598779ea64930e29a6c4b"
+    },
+    {
+      "path": "docs/mappings/matriz_mapping_HA22_HA26_HA32_PMD_MEP_v1.xlsx",
+      "bytes": 18252,
+      "sha256": "c8165964867edd04976a27c05d3b7942e9d993f08dce8537d762d931d224db2f"
+    },
+    {
+      "path": "docs/mappings/matriz_mapping_PMD_v1.xlsx",
+      "bytes": 8235,
+      "sha256": "61ce9dffab6366372b78ce95945a0e0752048a73d2495881a042642633fa50f9"
+    },
+    {
+      "path": "docs/mappings/matriz_mapping_productivo_CAET_CANT_DEPO_v1.xlsx",
+      "bytes": 14969,
+      "sha256": "c4e99c33006f8f8626fd7c53b399dc8e88258f49dcc27007651c75ae01dfa6fb"
+    },
+    {
+      "path": "docs/mappings/reporte_equivalencia_CAET_CANT_DEPO_v3.xlsx",
+      "bytes": 8355,
+      "sha256": "4b62438542db3b50208c9d6ccbc9d003559c406648ebbfca8a5048cead62499c"
+    },
+    {
+      "path": "frontend/src/types.ts",
+      "bytes": 461,
+      "sha256": "effefda2719935f87ee718b30150b801ef83fc14264b3afaed650e31b2654293"
+    },
+    {
+      "path": "openapi/concilia_fase1_openapi.yaml",
+      "bytes": 1874,
+      "sha256": "014b89f9feeb529961b41aa679285a87065c26a5fec397ab0dcc345e49fa6dcd"
+    }
+  ]
+}

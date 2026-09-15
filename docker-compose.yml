@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: concilia
+      POSTGRES_PASSWORD: concilia
+      POSTGRES_DB: concilia
+    volumes:
+      - ./database/00_concilia_fase1_ddl_21_tablas.sql:/docker-entrypoint-initdb.d/00_ddl.sql:ro
+      - ./database/22_seed_insumos_esperados.sql:/docker-entrypoint-initdb.d/22_seed.sql:ro
+      - concilia_pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U concilia -d concilia"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_URL: postgresql://concilia:concilia@postgres:5432/concilia
+      MINIO_ENDPOINT: minio:9000
+      MINIO_BUCKET: concilia-fase1
+      PAGE_SIZE: "30"
+      MAX_PAGE_SIZE: "100"
+      INCOMING_DIR: /app/data/incoming
+    volumes:
+      - ./backend/data/incoming:/app/data/incoming:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    image: nginx:alpine
+    volumes:
+      - ./frontend/public:/usr/share/nginx/html:ro
+      - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  concilia_pgdata:

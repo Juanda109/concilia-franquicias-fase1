@@ -1,0 +1,6 @@
+version: "1.0.0"
+totalFase1: 21
+tablasComunes: 8
+tablasResultado: 13
+nuevaTabla: "CON_ERROR_REGISTRO"
+vssContextoPagina: true
