@@ -1,8 +1,7 @@
-import re,uuid
+import re,tempfile,uuid
 from dataclasses import asdict
 from pathlib import Path
-from fastapi import FastAPI,HTTPException,Query,Header
-from app.core.config import settings
+from fastapi import FastAPI,HTTPException,Query,Header,UploadFile,File,Form
 from app.repositories.database import connection
 from app.repositories.insumo import InsumoRepository
 from app.repositories.jornada import JornadaRepository
@@ -20,15 +19,6 @@ def _fecha_en_nombre(nombre_archivo:str)->str|None:
     aa,mm,dd=m.groups()
     return f"20{aa}-{mm}-{dd}"
 
-def _buscar_en_ruta_estatica(tipo_insumo:str,patron_archivo:str|None,fecha_contable:str)->Path|None:
-    base=Path(settings.incoming_dir)
-    if not base.exists(): return None
-    patron=(patron_archivo or f"*{tipo_insumo}*").replace("%%ODATE",fecha_contable.replace("-",""))
-    candidatos=[p for p in base.glob(patron) if p.is_file()]
-    if not candidatos: return None
-    candidatos.sort(key=lambda p:p.stat().st_mtime,reverse=True)
-    return candidatos[0]
-
 @app.get("/api/v1/jornadas/actual")
 def jornada_actual():
  with connection() as c:
@@ -40,18 +30,29 @@ def jornada_actual():
 @app.get("/api/v1/archivos")
 def archivos(fechaContable:str=Query(...)):
  with connection() as c:
-  rows=c.execute("""SELECT a.ID_ARCHIVO,i.FUENTE,i.TIPO_INSUMO,a.NOMBRE_ARCHIVO,a.TOTAL_REGISTROS,a.ESTADO_RECEPCION,a.ESTADO_VALIDACION,a.ESTADO_PROCESAMIENTO,a.ESTADO_CARGA,a.ESTADO_DISPONIBILIDAD,a.DISPONIBLE
- FROM CON_JORNADA j JOIN CON_ARCHIVO_CARGA a ON a.ID_JORNADA=j.ID_JORNADA JOIN CON_INSUMO_ESPERADO i ON i.ID_INSUMO=a.ID_INSUMO WHERE j.FECHA_CONTABLE=%s ORDER BY i.ORDEN_VISUAL""",(fechaContable,)).fetchall()
+  rows=c.execute("""SELECT a.ID_ARCHIVO,i.FUENTE,i.TIPO_INSUMO,a.NOMBRE_ARCHIVO,a.TOTAL_REGISTROS,
+ COALESCE(a.ESTADO_RECEPCION,'No recibido'),COALESCE(a.ESTADO_PROCESAMIENTO,'Pendiente'),
+ COALESCE(a.ESTADO_DISPONIBILIDAD,'No disponible'),COALESCE(a.DISPONIBLE,FALSE)
+ FROM CON_INSUMO_ESPERADO i
+ LEFT JOIN CON_JORNADA j ON j.FECHA_CONTABLE=%s
+ LEFT JOIN CON_ARCHIVO_CARGA a ON a.ID_INSUMO=i.ID_INSUMO AND a.ID_JORNADA=j.ID_JORNADA
+ WHERE i.ACTIVO ORDER BY i.ORDEN_VISUAL""",(fechaContable,)).fetchall()
   if not rows: raise HTTPException(204)
-  keys=["idArchivo","fuente","tipoInsumo","nombreArchivo","totalRegistros","estadoRecepcion","estadoValidacion","estadoProcesamiento","estadoCarga","estadoDisponibilidad","disponible"]
-  return {"fechaContable":fechaContable,"totalEsperados":12,"items":[dict(zip(keys,x)) for x in rows]}
+  keys=["idArchivo","fuente","tipoInsumo","nombreArchivo","totalRegistros","estadoRecepcion","estadoProcesamiento","estadoDisponibilidad","disponible"]
+  return {"fechaContable":fechaContable,"totalEsperados":len(rows),"items":[dict(zip(keys,x)) for x in rows]}
+
+@app.get("/api/v1/jornadas/fechas")
+def jornadas_fechas(limit:int=20):
+ with connection() as c:
+  rows=c.execute("SELECT FECHA_CONTABLE,ESTADO FROM CON_JORNADA ORDER BY FECHA_CONTABLE DESC LIMIT %s",(limit,)).fetchall()
+  return {"items":[{"fechaContable":str(f),"estado":e} for f,e in rows]}
 
 @app.get("/api/v1/archivos/{id_archivo}")
 def archivo(id_archivo:int):
  with connection() as c:
-  row=c.execute("SELECT ID_ARCHIVO,NOMBRE_ARCHIVO,TOTAL_REGISTROS,ESTADO_RECEPCION,ESTADO_VALIDACION,ESTADO_PROCESAMIENTO,ESTADO_CARGA,ESTADO_DISPONIBILIDAD,DISPONIBLE,CORRELATION_ID FROM CON_ARCHIVO_CARGA WHERE ID_ARCHIVO=%s",(id_archivo,)).fetchone()
+  row=c.execute("SELECT ID_ARCHIVO,NOMBRE_ARCHIVO,TOTAL_REGISTROS,ESTADO_RECEPCION,ESTADO_PROCESAMIENTO,ESTADO_DISPONIBILIDAD,DISPONIBLE,CORRELATION_ID FROM CON_ARCHIVO_CARGA WHERE ID_ARCHIVO=%s",(id_archivo,)).fetchone()
   if not row: raise HTTPException(404,"ARCHIVO_NO_ENCONTRADO")
-  return dict(zip(["idArchivo","nombreArchivo","totalRegistros","estadoRecepcion","estadoValidacion","estadoProcesamiento","estadoCarga","estadoDisponibilidad","disponible","correlationId"],row))
+  return dict(zip(["idArchivo","nombreArchivo","totalRegistros","estadoRecepcion","estadoProcesamiento","estadoDisponibilidad","disponible","correlationId"],row))
 
 @app.get('/health')
 def health():
@@ -70,35 +71,39 @@ def contenido(id_archivo:int,page:int=0,size:int=30):
         return {'idArchivo':id_archivo,'tipoInsumo':row[1],'page':page,'size':size,'total':total,'items':items}
 
 @app.post('/api/v1/archivos')
-def procesar_archivo(fechaContable:str=Query(...),tipoInsumo:str=Query(...),
-                      x_correlation_id:str|None=Header(None,alias='X-Correlation-Id')):
-    """Procesa un insumo ya depositado en la ruta estática (INCOMING_DIR), emulando
-    la llegada real vía Control-M -> Hub Linux -> SFTP -> MinIO/OKD. No recibe el
-    archivo por HTTP: lo localiza por el PATRON_ARCHIVO configurado en CON_INSUMO_ESPERADO."""
+def cargar_archivo(fechaContable:str=Form(...),tipoInsumo:str=Form(...),file:UploadFile=File(...),
+                    x_correlation_id:str|None=Header(None,alias='X-Correlation-Id')):
+    """Recibe el archivo por HTTP (multipart) y en la misma llamada lo valida, parsea y carga."""
     correlation_id=x_correlation_id or str(uuid.uuid4())
     with connection() as c:
         insumo=InsumoRepository(c).get_by_tipo(tipoInsumo)
         if insumo is None: raise HTTPException(404,'INSUMO_NO_ENCONTRADO')
-        source=_buscar_en_ruta_estatica(tipoInsumo,insumo['patron_archivo'],fechaContable)
-        if source is None: raise HTTPException(404,'ARCHIVO_NO_ENCONTRADO_EN_RUTA')
-        fecha_archivo=_fecha_en_nombre(source.name)
+        nombre_archivo=file.filename or f'{tipoInsumo}.dat'
+        fecha_archivo=_fecha_en_nombre(nombre_archivo)
         if fecha_archivo and fecha_archivo!=fechaContable:
-            raise HTTPException(409,f'FECHA_NO_COINCIDE_CON_ARCHIVO: el archivo {source.name} corresponde a {fecha_archivo}, no a {fechaContable}')
+            raise HTTPException(409,f'FECHA_NO_COINCIDE_CON_ARCHIVO: el archivo {nombre_archivo} corresponde a {fecha_archivo}, no a {fechaContable}')
 
         id_jornada=JornadaRepository(c).get_or_create(fechaContable)
-        id_archivo=ArchivoRepo(c).get_or_create(id_jornada,insumo['id_insumo'],source.name,correlation_id)
-        try:
-            result=IngestionOrchestrator(c).execute(id_archivo,tipoInsumo,source,correlation_id)
-        except KeyError:
-            raise HTTPException(400,'PARSER_NO_IMPLEMENTADO')
+        id_archivo=ArchivoRepo(c).get_or_create(id_jornada,insumo['id_insumo'],nombre_archivo,correlation_id)
 
-        row=c.execute("""SELECT ID_ARCHIVO,NOMBRE_ARCHIVO,TOTAL_REGISTROS,ESTADO_RECEPCION,ESTADO_VALIDACION,
- ESTADO_PROCESAMIENTO,ESTADO_CARGA,ESTADO_DISPONIBILIDAD,DISPONIBLE,CORRELATION_ID
+        suffix=Path(nombre_archivo).suffix
+        with tempfile.NamedTemporaryFile(suffix=suffix,delete=False) as tmp:
+            tmp.write(file.file.read())
+            tmp_path=Path(tmp.name)
+        try:
+            try:
+                result=IngestionOrchestrator(c).execute(id_archivo,tipoInsumo,tmp_path,correlation_id)
+            except KeyError:
+                raise HTTPException(400,'PARSER_NO_IMPLEMENTADO')
+        finally:
+            tmp_path.unlink(missing_ok=True)
+
+        row=c.execute("""SELECT ID_ARCHIVO,NOMBRE_ARCHIVO,TOTAL_REGISTROS,ESTADO_RECEPCION,
+ ESTADO_PROCESAMIENTO,ESTADO_DISPONIBILIDAD,DISPONIBLE,CORRELATION_ID
  FROM CON_ARCHIVO_CARGA WHERE ID_ARCHIVO=%s""",(id_archivo,)).fetchone()
-        keys=["idArchivo","nombreArchivo","totalRegistros","estadoRecepcion","estadoValidacion",
-              "estadoProcesamiento","estadoCarga","estadoDisponibilidad","disponible","correlationId"]
+        keys=["idArchivo","nombreArchivo","totalRegistros","estadoRecepcion",
+              "estadoProcesamiento","estadoDisponibilidad","disponible","correlationId"]
         return {**dict(zip(keys,row)),
-                "rutaOrigen":str(source),
                 "registrosInsertados":len(result.records) if not result.errors else 0,
                 "errores":[asdict(e) for e in result.errors],
                 "controles":result.controls}
