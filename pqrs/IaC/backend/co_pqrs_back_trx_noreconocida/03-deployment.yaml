@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: co-pqrs-back-trx-noreconocida
+  labels:
+    app: co-pqrs-back-trx-noreconocida
+    app.kubernetes.io/name: co-pqrs-back-trx-noreconocida
+    app.kubernetes.io/part-of: backend
+    app.kubernetes.io/component: backend-trx
+    app.kubernetes.io/version: v1
+    app.openshift.io/runtime: python
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: co-pqrs-back-trx-noreconocida
+  template:
+    metadata:
+      labels:
+        app: co-pqrs-back-trx-noreconocida
+        app.kubernetes.io/name: co-pqrs-back-trx-noreconocida
+        app.kubernetes.io/part-of: backend
+        app.kubernetes.io/component: backend-trx
+        app.kubernetes.io/version: v1
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8004"
+    spec:
+      serviceAccountName: default
+      dnsPolicy: ClusterFirst
+      enableServiceLinks: false
+
+      containers:
+        - name: back-trx
+          image: quay.apps.work.ocp.co.igrupobbva/pqr-genai/co_pqrs_back_trx_noreconocida:test_v1.0.10
+          imagePullPolicy: Always
+
+          ports:
+            - name: http
+              containerPort: 8004
+              protocol: TCP
+
+          env:
+            - name: TZ
+              value: America/Bogota
+
+            - name: HTTP_PROXY
+              value: "http://172.17.81.140:9480"
+            - name: HTTPS_PROXY
+              value: "http://172.17.81.140:9480"
+            - name: http_proxy
+              value: "http://172.17.81.140:9480"
+            - name: https_proxy
+              value: "http://172.17.81.140:9480"
+
+            - name: NO_PROXY
+              value: "localhost,127.0.0.1,.svc,.cluster.local,co-pqrs-back-agent,co-pqrs-back-data,co-pqrs-back-trx-noreconocida,co-pqrs-back-trx-aso-simulator,co-pqrs-back-error-handler,rabbitmq,postgresql,opensearch,.co.nextgen.igrupobbva"
+            - name: no_proxy
+              value: "localhost,127.0.0.1,.svc,.cluster.local,co-pqrs-back-agent,co-pqrs-back-data,co-pqrs-back-trx-noreconocida,co-pqrs-back-trx-aso-simulator,co-pqrs-back-error-handler,rabbitmq,postgresql,opensearch,.co.nextgen.igrupobbva"
+
+          volumeMounts:
+            - name: conf-pqr-env
+              mountPath: /app/.env
+              subPath: .env
+
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            failureThreshold: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          resources:
+            requests:
+              cpu: "150m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+      volumes:
+        - name: conf-pqr-env
+          configMap:
+            name: conf-pqr-trxnr-env

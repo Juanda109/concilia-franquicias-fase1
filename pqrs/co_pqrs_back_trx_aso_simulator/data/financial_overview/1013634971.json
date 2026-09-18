@@ -1,0 +1,181 @@
+{
+ "data": {
+  "hasMoreData": false,
+  "family": [
+   {
+    "id": "CARDS",
+    "name": "TARJETAS",
+    "balances": [
+     {
+      "id": "DISPOSED_CURRENT_AGGREGATED",
+      "name": "",
+      "amountBalance": [
+       {
+        "amount": 980000,
+        "currency": "COP",
+        "isMajor": false
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "hasViewers": false,
+  "isEnrolled": false,
+  "contracts": [
+   {
+    "id": "4912680517940067",
+    "classification": {
+     "type": "",
+     "level": [
+      {
+       "id": "FIRST_LEVEL",
+       "name": "CARDS",
+       "internalCode": ""
+      },
+      {
+       "id": "SECOND_LEVEL",
+       "name": "CARDS",
+       "internalCode": ""
+      }
+     ]
+    },
+    "number": "0067",
+    "numberType": {
+     "id": "PAN",
+     "name": ""
+    },
+    "countryId": "CO",
+    "bank": {
+     "id": "0013",
+     "name": "BBVA COLOMBIA"
+    },
+    "branch": {
+     "id": "0067",
+     "name": ""
+    },
+    "status": {
+     "id": "OPERATIVE",
+     "name": ""
+    },
+    "alias": "",
+    "signedAuthorization": {
+     "id": "INDISTINCT",
+     "name": ""
+    },
+    "currencies": [
+     {
+      "currency": "COP",
+      "isMajor": true
+     }
+    ],
+    "participant": {
+     "participantType": {
+      "id": "HOLDER",
+      "name": "",
+      "order": ""
+     },
+     "name": "CLIENTE N PRESENCIAL"
+    },
+    "relatedContracts": [],
+    "userAccessControl": [],
+    "product": {
+     "id": "50",
+     "name": "VISA ORO LM",
+     "description": ""
+    },
+    "productType": "CARD",
+    "subProductType": {
+     "id": "CREDIT_CARD",
+     "name": ""
+    },
+    "formats": [
+     {
+      "number": "4912680517940061",
+      "numberType": {
+       "id": "PAN",
+       "name": ""
+      }
+     }
+    ],
+    "isLegacy": false,
+    "arrearsSituation": "",
+    "detail": {
+     "specificAmounts": [
+      {
+       "id": "AVAILABLE_CURRENT_BALANCES",
+       "name": "",
+       "amounts": [
+        {
+         "amount": 4020000,
+         "currency": "COP"
+        }
+       ]
+      },
+      {
+       "id": "GRANTED_CREDITS",
+       "name": "",
+       "amounts": [
+        {
+         "amount": 5000000,
+         "currency": "COP"
+        }
+       ]
+      },
+      {
+       "id": "DISPOSED_CURRENT_BALANCES",
+       "name": "",
+       "amounts": [
+        {
+         "amount": 980000,
+         "currency": "COP"
+        }
+       ]
+      }
+     ],
+     "agreementContract": "",
+     "images": [
+      {
+       "id": "491268LR",
+       "url": "https://cardcovers.caasbbva.com/colombia/co_LR_491268_19700101_front.png"
+      }
+     ],
+     "physicalSupport": {
+      "id": "NORMAL_PLASTIC",
+      "name": ""
+     },
+     "expirationDate": "2032-06-30T00:00:00.0-0500",
+     "activations": [
+      {
+       "id": "ON_OFF",
+       "name": "",
+       "isActive": true
+      }
+     ],
+     "rewards": [
+      {
+       "id": "BANCOMER_POINTS",
+       "name": "",
+       "nonMonetaryValue": 1
+      }
+     ],
+     "indicators": [
+      {
+       "id": "BLOCKABLE",
+       "name": "",
+       "isActive": true
+      }
+     ],
+     "holderName": "",
+     "embossingDate": "2026-05-25T00:00:00.0-0500",
+     "migrationType": "NORMAL",
+     "status": {
+      "id": "OPERATIVE",
+      "name": "ACTIVADA"
+     },
+     "dependencyValue": ""
+    }
+   }
+  ]
+ }
+}

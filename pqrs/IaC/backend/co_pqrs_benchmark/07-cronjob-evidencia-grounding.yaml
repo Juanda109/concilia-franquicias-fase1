@@ -1,0 +1,84 @@
+# Corridas de evidencia, una por banco de casos. Nacen SUSPENDIDAS: no se ejecutan solas.
+#
+# Se disparan desde la consola de OpenShift, sin terminal:
+#   Workloads -> CronJobs -> co-pqrs-benchmark-grounding -> Actions -> Instantiate Job
+#
+# Cada una fija su BENCHMARK_SOURCE, que es lo que decide en que tablero aparece.
+# Un banco adversarial publicado como "benchmark" no sale en el tablero adversarial.
+#
+# Fidelidad a la fuente en los cuatro puntos generativos (23 casos)
+# Tablero: PQRS · Grounding
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: co-pqrs-benchmark-grounding
+  labels:
+    app: co-pqrs-benchmark
+    app.kubernetes.io/part-of: benchmark
+spec:
+  suspend: true
+  schedule: "0 4 31 2 *"   # fecha imposible: solo se lanza a mano
+  timeZone: "America/Bogota"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      ttlSecondsAfterFinished: 86400
+      template:
+        metadata:
+          labels:
+            app: co-pqrs-benchmark
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: co-pqr-benchmark
+              image: quay.apps.work.ocp.co.igrupobbva/pqr-genai/co_pqrs_benchmark:v9
+              imagePullPolicy: Always
+              command: ["python", "main.py"]
+              envFrom:
+                - configMapRef:
+                    name: conf-pqrs-benchmark-env
+              env:
+                - name: TZ
+                  value: "America/Bogota"
+                - name: RABBITMQ_ENABLED
+                  value: "true"
+                - name: MINIO_ENABLED
+                  value: "false"
+                - name: BENCHMARK_SOURCE
+                  value: "grounding"
+                - name: INPUT_JSON
+                  value: /data/input/grounding.json
+                - name: RUN_NAME
+                  value: evidencia_grounding
+                - name: OUTPUT_JSON
+                  value: /dev/stdout
+                - name: SUMMARY_TXT
+                  value: /tmp/summary.txt
+                - name: RABBITMQ_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: rabbitmq-secret
+                      key: username
+                - name: RABBITMQ_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: rabbitmq-secret
+                      key: password
+              resources:
+                requests:
+                  cpu: 200m
+                  memory: 256Mi
+                limits:
+                  cpu: 1000m
+                  memory: 1024Mi
+              volumeMounts:
+                - name: dataset
+                  mountPath: /data/input
+                  readOnly: true
+          volumes:
+            - name: dataset
+              configMap:
+                name: conf-pqrs-benchmark-dataset

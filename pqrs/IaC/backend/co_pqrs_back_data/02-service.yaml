@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: co-pqrs-back-data
+  labels:
+    app: co-pqrs-back-data
+    app.kubernetes.io/part-of: backend
+spec:
+  type: ClusterIP
+  selector:
+    app: co-pqrs-back-data
+  ports:
+    - name: http-8003
+      protocol: TCP
+      port: 8003
+      targetPort: 8003

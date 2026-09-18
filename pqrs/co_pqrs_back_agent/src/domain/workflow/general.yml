@@ -1,0 +1,527 @@
+# YAML field guide (routing catalog):
+# - welcome.message: initial greeting shown to the user (texto UX, no se toca).
+# - groups[].key/label/message: category identity and intro message.
+# - groups[].routing_criteria: group-level rule used to disambiguate between similar categories.
+# - groups[].options[].key/label: workflow identity shown to the user.
+# - groups[].options[].description: concise "cuando usar" summary used during routing.
+# - groups[].options[].preconditions: intent signals that should hold to route here.
+# - groups[].options[].no_usar: when NOT to route here and where to route instead.
+# - groups[].options[].se_confunde_con: neighbouring workflows commonly confused with this one.
+# - groups[].options[].examples: user phrases that SHOULD map to this workflow.
+# - groups[].options[].contraejemplos: phrases that look similar but must NOT map here (negatives).
+# - groups[].options[].workflow: technical workflow id (loads <group>/<workflow>.yml and its UX texts).
+# The persona/few-shots of the routing prompt live in routing_prompt.yml (business-editable).
+welcome:
+  message: "Hola, soy tu asistente de PQRs. En que te puedo ayudar?"
+  groups:
+    - key: "hazlo_tu_mismo"
+      label: "Hazlo tu mismo"
+      message: "Estas son las opciones criticas disponibles en Hazlo tu mismo."
+      routing_criteria: >-
+        El usuario quiere OBTENER, DESCARGAR o TRAMITAR un documento o gestion de
+        autoservicio (certificados de cuenta, tributario, de deuda o de fondos;
+        extractos; paz y salvo; consulta de movimientos; documentos de leasing).
+      limit_category: "general"
+      options:
+        - key: "certificado_de_cuenta"
+          label: "Certificado de Cuenta"
+          description: "Documento oficial que certifica titularidad o saldos de la cuenta para terceros (empresas, embajadas, visa, nomina)."
+          preconditions: "El usuario necesita un certificado de cuenta o de su cuenta de ahorros para presentarlo ante un tercero."
+          no_usar: "Ver/descargar movimientos -> consulta_de_movimientos/extractos_bancarios; documento fiscal/renta -> certificado_tributario; certificado de cuanto debe -> certificado_de_deuda."
+          se_confunde_con: "extractos_bancarios, consulta_de_movimientos, certificado_tributario, certificado_de_deuda"
+          examples:
+            - Como descargo una certificacion de mi cuenta?
+            - Necesito un soporte que diga que tengo una cuenta con ustedes
+            - Donde saco la certificacion bancaria?
+            - Necesito un certificado de saldo actual
+            - Como obtengo mi certificado de saldo medio para una visa?
+            - Mi nueva empresa me pide un soporte de mi cuenta BBVA
+            - Por donde bajo el papel de la cuenta para que me consignen el sueldo?
+          contraejemplos:
+            - "Necesito el certificado para la declaracion de renta (-> certificado_tributario)"
+            - "Quiero ver mis movimientos del mes (-> extractos_bancarios)"
+          workflow: "certificado_de_cuenta"
+        - key: "consulta_de_movimientos"
+          label: "Consulta de Movimientos"
+          description: "Ver, buscar o verificar transacciones recientes en app/web (no un documento oficial) o controlar gastos."
+          preconditions: "El usuario quiere buscar, ver o verificar los movimientos/saldos de su cuenta, o no sabe como verlos."
+          no_usar: "Documento oficial/descargable del periodo -> extractos_bancarios; para impuestos -> certificado_tributario."
+          se_confunde_con: "extractos_bancarios, certificado_de_cuenta"
+          examples:
+            - Donde veo lo que gaste ayer?
+            - No me acuerdo si ya pague el servicio publico
+            - Como busco una compra especifica?
+            - Donde aparece el abono que me hicieron hoy?
+            - Como descargo mis movimientos en Excel?
+            - Como busco movimientos de hace 15 dias?
+            - Se pueden filtrar los gastos por valor?
+          contraejemplos:
+            - "Necesito descargar el extracto oficial de mi cuenta (-> extractos_bancarios)"
+          workflow: "consulta_de_movimientos"
+        - key: "certificado_tributario"
+          label: "Certificado Tributario"
+          description: "Documentos fiscales: certificado para renta, retencion en la fuente, saldos e intereses, certificado del GMF 4x1000."
+          preconditions: "El usuario necesita un documento tributario/fiscal (renta, retencion en la fuente, certificado del GMF)."
+          no_usar: "Reclamo/duda por el COBRO del 4x1000 -> impuesto_4x1000; titularidad/saldos para tercero -> certificado_de_cuenta."
+          se_confunde_con: "impuesto_4x1000, certificado_de_cuenta, extractos_bancarios"
+          examples:
+            - Donde bajo mis certificados para la declaracion de renta?
+            - Necesito mi certificado de retencion en la fuente
+            - Como descargo el certificado de saldos e intereses?
+            - Necesito el documento del GMF 4x1000 para la renta
+            - No encuentro la opcion de certificados en la App
+            - Por donde se bajan los certificados tributarios en la pagina web?
+          contraejemplos:
+            - "Por que me cobran el 4x1000 / quiero que no me lo cobren (-> impuesto_4x1000)"
+          workflow: "certificado_tributario"
+        - key: "extractos_bancarios"
+          label: "Extractos Bancarios"
+          description: "Extracto (mensual o historico) de cuenta/tarjeta con movimientos detallados, o ubicar la notificacion de reporte en el extracto."
+          preconditions: "El usuario pide extractos bancarios (ultimos meses o un rango de fechas) o no sabe como obtenerlos."
+          no_usar: "Ver movimientos rapidos sin documento -> consulta_de_movimientos; certificacion titularidad/saldos para tercero -> certificado_de_cuenta; documento fiscal -> certificado_tributario."
+          se_confunde_con: "consulta_de_movimientos, certificado_de_cuenta, certificado_tributario"
+          examples:
+            - Donde veo mis movimientos del mes pasado?
+            - Necesito descargar el extracto de mi cuenta
+            - Como saco el extracto de la tarjeta de credito?
+            - Necesito un extracto de hace 3 anios
+            - Por que solo me salen 24 meses en la App?
+            - No encuentro el boton de extractos en la web
+          contraejemplos:
+            - "Necesito una certificacion que diga que la cuenta es mia (-> certificado_de_cuenta)"
+          workflow: "extractos_bancarios"
+        - key: "paz_y_salvo"
+          label: "Paz y Salvo"
+          description: "El cliente YA pago/cancelo una deuda o producto y pide el documento oficial de que no tiene compromisos pendientes (compra de cartera, liberar garantias, soporte de cancelacion)."
+          preconditions: "El cliente afirma que YA pago/cancelo la deuda o producto y solicita el documento de paz y salvo."
+          no_usar: "Cuando el cliente NO indica que ya pago y solo pide que le eliminen/quiten o reclama un reporte negativo -> centrales_de_riesgo. Si pregunta cuanto tarda en borrarse el reporte -> faq_plazos_reporte_negativo. Certificado del valor que aun debe -> certificado_de_deuda."
+          se_confunde_con: "centrales_de_riesgo, certificado_de_deuda, faq_solicitud_actualizacion_tras_pago"
+          examples:
+            - Ya pague todo, donde saco mi paz y salvo?
+            - Necesito el certificado de que ya no les debo nada
+            - Como descargo el paz y salvo de mi tarjeta de credito?
+            - Necesito el paz y salvo de mi deuda para otro banco
+            - Por donde se baja el paz y salvo en la pagina web?
+            - Como certifico que mi credito ya esta cancelado?
+          contraejemplos:
+            - "Estoy reportado y necesito que me quiten ese reporte de datacredito (-> centrales_de_riesgo)"
+            - "Ya pague, cuando me borran de Datacredito? (-> faq_plazos_reporte_negativo)"
+          workflow: "paz_y_salvo"
+        - key: "solicitud_de_documentos_leasing"
+          label: "Solicitud de documentos Leasing"
+          description: "Postventa de Leasing (financiero/habitacional): autorizaciones (remodelar, vehiculo), certificados de la operacion, contacto con el equipo especialista."
+          preconditions: "El cliente tiene un producto de leasing y necesita una gestion o documento de postventa."
+          no_usar: "Certificado de cuenta o de deuda estandar no relacionado con leasing -> el certificado correspondiente."
+          se_confunde_con: "certificado_de_deuda, certificado_de_cuenta"
+          examples:
+            - Como pido permiso para remodelar mi casa de leasing?
+            - Necesito una autorizacion para mi vehiculo de leasing
+            - Necesito un certificado de mi operacion de leasing
+            - Como saco los papeles de mi leasing financiero?
+            - Cual es el correo de leasing?
+            - Tengo un problema con mi contrato de leasing
+            - Quiero hacer un abono a mi leasing y no se como
+          contraejemplos:
+            - "Necesito un documento de como esta mi credito de la cuenta (-> certificado_de_deuda)"
+          workflow: "solicitud_de_documentos_leasing"
+        - key: "certificado_de_deuda"
+          label: "Certificado de deuda"
+          description: "Soporte oficial del VALOR TOTAL que debe (saldo pendiente) para compra de cartera, levantamiento de garantias o liquidacion total."
+          preconditions: "El cliente tiene una deuda/credito vigente y necesita certificar cuanto debe."
+          no_usar: "Ya pago y quiere el soporte de que NO debe -> paz_y_salvo; certificacion titularidad/saldos -> certificado_de_cuenta."
+          se_confunde_con: "paz_y_salvo, certificado_de_cuenta, solicitud_de_documentos_leasing"
+          examples:
+            - Necesito el certificado de deuda para llevarme mi cuenta a otro banco
+            - Donde pido el certificado de saldos para una compra de cartera?
+            - Quiero saber exactamente cuanto debo para cancelar todo hoy
+            - Como solicito un certificado de lo que debo de mi credito?
+            - Como hablo con alguien para que me den un soporte de mi deuda?
+            - Necesito el documento oficial de mi saldo pendiente
+          contraejemplos:
+            - "Ya pague todo, necesito el paz y salvo (-> paz_y_salvo)"
+          workflow: "certificado_de_deuda"
+        - key: "certificados_fondos_de_inversion"
+          label: "Certificados fondos de inversion"
+          description: "Documentos de fondos de inversion (FIC): extracto del fondo, certificado de la inversion para renta, saldos del fondo o fiducia."
+          preconditions: "El cliente tiene un fondo de inversion/fiducia y necesita un documento o soporte del mismo."
+          no_usar: "Certificado fiscal general -> certificado_tributario; extracto de cuenta ahorros/corriente -> extractos_bancarios."
+          se_confunde_con: "certificado_tributario, extractos_bancarios"
+          examples:
+            - Donde bajo el extracto de mi fondo de inversion?
+            - Necesito el certificado de mi inversion para la declaracion de renta
+            - Como veo cuanto dinero tengo en mi fiducia?
+            - No me llega el extracto de mi inversion
+            - Cual es el correo de la fiduciaria?
+            - Cual es la clave para abrir el extracto de mi fondo?
+            - No puedo abrir el pdf de mi inversion
+          workflow: "certificados_fondos_de_inversion"
+
+    - key: "guia_rapida"
+      label: "Guia rapida"
+      message: "Estas son las opciones disponibles en Guia rapida."
+      routing_criteria: >-
+        El usuario pregunta por un COBRO o un BENEFICIO y como funciona
+        (4x1000/GMF, cuota de manejo, puntos y promociones, limites transaccionales),
+        o por el PROCESO de una CUENTA EMBARGADA (que es, como levantarlo, tiempos,
+        inembargabilidad del salario, relacion con el reporte en centrales).
+      limit_category: "general"
+      options:
+        - key: "impuesto_4x1000"
+          label: "Impuesto 4x1000"
+          description: "Dudas o reclamos del GMF (4x1000): por que se lo cobran, como funciona, marcar cuenta exenta, cobro indebido."
+          preconditions: "El cliente pregunta por el cobro del 4x1000, como funciona, o como marcar su cuenta como exenta."
+          no_usar: "Pide el CERTIFICADO del 4x1000 para la declaracion de renta -> certificado_tributario."
+          se_confunde_con: "certificado_tributario"
+          examples:
+            - Por que me descontaron plata de mi transferencia?
+            - Que es ese cobro de GMF que me sale en el extracto?
+            - Que es el 4x1000?
+            - Quien se queda con la plata del impuesto al movimiento financiero?
+            - Como hago para que no me cobren el 4x1000?
+            - Cual es mi cuenta exenta?
+            - Me cobraron el 4x1000 y yo tengo la cuenta marcada
+          contraejemplos:
+            - "Necesito el certificado del GMF para la declaracion de renta (-> certificado_tributario)"
+          workflow: "impuesto_4x1000"
+        - key: "puntos_y_promociones"
+          label: "Puntos y Promociones"
+          description: "Consultas sobre puntos BBVA, beneficios, promociones, experiencias o canje de puntos."
+          preconditions: "El cliente pregunta por sus puntos, beneficios, promociones u ofertas de BBVA."
+          no_usar: "El cliente RECLAMA un cobro, descuento o debito (un seguro, una suscripcion, una mensualidad, una afiliacion, un cargo que no autorizo): eso no es una consulta de puntos ni de beneficios, aunque mencione productos o servicios del banco -> formulario PQRS o la tipologia de reclamo que corresponda."
+          examples:
+            - Donde veo mis puntos BBVA?
+            - Para que sirven los puntos que tengo?
+            - Como canjeo mis puntos?
+            - Donde estan las ofertas de BBVA?
+            - Que es eso de Experiencias BBVA?
+            - Como uso el simulador de puntos?
+            - Mis puntos no aparecen
+          contraejemplos:
+            - "Cada mes me descuentan un seguro que nunca autorice (: va al formulario PQRS; reclamo por cobro recurrente, no es un beneficio)"
+            - "Me estan cobrando una suscripcion que no pedi (: va al formulario PQRS; reclamo, no promocion)"
+          workflow: "puntos_y_promociones"
+        - key: "cuota_de_manejo"
+          label: "Cuota de manejo"
+          description: "Cobro de la cuota de manejo de la tarjeta: inconformidad, exoneracion por transaccionalidad, condiciones por categoria."
+          preconditions: "El cliente pregunta o reclama por el cobro de la cuota de manejo de su tarjeta o como exonerarla."
+          no_usar: "El cobro reclamado es el 4x1000 -> impuesto_4x1000; topes/limites -> limites_transaccionales."
+          se_confunde_con: "impuesto_4x1000, limites_transaccionales"
+          examples:
+            - Por que me estan cobrando cuota de manejo?
+            - Quiero que me quiten el cobro de la tarjeta
+            - Como hago para no pagar cuota de manejo?
+            - Cuantas compras debo hacer para que la tarjeta me salga gratis?
+            - Cual es el beneficio de mi tarjeta Black?
+            - Que diferencia hay entre la tarjeta Gold y la Estandar en costos?
+            - Es verdad que si uso la tarjeta no me cobran?
+          contraejemplos:
+            - "Quiero que me quiten el cobro del 4x1000 (-> impuesto_4x1000)"
+          workflow: "cuota_de_manejo"
+        - key: "limites_transaccionales"
+          label: "Limites Transaccionales"
+          description: "Cambiar/consultar topes o limites de transacciones (subir para un pago grande, bajarlos por seguridad) o bloqueo de operacion por limite."
+          preconditions: "El cliente quiere subir/bajar o consultar los topes/limites de su cuenta, o no pudo transferir por un limite."
+          no_usar: "Es un cobro (cuota de manejo/4x1000) -> cuota_de_manejo/impuesto_4x1000; cuenta bloqueada por embargo -> centrales_de_riesgo."
+          se_confunde_con: "cuota_de_manejo"
+          examples:
+            - No me deja transferir tanta plata
+            - Por que me sale supera el limite permitido?
+            - Quiero aumentar el monto maximo para hacer un pago
+            - Como bajo los topes de mi app para que no me roben?
+            - Donde ajusto los limites de transferencias?
+            - Como activo el token para cambiar mis limites?
+            - Como cambio los limites de mi cuenta de empresa?
+          contraejemplos:
+            - "Mi cuenta aparece embargada (-> centrales_de_riesgo)"
+          workflow: "limites_transaccionales"
+        - key: "faq_cuenta_embargada"
+          label: "Cuenta embargada"
+          description: "Respuesta guia sobre embargos de cuenta: que es, como levantarlo, cuanto tarda, cuanto del salario es inembargable y como se relaciona con el reporte en centrales. Informa y remite a la linea; no radica PQR."
+          preconditions: "El cliente pregunta por un embargo de su cuenta: que es, como levantarlo, tiempos, si afecta su historial o que parte del salario es inembargable."
+          no_usar: "Si el cliente NO reconoce un REPORTE en centrales o quiere reclamar/corregir un reporte negativo (no el embargo en si) -> centrales_de_riesgo. Bloqueo de clave, tarjeta, token o de TODOS los productos/acceso no es un embargo judicial (ruta de seguridad, aun no disponible : va al formulario PQRS)."
+          se_confunde_con: "centrales_de_riesgo"
+          examples:
+            - Como quito o levanto el embargo de mi cuenta?
+            - Que tengo que hacer para que me liberen la plata?
+            - Por que no me han quitado el embargo si ya pague?
+            - Cuanto demora el banco en desbloquear mi cuenta?
+            - Ya el juez mando el papel, cuando puedo usar mi dinero?
+            - Me pueden embargar todo el sueldo?
+            - Por que puedo sacar una parte de mi plata y la otra no?
+            - Tengo un embargo pero mi saldo es poquito, que pasa?
+            - Estar embargado me quita puntos en Datacredito?
+            - El embargo es un reporte negativo?
+            - Cuando se vence un embargo?
+            - Cada cuanto hay que renovar la orden de embargo?
+            - Quisiera conocer sobre el proceso de embargos
+            - Me puedes ayudar con informacion sobre el proceso de embargo?
+            - Quiero entender como funciona un embargo de cuenta
+            - Cuentame sobre los embargos
+          contraejemplos:
+            - "No reconozco un reporte negativo en Datacredito (-> centrales_de_riesgo)"
+            - "Quiero reclamar o corregir el reporte que me pusieron (-> centrales_de_riesgo)"
+          workflow: "faq_cuenta_embargada"
+
+    - key: "pqrs"
+      label: "PQRs"
+      message: "Estas son las opciones disponibles en PQRs."
+      routing_criteria: >-
+        El usuario plantea un CASO CONCRETO o reclamo sobre SU situacion en centrales
+        de riesgo (un reporte que quiere quitar/corregir/no reconoce, salir de datacredito)
+        o un embargo/estado de su producto. Es una ACCION, no solo una pregunta informativa.
+      limit_category: "centrales"
+      options:
+        - key: "centrales_de_riesgo"
+          label: "Centrales de Riesgo"
+          description: "Reclamos/PQR sobre un reporte en centrales: eliminar/corregir/no reconocer un reporte, salir de datacredito, o embargo/estado del producto."
+          preconditions: "El cliente pide una ACCION sobre SU reporte o situacion en centrales (reclamar, corregir, quitar, aclarar), no solo informacion general."
+          no_usar: "El cliente ya pago y solo pide el documento de que no debe -> paz_y_salvo. Si SOLO PREGUNTA (informativo) cuanto tarda, que es un reporte, si deben avisar, cada cuanto se actualiza o que tramite hacer tras pagar -> la FAQ correspondiente (faq_*). Si SOLO PREGUNTA que es un embargo, que parte del salario es inembargable o si un embargo afecta su reporte -> faq_cuenta_embargada. Temas de documentos de autoservicio -> hazlo_tu_mismo. Un bloqueo de acceso/productos/clave/token, un congelamiento de dinero NO enmarcado como embargo, un problema de dinero mal aplicado/transferencias/abonos, una certificacion o documento de un RETIRO o transaccion especifica, o una queja/reclamo por un debito NO son centrales: van al formulario PQRS. En cambio, un EMBARGO o DESEMBARGO de la cuenta (estoy embargado/a, pase o gestiono la solicitud de desembargo, por que me embargaron, que entidad lo genero, certificado o radicado de desembargo) SI es centrales: el flujo informa el motivo y la entidad aunque el documento puntual no se emita aqui."
+          se_confunde_con: "paz_y_salvo, faq_plazos_reporte_negativo, faq_solicitud_actualizacion_tras_pago, faq_definicion_tipos_reporte, faq_cuenta_embargada"
+          examples:
+            - No reconozco un reporte en centrales de riesgo
+            - Quiero que me quiten o eliminen el reporte de Datacredito
+            - Estoy reportado y quiero salir de centrales
+            - No estoy de acuerdo con mi reporte negativo, quiero reclamar
+            - Me tienen reportado en Datacredito pero ya pague todo, quiero aclarar mi situacion
+            - Como reclamo un reporte que no reconozco en las centrales?
+            - Tengo un reporte en centrales de riesgo
+            - Tengo un reporte en centrales y quiero saber por que
+            - Aparezco reportado en Datacredito
+            - Me reportaron en centrales de riesgo
+            - Tengo una novedad reportada por BBVA en centrales
+            - Necesito ayuda con un reporte en centrales de riesgo
+            - Me encuentro embargada y gestiono el desembargo de mi cuenta
+            - Necesito el certificado o radicado de desembargo de mi cuenta
+            - Por que me embargaron y que entidad genero el embargo
+          contraejemplos:
+            - "Necesito mi paz y salvo para quitar mi reporte de credito (-> paz_y_salvo)"
+            - "Ya pague, cuando me borran de Datacredito? (-> faq_plazos_reporte_negativo)"
+            - "Que significa estar reportado? (-> faq_definicion_tipos_reporte)"
+            - "Me pueden embargar todo el sueldo? (-> faq_cuenta_embargada)"
+            - "Me bloquearon todos mis productos y no puedo usarlos (: va al formulario PQRS; no es centrales)"
+            - "Necesito desbloquear mi cuenta de nomina (: va al formulario PQRS; no es centrales)"
+            - "Me reportaron los movimientos de mi compra como fraudulentos (: va al formulario PQRS; no es centrales)"
+            - "Me pasaron el sueldo a la tarjeta y me dejaron sin dinero (: va al formulario PQRS; no es centrales)"
+            - "Me congelaron mi dinero estando al dia en mis obligaciones (: va al formulario PQRS; no es centrales)"
+            - "Necesito una certificacion de un retiro o movimiento especifico de mi cuenta (no es centrales: es un documento o va al formulario PQRS)"
+            # Casos REALES de produccion (ago-2026) que el router mando aqui por error:
+            # la ACCION pedida es un documento o una queja, y el embargo/mora es solo el motivo.
+            - "Solicitud de paz y salvo y levantamiento de medidas cautelares (-> paz_y_salvo; la accion es el documento, no el reporte)"
+            - "Necesito radicar el paz y salvo del embargo (-> paz_y_salvo; el embargo es el motivo, no el destino)"
+            - "Necesito un paz y salvo porque me llegan mensajes de pago vencido (-> paz_y_salvo; la mora es el motivo)"
+            - "Necesito poner un PQR por el bloqueo de mi cuenta de ahorros (: va al formulario PQRS; bloqueo no es centrales)"
+            - "Tengo una inconformidad con el tema de las tarjetas de credito (: va al formulario PQRS; no hay reporte involucrado)"
+            - "Solicito escalar el caso y que el banco informe las fechas de mora (: va al formulario PQRS; es escalamiento, no gestion del reporte)"
+          workflow: "centrales_de_riesgo"
+
+    - key: "preguntas_frecuentes"
+      label: "Preguntas Frecuentes"
+      message: "Estas son las preguntas frecuentes disponibles."
+      routing_criteria: >-
+        El usuario hace una pregunta CONCEPTUAL o informativa sobre reportes y centrales
+        (que es un reporte, plazos de permanencia, notificacion previa, frecuencia de
+        actualizacion, como actualizar tras el pago), SIN pedir un tramite ni un reclamo concreto.
+      limit_category: "general"
+      options:
+        - key: "faq_plazos_reporte_negativo"
+          label: "Plazos de permanencia de reportes negativos"
+          description: "PREGUNTA informativa sobre cuanto tarda en borrarse/limpiarse un reporte negativo tras pagar y los plazos de permanencia (Habeas Data, borron y cuenta nueva, 4 anios)."
+          preconditions: "Consulta informativa sobre tiempos de permanencia de un reporte."
+          no_usar: "Quiere que EFECTIVAMENTE le quiten/corrijan el reporte -> centrales_de_riesgo; pregunta cada cuanto se ACTUALIZA -> faq_frecuencia_actualizacion_centrales."
+          se_confunde_con: "centrales_de_riesgo, faq_frecuencia_actualizacion_centrales, faq_solicitud_actualizacion_tras_pago"
+          examples:
+            - Ya pague mi deuda, cuando me borran de Datacredito?
+            - En cuanto tiempo se quita el reporte negativo si ya estoy al dia?
+            - Cuanto tiempo dura una mancha en el historial?
+            - Por que sigo reportado si pague hace un anio?
+            - Que dice la ley de borron y cuenta nueva sobre los 4 anios?
+            - Como calculan el tiempo de permanencia del reporte?
+          contraejemplos:
+            - "Quiten mi reporte ya (-> centrales_de_riesgo)"
+          workflow: "faq_plazos_reporte_negativo"
+        - key: "faq_definicion_tipos_reporte"
+          label: "Que es un reporte y tipos que existen"
+          description: "Dudas conceptuales/educativas: que significa estar reportado, que es un reporte, tipos, como funcionan las centrales (Datacredito/TransUnion)."
+          preconditions: "Consulta conceptual/educativa sobre reportes, sin un caso propio que resolver."
+          no_usar: "Accion sobre su reporte -> centrales_de_riesgo; plazos de permanencia -> faq_plazos_reporte_negativo."
+          se_confunde_con: "centrales_de_riesgo, faq_plazos_reporte_negativo, faq_notificacion_previa_reporte"
+          examples:
+            - Que significa estar reportado?
+            - Estar en Datacredito es malo?
+            - Como funcionan las centrales de riesgo?
+            - Hay reportes buenos?
+            - Por que aparezco en las centrales si yo soy buena paga?
+            - Me dijeron que me van a reportar, que implica eso?
+            - Que es un historial crediticio?
+          contraejemplos:
+            - "No reconozco un reporte, quiero reclamar (-> centrales_de_riesgo)"
+          workflow: "faq_definicion_tipos_reporte"
+        - key: "faq_notificacion_previa_reporte"
+          label: "Notificacion previa antes de un reporte negativo"
+          description: "Pregunta si el banco debe avisarle antes de reportarlo, o reclama que lo reportaron sin avisar; derecho a la notificacion previa (Ley 1266)."
+          preconditions: "Consulta informativa sobre el derecho a ser notificado antes de un reporte."
+          no_usar: "Quiere que quiten/corrijan el reporte -> centrales_de_riesgo."
+          se_confunde_con: "centrales_de_riesgo, faq_definicion_tipos_reporte"
+          examples:
+            - Me tienen que avisar antes de reportarme?
+            - Por que me reportaron sin avisarme?
+            - El banco me debe mandar una carta antes de mandarme a Datacredito?
+            - Donde me llega el aviso de reporte?
+            - Como se si me van a reportar este mes?
+            - Que dice la Ley 1266 sobre la notificacion previa?
+            - Cuantos dias tiene el banco para avisarme de un reporte segun el Habeas Data?
+          contraejemplos:
+            - "Quiten el reporte que me pusieron sin avisar (-> centrales_de_riesgo)"
+          workflow: "faq_notificacion_previa_reporte"
+        - key: "faq_frecuencia_actualizacion_centrales"
+          label: "Frecuencia de actualizacion de datos en centrales"
+          description: "Pregunta cada cuanto se actualiza su informacion en centrales tras pagar, o por que aun aparece la deuda a los pocos dias (ciclos de actualizacion)."
+          preconditions: "Consulta informativa sobre la frecuencia con que se actualizan los datos en centrales tras pagar."
+          no_usar: "Cuanto tarda en BORRARSE (permanencia) -> faq_plazos_reporte_negativo; que actualicen/quiten ya -> centrales_de_riesgo; que tramite hacer tras pagar -> faq_solicitud_actualizacion_tras_pago."
+          se_confunde_con: "faq_plazos_reporte_negativo, faq_solicitud_actualizacion_tras_pago, centrales_de_riesgo"
+          examples:
+            - Ya pague hace dos dias y sigo apareciendo reportado
+            - Por que no se ha actualizado mi saldo en Datacredito?
+            - Cada cuanto le avisa el banco a las centrales que ya pague?
+            - Cuanto demora el reporte en actualizarse?
+            - Por que el reporte no es automatico cuando uno paga?
+            - Necesito que actualicen mi informacion ya mismo para un credito
+          contraejemplos:
+            - "Necesito que actualicen mi informacion YA para un credito (-> centrales_de_riesgo)"
+          workflow: "faq_frecuencia_actualizacion_centrales"
+        - key: "faq_solicitud_actualizacion_tras_pago"
+          label: "Solicitud de actualizacion de datos tras el pago"
+          description: "Ya pago y pregunta si debe hacer un tramite (enviar recibo, pedir actualizacion) para limpiar su historial, o si el proceso es automatico."
+          preconditions: "El cliente afirma que ya pago y consulta el procedimiento para que actualicen su informacion."
+          no_usar: "Quiere que actualicen/quiten el reporte (accion) -> centrales_de_riesgo; cuanto TARDA -> faq_plazos_reporte_negativo/faq_frecuencia_actualizacion_centrales; documento de paz y salvo -> paz_y_salvo."
+          se_confunde_con: "centrales_de_riesgo, faq_frecuencia_actualizacion_centrales, paz_y_salvo"
+          examples:
+            - Tengo que mandar el recibo de pago a algun lado para que me quiten el reporte?
+            - Debo pedirles que actualicen mi informacion en Datacredito?
+            - Como sabe Datacredito que ya pague?
+            - Ustedes le avisan a las centrales o me toca a mi?
+            - Ya pague, que mas tengo que hacer para quedar al dia en todo lado?
+            - A que correo mando el soporte de pago para actualizar mi historial?
+          contraejemplos:
+            - "Quiten mi reporte de una vez (-> centrales_de_riesgo)"
+          workflow: "faq_solicitud_actualizacion_tras_pago"
+
+    - key: "trx_no_reconocida"
+      label: "Transaccion no reconocida"
+      message: "Estas son las opciones disponibles para transaccion no reconocida."
+      routing_criteria: >-
+        El usuario menciona una operacion concreta (compra, cargo, debito, retiro,
+        transferencia o movimiento) reflejada en su cuenta o tarjeta y manifiesta que
+        NO la realizo, no la autorizo, no la reconoce o no la puede asociar con un
+        comercio conocido; o reconoce la compra pero el nombre/descriptor no coincide;
+        o sospecha fraude por cambiazo, hurto/perdida, ingenieria social o uso no
+        autorizado de sus datos. Es una ACCION de aclaracion/reclamo, no solo consultar
+        el historial.
+      limit_category: "trx_no_reconocida"
+      options:
+        - key: "trx_no_reconocida"
+          label: "Transaccion no reconocida"
+          description: "Reclamo sobre una transaccion (compra, cargo, debito, retiro, transferencia o movimiento) registrada en la cuenta o tarjeta que el cliente no reconoce, no recuerda, no autorizo o no logra asociar con el nombre/descriptor del comercio. Incluye compras presenciales o por internet y posibles fraudes por cambiazo, hurto o perdida, ingenieria social o uso no autorizado de datos."
+          preconditions: "El cliente hace referencia a una operacion concreta reflejada o informada en su cuenta o tarjeta y manifiesta al menos una de estas intenciones: no la realizo, no la autorizo, no la reconoce, no identifica al comercio/cobrador, no la puede relacionar con una compra conocida o sospecha fraude. La intencion principal es aclarar o reclamar una posible transaccion no autorizada, no solo consultar movimientos. Si usa palabras como reporte, deuda u obligacion referidas a Datacredito o centrales -> centrales_de_riesgo; si se refiere a una compra o movimiento en cuenta/tarjeta, continua por trx_no_reconocida."
+          no_usar: "Solo quiere consultar, buscar, filtrar o descargar movimientos sin desconocer una operacion -> consulta_de_movimientos / extractos_bancarios. El concepto reclamado es 4x1000/GMF o una exencion tributaria -> impuesto_4x1000; cuota de manejo -> cuota_de_manejo. Lo que desconoce o quiere eliminar es un reporte, deuda, mora u obligacion en Datacredito u otra central, o un embargo/retencion judicial -> centrales_de_riesgo. Una compra o transferencia no se ejecuto por superar un tope/limite -> limites_transaccionales. Reconoce haber hecho la transaccion pero la ve cobrada, debitada o procesada DOS VECES (cobro duplicado, doble cargo, doble descuento) -> doble_cobro. Reconoce la transaccion pero reclama valor incorrecto, devolucion pendiente, compra cancelada o incumplimiento del comercio: ruta de reclamacion de la operacion (aun no disponible). Solo reporta perdida, hurto, cambiazo o entrega de datos pero aun no identifica ninguna transaccion desconocida: ruta de seguridad o bloqueo preventivo (aun no disponible). COBROS RECURRENTES O PERIODICOS (suscripciones tipo Disney/Netflix/Spotify, afiliaciones, domiciliaciones automaticas, seguros o polizas que se descuentan cada mes, mensualidades) NO van aqui aunque el cliente diga que no los autorizo: este flujo exige UNA transaccion puntual (producto + fecha + movimiento) y no puede resolver un cobro que se repite -> formulario PQRS. Tampoco va aqui pedir que se elimine o desvincule un producto o servicio (quitar la tarjeta de mis servicios, cancelar una domiciliacion) -> formulario PQRS."
+          se_confunde_con: "doble_cobro, centrales_de_riesgo, consulta_de_movimientos, extractos_bancarios, impuesto_4x1000, cuota_de_manejo, limites_transaccionales"
+          examples:
+            - No reconozco esta compra
+            - Nunca he comprado en ese comercio
+            - No identifico esa transaccion
+            - Yo no autorice ese cargo
+            - No entiendo quien me cobro
+            - El nombre del comercio no coincide con el del establecimiento
+            - No se de donde salio ese cargo
+            - No me aparece informacion suficiente para saber que compre
+            - Ese descriptor no corresponde al negocio donde hice la compra
+            - La descripcion del movimiento es confusa
+            - No puedo relacionar ese movimiento con ninguna compra
+            - Parece fraudulento porque no identifico el nombre del comercio
+            - Yo si compre algo, pero no con ese nombre
+            - Me aparece una compra por internet que yo no hice
+            - Hay una transferencia que no autorice
+            - Veo un retiro en cajero que no realice
+            - Perdi mi tarjeta y ahora aparecen compras que no reconozco
+            - Creo que me hicieron un cambiazo y usaron mi tarjeta
+            - Entregue mis datos en un enlace y despues aparecio este cargo
+            - Me llego una notificacion de una compra que yo no hice
+          contraejemplos:
+            - "Quiero ver mis ultimos movimientos (-> consulta_de_movimientos)"
+            - "Necesito descargar el extracto de mi tarjeta del mes pasado (-> extractos_bancarios)"
+            - "No reconozco un reporte que aparece en Datacredito (-> centrales_de_riesgo)"
+            - "Me estan reportando por una deuda que no es mia (-> centrales_de_riesgo)"
+            - "Que es ese cobro de GMF que aparece en mi cuenta (-> impuesto_4x1000)"
+            - "Por que me estan cobrando cuota de manejo (-> cuota_de_manejo)"
+            - "No me deja hacer la transferencia porque supero el limite (-> limites_transaccionales)"
+            - "Mi saldo aparece retenido por una orden de un juzgado (-> centrales_de_riesgo)"
+            - "Quisiera conocer sobre el proceso de embargos (-> faq_cuenta_embargada)"
+            - "Si hice la compra, pero me cobraron dos veces (-> doble_cobro)"
+            - "Si hice la compra, pero el valor cobrado es incorrecto: reclamacion por valor incorrecto, aun no disponible"
+            - "Reconozco la compra, pero no me entregaron el producto: reclamacion al comercio, aun no disponible"
+            - "Me robaron la tarjeta, pero todavia no aparece ninguna compra desconocida: seguridad o bloqueo preventivo, aun no disponible"
+            # Casos REALES de produccion (ago-2026) que entraron aqui y quedaron sin
+            # solucion: el flujo pide producto + fecha + movimiento puntual, y un cobro
+            # que se repite cada mes no encaja -> formulario PQRS.
+            - "Me siguen descontando el pago de una afiliacion a Disney Plus que ya cancele (: va al formulario PQRS; cobro recurrente)"
+            - "Me estan cobrando seguros en mis dos tarjetas de credito y no los autorice (: va al formulario PQRS; cobro periodico de poliza)"
+            - "El banco me hace descuentos por domiciliacion cada mes y no los quiero (: va al formulario PQRS; domiciliacion automatica)"
+            - "Requiero eliminar de mis servicios la tarjeta de credito terminada en 2813 (: va al formulario PQRS; desvinculacion de producto)"
+            - "Necesito bloquear a un comercio que me hace descuentos de mi tarjeta (: va al formulario PQRS; bloqueo de cobros recurrentes)"
+          workflow: "trx_no_reconocida"
+    - key: "doble_cobro"
+      label: "Duplicidad en el cobro o doble cobro"
+      message: "Estas son las opciones disponibles para duplicidad en el cobro o doble cobro."
+      routing_criteria: >
+        El usuario reporta que una misma compra, pago, débito o transacción
+        parece haberse cobrado, debitado o procesado dos veces.
+        Puede mencionar dos cargos, cobro duplicado, transacción repetida,
+        doble descuento o que intentó realizar nuevamente una operación
+        después de que la primera pareciera no haberse procesado.
+      limit_category: "doble_cobro"
+      options:
+        - key: "doble_cobro"
+          label: "Duplicidad en el cobro o doble cobro"
+          description: >
+            Reclamo sobre un cobro duplicado o doble cobro registrado
+            en una cuenta o tarjeta.
+          preconditions: >
+            El cliente hace referencia a una operación concreta que aparece
+            duplicada o procesada más de una vez.
+          no_usar: >
+            Si el cliente indica que desconoce completamente la operación,
+            que no la realizó o que sospecha fraude, utilizar la tipología
+            correspondiente a transacción no reconocida. Si el cobro se
+            repite de forma periódica (suscripciones, afiliaciones,
+            domiciliaciones, seguros o mensualidades que se descuentan cada
+            mes), no es un doble cobro puntual -> formulario PQRS. Si
+            reconoce el cobro único pero reclama que el valor es incorrecto,
+            tampoco va aquí (ruta de valor incorrecto, aún no disponible).
+          se_confunde_con: "trx_no_reconocida"
+          examples:
+            - "Me cobraron dos veces."
+            - "Tengo un cobro duplicado."
+            - "Me hicieron un doble cargo."
+            - "La compra aparece dos veces."
+            - "Veo el mismo cobro repetido."
+            - "Me descontaron el dinero dos veces."
+            - "Me cobraron dos veces por la misma compra."
+            - "La transacción está duplicada."
+            - "Tengo cargos duplicados en mi cuenta."
+            - "Me pasaron la tarjeta dos veces."
+            - "Tengo un cobro repetido."
+            - "Hay dos cargos del mismo importe."
+            - "Hice una compra por internet y me la cobraron dos veces."
+            - "La web se quedó cargando y después aparecieron dos cargos."
+            - "La transacción quedó pensando y volví a intentarlo."
+            - "No me salió el comprobante y repetí el pago."
+            - "El comercio me indicó que el pago no pasó y lo intenté otra vez."
+            - "Tengo una compra pendiente y otra ya cobrada."
+            - "Veo una compra procesada y otra en retención."
+          contraejemplos:
+            - "Hay una compra en mi tarjeta que yo no hice (-> trx_no_reconocida; desconoce la operacion)"
+            - "Aparecen dos compras que no reconozco en mi extracto (-> trx_no_reconocida; aunque sean dos, las desconoce)"
+            - "Me siguen cobrando la suscripcion de Netflix que ya cancele (: va al formulario PQRS; cobro recurrente, no puntual)"
+            - "Cada mes me descuentan un seguro que no autorice (: va al formulario PQRS; cobro periodico)"
+            - "Hice la compra pero me cobraron mas de lo que costaba (: va al formulario PQRS; valor incorrecto, aun no disponible)"
+          workflow: "doble_cobro"

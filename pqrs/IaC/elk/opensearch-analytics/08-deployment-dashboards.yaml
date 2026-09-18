@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opensearch-dashboards-analytics
+  labels:
+    app.kubernetes.io/part-of: elk-metrics
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: opensearch-dashboards-analytics
+  template:
+    metadata:
+      labels:
+        app: opensearch-dashboards-analytics
+        app.kubernetes.io/part-of: elk-metrics
+    spec:
+      serviceAccountName: opensearch-analytics-sa
+      automountServiceAccountToken: false
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: dashboards
+          image: opensearchproject/opensearch-dashboards:2.13.0
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            capabilities:
+              drop:
+                - ALL
+          ports:
+            - containerPort: 5601
+          env:
+            - name: OPENSEARCH_HOSTS
+              value: '["https://opensearch-analytics:9200"]'
+            - name: OPENSEARCH_USERNAME
+              value: "admin"
+            - name: OPENSEARCH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: opensearch-analytics-secret
+                  key: OPENSEARCH_INITIAL_ADMIN_PASSWORD
+          volumeMounts:
+            - name: dashboards-config
+              mountPath: /usr/share/opensearch-dashboards/config/opensearch_dashboards.yml
+              subPath: opensearch_dashboards.yml
+              readOnly: true
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+          startupProbe:
+            tcpSocket:
+              port: 5601
+            failureThreshold: 20
+            periodSeconds: 10
+          readinessProbe:
+            tcpSocket:
+              port: 5601
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 5601
+            initialDelaySeconds: 60
+            periodSeconds: 20
+      volumes:
+        - name: dashboards-config
+          configMap:
+            name: opensearch-dashboards-analytics-config

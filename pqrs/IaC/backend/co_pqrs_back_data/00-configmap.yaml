@@ -1,0 +1,92 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: conf-pqr-data-env
+  labels:
+    app.kubernetes.io/part-of: backend
+data:
+  .env: |
+    # Base environment configuration
+    COMPONENT_VERSION=1.0.0
+    API_V0_STR=/pqrs/v0
+
+    DATA_CSV=unifi
+    CUSTOMER_IDENTITY_SOURCE=postgres   #### postgres / mock
+    DB_HOST=postgresql.pqr-genai-dev.svc.cluster.local
+    POSTGRES_PORT=5432
+    POSTGRES_CONNECT_TIMEOUT=5
+    POSTGRES_CUSTOMER_IDENTITY_TABLE=ada_info_detail
+    POSTGRES_TABLE_EMB=bgdtemb
+    POSTGRES_TABLE_DEM=bgdtdem
+    POSTGRES_TABLE_JOIN=bgdt_salida_join
+
+    COMMERCIAL_INFO_SOURCE=api ###mock / api
+    COMMERCIAL_INFO_MOCK_DIR=data
+    COMMERCIAL_INFO_FILE_PREFIX=commercial_info_
+    COMMERCIAL_INFO_TICKET_URL=https://dev-arqaso.work.co.nextgen.igrupobbva:8050/TechArchitecture/co/grantingTicket/V02
+    COMMERCIAL_INFO_OVERVIEW_URL=https://dev-arqaso.work.co.nextgen.igrupobbva:8050/risks/v0/commercial-information
+    COMMERCIAL_INFO_ASO_BASE_URL=https://dev-arqaso.work.co.nextgen.igrupobbva:8050
+    COMMERCIAL_INFO_API_USER_ID=ZM12035
+    COMMERCIAL_INFO_API_CONSUMER_ID=12000035
+    COMMERCIAL_INFO_API_AUTHENTICATION_TYPE=04
+    COMMERCIAL_INFO_API_PASSWORD=PTDada2026_PQRS
+    COMMERCIAL_INFO_API_VERIFY_SSL=false
+    COMMERCIAL_INFO_API_TIMEOUT=30
+    COMMERCIAL_INFO_API_CUSTOMER_ID_LENGTH=15
+
+    # Paths de extractos por familia de producto (ASO). Placeholders: {contract_id}, {id_extracto}.
+    # La base la aporta COMMERCIAL_INFO_ASO_BASE_URL.
+    COMMERCIAL_INFO_EXTRACTO_PRESTAMOS_LISTADO=/loans/v1/loans/{contract_id}/financial-statements
+    COMMERCIAL_INFO_EXTRACTO_PRESTAMOS_PDF=/loans/v1/loans/{contract_id}/financial-statements/{id_extracto}
+    COMMERCIAL_INFO_EXTRACTO_CUENTAS_LISTADO=/accounts/v0/accounts/{contract_id}/financial-statements
+    COMMERCIAL_INFO_EXTRACTO_CUENTAS_PDF=/accounts/v0/accounts/{contract_id}/financial-statements/{id_extracto}
+    COMMERCIAL_INFO_EXTRACTO_TDC_LISTADO=/cards/v1/cards/{contract_id}/financial-statements
+    COMMERCIAL_INFO_EXTRACTO_TDC_PDF=/cards/v1/cards/{contract_id}/financial-statements/{id_extracto}
+    COMMERCIAL_INFO_EXTRACTO_LEASING_LISTADO=/leasings/v0/leasings/{contract_id}/financial-statements
+    COMMERCIAL_INFO_EXTRACTO_LEASING_PDF=/leasings/v0/leasings/{contract_id}/financial-statements/{id_extracto}
+    COMMERCIAL_INFO_EXTRACTO_FONDOS_LISTADO=/investment-funds/v0/investment-funds/{contract_id}/funds/{contract_id}/financial-statements
+    COMMERCIAL_INFO_EXTRACTO_FONDOS_PDF=/investment-funds/v0/investment-funds/{contract_id}/funds/{contract_id}/financial-statements/{id_extracto}
+
+
+    SSL_VERIFY=false
+    OPENSEARCH_ENDPOINT=https://opensearch.pqr-genai-dev.svc.cluster.local:9200
+    OPENSEARCH_VERIFY_SSL=false
+    OPENSEARCH_CONVERSATIONS_INDEX=conversations-reference
+    OPENSEARCH_MESSAGES_INDEX=conversations-messages
+    OPENSEARCH_CONTROL_INDEX=client-control-table
+    OPENSEARCH_TIMEOUT=10
+
+    ERROR_HANDLER_SERVICE_URL=http://co-pqrs-back-error-handler.pqr-genai-dev.svc.cluster.local:8002
+    AUDIT_MIN_STATUS=400
+    
+    # Traza ASO detallada (solo dev): guarda el cuerpo enmascarado+truncado en las trazas E2E.
+    ASO_TRACE_FULL_BODY=true
+    TRACE_BODY_MAXLEN=8000
+    
+    # Traza DEBUG E2E (tenerla en true consume maquina solo activar en pruebas
+    # Cuerpo completo del ASO solo enmascarado y solo para diagnostico (KYNS IT 3).
+    E2E_DEBUG_TRACE=false
+    # Captura de log COMPLETO por peticion (solo dev): carpeta SEPARADA request-logs/customer=<id>/...
+    REQUEST_LOG_CAPTURE_ENABLED=true
+    REQUEST_LOG_CAPTURE_LEVEL=INFO
+    REQUEST_LOG_MAX_LINES=3000
+    REQUEST_LOG_MAX_BYTES=512000
+
+    CORS_ALLOW_ORIGINS=*
+    CORS_ALLOW_METHODS=*
+    CORS_ALLOW_HEADERS=*
+    # --- Conexión SMTP ---
+    SMTP_HOST=mailB.bbva.com.co
+    SMTP_PORT=25
+    SMTP_USE_TLS=false
+    # Solo si el relay exige autenticación (dejar vacío si no):
+    SMTP_USER=
+    SMTP_PASSWORD=
+    SMTP_TIMEOUT=10
+    # --- Cabeceras del correo ---
+    MAIL_FROM=agente_pqrs@bbva.com
+    MAIL_FROM_NAME=BBVA
+    # Copia oculta opcional (dejar vacío si no se requiere):
+    MAIL_BCC=
+    MAIL_SUBJECT=Tu documento soporte ya está listo - BBVA
+    MAIL_ENABLED=true # true para activar envio de correos

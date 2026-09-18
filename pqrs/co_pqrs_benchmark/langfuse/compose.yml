@@ -1,0 +1,144 @@
+# Langfuse v3 self-hosted para el PoC de LLMOps (dev LOCAL únicamente).
+#
+# Espejo del docker-compose oficial de Langfuse, con inicialización HEADLESS:
+# al primer arranque se crean organización, proyecto, usuario y las API keys
+# de abajo, así el publicador (scripts/publish_to_langfuse.py) funciona sin
+# tocar la UI. Todas las credenciales de este archivo son de laboratorio;
+# para OKD van como Secrets en IaC/, nunca en el manifiesto.
+#
+#   podman compose -f compose.yml up -d     (o docker compose)
+#   UI:      http://localhost:3000   (admin@pqrs.local / pqrsbenchmark2026)
+#   Ingesta: pk-lf-doble-cobro-poc / sk-lf-doble-cobro-poc
+
+x-langfuse-env: &langfuse_env
+  DATABASE_URL: postgresql://postgres:postgres@postgres:5432/postgres
+  SALT: pqrs-benchmark-salt-solo-local
+  ENCRYPTION_KEY: "0000000000000000000000000000000000000000000000000000000000000001"
+  TELEMETRY_ENABLED: "false"
+  CLICKHOUSE_MIGRATION_URL: clickhouse://clickhouse:9000
+  CLICKHOUSE_URL: http://clickhouse:8123
+  CLICKHOUSE_USER: clickhouse
+  CLICKHOUSE_PASSWORD: clickhouse
+  CLICKHOUSE_CLUSTER_ENABLED: "false"
+  LANGFUSE_S3_EVENT_UPLOAD_BUCKET: langfuse
+  LANGFUSE_S3_EVENT_UPLOAD_REGION: auto
+  LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID: minio
+  LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: miniosecret
+  LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT: http://minio:9000
+  LANGFUSE_S3_EVENT_UPLOAD_FORCE_PATH_STYLE: "true"
+  LANGFUSE_S3_EVENT_UPLOAD_PREFIX: events/
+  LANGFUSE_S3_MEDIA_UPLOAD_BUCKET: langfuse
+  LANGFUSE_S3_MEDIA_UPLOAD_REGION: auto
+  LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: minio
+  LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: miniosecret
+  LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: http://minio:9000
+  LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: "true"
+  LANGFUSE_S3_MEDIA_UPLOAD_PREFIX: media/
+  REDIS_HOST: redis
+  REDIS_PORT: "6379"
+  REDIS_AUTH: pqrsredislocal
+
+# El web corre migraciones al arrancar: sin las condiciones healthy se
+# adelanta a PostgreSQL y muere con P1001.
+x-depends: &depends_healthy
+  postgres:
+    condition: service_healthy
+  clickhouse:
+    condition: service_healthy
+  redis:
+    condition: service_healthy
+  minio:
+    condition: service_healthy
+
+services:
+  langfuse-web:
+    image: langfuse/langfuse:3
+    depends_on: *depends_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      <<: *langfuse_env
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: pqrs-nextauth-secret-solo-local
+      # Bootstrap headless: org/proyecto/usuario/keys listos al primer arranque.
+      LANGFUSE_INIT_ORG_ID: pqrs
+      LANGFUSE_INIT_ORG_NAME: PQRS
+      LANGFUSE_INIT_PROJECT_ID: doble-cobro
+      LANGFUSE_INIT_PROJECT_NAME: Agente PQRS - Doble Cobro
+      LANGFUSE_INIT_PROJECT_PUBLIC_KEY: pk-lf-doble-cobro-poc
+      LANGFUSE_INIT_PROJECT_SECRET_KEY: sk-lf-doble-cobro-poc
+      LANGFUSE_INIT_USER_EMAIL: admin@pqrs.local
+      LANGFUSE_INIT_USER_NAME: Admin PQRS
+      LANGFUSE_INIT_USER_PASSWORD: pqrsbenchmark2026
+
+  langfuse-worker:
+    image: langfuse/langfuse-worker:3
+    depends_on: *depends_healthy
+    environment: *langfuse_env
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - langfuse_pg:/var/lib/postgresql/data
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.3-alpine
+    environment:
+      CLICKHOUSE_DB: default
+      CLICKHOUSE_USER: clickhouse
+      CLICKHOUSE_PASSWORD: clickhouse
+    healthcheck:
+      # 127.0.0.1 explicito: "localhost" resuelve a ::1 y el servidor es IPv4.
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8123/ping >/dev/null 2>&1"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+      start_period: 40s
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    volumes:
+      - langfuse_ch_data:/var/lib/clickhouse
+      - langfuse_ch_logs:/var/log/clickhouse-server
+      - ./clickhouse-listen.xml:/etc/clickhouse-server/config.d/listen.xml:ro
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--requirepass", "pqrsredislocal"]
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a pqrsredislocal ping | grep -q PONG"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+  minio:
+    image: minio/minio:latest
+    entrypoint: sh
+    # El bucket es un directorio: crearlo antes de arrancar evita el sidecar mc.
+    command: -c 'mkdir -p /data/langfuse && minio server --address ":9000" --console-address ":9001" /data'
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: miniosecret
+    healthcheck:
+      test: ["CMD-SHELL", "mc ready local 2>/dev/null || curl -sf http://localhost:9000/minio/health/live"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - langfuse_minio:/data
+
+volumes:
+  langfuse_pg:
+  langfuse_ch_data:
+  langfuse_ch_logs:
+  langfuse_minio:

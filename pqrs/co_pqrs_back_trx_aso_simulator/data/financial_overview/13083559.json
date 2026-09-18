@@ -1,0 +1,70 @@
+{
+  "data": {
+    "contracts": [
+      {
+        "id": "5412684136507799",
+        "number": "7799",
+        "numberType": {
+          "id": "PAN",
+          "name": ""
+        },
+        "countryId": "CO",
+        "bank": {
+          "id": "0013",
+          "name": "BBVA COLOMBIA"
+        },
+        "branch": {
+          "id": "0766",
+          "name": ""
+        },
+        "status": {
+          "id": "OPERATIVE",
+          "name": ""
+        },
+        "alias": "",
+        "currencies": [
+          {
+            "currency": "COP",
+            "isMajor": true
+          }
+        ],
+        "participant": {
+          "participantType": {
+            "id": "HOLDER",
+            "name": "",
+            "order": ""
+          },
+          "name": "NOMBRE PRIAPE SEGAPE"
+        },
+        "relatedContracts": [],
+        "userAccessControl": [],
+        "product": {
+          "id": "50",
+          "name": "Mastercard Débito",
+          "description": ""
+        },
+        "productType": "CARD",
+        "subProductType": {
+          "id": "DEBIT_CARD",
+          "name": ""
+        },
+        "formats": [],
+        "isLegacy": false,
+        "detail": {
+          "specificAmounts": [
+            {
+              "id": "AVAILABLE_CURRENT_BALANCES",
+              "name": "",
+              "amounts": [
+                {
+                  "amount": 1000.0,
+                  "currency": "COP"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

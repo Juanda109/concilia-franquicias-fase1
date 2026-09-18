@@ -1,0 +1,15 @@
+version: 1
+start_step: "1"
+steps:
+  "1":
+    question: |
+      Solicita tu certificado de saldos con el acompañamiento de un asesor experto, siguiendo estos pasos:
+
+      - Ingresa a [Certificado de deuda](https://www.bbva.com.co/personas/promocion/certificado-de-deuda.html).
+      - Completa el formulario con tu información básica de contacto.
+      - Una vez recibamos tu solicitud, un asesor especializado te llamará en el menor tiempo posible para gestionar la entrega de tu certificado.
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "satisfaction_check"

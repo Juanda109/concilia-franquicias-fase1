@@ -1,0 +1,74 @@
+{
+  "data": [
+    {
+      "customer": {
+        "fullName": "CLIENTE PRUEBA DOS",
+        "firstName": "CLIENTE",
+        "secondName": "PRUEBA",
+        "lastName": "DOS",
+        "contact": {
+          "phone": "3002222222",
+          "email": "dos@mail.com"
+        }
+      },
+      "operations": [
+        {
+          "id": "TXR201",
+          "accountDesti": "9461",
+          "accountOrigin": "001300090200949461",
+          "amountCommi": {
+            "amount": "0.00",
+            "currency": "COP"
+          },
+          "amountDonation": {
+            "amount": "89990",
+            "currency": "COP"
+          },
+          "amountOperation": {
+            "amount": 89990,
+            "currency": "COP"
+          },
+          "dateExpiration": "01/2033",
+          "dateOper": "2026-08-06",
+          "descProvision": "COMPRA AMAZON.COM",
+          "eCard": true,
+          "eci": "1",
+          "hourOperation": "160500",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA INTERNET SIN 3DS",
+          "origin": "2903",
+          "placeOperation": "AMAZON MKTP US",
+          "policy": {
+            "amountIva": "0",
+            "amountPolicy": "0.00",
+            "id": "0000000000",
+            "positionIndicator": "1"
+          },
+          "process": {
+            "date": "2026-08-06",
+            "hour": "160505",
+            "responseOperati": "Exitosa"
+          },
+          "responseOperati": "Exitosa",
+          "terminal": {
+            "id": "6789019461"
+          },
+          "version": "2",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "009461"
+          },
+          "interest": 0
+        }
+      ]
+    }
+  ],
+  "pagination": {
+    "links": {
+      "first": "/cards/v2/operations?operationDate=20260806&cardId=4916555117389461&pageSize=100"
+    },
+    "page": 1,
+    "totalPages": 1,
+    "totalElements": 1,
+    "pageSize": 100
+  }
+}

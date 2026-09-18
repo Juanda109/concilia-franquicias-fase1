@@ -1,0 +1,15 @@
+version: 1
+start_step: "respuesta"
+steps:
+  "respuesta":
+    question: |
+      No te preocupes, estar reportado no siempre es algo malo. En realidad, tu historial es como una carta de presentación ante el mundo financiero y tiene dos caras:
+
+      **El reporte positivo:** Es el que se genera cuando pagas a tiempo. Este te ayuda a construir un puntaje alto y hace que sea mucho más fácil que te aprueben nuevos créditos o servicios.
+
+      **El reporte negativo:** Este aparece únicamente cuando hay retrasos o deudas sin pagar. Funciona como una alerta para las entidades sobre el incumplimiento de una obligación.
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "satisfaction_check_faq"

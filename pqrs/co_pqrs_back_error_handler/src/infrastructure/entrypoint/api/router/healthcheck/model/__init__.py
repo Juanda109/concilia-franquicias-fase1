@@ -1,0 +1,1 @@
+"""Healthcheck response models."""

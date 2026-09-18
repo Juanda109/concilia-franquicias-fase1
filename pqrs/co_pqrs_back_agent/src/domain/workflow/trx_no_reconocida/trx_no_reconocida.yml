@@ -1,0 +1,628 @@
+# Flujo: transaccion no reconocida (trx_no_reconocida) — ARBOL COMPLETO (Fase 2).
+#
+# Nomenclatura integral bajo 2.4.0.1. Nodos con `action:` consultan back_trx (ASO/Postgres)
+# via chat_service/_prefetch_trx_data_if_needed, que reescribe current_step al branch/exit
+# segun el resultado del backend (ver docs/trx no reconocida/ESPECIFICACION_FLUJO.md).
+# Ruteo de bloqueo: SEMANTICO (definitivo->permanente 1.17.x, temporal->temporal 1.16.x).
+version: 1
+start_step: "2.4.0"
+steps:
+  # ----- Menu (4 sucesos) -----
+  "2.4.0":
+    question: |
+      Antes de iniciar el proceso de análisis, confírmame por favor si fuiste víctima de alguno de estos sucesos:
+    input_type: "choice"
+    save_as: "evento_trx_no_reconocida"
+    options:
+      - key: "cambiazo"
+        label: "Me cambiaron la tarjeta (cambiazo)"
+        next_step: "2.4.1"
+      - key: "hurto_o_perdida"
+        label: "Hurto o pérdida"
+        next_step: "2.4.2"
+      - key: "ingenieria_social"
+        label: "Alguien obtuvo tus datos bancarios por llamada, mensaje, correo o enlace"
+        next_step: "2.4.3"
+      - key: "compra_presencial_o_internet"
+        label: "Hiciste una compra presencial o por internet"
+        next_step: "2.4.0.1"
+
+  # ----- Ramas 1-3: radicacion directa -----
+  "2.4.1":
+    question: "Por las características de lo ocurrido, tu caso requiere una revisión a fondo por parte de nuestro equipo especializado. Por favor completa el siguiente formulario."
+    input_type: "choice"
+    options:
+      - key: "pqr"
+        label: "Formulario PQR"
+        next_step: "satisfaction_check"
+  "2.4.2":
+    question: "Por las características de lo ocurrido, necesitamos que nuestro equipo de especialistas revise tu caso detalladamente. Por favor registra tu solicitud en este enlace y nosotros nos encargaremos de analizarlo."
+    input_type: "choice"
+    options:
+      - key: "pqr"
+        label: "Formulario PQR"
+        next_step: "satisfaction_check"
+  "2.4.3":
+    question: "Por las características de lo ocurrido, necesitamos que nuestro equipo de especialistas revise tu caso detalladamente. Por favor registra tu solicitud en este enlace y nosotros nos encargaremos de analizarlo."
+    input_type: "choice"
+    options:
+      - key: "pqr"
+        label: "Formulario PQR"
+        next_step: "satisfaction_check"
+
+  # ----- Portón de despliegue (piloto): op4 cuando el flujo aún no está abierto -----
+  # Mismo texto que 2.4.2/2.4.3: el cliente ve el comportamiento "de antes" (los 4
+  # sucesos terminan en el formulario). El agente redirige aquí cuando
+  # TRX_FLOW_ENABLED=false y la conversación no tiene el token de piloto.
+  "2.4.0.4.pqr":
+    question: "Por las caracteristicas de lo ocurrido, necesitamos que nuestro equipo de especialistas revise tu caso detalladamente. Por favor registra tu solicitud en el formulario."
+    input_type: "choice"
+    options:
+      - key: "pqr"
+        label: "Formulario PQR"
+        next_step: "satisfaction_check"
+
+  # ----- 2.4.0.1: recurrencia (BACK_TRX salesforce + recurrencia-bot) -----
+  "2.4.0.1":
+    question: "Gracias. Estoy validando tu caso para continuar con el análisis."
+    action: "consultar_recurrencia_salesforce"
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "2.4.0.1.1"
+  "2.4.0.pqr_recurrencia":
+    question: |
+      Encontré una gestión reciente relacionada con una transacción no reconocida. Para garantizar la seguridad de tus productos y darte una solución sin duplicar la solicitud, es necesario que un equipo especializado revise tu caso. Completa el siguiente formulario para registrar la reclamación.
+    input_type: "choice"
+    options:
+      - key: "pqr"
+        label: "Formulario PQR"
+        next_step: "satisfaction_check"
+
+  # ----- 2.4.0.1.1: cuantas transacciones -----
+  "2.4.0.1.1":
+    question: "¿Cuántas transacciones quieres reportar?"
+    input_type: "choice"
+    save_as: "trx_cantidad"
+    options:
+      - key: "1"
+        label: "1"
+        next_step: "2.4.0.1.2"
+      - key: "2"
+        label: "2"
+        next_step: "2.4.0.1.2"
+      - key: "3"
+        label: "3"
+        next_step: "2.4.0.1.2"
+      - key: "mas_de_3"
+        label: "Más de 3"
+        next_step: "2.4.0.1.1.pqr"
+  "2.4.0.1.1.pqr":
+    question: "Para validar el reporte de más de 3 compras no reconocidas, necesitamos tener la información completa en un solo trámite. Completa el formulario a continuación y analizaremos cada movimiento a fondo."
+    input_type: "choice"
+    options:
+      - key: "pqr"
+        label: "Formulario PQR"
+        next_step: "satisfaction_check"
+
+  # ----- 2.4.0.1.2: una transaccion a la vez -----
+  "2.4.0.1.2":
+    question: "Revisaremos una transacción a la vez para darte el detalle de cada caso. Al terminar la primera, continuaremos de inmediato con la siguiente."
+    input_type: "choice"
+    options:
+      - key: "empezar"
+        label: "Empezar ahora"
+        next_step: "2.4.0.1.3"
+
+  # ----- 2.4.0.1.3: confirmacion de datos -----
+  "2.4.0.1.3":
+    question: |
+      Antes de empezar, ten en cuenta que desde aquí puedes reportar hasta 3 transacciones de entre $35.000 y $500.000 cada una.
+
+      Al continuar, confirmas que tus datos de contacto y dirección están actualizados para el envío de tu tarjeta si se requiere. ¿Quieres continuar?
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Sí, continuar"
+        next_step: "2.4.0.1.4"
+      - key: "finalizar"
+        label: "Finalizar conversacion"
+        next_step: "satisfaction_check"
+
+  # ----- 2.4.0.1.4: verificacion de productos (BACK_TRX Postgres) [gate->auto] -----
+  # prefetch: si hay productos -> 2.4.0.1.5 (selector); si no -> 2.4.0.1.4.exit.
+  "2.4.0.1.4":
+    question: "Estoy validando tus productos activos."
+    action: "verificar_productos_trx"
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "2.4.0.1.5"
+  "2.4.0.1.4.exit":
+    question: |
+      Actualmente no tienes productos activos con nosotros para realizar esta solicitud.
+
+      Si deseas revisar el estado de tus productos o movimientos, puedes ingresar a tu app BBVA. Hasta pronto.
+    input_type: "choice"
+    options:
+      - key: "terminar"
+        label: "Terminar"
+        next_step: "satisfaction_check"
+
+  # ----- 2.4.0.1.5: mostrar productos (selector dinamico) -----
+  "2.4.0.1.5":
+    question: "Selecciona la cuenta o tarjeta en la que aparece la compra que no reconoces:"
+    action: "mostrar_productos_activos_trx"
+    input_type: "choice"
+    save_as: "producto_trx_no_reconocida"
+    options:
+      - key: "producto_1"
+        label: "Producto 1"
+        next_step: "2.4.0.1.6"
+      - key: "producto_2"
+        label: "Producto 2"
+        next_step: "2.4.0.1.6"
+      - key: "producto_3"
+        label: "Producto 3"
+        next_step: "2.4.0.1.6"
+      - key: "producto_4"
+        label: "Producto 4"
+        next_step: "2.4.0.1.6"
+      - key: "producto_5"
+        label: "Producto 5"
+        next_step: "2.4.0.1.6"
+
+  # ----- 2.4.0.1.6: rango de valor -----
+  "2.4.0.1.6":
+    question: "Antes de continuar, selecciona el rango de valor de la transacción que deseas reportar:"
+    input_type: "choice"
+    save_as: "trx_rango_valor"
+    options:
+      - key: "menor_35000"
+        label: "Menor a $35.000"
+        next_step: "2.4.0.1.6.pqr"
+      - key: "entre_35000_500000"
+        label: "Entre $35.000 y $500.000"
+        next_step: "2.4.0.1.7"
+      - key: "mayor_500000"
+        label: "Mayor a $500.000"
+        next_step: "2.4.0.1.6.pqr"
+  "2.4.0.1.6.pqr":
+    question: "Para validar el reporte de estas compras no reconocidas, necesitamos la validación de nuestro equipo especializado. Completa el formulario a continuación y analizaremos cada movimiento a fondo."
+    input_type: "choice"
+    options:
+      - key: "pqr"
+        label: "Formulario PQR"
+        next_step: "satisfaction_check"
+
+  # ----- 2.4.0.1.7: fecha (texto) + vigencia por franquicia (gate en 2.4.0.1.8) -----
+  "2.4.0.1.7":
+    question: |
+      Escribe la fecha en la que se realizó la compra no reconocida usando el formato DD/MM/AAAA.
+
+      Consulta la fecha en tu extracto o en los movimientos de tu App BBVA y verifica que sea una transacción sin estado pendiente para poder validarla desde este canal.
+    input_type: "text"
+    save_as: "trx_fecha"
+    next_step: "2.4.0.1.8"
+  "2.4.0.1.7.exit":
+    question: |
+      La fecha que ingresaste supera el plazo permitido por las franquicias de la tarjeta para reportar compras no reconocidas, por lo que no podemos procesar tu solicitud.
+
+      Te sugerimos contactar directamente al comercio donde se realizó la compra para solicitar el detalle o la devolución del cobro. Hasta pronto.
+    input_type: "choice"
+    options:
+      - key: "terminar"
+        label: "Terminar"
+        next_step: "satisfaction_check"
+
+  # ----- 2.4.0.1.8: ASOs financial-overview + transactions [gate->auto] -----
+  # prefetch: vencida->2.4.0.1.7.exit ; sin movimientos->2.4.0.1.8.return ; con->2.4.0.1.9.
+  "2.4.0.1.8":
+    question: "Estoy consultando tus movimientos en la fecha indicada."
+    action: "consultar_movimientos_trx"
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "2.4.0.1.9"
+  "2.4.0.1.8.return":
+    question: "No encontramos compras registradas en la fecha seleccionada para este producto."
+    input_type: "choice"
+    options:
+      - key: "otra_fecha"
+        label: "Elegir otra fecha"
+        next_step: "2.4.0.1.7"
+      - key: "otro_producto"
+        label: "Seleccionar otro producto"
+        next_step: "2.4.0.1.5"
+      - key: "terminar"
+        label: "Terminar consulta"
+        next_step: "satisfaction_check"
+
+  # ----- 2.4.0.1.9: movimientos (botones dinamicos) -----
+  "2.4.0.1.9":
+    question: "Encontré estas transacciones en la fecha indicada. Selecciona la compra que no reconoces:"
+    action: "mostrar_movimientos_trx"
+    input_type: "choice"
+    save_as: "trx_movimiento_seleccionado"
+    options:
+      - key: "movimiento_1"
+        label: "Movimiento 1"
+        next_step: "2.4.0.1.10"
+      - key: "movimiento_2"
+        label: "Movimiento 2"
+        next_step: "2.4.0.1.10"
+      - key: "movimiento_3"
+        label: "Movimiento 3"
+        next_step: "2.4.0.1.10"
+      - key: "movimiento_4"
+        label: "Movimiento 4"
+        next_step: "2.4.0.1.10"
+      - key: "movimiento_5"
+        label: "Movimiento 5"
+        next_step: "2.4.0.1.10"
+      # Paginacion (04/09): la navegacion pasa por el gate async 2.4.0.1.9.nav,
+      # que pide la pagina al servicio (movimientos-pagina) y reencamina a .9.
+      # El cargador solo emite estos botones segun has_prev/has_next del servicio.
+      - key: "anterior_movimientos"
+        label: "Anterior"
+        next_step: "2.4.0.1.9.nav"
+      - key: "mas_movimientos"
+        label: "Ver más movimientos"
+        next_step: "2.4.0.1.9.nav"
+      - key: "no_encuentro"
+        label: "No encuentro la transacción en este listado."
+        next_step: "2.4.0.1.9.exit"
+  # ----- 2.4.0.1.9.nav: gate de navegacion de paginas [gate->auto] -----
+  # No se muestra: el gate en chat_service pide la pagina anterior/siguiente al
+  # servicio y reencamina a 2.4.0.1.9. Existe para que el motor pueda transitar.
+  "2.4.0.1.9.nav":
+    question: "Un momento, cargando la página de movimientos."
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "2.4.0.1.9"
+  "2.4.0.1.9.exit":
+    question: "Para continuar, puedes elegir otra fecha. Por favor valida que la transacción no esté pendiente en tus movimientos en la App BBVA."
+    input_type: "choice"
+    options:
+      - key: "nueva_fecha"
+        label: "Seleccionar una nueva fecha"
+        next_step: "2.4.0.1.7"
+      - key: "finalizar"
+        label: "No, finalizar la conversacion"
+        next_step: "satisfaction_check"
+
+  # ----- 2.4.0.1.10: detalle del movimiento (operations) [gate->auto] -----
+  "2.4.0.1.10":
+    question: "Estoy consultando el detalle de la compra seleccionada."
+    action: "consultar_detalle_trx"
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "2.4.0.1.11"
+  "2.4.0.1.10.pqr":
+    question: "Con la información disponible no podemos resolver esta solicitud en este canal. Por favor registra tu solicitud en el formulario."
+    input_type: "choice"
+    options:
+      - key: "pqr"
+        label: "Formulario PQR"
+        next_step: "satisfaction_check"
+
+  # ----- 2.4.0.1.11: confirmacion del movimiento -----
+  "2.4.0.1.11":
+    question: |
+      Confirma los datos de la compra seleccionada. ¿Es la transacción que deseas reportar?
+    action: "confirmar_movimiento_trx"
+    input_type: "choice"
+    save_as: "trx_confirmacion_movimiento"
+    options:
+      - key: "si_reportar"
+        label: "Sí, continuar con el reporte"
+        next_step: "2.4.0.1.12"
+      # Volver al listado (04/09): si el cliente eligio mal, regresa al selector
+      # de movimientos. Re-renderiza la MISMA pagina en la que estaba (la pagina
+      # y su metadata siguen en captured_data), asi puede elegir otra o navegar.
+      - key: "volver_listado"
+        label: "No, quiero elegir otra transacción"
+        next_step: "2.4.0.1.9"
+      - key: "ya_reconozco"
+        label: "No es necesario, ya reconozco la transacción"
+        next_step: "satisfaction_check"
+
+  # ----- 2.4.0.1.12: validacion pendiente-TDC [gate->auto] -----
+  "2.4.0.1.12":
+    question: "Estoy validando el estado de la compra."
+    action: "validar_pendiente_trx"
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "2.4.0.1.13"
+  "2.4.0.1.12.exit":
+    question: |
+      Esta compra se encuentra actualmente en estado pendiente. Esto significa que el comercio aún la está procesando y podría liberarla o anularla en los próximos días sin realizar el cobro.
+
+      Si la compra se confirma en tus movimientos definitivos y continúas sin reconocerla, podrás ingresar de nuevo a este chat para realizar tu reporte. Que tengas un buen día.
+    input_type: "choice"
+    options:
+      - key: "terminar"
+        label: "Terminar"
+        next_step: "satisfaction_check"
+
+  # ----- 2.4.0.1.13: iniciar investigacion -----
+  "2.4.0.1.13":
+    question: "Para continuar con tu proceso debemos iniciar con la investigación de tu caso, ¿quieres continuar con este proceso?"
+    input_type: "choice"
+    options:
+      - key: "si_investigar"
+        label: "Sí, continuar con la investigación"
+        next_step: "2.4.0.1.15"
+      - key: "no_finalizar"
+        label: "No, finalizar la conversación"
+        next_step: "satisfaction_check"
+
+  # ----- 2.4.0.1.15: tipo de bloqueo (SEMANTICO) -----
+  "2.4.0.1.15":
+    question: "Para continuar con este proceso es necesario bloquear definitivamente tu tarjeta, ¿quieres continuar con este bloqueo?"
+    input_type: "choice"
+    options:
+      - key: "definitivamente"
+        label: "Sí, bloquear definitivamente"
+        next_step: "2.4.0.1.17"
+      - key: "temporalmente"
+        label: "No, bloquear temporalmente"
+        next_step: "2.4.0.1.16"
+
+  # ----- Rama TEMPORAL -----
+  "2.4.0.1.16":
+    question: |
+      Apagaremos temporalmente tu tarjeta para protegerla. Podrás volver a encenderla desde tus canales digitales.
+
+      Al elegir esta opción, la revisión automática de la transacción finalizará. Si luego confirmas que no reconoces la compra, podrás volver a ingresar para hacer tu reporte. ¿Quieres continuar?
+    input_type: "choice"
+    options:
+      - key: "si_apagar"
+        label: "Sí, apagar temporalmente"
+        next_step: "2.4.0.1.16.1"
+      - key: "no_finalizar"
+        label: "No, finalizar conversación"
+        next_step: "satisfaction_check"
+  "2.4.0.1.16.1":
+    question: "Listo. Enviamos una notificación a tu App BBVA para confirmar este bloqueo. Revísala y regresa aquí para continuar."
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "2.4.0.1.16.2"
+  "2.4.0.1.16.1.denied":
+    question: |
+      No pudimos validar tu autorización para continuar con el bloqueo de tu producto.
+
+      Siempre que lo necesites, estoy aquí para apoyarte con tus productos BBVA. Hasta pronto.
+    input_type: "choice"
+    options:
+      - key: "terminar"
+        label: "Terminar"
+        next_step: "satisfaction_check"
+  "2.4.0.1.16.2":
+    question: "Estoy apagando temporalmente tu tarjeta."
+    action: "bloqueo_temporal_trx"
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "2.4.0.1.16.3"
+  "2.4.0.1.16.2.pqr":
+    question: "No hemos podido completar el bloqueo temporal. Por favor realiza el siguiente formulario PQR."
+    input_type: "choice"
+    options:
+      - key: "pqr"
+        label: "Formulario PQR"
+        next_step: "satisfaction_check"
+  "2.4.0.1.16.3":
+    question: ""
+    action: "mostrar_bloqueo_temporal_trx"
+    input_type: "choice"
+    options:
+      - key: "terminar"
+        label: "Terminar"
+        next_step: "satisfaction_check"
+
+  # ----- Rama PERMANENTE -----
+  "2.4.0.1.17":
+    question: "Al continuar, tu tarjeta actual quedará bloqueada definitivamente. Solicitaremos una nueva tarjeta, sin costo. ¿Quieres continuar?"
+    input_type: "choice"
+    options:
+      - key: "si_bloquear"
+        label: "Sí, bloquear y continuar"
+        next_step: "2.4.0.1.17.1"
+      - key: "no_finalizar"
+        label: "No, finalizar conversación"
+        next_step: "satisfaction_check"
+  "2.4.0.1.17.1":
+    question: "Listo. Enviamos una notificación a tu App BBVA para confirmar este bloqueo. Revísala y regresa aquí para continuar."
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "2.4.0.1.17.2"
+  "2.4.0.1.17.1.denied":
+    question: |
+      No pudimos validar tu autorización para continuar con el bloqueo de tu producto.
+
+      Siempre que lo necesites, estoy aquí para apoyarte con tus productos BBVA. Hasta pronto.
+    input_type: "choice"
+    options:
+      - key: "terminar"
+        label: "Terminar"
+        next_step: "satisfaction_check"
+  "2.4.0.1.17.2":
+    question: "Estoy bloqueando definitivamente tu tarjeta y solicitando la nueva."
+    action: "bloqueo_permanente_trx"
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "2.4.0.1.17.3"
+  "2.4.0.1.17.2.pqr":
+    question: "No hemos podido completar el bloqueo permanente. Por favor realiza el siguiente formulario PQR."
+    input_type: "choice"
+    options:
+      - key: "pqr"
+        label: "Formulario PQR"
+        next_step: "satisfaction_check"
+  "2.4.0.1.17.3":
+    question: ""
+    action: "mostrar_bloqueo_definitivo_trx"
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "2.4.0.1.18"
+
+  # ----- 2.4.0.1.18: aviso de revision -----
+  "2.4.0.1.18":
+    question: "Ahora revisaremos la información de la transacción para determinar cómo podemos gestionar tu solicitud."
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "2.4.0.1.19"
+
+  # ----- 2.4.0.1.19: validaciones ECI/eCard/reverso [gate->auto] -----
+  "2.4.0.1.19":
+    question: "Estoy analizando la transacción."
+    action: "validar_investigacion_trx"
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "2.4.0.1.20"
+  "2.4.0.1.19.1":
+    question: ""
+    action: "mostrar_trx_no_reconocida"
+    input_type: "choice"
+    options:
+      - key: "terminar"
+        label: "Finalizar conversación"
+        next_step: "2.4.0.1.20.0"
+  "2.4.0.1.19.2":
+    question: ""
+    input_type: "choice"
+    action: "mostrar_trx_reversada"
+    options:
+      - key: "ver_movimientos"
+        label: "Ver paso a paso para consultar movimientos"
+        next_step: "2.4.0.1.19.2.guia"
+      - key: "finalizar"
+        label: "Finalizar"
+        next_step: "2.4.0.1.20.0"
+  "2.4.0.1.19.2.guia":
+    question: |
+      Puedes consultar tus movimientos desde la BBVA net siguiendo estos pasos:
+
+      1. Ingresa a bbva.com.co y haz clic en "Acceso". Inicia sesion con tu documento de identidad y contrasena de la Net.
+      2. Ubica en el menú principal la opción de "Descarga tus certificados".
+      3. Dentro de esta sección, selecciona la opción titulada "Otros certificados".
+      4. En la lista de documentos disponibles, haz clic sobre la opción específica de "Paz y Salvo".
+      5. Elige el tipo de producto que necesitas certificar, ya sea tu tarjeta de crédito o tus préstamos.
+      6. Confirma el número del producto específico y haz clic en descargar para obtener tu documento PDF.
+    input_type: "choice"
+    options:
+      - key: "finalizar"
+        label: "Finalizar"
+        next_step: "2.4.0.1.20.0"
+  "2.4.0.1.19.pqr":
+    question: |
+      Con la información disponible no podemos resolver esta solicitud en este canal. Tu caso necesita una revisión por parte de nuestro equipo especializado.
+
+      Por favor registra tu solicitud en este enlace y nosotros nos encargaremos de analizarlo.
+    input_type: "choice"
+    options:
+      - key: "pqr"
+        label: "Formulario PQR"
+        next_step: "2.4.0.1.20.0"
+
+  # ----- 2.4.0.1.20: devolucion automatica + Excel/RPA Tantia -----
+  "2.4.0.1.20":
+    question: ""
+    action: "registrar_devolucion_trx"
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "2.4.0.1.20.0"
+
+  # ----- 2.4.0.1.20.1: bucle multi-transaccion [gate->auto] -----
+  # Si quedan tx (eligio 2/3): "reportar la siguiente?" -> si -> 2.4.0.1.3 ; no -> satisfaction_check.
+  # Si eligio 1 o no quedan: chat_service enruta directo a satisfaction_check.
+  "2.4.0.1.20.1":
+    question: "¿Deseas reportar la siguiente transacción?"
+    input_type: "choice"
+    options:
+      - key: "si_siguiente"
+        label: "Sí, reportar la siguiente"
+        next_step: "2.4.0.1.3"
+      - key: "no_finalizar"
+        label: "No, finalizar"
+        next_step: "satisfaction_check"
+
+  # ----- 2.4.0.1.4.error: no se pudieron CONSULTAR los productos [fail-closed] -----
+  # Distinto de 2.4.0.1.4.exit, que afirma que el cliente NO TIENE productos. Esa
+  # afirmacion solo es legitima si el servicio respondio. Si no respondio, decirla
+  # es dar informacion falsa: el cliente puede concluir que no tiene productos
+  # cuando lo unico cierto es que no pudimos preguntar.
+  "2.4.0.1.4.error":
+    question: |
+      En este momento no podemos consultar tus productos por un inconveniente técnico de nuestro lado.
+
+      Para que tu caso quede registrado y nuestro equipo lo revise, por favor radica tu solicitud en el siguiente formulario.
+    input_type: "choice"
+    options:
+      - key: "pqr"
+        label: "Formulario PQR"
+        next_step: "satisfaction_check"
+
+  # ----- 2.4.0.1.8.error: no se pudieron CONSULTAR los movimientos [fail-closed] -----
+  # Distinto de 2.4.0.1.8.return ("no encontramos compras en esa fecha"), que es una
+  # afirmacion sobre sus compras y solo vale si el servicio contesto.
+  "2.4.0.1.8.error":
+    question: |
+      En este momento no podemos consultar los movimientos de tu producto por un inconveniente técnico de nuestro lado.
+
+      No queremos darte información incompleta sobre tus compras. Para que tu caso quede registrado y nuestro equipo lo revise, por favor radica tu solicitud en el siguiente formulario.
+    input_type: "choice"
+    options:
+      - key: "pqr"
+        label: "Formulario PQR"
+        next_step: "satisfaction_check"
+
+  # ----- 2.4.0.1.20.0: cierre del bucle [gate->auto] -----
+  # Punto unico de decision al que llegan los CUATRO desenlaces (.19.1 presencial,
+  # .19.2 reversado, .19.pqr y .20 devolucion). Antes solo la devolucion ofrecia
+  # reportar la siguiente, asi que quien declaraba 2 o 3 y caia en otro desenlace
+  # no llegaba a reportar las demas. chat_service enruta:
+  #   quedan transacciones -> 2.4.0.1.20.1   ;   no quedan -> 2.4.0.1.20.2
+  "2.4.0.1.20.0":
+    question: ""
+    input_type: "choice"
+    action: "cierre_bucle_trx"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "2.4.0.1.20.1"
+
+  # ----- 2.4.0.1.20.2: ya se reportaron todas [terminal] -----
+  # Antes el bot saltaba a satisfaccion en silencio al agotar las transacciones.
+  "2.4.0.1.20.2":
+    question: "Ya reportaste todas las transacciones no reconocidas que nos indicaste."
+    input_type: "choice"
+    options:
+      - key: "terminar"
+        label: "Terminar"
+        next_step: "satisfaction_check"

@@ -1,0 +1,50 @@
+==============================================================
+BENCHMARK PQRS - RESUMEN PROMEDIADO
+==============================================================
+generado                    : 2026-09-07T20:21:28+00:00
+api                         : http://127.0.0.1:8000
+modelo                      : agentepqrs-llm-live-agent-gpt54mini
+dataset                     : datasets/doble_cobro_routing.json
+max_turnos                  : 4
+duracion_s                  : 132.80
+
+--- ACIERTO ---
+casos                       : 28
+evaluados                   : 28
+aciertos                    : 27
+precision_pct               : 96.40
+fallos                      : 1
+fallos_workflow             : 1
+fallos_outcome              : 0
+sin_resolver                : 0
+  turnos_agotados           : 0
+  falta_follow_up           : 0
+saltados                    : 0
+
+--- TURNOS ---
+turnos_total                : 32
+turnos_por_caso             : 1.14
+casos_multiturno            : 4
+
+--- TOKENS ---
+tokens_in_total             : 265,841
+tokens_in_cacheados         : 0
+cache_hit_pct               : 0.00
+tokens_out_total            : 7,082
+tokens_in_por_turno         : 8,307.53
+tokens_out_por_turno        : 221.31
+tokens_in_por_caso          : 9,494.32
+tokens_out_por_caso         : 252.93
+
+--- TIEMPOS (segundos) ---
+ruteo_s_por_turno           : 3.86
+e2e_s_por_turno             : 3.87
+ruteo_s_caso_p50            : 3.80
+ruteo_s_caso_p95            : 7.82
+e2e_s_caso_p50              : 3.81
+e2e_s_caso_p95              : 7.83
+
+Nota: 'por_turno' divide el acumulado de la corrida entre el numero
+TOTAL de turnos; 'por_caso' entre el numero de casos. El total mezcla
+cuanto cuesta una interaccion con cuantas hicieron falta.
+==============================================================

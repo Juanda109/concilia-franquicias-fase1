@@ -1,0 +1,5 @@
+<!-- La red del compose no siempre tiene IPv6; sin este override ClickHouse
+     intenta escuchar en [::], falla en todos los puertos y queda sordo. -->
+<clickhouse>
+    <listen_host>0.0.0.0</listen_host>
+</clickhouse>

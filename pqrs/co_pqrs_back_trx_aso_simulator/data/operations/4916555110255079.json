@@ -1,0 +1,74 @@
+{
+  "data": [
+    {
+      "customer": {
+        "fullName": "CLIENTE PRUEBA UNO",
+        "firstName": "CLIENTE",
+        "secondName": "PRUEBA",
+        "lastName": "UNO",
+        "contact": {
+          "phone": "3001111111",
+          "email": "uno@mail.com"
+        }
+      },
+      "operations": [
+        {
+          "id": "TXR101",
+          "accountDesti": "5079",
+          "accountOrigin": "001300090200945079",
+          "amountCommi": {
+            "amount": "0.00",
+            "currency": "COP"
+          },
+          "amountDonation": {
+            "amount": "200000",
+            "currency": "COP"
+          },
+          "amountOperation": {
+            "amount": 200000,
+            "currency": "COP"
+          },
+          "dateExpiration": "09/2031",
+          "dateOper": "2026-08-06",
+          "descProvision": "COMPRA ALMACEN EXITO CHIPICHAPE",
+          "eCard": false,
+          "eci": "7",
+          "hourOperation": "142000",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA PRESENCIAL CHIP+PIN",
+          "origin": "2903",
+          "placeOperation": "EXITO CHIPICHAPE CALI",
+          "policy": {
+            "amountIva": "0",
+            "amountPolicy": "0.00",
+            "id": "0000000000",
+            "positionIndicator": "1"
+          },
+          "process": {
+            "date": "2026-08-06",
+            "hour": "142005",
+            "responseOperati": "Exitosa"
+          },
+          "responseOperati": "Exitosa",
+          "terminal": {
+            "id": "6789015079"
+          },
+          "version": "2",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "005079"
+          },
+          "interest": 4000
+        }
+      ]
+    }
+  ],
+  "pagination": {
+    "links": {
+      "first": "/cards/v2/operations?operationDate=20260806&cardId=4916555110255079&pageSize=100"
+    },
+    "page": 1,
+    "totalPages": 1,
+    "totalElements": 1,
+    "pageSize": 100
+  }
+}

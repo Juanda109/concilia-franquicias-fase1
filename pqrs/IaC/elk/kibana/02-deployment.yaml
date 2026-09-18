@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana
+  labels:
+    app: kibana
+    app.kubernetes.io/part-of: elk-metrics
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: kibana
+  template:
+    metadata:
+      labels:
+        app: kibana
+        app.kubernetes.io/part-of: elk-metrics
+    spec:
+      serviceAccountName: elk-sa
+      initContainers:
+      - name: fix-kibana-permissions
+        image: busybox:latest
+        command: ['sh', '-c', 'chown -R 1000:1000 /usr/share/kibana/data']
+        securityContext:
+          runAsUser: 0
+        volumeMounts:
+        - name: kibana-data
+          mountPath: /usr/share/kibana/data
+      - name: change-kibana-password
+        image: docker.elastic.co/elasticsearch/elasticsearch:9.4.2
+        command:
+        - sh
+        - -c
+        - |
+          echo "Esperando a que el puerto de Elasticsearch responda..."
+          until curl -s -I http://elasticsearch-service.pqr-genai-dev.svc.cluster.local:9200 | grep -q "HTTP/"; do
+            sleep 3
+          done
+          sleep 5
+          echo "Configurando contraseña de kibana_system en Elasticsearch..."
+          curl -s -X POST -u "elastic:${ELASTIC_PASSWORD}" \
+            -H "Content-Type: application/json" \
+            "http://elasticsearch-service.pqr-genai-dev.svc.cluster.local:9200/_security/user/kibana_system/_password" \
+            -d "{\"password\":\"${KIBANA_SYSTEM_PASSWORD}\"}"
+          echo "Proceso finalizado."
+        env:
+        - name: ELASTIC_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elk-credentials
+              key: ELASTIC_PASSWORD
+        - name: KIBANA_SYSTEM_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elk-credentials
+              key: KIBANA_SYSTEM_PASSWORD
+      containers:
+      - name: kibana
+        image: docker.elastic.co/kibana/kibana:9.4.2
+        ports:
+        - containerPort: 5601
+          name: ui
+        env:
+        - name: ELASTICSEARCH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elk-credentials
+              key: KIBANA_SYSTEM_PASSWORD
+        resources:
+          limits:
+            cpu: "2"
+            memory: 2Gi
+          requests:
+            cpu: "500m"
+            memory: 1Gi
+        securityContext:
+          runAsUser: 1000
+          fsGroup: 1000
+        volumeMounts:
+        - name: config-volume
+          mountPath: /usr/share/kibana/config/kibana.yml
+          subPath: kibana.yml
+        - name: kibana-data
+          mountPath: /usr/share/kibana/data
+      volumes:
+      - name: config-volume
+        configMap:
+          name: kibana-config
+      - name: kibana-data
+        persistentVolumeClaim:
+          claimName: kibana-pvc

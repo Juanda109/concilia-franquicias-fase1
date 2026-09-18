@@ -1,0 +1,19 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: co-pqrs-front-test
+  labels:
+    app.kubernetes.io/part-of: frontend
+  annotations:
+    # Streamlit usa websockets de larga duracion; ampliamos el timeout del router.
+    haproxy.router.openshift.io/timeout: "300s"
+spec:
+  host: front-pqr-genai-dev.apps.work.ocp.co.igrupobbva
+  to:
+    kind: Service
+    name: co-pqrs-front-test
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

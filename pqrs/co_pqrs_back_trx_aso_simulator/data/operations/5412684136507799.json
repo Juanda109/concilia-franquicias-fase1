@@ -1,0 +1,82 @@
+{
+  "data": [
+    {
+      "operations": [
+        {
+          "id": "MS01",
+          "amountOperation": {
+            "amount": 75000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-21",
+          "hourOperation": "104500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|TIENDA ONLINE MASTER |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "MS01"
+          }
+        },
+        {
+          "id": "MS02",
+          "amountOperation": {
+            "amount": 75000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-21",
+          "hourOperation": "105100",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|TIENDA ONLINE MASTER |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "MS02"
+          }
+        },
+        {
+          "id": "MS03",
+          "amountOperation": {
+            "amount": 890000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-04-10",
+          "hourOperation": "160000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|ELECTRODOMESTICOS ALKOSTO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "MS03"
+          }
+        },
+        {
+          "id": "MS04",
+          "amountOperation": {
+            "amount": 890000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-04-10",
+          "hourOperation": "160600",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|ELECTRODOMESTICOS ALKOSTO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "MS04"
+          }
+        }
+      ]
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "totalPages": 1,
+    "totalElements": 4,
+    "pageSize": 100
+  }
+}

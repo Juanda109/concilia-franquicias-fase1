@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: conf-pqr-error-handler-env
+  namespace: pqr-genai-dev
+  labels:
+    app.kubernetes.io/part-of: backend
+data:
+  .env: |
+    OPENSEARCH_ENDPOINT=https://opensearch.pqr-genai-dev.svc.cluster.local:9200
+    OPENSEARCH_VERIFY_SSL=false
+    OPENSEARCH_CONVERSATIONS_INDEX=conversations-reference
+    OPENSEARCH_MESSAGES_INDEX=conversations-messages
+    OPENSEARCH_TIMEOUT=10
+    ERROR_REPORT_OUTPUT_DIR=/app/data/error_reports
+    ERROR_REPORT_FILE_PREFIX=error_report
+    ERROR_HANDLER_LOG_LEVEL=INFO
+    MINIO_ENABLED=true
+    MINIO_ENDPOINT_URL=http://minio.pqr-genai-dev.svc.cluster.local:9000
+    MINIO_BUCKET=audit-logs
+    MINIO_REGION=us-east-1
+    MINIO_ADDRESSING_STYLE=path

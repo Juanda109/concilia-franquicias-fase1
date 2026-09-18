@@ -1,0 +1,48 @@
+{
+  "configurations": [
+    {
+      "id": "mask_replacing",
+      "content": {
+        "FALLBACK_NOAPLICA": {
+          "type": "fallbacks",
+          "phrases": [
+            "Ese tema no lo puedo gestionar, pero me encantará ayudarte con cualquier consulta sobre BBVA. Cuéntame, ¿en qué necesitas ayuda?",
+            "No puedo responder sobre ese tema, pero si necesitas ayuda con algo de BBVA, dime en qué puedo asistirte.",
+            "Ese tema no lo manejo, pero puedo ayudarte con otras consultas sobre BBVA. ¿En qué necesitas asistencia?"
+          ]
+        },
+        "FALLBACK_NOINFO": {
+          "type": "fallbacks",
+          "phrases": [
+            "Lo siento, no tengo esa información ahora, pero puedes consultarme sobre otros temas del banco. ¡Estoy aquí para ayudarte!",
+            "Disculpa, no tengo esa información en este momento, pero puedo ayudarte con otros temas de BBVA. ¡Cuéntame en qué más puedo asistirte!",
+            "Lo siento, no tengo información sobre eso ahora, pero puedo ayudarte con otros temas del banco. ¡Pregúntame lo que necesites!"
+          ]
+        },
+        "FALLBACK_AMBIGUO": {
+          "type": "fallbacks",
+          "phrases": [
+            "Necesito más detalles para ayudarte. Por favor, cuéntame tu consulta con palabras más claras.",
+            "Disculpa, no entiendo tu solicitud. Por favor, repíteme tu consulta con frases completas y concisas.",
+            "Para ayudarte mejor, por favor, hazme tu consulta de forma más clara y concisa.",
+            "Lo siento, no te he entendido bien. Por favor, escríbeme de nuevo tu consulta con frases más concretas."
+          ]
+        },
+        "FALLBACK_SALUDO": {
+          "type": "fallbacks",
+          "phrases": [
+            "Hola, estoy aquí para ayudarte con tus consultas. ¿En qué puedo apoyarte?",
+            "¡Hola! Estoy disponible para ayudarte con tus consultas. Cuéntame, ¿en qué necesitas ayuda?"
+          ]
+        },
+        "FALLBACK_GRACIAS": {
+          "type": "fallbacks",
+          "phrases": [
+            "Con gusto. Estoy aquí para ayudarte con cualquier otra consulta.",
+            "Con mucho gusto. Si necesitas algo más, cuéntame."
+          ]
+        }
+      }
+    }
+  ]
+}

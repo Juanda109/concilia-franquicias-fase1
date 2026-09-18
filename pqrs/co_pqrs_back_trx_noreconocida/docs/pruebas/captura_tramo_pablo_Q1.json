@@ -1,0 +1,186 @@
+[
+ {
+  "id": "Q1",
+  "uid": "1013634962",
+  "proposito": "2.4.0 -> 2.4.1 (cambiazo)",
+  "turnos": [
+   {
+    "pedido": "No reconozco esta compra",
+    "enviado": "No reconozco esta compra",
+    "paso": "2.4.0",
+    "texto": "Antes de iniciar el proceso de análisis, confírmame por favor si fuiste víctima de alguno de estos sucesos:",
+    "opciones": [
+     "Me cambiaron la tarjeta (cambiazo)",
+     "Hurto o pérdida",
+     "Alguien obtuvo tus datos bancarios por llamada, mensaje, correo o enlace",
+     "Hiciste una compra presencial o por internet"
+    ]
+   },
+   {
+    "pedido": "Me cambiaron la tarjeta",
+    "enviado": "Me cambiaron la tarjeta (cambiazo)",
+    "paso": "2.4.1",
+    "texto": "Por las características de lo ocurrido, tu caso requiere una revisión a fondo por parte de nuestro equipo especializado. Por favor completa el siguiente formulario.",
+    "opciones": [
+     "Formulario PQR"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "Q2",
+  "uid": "1013634963",
+  "proposito": "2.4.0 -> 2.4.2 (hurto)",
+  "turnos": [
+   {
+    "pedido": "No reconozco esta compra",
+    "enviado": "No reconozco esta compra",
+    "paso": "2.4.0",
+    "texto": "Antes de iniciar el proceso de análisis, confírmame por favor si fuiste víctima de alguno de estos sucesos:",
+    "opciones": [
+     "Me cambiaron la tarjeta (cambiazo)",
+     "Hurto o pérdida",
+     "Alguien obtuvo tus datos bancarios por llamada, mensaje, correo o enlace",
+     "Hiciste una compra presencial o por internet"
+    ]
+   },
+   {
+    "pedido": "Hurto o perdida",
+    "enviado": "Hurto o pérdida",
+    "paso": "2.4.2",
+    "texto": "Por las características de lo ocurrido, necesitamos que nuestro equipo de especialistas revise tu caso detalladamente. Por favor registra tu solicitud en este enlace y nosotros nos encargaremos de analizarlo.",
+    "opciones": [
+     "Formulario PQR"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "Q3",
+  "uid": "1013634964",
+  "proposito": "2.4.0 -> 2.4.3 (suplantacion)",
+  "turnos": [
+   {
+    "pedido": "No reconozco esta compra",
+    "enviado": "No reconozco esta compra",
+    "paso": "2.4.0",
+    "texto": "Antes de iniciar el proceso de análisis, confírmame por favor si fuiste víctima de alguno de estos sucesos:",
+    "opciones": [
+     "Me cambiaron la tarjeta (cambiazo)",
+     "Hurto o pérdida",
+     "Alguien obtuvo tus datos bancarios por llamada, mensaje, correo o enlace",
+     "Hiciste una compra presencial o por internet"
+    ]
+   },
+   {
+    "pedido": "Alguien obtuvo tus datos",
+    "enviado": "Alguien obtuvo tus datos bancarios por llamada, mensaje, correo o enlace",
+    "paso": "2.4.3",
+    "texto": "Por las características de lo ocurrido, necesitamos que nuestro equipo de especialistas revise tu caso detalladamente. Por favor registra tu solicitud en este enlace y nosotros nos encargaremos de analizarlo.",
+    "opciones": [
+     "Formulario PQR"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "Q4",
+  "uid": "98787954",
+  "proposito": "2.4.0.1.1 -> .1.pqr -> satisfaction",
+  "turnos": [
+   {
+    "pedido": "No reconozco esta compra",
+    "enviado": "No reconozco esta compra",
+    "paso": "2.4.0",
+    "texto": "Antes de iniciar el proceso de análisis, confírmame por favor si fuiste víctima de alguno de estos sucesos:",
+    "opciones": [
+     "Me cambiaron la tarjeta (cambiazo)",
+     "Hurto o pérdida",
+     "Alguien obtuvo tus datos bancarios por llamada, mensaje, correo o enlace",
+     "Hiciste una compra presencial o por internet"
+    ]
+   },
+   {
+    "pedido": "Compra presencial",
+    "enviado": "Hiciste una compra presencial o por internet",
+    "paso": "2.4.0.1.1",
+    "texto": "¿Cuántas transacciones quieres reportar?",
+    "opciones": [
+     "1",
+     "2",
+     "3",
+     "Más de 3"
+    ]
+   },
+   {
+    "pedido": "Mas de 3",
+    "enviado": "Más de 3",
+    "paso": "2.4.0.1.1.pqr",
+    "texto": "Para validar el reporte de más de 3 compras no reconocidas, necesitamos tener la información completa en un solo trámite. Completa el formulario a continuación y analizaremos cada movimiento a fondo.",
+    "opciones": [
+     "Formulario PQR"
+    ]
+   },
+   {
+    "pedido": "Formulario PQR",
+    "enviado": "Formulario PQR",
+    "paso": "satisfaction_check",
+    "texto": "¿He resuelto tu consulta?",
+    "opciones": [
+     "Sí, me ayudó",
+     "No, ver línea de atención"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "Q5",
+  "uid": "10482895",
+  "proposito": "2.4.0.1.1 [3] -> 2.4.0.1.2",
+  "turnos": [
+   {
+    "pedido": "No reconozco esta compra",
+    "enviado": "No reconozco esta compra",
+    "paso": "2.4.0",
+    "texto": "Antes de iniciar el proceso de análisis, confírmame por favor si fuiste víctima de alguno de estos sucesos:",
+    "opciones": [
+     "Me cambiaron la tarjeta (cambiazo)",
+     "Hurto o pérdida",
+     "Alguien obtuvo tus datos bancarios por llamada, mensaje, correo o enlace",
+     "Hiciste una compra presencial o por internet"
+    ]
+   },
+   {
+    "pedido": "Compra presencial",
+    "enviado": "Hiciste una compra presencial o por internet",
+    "paso": "2.4.0.1.1",
+    "texto": "¿Cuántas transacciones quieres reportar?",
+    "opciones": [
+     "1",
+     "2",
+     "3",
+     "Más de 3"
+    ]
+   },
+   {
+    "pedido": "3",
+    "enviado": "3",
+    "paso": "2.4.0.1.2",
+    "texto": "Revisaremos una transacción a la vez para darte el detalle de cada caso. Al terminar la primera, continuaremos de inmediato con la siguiente.",
+    "opciones": [
+     "Empezar ahora"
+    ]
+   },
+   {
+    "pedido": "Empezar ahora",
+    "enviado": "Empezar ahora",
+    "paso": "2.4.0.1.3",
+    "texto": "Antes de empezar, ten en cuenta que desde aquí puedes reportar hasta 3 transacciones de entre $35.000 y $500.000 cada una. Al continuar, confirmas que tus datos de contacto y dirección están actualizados para el envío de tu tarjeta si se requiere. ¿Quieres continuar?",
+    "opciones": [
+     "Sí, continuar",
+     "Finalizar conversacion"
+    ]
+   }
+  ]
+ }
+]

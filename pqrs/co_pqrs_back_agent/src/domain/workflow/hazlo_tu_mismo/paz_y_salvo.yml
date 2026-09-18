@@ -1,0 +1,18 @@
+version: 1
+start_step: "1"
+steps:
+  "1":
+    question: |
+      Solicita el paz y salvo de tus productos BBVA desde BBVA Net siguiendo estos pasos:
+
+      1. Ingresa a `bbva.com.co` y haz clic en **Acceso**. Inicia sesión con tu documento de identidad y contraseña de la Net.
+      2. Ubica en el menú principal la opción **Descarga tus certificados**.
+      3. Dentro de esta sección, selecciona **Otros certificados**.
+      4. En la lista de documentos disponibles, haz clic sobre **Paz y Salvo**.
+      5. Elige el tipo de producto que necesitas certificar: **tarjeta de crédito** o **préstamos**.
+      6. Confirma el número del producto y haz clic en descargar para obtener tu documento PDF.
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "satisfaction_check"

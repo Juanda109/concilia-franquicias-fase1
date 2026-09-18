@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: conf-pqr-doblecobro-env
+  labels:
+    app.kubernetes.io/part-of: backend
+data:
+  .env: |
+    DOBLE_COBRO_LOG_LEVEL=INFO
+
+    # ===== ASOs Transaccion No Reconocida (Fase 2) — independiente =====
+    # Switch de origen: "simulator" (dev) usa ASO_SIMULATOR_URL; "real" usa ASO_REAL_URL.
+    ASO_SOURCE=simulator
+    # URL del simulador ASO (Service de k8s creado en IaC/backend/co_pqrs_back_trx_aso_simulator).
+    DC_ASO_SIMULATOR_URL=http://co-pqrs-back-trx-aso-simulator.pqr-genai-dev.svc.cluster.local:8050
+    # URL del ASO REAL (pasarela BBVA). Se usa cuando ASO_SOURCE=real.
+    DC_ASO_REAL_URL=https://dev-arqaso.work.co.nextgen.igrupobbva:8050
+
+    # --- Credenciales grantingTicket (para el ASO REAL; el simulador las ignora) ---
+    # Si TRX_TICKET_URL esta vacio, se usa {base}/TechArchitecture/co/grantingTicket/V02.
+    DC_ASO_TICKET_URL=
+    DC_ASO_API_USER_ID=ZM12035
+    DC_ASO_API_CONSUMER_ID=12000035
+    DC_ASO_API_AUTHENTICATION_TYPE=04
+    DC_ASO_API_PASSWORD=PTDada2026_PQRS
+    DC_ASO_API_VERIFY_SSL=false
+    DC_ASO_API_TIMEOUT=30
+    DC_ASO_API_CUSTOMER_ID_LENGTH=15
+
+    DC_ASO_FO_PATH=/financial-overview/v0/financial-overview
+    DC_ASO_OPERATIONS_PATH=/cards/v2/operations
+
+    # ===== Reglas de negocio del flujo Doble Cobro =====
+    # Ventana de conciliacion con el comercio antes de poder reclamar.
+    # Es la misma para cuentas y para tarjetas debito.
+    DC_SETTLEMENT_DAYS=7
+    # Vigencia para reportar: primero el plazo general, despues la franquicia.
+    DC_MAX_REPORT_MONTHS=6
+    DC_VISA_VALIDITY_DAYS=180
+    DC_MASTER_VALIDITY_DAYS=120
+    # Deteccion de duplicados: margen de busqueda del monto. Al agrupar se
+    # exige monto identico, mismo comercio y misma fecha (el dia completo).
+    DC_AMOUNT_TOLERANCE=2000
+
+    # La contrasena del grantingTicket es una credencial PERMANENTE, no de sesion.
+    # Se deja enmascarada aunque el resto vaya completo.
+    # Debug E2E: guarda el body COMPLETO del ASO (sin enmascarar; nunca tsec/password). Usar solo para depurar.
+    # ---- DEBUG COMPLETO DE LAS LLAMADAS ASO (diagnostico 2026-08-25) --------
+    # Se traza la peticion entera: metodo, URL con query, params, headers y cuerpo.
+    #
+    # KYNS IT 3 (2026-09-09): el TSEC completo ya no se escribe NUNCA en las
+    # trazas (ASO_TRACE_TSEC_FULL se retiro del codigo). Sale una huella
+    # (longitud + prefijo + sufijo + SHA256) que permite comparar tokens.
+    # La contrasena del grantingTicket es una credencial PERMANENTE, no de sesion.
+    # Se deja enmascarada aunque el resto vaya completo.
+    # Debug E2E: guarda el body COMPLETO del ASO (sin enmascarar; nunca tsec/password). Usar solo para depurar.

@@ -1,0 +1,13 @@
+version: 1
+start_step: "respuesta"
+steps:
+  "respuesta":
+    question: |
+      Por ley y por transparencia, el banco siempre debe avisarte antes de generar un reporte negativo. Según la **Ley 1266 de 2008 (Ley de Habeas Data)**, tenemos la obligación de enviarte una notificación previa con al menos **20 días de antelación** para informarte sobre el estado de tu deuda y darte la oportunidad de ponerte al día antes de que el reporte llegue a las centrales.
+
+      ¿Dónde puedes encontrar este aviso? Generalmente, lo incluimos en el **extracto de tu producto**, el cual enviamos mes a mes a tu correo electrónico registrado. También puedes entrar a nuestra **App BBVA** o a la **Web** y consultar tus extractos en cualquier momento para estar siempre al tanto.
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "satisfaction_check_faq"

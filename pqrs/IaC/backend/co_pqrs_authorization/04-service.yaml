@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: co-pqrs-authorization
+  labels:
+    app.kubernetes.io/part-of: backend
+spec:
+  selector:
+    app: co-pqrs-authorization
+  ports:
+    - name: http
+      port: 8005
+      targetPort: 8005
+  type: ClusterIP

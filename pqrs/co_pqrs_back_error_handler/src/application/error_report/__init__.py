@@ -1,0 +1,1 @@
+"""Error report application package."""

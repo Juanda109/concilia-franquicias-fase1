@@ -1,0 +1,1035 @@
+{
+  "data": {
+    "hasMoreData": null,
+    "family": [
+      {
+        "id": "COMMON_AND_SAVINGS",
+        "name": "CUENTAS",
+        "balances": [
+          {
+            "id": "AVAILABLE_CURRENT_AGGREGATED",
+            "name": "",
+            "amountBalance": [
+              {
+                "amount": 5779724.76,
+                "currency": "COP",
+                "isMajor": null
+              },
+              {
+                "amount": 1015.12,
+                "currency": "USD",
+                "isMajor": true
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "INVESTMENT_FUNDS",
+        "name": "FONDOS",
+        "balances": [
+          {
+            "id": "AVAILABLE_FUND_POSITION_AMOUNTS_AGGREGATED",
+            "name": "",
+            "amountBalance": [
+              {
+                "amount": 1013952.55,
+                "currency": "COP",
+                "isMajor": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "LOANS",
+        "name": "PRESTAMOS",
+        "balances": [
+          {
+            "id": "PENDING_AMOUNTS_AGGREGATED",
+            "name": "",
+            "amountBalance": [
+              {
+                "amount": 316871319,
+                "currency": "COP",
+                "isMajor": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "CARDS",
+        "name": "TARJETAS",
+        "balances": [
+          {
+            "id": "DISPOSED_CURRENT_AGGREGATED",
+            "name": "",
+            "amountBalance": [
+              {
+                "amount": 1413598,
+                "currency": "COP",
+                "isMajor": null
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "hasViewers": null,
+    "isEnrolled": null,
+    "contracts": [
+      {
+        "id": "********",
+        "classification": {
+          "type": "GLOMO",
+          "level": [
+            {
+              "id": "FIRST_LEVEL",
+              "name": "ACCOUNTS",
+              "internalCode": ""
+            },
+            {
+              "id": "SECOND_LEVEL",
+              "name": "COMMON_AND_SAVINGS",
+              "internalCode": "0003"
+            }
+          ]
+        },
+        "number": "8043",
+        "numberType": {
+          "id": "LIC",
+          "name": ""
+        },
+        "countryId": "CO",
+        "bank": {
+          "id": "0013",
+          "name": "BBVA COLOMBIA"
+        },
+        "branch": {
+          "id": "0766",
+          "name": ""
+        },
+        "status": {
+          "id": "ACTIVATED",
+          "name": "ACTIVATED",
+          "reason": null,
+          "statusDate": null
+        },
+        "alias": "",
+        "signedAuthorization": {
+          "id": "INDISTINCT",
+          "name": ""
+        },
+        "currencies": [
+          {
+            "currency": "COP",
+            "isMajor": true
+          }
+        ],
+        "participant": null,
+        "relatedContracts": [],
+        "userAccessControl": [],
+        "marketerEntity": null,
+        "product": {
+          "id": "02",
+          "name": "Ahorro Libretón",
+          "description": ""
+        },
+        "productType": "ACCOUNT",
+        "subProductType": {
+          "id": "SAVING",
+          "name": ""
+        },
+        "formats": [
+          {
+            "number": "********",
+            "numberType": {
+              "id": "LIC",
+              "name": ""
+            }
+          }
+        ],
+        "isLegacy": false,
+        "arrearsSituation": "",
+        "detail": {
+          "specificAmounts": [
+            {
+              "id": "AVAILABLE_CURRENT_BALANCES",
+              "name": "",
+              "amounts": [
+                {
+                  "amount": 1736202.76,
+                  "currency": "COP"
+                }
+              ]
+            }
+          ],
+          "agreementContract": null,
+          "level": "",
+          "indicators": [
+            {
+              "id": "FINANCIAL_MOVEMENT_TAX_FREE",
+              "name": "",
+              "isActive": true,
+              "isBlocked": null
+            },
+            {
+              "id": "IS_PAYROLL_ACCOUNT",
+              "name": "",
+              "isActive": false,
+              "isBlocked": false
+            }
+          ],
+          "expirationDate": null
+        }
+      },
+      {
+        "id": "********",
+        "classification": {
+          "type": "GLOMO",
+          "level": [
+            {
+              "id": "FIRST_LEVEL",
+              "name": "ACCOUNTS",
+              "internalCode": ""
+            },
+            {
+              "id": "SECOND_LEVEL",
+              "name": "COMMON_AND_SAVINGS",
+              "internalCode": "0020"
+            }
+          ]
+        },
+        "number": "0030",
+        "numberType": {
+          "id": "LIC",
+          "name": ""
+        },
+        "countryId": "CO",
+        "bank": {
+          "id": "0013",
+          "name": "BBVA COLOMBIA"
+        },
+        "branch": {
+          "id": "0777",
+          "name": ""
+        },
+        "status": {
+          "id": "ACTIVATED",
+          "name": "ACTIVATED",
+          "reason": null,
+          "statusDate": null
+        },
+        "alias": "",
+        "signedAuthorization": {
+          "id": "INDISTINCT",
+          "name": ""
+        },
+        "currencies": [
+          {
+            "currency": "COP",
+            "isMajor": true
+          }
+        ],
+        "participant": null,
+        "relatedContracts": [],
+        "userAccessControl": [],
+        "marketerEntity": null,
+        "product": {
+          "id": "02",
+          "name": "AHORRO DIARIO EMP",
+          "description": ""
+        },
+        "productType": "ACCOUNT",
+        "subProductType": {
+          "id": "SAVING",
+          "name": ""
+        },
+        "formats": [
+          {
+            "number": "********",
+            "numberType": {
+              "id": "LIC",
+              "name": ""
+            }
+          }
+        ],
+        "isLegacy": false,
+        "arrearsSituation": "",
+        "detail": {
+          "specificAmounts": [
+            {
+              "id": "AVAILABLE_CURRENT_BALANCES",
+              "name": "",
+              "amounts": [
+                {
+                  "amount": 4043059,
+                  "currency": "COP"
+                }
+              ]
+            }
+          ],
+          "agreementContract": null,
+          "level": "",
+          "indicators": [
+            {
+              "id": "IS_PAYROLL_ACCOUNT",
+              "name": "",
+              "isActive": false,
+              "isBlocked": false
+            }
+          ],
+          "expirationDate": null
+        }
+      },
+      {
+        "id": "********",
+        "classification": {
+          "type": "GLOMO",
+          "level": [
+            {
+              "id": "FIRST_LEVEL",
+              "name": "ACCOUNTS",
+              "internalCode": ""
+            },
+            {
+              "id": "SECOND_LEVEL",
+              "name": "COMMON_AND_SAVINGS",
+              "internalCode": "0007"
+            }
+          ]
+        },
+        "number": "1431",
+        "numberType": {
+          "id": "LIC",
+          "name": ""
+        },
+        "countryId": "CO",
+        "bank": {
+          "id": "0013",
+          "name": "BBVA COLOMBIA"
+        },
+        "branch": {
+          "id": "0777",
+          "name": ""
+        },
+        "status": {
+          "id": "ACTIVATED",
+          "name": "ACTIVATED",
+          "reason": null,
+          "statusDate": null
+        },
+        "alias": "",
+        "signedAuthorization": {
+          "id": "INDISTINCT",
+          "name": ""
+        },
+        "currencies": [
+          {
+            "currency": "COP",
+            "isMajor": true
+          }
+        ],
+        "participant": null,
+        "relatedContracts": [],
+        "userAccessControl": [],
+        "marketerEntity": null,
+        "product": {
+          "id": "02",
+          "name": "AHORRO AFC",
+          "description": ""
+        },
+        "productType": "ACCOUNT",
+        "subProductType": {
+          "id": "SAVING",
+          "name": ""
+        },
+        "formats": [
+          {
+            "number": "********",
+            "numberType": {
+              "id": "LIC",
+              "name": ""
+            }
+          }
+        ],
+        "isLegacy": false,
+        "arrearsSituation": "",
+        "detail": {
+          "specificAmounts": [
+            {
+              "id": "AVAILABLE_CURRENT_BALANCES",
+              "name": "",
+              "amounts": [
+                {
+                  "amount": 463,
+                  "currency": "COP"
+                }
+              ]
+            }
+          ],
+          "agreementContract": null,
+          "level": "",
+          "indicators": [
+            {
+              "id": "IS_PAYROLL_ACCOUNT",
+              "name": "",
+              "isActive": false,
+              "isBlocked": false
+            }
+          ],
+          "expirationDate": null
+        }
+      },
+      {
+        "id": "********",
+        "classification": {
+          "type": "GLOMO",
+          "level": [
+            {
+              "id": "FIRST_LEVEL",
+              "name": "INVESTMENT_FUNDS",
+              "internalCode": ""
+            },
+            {
+              "id": "SECOND_LEVEL",
+              "name": "INVESTMENT_FUNDS",
+              "internalCode": ""
+            }
+          ]
+        },
+        "number": "5200",
+        "numberType": {
+          "id": "CCC",
+          "name": "70"
+        },
+        "countryId": "CO",
+        "bank": {
+          "id": "0013",
+          "name": "BBVA COLOMBIA"
+        },
+        "branch": {
+          "id": "0766",
+          "name": ""
+        },
+        "status": {
+          "id": "ACTIVATED",
+          "name": "ACTIVADA",
+          "reason": null,
+          "statusDate": null
+        },
+        "alias": "",
+        "signedAuthorization": {
+          "id": "INDISTINCT",
+          "name": ""
+        },
+        "currencies": [
+          {
+            "currency": "COP",
+            "isMajor": true
+          }
+        ],
+        "participant": null,
+        "relatedContracts": [],
+        "userAccessControl": [],
+        "marketerEntity": null,
+        "product": {
+          "id": "70",
+          "name": "ArriendoNuevo",
+          "description": ""
+        },
+        "productType": "INVESTMENT_FUND",
+        "subProductType": {
+          "id": "SIMPLE",
+          "name": ""
+        },
+        "formats": [
+          {
+            "number": "********",
+            "numberType": {
+              "id": "CCC",
+              "name": ""
+            }
+          }
+        ],
+        "isLegacy": false,
+        "arrearsSituation": "",
+        "detail": {
+          "specificAmounts": [
+            {
+              "id": "AVAILABLE_FUND_POSITION_AMOUNTS",
+              "name": "",
+              "amounts": [
+                {
+                  "amount": 1013952.55,
+                  "currency": "COP"
+                }
+              ]
+            }
+          ],
+          "agreementContract": null,
+          "funds": [
+            {
+              "specificAmounts": [],
+              "agreementContract": null,
+              "id": "263416454",
+              "number": "70",
+              "numberType": {
+                "id": "MIC",
+                "name": "MARKET IDENTIFIER"
+              },
+              "netAssetValue": {
+                "amount": 1013952.55,
+                "currency": "COP"
+              },
+              "product": {
+                "id": "IN",
+                "name": "FONDO DE INVERSION"
+              },
+              "currency": null
+            }
+          ],
+          "ownedShares": null,
+          "maturityDate": null,
+          "isInternationalManaged": false,
+          "portfolio": null
+        }
+      },
+      {
+        "id": "********",
+        "classification": {
+          "type": "GLOMO",
+          "level": [
+            {
+              "id": "FIRST_LEVEL",
+              "name": "LOANS",
+              "internalCode": ""
+            },
+            {
+              "id": "SECOND_LEVEL",
+              "name": "LOANS",
+              "internalCode": ""
+            }
+          ]
+        },
+        "number": "1083",
+        "numberType": {
+          "id": "CCC",
+          "name": ""
+        },
+        "countryId": "CO",
+        "bank": {
+          "id": "0013",
+          "name": "BBVA COLOMBIA"
+        },
+        "branch": {
+          "id": "0777",
+          "name": ""
+        },
+        "status": {
+          "id": "ACTIVATED",
+          "name": "ACTIVADA",
+          "reason": null,
+          "statusDate": null
+        },
+        "alias": "",
+        "signedAuthorization": {
+          "id": "INDISTINCT",
+          "name": ""
+        },
+        "currencies": [
+          {
+            "currency": "COP",
+            "isMajor": true
+          }
+        ],
+        "participant": {
+          "participantType": {
+            "id": "HOLDER",
+            "name": "",
+            "order": ""
+          },
+          "name": "NICOLAS HERNANDO GONZALEZ MARR"
+        },
+        "relatedContracts": [],
+        "userAccessControl": [],
+        "marketerEntity": null,
+        "product": {
+          "id": "97",
+          "name": "CREDITO DECRETO 663 SALARIO TR",
+          "description": ""
+        },
+        "productType": "LOAN",
+        "subProductType": {
+          "id": "MORTGAGE",
+          "name": ""
+        },
+        "formats": [
+          {
+            "number": "********",
+            "numberType": {
+              "id": "CCC",
+              "name": ""
+            }
+          }
+        ],
+        "isLegacy": false,
+        "arrearsSituation": "",
+        "detail": {
+          "specificAmounts": [
+            {
+              "id": "TOTAL_PENDING_AMOUNTS",
+              "name": "",
+              "amounts": [
+                {
+                  "amount": 316871319,
+                  "currency": "COP"
+                }
+              ]
+            }
+          ],
+          "agreementContract": null,
+          "maturityDate": "2040-05-30T00:00:00.0-0500",
+          "effectiveDate": "2040-05-30T00:00:00.0-0500",
+          "nextInstallmentDate": null,
+          "lastInstallmentDate": null,
+          "totalInstallmentsNumber": null,
+          "nextInstallmentAmount": null,
+          "lastInstallmentAmount": null,
+          "pendingInstallment": null,
+          "frequency": null,
+          "interestRateApplied": null,
+          "isGuaranteed": null,
+          "monthlyRent": null,
+          "insuranceAmount": null,
+          "disposals": []
+        }
+      },
+      {
+        "id": "4912680517942583",
+        "classification": {
+          "type": "GLOMO",
+          "level": [
+            {
+              "id": "FIRST_LEVEL",
+              "name": "CARDS",
+              "internalCode": ""
+            },
+            {
+              "id": "SECOND_LEVEL",
+              "name": "CARDS",
+              "internalCode": ""
+            }
+          ]
+        },
+        "number": "2583",
+        "numberType": {
+          "id": "PAN",
+          "name": ""
+        },
+        "countryId": "CO",
+        "bank": {
+          "id": "0013",
+          "name": "BBVA COLOMBIA"
+        },
+        "branch": {
+          "id": "0766",
+          "name": ""
+        },
+        "status": {
+          "id": "OPERATIVE",
+          "name": "",
+          "reason": null,
+          "statusDate": null
+        },
+        "alias": "",
+        "signedAuthorization": {
+          "id": "INDISTINCT",
+          "name": ""
+        },
+        "currencies": [
+          {
+            "currency": "COP",
+            "isMajor": true
+          }
+        ],
+        "participant": {
+          "participantType": {
+            "id": "HOLDER",
+            "name": "",
+            "order": ""
+          },
+          "name": "NICOLAS HERNANDO GONZALEZ MARR"
+        },
+        "relatedContracts": [],
+        "userAccessControl": [],
+        "marketerEntity": null,
+        "product": {
+          "id": "50",
+          "name": "Visa Débito",
+          "description": ""
+        },
+        "productType": "CARD",
+        "subProductType": {
+          "id": "DEBIT_CARD",
+          "name": ""
+        },
+        "formats": [
+          {
+            "number": "4912680517942583",
+            "numberType": {
+              "id": "PAN",
+              "name": ""
+            }
+          }
+        ],
+        "isLegacy": false,
+        "arrearsSituation": "",
+        "detail": {
+          "specificAmounts": [
+            {
+              "id": "AVAILABLE_CURRENT_BALANCES",
+              "name": "",
+              "amounts": [
+                {
+                  "amount": 1000,
+                  "currency": "COP"
+                }
+              ]
+            },
+            {
+              "id": "GRANTED_CREDITS",
+              "name": "",
+              "amounts": [
+                {
+                  "amount": 2000,
+                  "currency": "COP"
+                }
+              ]
+            }
+          ],
+          "agreementContract": "SKtWD4g-_nwbehEBiPepu_PBUhzPnjARE4-me6Hadr8",
+          "images": [
+            {
+              "specificAmounts": null,
+              "agreementContract": null,
+              "id": "491268A0",
+              "name": null,
+              "url": "https://cardcovers.caasbbva.com/colombia/co_A0_491268_19700101_front.png"
+            }
+          ],
+          "physicalSupport": {
+            "id": "NORMAL_PLASTIC",
+            "name": ""
+          },
+          "expirationDate": "2027-05-20T00:00:00.0-0500",
+          "activations": [
+            {
+              "id": "ON_OFF",
+              "name": "",
+              "isActive": true
+            }
+          ],
+          "rewards": [
+            {
+              "id": "BANCOMER_POINTS",
+              "name": "",
+              "nonMonetaryValue": 1
+            }
+          ],
+          "indicators": [
+            {
+              "id": "BLOCKABLE",
+              "name": "",
+              "isActive": true
+            }
+          ],
+          "holderName": "",
+          "paymentMethod": null,
+          "internalProduct": null,
+          "embossingDate": "2022-06-01T00:00:00.0-0500",
+          "migrationType": "NORMAL",
+          "status": {
+            "id": "OPERATIVE",
+            "name": "ACTIVADA",
+            "reason": null,
+            "statusDate": null
+          },
+          "brandAssociation": null,
+          "dependencyValue": ""
+        }
+      },
+      {
+        "id": "4912680517942100",
+        "classification": {
+          "type": "GLOMO",
+          "level": [
+            {
+              "id": "FIRST_LEVEL",
+              "name": "CARDS",
+              "internalCode": ""
+            },
+            {
+              "id": "SECOND_LEVEL",
+              "name": "CARDS",
+              "internalCode": ""
+            }
+          ]
+        },
+        "number": "2100",
+        "numberType": {
+          "id": "PAN",
+          "name": ""
+        },
+        "countryId": "CO",
+        "bank": {
+          "id": "0013",
+          "name": "BBVA COLOMBIA"
+        },
+        "branch": {
+          "id": "0766",
+          "name": ""
+        },
+        "status": {
+          "id": "OPERATIVE",
+          "name": "",
+          "reason": null,
+          "statusDate": null
+        },
+        "alias": "",
+        "signedAuthorization": {
+          "id": "INDISTINCT",
+          "name": ""
+        },
+        "currencies": [
+          {
+            "currency": "COP",
+            "isMajor": true
+          }
+        ],
+        "participant": {
+          "participantType": {
+            "id": "HOLDER",
+            "name": "",
+            "order": ""
+          },
+          "name": "NICOLAS HERNANDO GONZALEZ MARR"
+        },
+        "relatedContracts": [],
+        "userAccessControl": [],
+        "marketerEntity": null,
+        "product": {
+          "id": "50",
+          "name": "VISA ORO",
+          "description": ""
+        },
+        "productType": "CARD",
+        "subProductType": {
+          "id": "CREDIT_CARD",
+          "name": ""
+        },
+        "formats": [
+          {
+            "number": "4912680517942100",
+            "numberType": {
+              "id": "PAN",
+              "name": ""
+            }
+          }
+        ],
+        "isLegacy": false,
+        "arrearsSituation": "",
+        "detail": {
+          "specificAmounts": [
+            {
+              "id": "AVAILABLE_CURRENT_BALANCES",
+              "name": "",
+              "amounts": [
+                {
+                  "amount": 1412598,
+                  "currency": "COP"
+                }
+              ]
+            },
+            {
+              "id": "GRANTED_CREDITS",
+              "name": "",
+              "amounts": [
+                {
+                  "amount": 2000000,
+                  "currency": "COP"
+                }
+              ]
+            },
+            {
+              "id": "DISPOSED_CURRENT_BALANCES",
+              "name": "",
+              "amounts": [
+                {
+                  "amount": 0,
+                  "currency": "COP"
+                }
+              ]
+            }
+          ],
+          "agreementContract": "",
+          "images": [
+            {
+              "specificAmounts": null,
+              "agreementContract": null,
+              "id": "450408I0",
+              "name": null,
+              "url": "https://cardcovers.caasbbva.com/colombia/co_I0_450408_19700101_front.png"
+            }
+          ],
+          "physicalSupport": {
+            "id": "NORMAL_PLASTIC",
+            "name": ""
+          },
+          "expirationDate": "2029-08-08T00:00:00.0-0500",
+          "activations": [
+            {
+              "id": "ON_OFF",
+              "name": "",
+              "isActive": true
+            }
+          ],
+          "rewards": [
+            {
+              "id": "BANCOMER_POINTS",
+              "name": "",
+              "nonMonetaryValue": 1
+            }
+          ],
+          "indicators": [
+            {
+              "id": "BLOCKABLE",
+              "name": "",
+              "isActive": true
+            }
+          ],
+          "holderName": "",
+          "paymentMethod": null,
+          "internalProduct": null,
+          "embossingDate": "2024-08-08T00:00:00.0-0500",
+          "migrationType": "NORMAL",
+          "status": {
+            "id": "OPERATIVE",
+            "name": "ACTIVADA",
+            "reason": null,
+            "statusDate": null
+          },
+          "brandAssociation": null,
+          "dependencyValue": ""
+        }
+      },
+      {
+        "id": "********",
+        "classification": {
+          "type": "GLOMO",
+          "level": [
+            {
+              "id": "FIRST_LEVEL",
+              "name": "ACCOUNTS",
+              "internalCode": ""
+            },
+            {
+              "id": "SECOND_LEVEL",
+              "name": "COMMON_AND_SAVINGS",
+              "internalCode": "0013"
+            }
+          ]
+        },
+        "number": "2435",
+        "numberType": {
+          "id": "LIC",
+          "name": "Customer Account Code"
+        },
+        "countryId": "CO",
+        "bank": {
+          "id": "0013",
+          "name": "BBVA COLOMBIA"
+        },
+        "branch": {
+          "id": "50",
+          "name": "OFICINA SUCURSAL PANAMA"
+        },
+        "status": {
+          "id": "ACTIVE",
+          "name": "ACTIVE",
+          "reason": null,
+          "statusDate": null
+        },
+        "alias": " ",
+        "signedAuthorization": {
+          "id": "INDISTINCT",
+          "name": ""
+        },
+        "currencies": [
+          {
+            "currency": "USD",
+            "isMajor": false
+          }
+        ],
+        "participant": {
+          "participantType": {
+            "id": "INDISTINCT",
+            "name": "",
+            "order": ""
+          },
+          "name": " "
+        },
+        "relatedContracts": [],
+        "userAccessControl": [],
+        "marketerEntity": null,
+        "product": {
+          "id": "4",
+          "name": "Cuenta de Ahorros",
+          "description": " "
+        },
+        "productType": "ACCOUNT",
+        "subProductType": {
+          "id": "SAVING",
+          "name": ""
+        },
+        "formats": [
+          {
+            "number": "********",
+            "numberType": {
+              "id": "LIC",
+              "name": ""
+            }
+          }
+        ],
+        "isLegacy": false,
+        "arrearsSituation": "",
+        "detail": {
+          "specificAmounts": [
+            {
+              "id": "AVAILABLE_CURRENT_BALANCES",
+              "name": "",
+              "amounts": [
+                {
+                  "amount": 1015.12,
+                  "currency": "USD"
+                }
+              ]
+            }
+          ],
+          "agreementContract": null,
+          "level": null,
+          "indicators": [
+            {
+              "id": "IS_PAYROLL_ACCOUNT",
+              "name": "  ",
+              "isActive": false,
+              "isBlocked": false
+            }
+          ],
+          "expirationDate": null
+        }
+      }
+    ]
+  }
+}

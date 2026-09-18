@@ -1,0 +1,483 @@
+
+{
+ "data": {
+  "family": [
+   {
+    "id": "COMMON_AND_SAVINGS",
+    "name": "CUENTAS",
+    "balances": [
+     {
+      "id": "AVAILABLE_CURRENT_AGGREGATED",
+      "name": "",
+      "amountBalance": [
+       {
+        "amount": 7719.59,
+        "currency": "COP"
+       }
+      ]
+     }
+    ]
+   },
+   {
+    "id": "CARDS",
+    "name": "TARJETAS",
+    "balances": [
+     {
+      "id": "DISPOSED_CURRENT_AGGREGATED",
+      "name": "",
+      "amountBalance": [
+       {
+        "amount": 1000.0,
+        "currency": "COP"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "contracts": [
+   {
+    "id": "00130766000200022384",
+    "classification": {
+     "type": "GLOMO",
+     "level": [
+      {
+       "id": "FIRST_LEVEL",
+       "name": "ACCOUNTS",
+       "internalCode": ""
+      },
+      {
+       "id": "SECOND_LEVEL",
+       "name": "COMMON_AND_SAVINGS",
+       "internalCode": "0003"
+      }
+     ]
+    },
+    "number": "2384",
+    "numberType": {
+     "id": "LIC",
+     "name": ""
+    },
+    "countryId": "CO",
+    "bank": {
+     "id": "0013",
+     "name": "BBVA COLOMBIA"
+    },
+    "branch": {
+     "id": "0766",
+     "name": ""
+    },
+    "status": {
+     "id": "ACTIVATED",
+     "name": "ACTIVATED"
+    },
+    "alias": "",
+    "signedAuthorization": {
+     "id": "INDISTINCT",
+     "name": ""
+    },
+    "currencies": [
+     {
+      "currency": "COP",
+      "isMajor": true
+     }
+    ],
+    "relatedContracts": [],
+    "userAccessControl": [],
+    "product": {
+     "id": "02",
+     "name": "Ahorro Libretón",
+     "description": ""
+    },
+    "productType": "ACCOUNT",
+    "subProductType": {
+     "id": "SAVING",
+     "name": ""
+    },
+    "formats": [],
+    "isLegacy": false,
+    "arrearsSituation": "",
+    "detail": {
+     "specificAmounts": [
+      {
+       "id": "AVAILABLE_CURRENT_BALANCES",
+       "name": "",
+       "amounts": [
+        {
+         "amount": 7718.59,
+         "currency": "COP"
+        }
+       ]
+      }
+     ],
+     "level": "",
+     "indicators": [
+      {
+       "id": "IS_PAYROLL_ACCOUNT",
+       "name": "",
+       "isActive": false,
+       "isBlocked": false
+      }
+     ]
+    }
+   },
+   {
+    "id": "00130766000200023755",
+    "classification": {
+     "type": "GLOMO",
+     "level": [
+      {
+       "id": "FIRST_LEVEL",
+       "name": "ACCOUNTS",
+       "internalCode": ""
+      },
+      {
+       "id": "SECOND_LEVEL",
+       "name": "COMMON_AND_SAVINGS",
+       "internalCode": "0026"
+      }
+     ]
+    },
+    "number": "3755",
+    "numberType": {
+     "id": "LIC",
+     "name": ""
+    },
+    "countryId": "CO",
+    "bank": {
+     "id": "0013",
+     "name": "BBVA COLOMBIA"
+    },
+    "branch": {
+     "id": "0766",
+     "name": ""
+    },
+    "status": {
+     "id": "ACTIVATED",
+     "name": "ACTIVATED"
+    },
+    "alias": "",
+    "signedAuthorization": {
+     "id": "INDISTINCT",
+     "name": ""
+    },
+    "currencies": [
+     {
+      "currency": "COP",
+      "isMajor": true
+     }
+    ],
+    "relatedContracts": [],
+    "userAccessControl": [],
+    "product": {
+     "id": "02",
+     "name": "CUENTA META",
+     "description": ""
+    },
+    "productType": "ACCOUNT",
+    "subProductType": {
+     "id": "SAVING",
+     "name": ""
+    },
+    "formats": [],
+    "isLegacy": false,
+    "arrearsSituation": "",
+    "detail": {
+     "specificAmounts": [
+      {
+       "id": "AVAILABLE_CURRENT_BALANCES",
+       "name": "",
+       "amounts": [
+        {
+         "amount": 1.0,
+         "currency": "COP"
+        }
+       ]
+      }
+     ],
+     "level": "",
+     "indicators": [
+      {
+       "id": "IS_PAYROLL_ACCOUNT",
+       "name": "",
+       "isActive": false,
+       "isBlocked": false
+      }
+     ]
+    }
+   },
+   {
+    "id": "4912684136504818",
+    "classification": {
+     "type": "GLOMO",
+     "level": [
+      {
+       "id": "FIRST_LEVEL",
+       "name": "CARDS",
+       "internalCode": ""
+      },
+      {
+       "id": "SECOND_LEVEL",
+       "name": "CARDS",
+       "internalCode": ""
+      }
+     ]
+    },
+    "number": "4818",
+    "numberType": {
+     "id": "PAN",
+     "name": ""
+    },
+    "countryId": "CO",
+    "bank": {
+     "id": "0013",
+     "name": "BBVA COLOMBIA"
+    },
+    "branch": {
+     "id": "0766",
+     "name": ""
+    },
+    "status": {
+     "id": "OPERATIVE",
+     "name": ""
+    },
+    "alias": "",
+    "signedAuthorization": {
+     "id": "INDISTINCT",
+     "name": ""
+    },
+    "currencies": [
+     {
+      "currency": "COP",
+      "isMajor": true
+     }
+    ],
+    "participant": {
+     "participantType": {
+      "id": "HOLDER",
+      "name": "",
+      "order": ""
+     },
+     "name": "NOMBRE PRIAPE SEGAPE"
+    },
+    "relatedContracts": [],
+    "userAccessControl": [],
+    "product": {
+     "id": "50",
+     "name": "Visa Débito",
+     "description": ""
+    },
+    "productType": "CARD",
+    "subProductType": {
+     "id": "DEBIT_CARD",
+     "name": ""
+    },
+    
+    "formats": [],
+    "isLegacy": false,
+    "arrearsSituation": "",
+    "detail": {
+     "specificAmounts": [
+      {
+       "id": "AVAILABLE_CURRENT_BALANCES",
+       "name": "",
+       "amounts": [
+        {
+         "amount": 1000.0,
+         "currency": "COP"
+        }
+       ]
+      },
+      {
+       "id": "GRANTED_CREDITS",
+       "name": "",
+       "amounts": [
+        {
+         "amount": 2000.0,
+         "currency": "COP"
+        }
+       ]
+      }
+     ],
+     "agreementContract": "00130766005001262751",
+     "images": [
+      {
+       "id": "491268A0",
+       "url": "https://cardcovers.caasbbva.com/colombia/co_A0_491268_19700101_front.png"
+      }
+     ],
+     "physicalSupport": {
+      "id": "NORMAL_PLASTIC",
+      "name": ""
+     },
+     "expirationDate": "2033-05-26T00:00:00.0-0500",
+     "activations": [
+      {
+       "id": "ON_OFF",
+       "name": "",
+       "isActive": true
+      }
+     ],
+     "rewards": [
+      {
+       "id": "BANCOMER_POINTS",
+       "name": "",
+       "nonMonetaryValue": 1
+      }
+     ],
+     "indicators": [
+      {
+       "id": "BLOCKABLE",
+       "name": "",
+       "isActive": true
+      }
+     ],
+     "holderName": "",
+     "embossingDate": "2026-05-07T00:00:00.0-0500",
+     "migrationType": "NORMAL",
+     "status": {
+      "id": "OPERATIVE",
+      "name": "ACTIVADA"
+     },
+     "dependencyValue": ""
+    }
+   },
+   {
+    "id": "4912684136504828",
+    "classification": {
+     "type": "GLOMO",
+     "level": [
+      {
+       "id": "FIRST_LEVEL",
+       "name": "CARDS",
+       "internalCode": ""
+      },
+      {
+       "id": "SECOND_LEVEL",
+       "name": "CARDS",
+       "internalCode": ""
+      }
+     ]
+    },
+    "number": "4828",
+    "numberType": {
+     "id": "PAN",
+     "name": ""
+    },
+    "countryId": "CO",
+    "bank": {
+     "id": "0013",
+     "name": "BBVA COLOMBIA"
+    },
+    "branch": {
+     "id": "0766",
+     "name": ""
+    },
+    "status": {
+     "id": "OPERATIVE",
+     "name": ""
+    },
+    "alias": "",
+    "signedAuthorization": {
+     "id": "INDISTINCT",
+     "name": ""
+    },
+    "currencies": [
+     {
+      "currency": "COP",
+      "isMajor": true
+     }
+    ],
+    "participant": {
+     "participantType": {
+      "id": "HOLDER",
+      "name": "",
+      "order": ""
+     },
+     "name": "NOMBRE PRIAPE SEGAPE"
+    },
+    "relatedContracts": [],
+    "userAccessControl": [],
+    "product": {
+     "id": "50",
+     "name": "Mastercard Credito",
+     "description": ""
+    },
+    "productType": "CARD",
+    "subProductType": {
+     "id": "CREDIT_CARD",
+     "name": ""
+    },
+    
+    "formats": [],
+    "isLegacy": false,
+    "arrearsSituation": "",
+    "detail": {
+     "specificAmounts": [
+      {
+       "id": "AVAILABLE_CURRENT_BALANCES",
+       "name": "",
+       "amounts": [
+        {
+         "amount": 1000.0,
+         "currency": "COP"
+        }
+       ]
+      },
+      {
+       "id": "GRANTED_CREDITS",
+       "name": "",
+       "amounts": [
+        {
+         "amount": 2000.0,
+         "currency": "COP"
+        }
+       ]
+      }
+     ],
+     "agreementContract": "",
+     "images": [
+      {
+       "id": "491268A0",
+       "url": "https://cardcovers.caasbbva.com/colombia/co_A0_491268_19700101_front.png"
+      }
+     ],
+     "physicalSupport": {
+      "id": "NORMAL_PLASTIC",
+      "name": ""
+     },
+     "expirationDate": "2033-05-26T00:00:00.0-0500",
+     "activations": [
+      {
+       "id": "ON_OFF",
+       "name": "",
+       "isActive": true
+      }
+     ],
+     "rewards": [
+      {
+       "id": "BANCOMER_POINTS",
+       "name": "",
+       "nonMonetaryValue": 1
+      }
+     ],
+     "indicators": [
+      {
+       "id": "BLOCKABLE",
+       "name": "",
+       "isActive": true
+      }
+     ],
+     "holderName": "",
+     "embossingDate": "2026-05-07T00:00:00.0-0500",
+     "migrationType": "NORMAL",
+     "status": {
+      "id": "OPERATIVE",
+      "name": "ACTIVADA"
+     },
+     "dependencyValue": ""
+    }
+   }
+  ]
+ }
+}

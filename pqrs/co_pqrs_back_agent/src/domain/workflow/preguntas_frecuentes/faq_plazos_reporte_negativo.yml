@@ -1,0 +1,17 @@
+version: 1
+start_step: "respuesta"
+steps:
+  "respuesta":
+    question: |
+      Es clave conocer estos tiempos para tu tranquilidad financiera. Te cuento que, por ley, la permanencia de un reporte negativo depende de qué tanto duró la mora:
+
+      * Si tu mora fue **menor a 2 años**: el reporte se mantendrá por el doble del tiempo que estuviste pendiente de pago (contado desde el día que te pusiste al día).
+
+      * Si tu mora fue de **2 años o más**: el reporte estará visible por un máximo de **4 años**, los cuales empiezan a correr desde el momento en que pagaste la totalidad de la deuda.
+
+      La buena noticia es que tu información positiva (tus pagos a tiempo) se queda en tu historial para siempre, respaldando tu buen nombre.
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "satisfaction_check_faq"

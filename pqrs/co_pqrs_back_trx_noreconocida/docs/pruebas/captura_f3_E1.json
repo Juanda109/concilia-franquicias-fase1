@@ -1,0 +1,517 @@
+[
+ {
+  "id": "E1",
+  "uid": "1013634961",
+  "proposito": "2.4.0.1.4.error: ASO caido al pedir productos",
+  "turnos": [
+   {
+    "pedido": "No reconozco esta compra",
+    "enviado": "No reconozco esta compra",
+    "paso": "2.4.0",
+    "texto": "Antes de iniciar el proceso de análisis, confírmame por favor si fuiste víctima de alguno de estos sucesos:",
+    "opciones": [
+     "Me cambiaron la tarjeta (cambiazo)",
+     "Hurto o pérdida",
+     "Alguien obtuvo tus datos bancarios por llamada, mensaje, correo o enlace",
+     "Hiciste una compra presencial o por internet"
+    ]
+   },
+   {
+    "pedido": "Compra presencial",
+    "enviado": "Hiciste una compra presencial o por internet",
+    "paso": "2.4.0.1.1",
+    "texto": "¿Cuántas transacciones quieres reportar?",
+    "opciones": [
+     "1",
+     "2",
+     "3",
+     "Más de 3"
+    ]
+   },
+   {
+    "pedido": "1",
+    "enviado": "1",
+    "paso": "2.4.0.1.2",
+    "texto": "Revisaremos una transacción a la vez para darte el detalle de cada caso. Al terminar la primera, continuaremos de inmediato con la siguiente.",
+    "opciones": [
+     "Empezar ahora"
+    ]
+   },
+   {
+    "pedido": "Empezar ahora",
+    "enviado": "Empezar ahora",
+    "paso": "2.4.0.1.3",
+    "texto": "Antes de empezar, ten en cuenta que desde aquí puedes reportar hasta 3 transacciones de entre $35.000 y $500.000 cada una. Al continuar, confirmas que tus datos de contacto y dirección están actualizados para el envío de tu tarjeta si se requiere. ¿Quieres continuar?",
+    "opciones": [
+     "Sí, continuar",
+     "Finalizar conversacion"
+    ]
+   },
+   {
+    "pedido": "Si, continuar",
+    "enviado": "Sí, continuar",
+    "paso": "2.4.0.1.4.error",
+    "texto": "En este momento no podemos consultar tus productos por un inconveniente técnico de nuestro lado. Para que tu caso quede registrado y nuestro equipo lo revise, por favor radica tu solicitud en el siguiente formulario.",
+    "opciones": [
+     "Formulario PQR"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "E2",
+  "uid": "1013634961",
+  "proposito": "2.4.0.1.8.error: ASO caido al pedir movimientos",
+  "turnos": [
+   {
+    "pedido": "No reconozco esta compra",
+    "enviado": "No reconozco esta compra",
+    "paso": "2.4.0",
+    "texto": "Antes de iniciar el proceso de análisis, confírmame por favor si fuiste víctima de alguno de estos sucesos:",
+    "opciones": [
+     "Me cambiaron la tarjeta (cambiazo)",
+     "Hurto o pérdida",
+     "Alguien obtuvo tus datos bancarios por llamada, mensaje, correo o enlace",
+     "Hiciste una compra presencial o por internet"
+    ]
+   },
+   {
+    "pedido": "Compra presencial",
+    "enviado": "Hiciste una compra presencial o por internet",
+    "paso": "2.4.0.1.1",
+    "texto": "¿Cuántas transacciones quieres reportar?",
+    "opciones": [
+     "1",
+     "2",
+     "3",
+     "Más de 3"
+    ]
+   },
+   {
+    "pedido": "1",
+    "enviado": "1",
+    "paso": "2.4.0.1.2",
+    "texto": "Revisaremos una transacción a la vez para darte el detalle de cada caso. Al terminar la primera, continuaremos de inmediato con la siguiente.",
+    "opciones": [
+     "Empezar ahora"
+    ]
+   },
+   {
+    "pedido": "Empezar ahora",
+    "enviado": "Empezar ahora",
+    "paso": "2.4.0.1.3",
+    "texto": "Antes de empezar, ten en cuenta que desde aquí puedes reportar hasta 3 transacciones de entre $35.000 y $500.000 cada una. Al continuar, confirmas que tus datos de contacto y dirección están actualizados para el envío de tu tarjeta si se requiere. ¿Quieres continuar?",
+    "opciones": [
+     "Sí, continuar",
+     "Finalizar conversacion"
+    ]
+   },
+   {
+    "pedido": "Si, continuar",
+    "enviado": "Sí, continuar",
+    "paso": "2.4.0.1.5",
+    "texto": "Selecciona la cuenta o tarjeta en la que aparece la compra que no reconoces: - VISA ORO LM •0061",
+    "opciones": [
+     "VISA ORO LM •0061"
+    ]
+   },
+   {
+    "pedido": "Tarjeta",
+    "enviado": "VISA ORO LM •0061",
+    "paso": "2.4.0.1.6",
+    "texto": "Antes de continuar, selecciona el rango de valor de la transacción que deseas reportar:",
+    "opciones": [
+     "Menor a $35.000",
+     "Entre $35.000 y $500.000",
+     "Mayor a $500.000"
+    ]
+   },
+   {
+    "pedido": "Entre $35.000",
+    "enviado": "Entre $35.000 y $500.000",
+    "paso": "2.4.0.1.7",
+    "texto": "Escribe la fecha en la que se realizó la compra no reconocida usando el formato DD/MM/AAAA. Consulta la fecha en tu extracto o en los movimientos de tu App BBVA y verifica que sea una transacción sin estado pendiente para poder validarla desde este canal.",
+    "opciones": []
+   },
+   {
+    "pedido": "06/08/2026",
+    "enviado": "06/08/2026",
+    "paso": "2.4.0.1.8.error",
+    "texto": "En este momento no podemos consultar los movimientos de tu producto por un inconveniente técnico de nuestro lado. No queremos darte información incompleta sobre tus compras. Para que tu caso quede registrado y nuestro equipo lo revise, por favor radica tu solicitud en el siguiente formulario.",
+    "opciones": [
+     "Formulario PQR"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "E3",
+  "uid": "1013634960",
+  "proposito": "2.4.0.1.10.pqr: ASO caido al pedir el detalle",
+  "turnos": [
+   {
+    "pedido": "No reconozco esta compra",
+    "enviado": "No reconozco esta compra",
+    "paso": "2.4.0",
+    "texto": "Antes de iniciar el proceso de análisis, confírmame por favor si fuiste víctima de alguno de estos sucesos:",
+    "opciones": [
+     "Me cambiaron la tarjeta (cambiazo)",
+     "Hurto o pérdida",
+     "Alguien obtuvo tus datos bancarios por llamada, mensaje, correo o enlace",
+     "Hiciste una compra presencial o por internet"
+    ]
+   },
+   {
+    "pedido": "Compra presencial",
+    "enviado": "Hiciste una compra presencial o por internet",
+    "paso": "2.4.0.1.1",
+    "texto": "¿Cuántas transacciones quieres reportar?",
+    "opciones": [
+     "1",
+     "2",
+     "3",
+     "Más de 3"
+    ]
+   },
+   {
+    "pedido": "1",
+    "enviado": "1",
+    "paso": "2.4.0.1.2",
+    "texto": "Revisaremos una transacción a la vez para darte el detalle de cada caso. Al terminar la primera, continuaremos de inmediato con la siguiente.",
+    "opciones": [
+     "Empezar ahora"
+    ]
+   },
+   {
+    "pedido": "Empezar ahora",
+    "enviado": "Empezar ahora",
+    "paso": "2.4.0.1.3",
+    "texto": "Antes de empezar, ten en cuenta que desde aquí puedes reportar hasta 3 transacciones de entre $35.000 y $500.000 cada una. Al continuar, confirmas que tus datos de contacto y dirección están actualizados para el envío de tu tarjeta si se requiere. ¿Quieres continuar?",
+    "opciones": [
+     "Sí, continuar",
+     "Finalizar conversacion"
+    ]
+   },
+   {
+    "pedido": "Si, continuar",
+    "enviado": "Sí, continuar",
+    "paso": "2.4.0.1.5",
+    "texto": "Selecciona la cuenta o tarjeta en la que aparece la compra que no reconoces: - VISA ORO LM •0060",
+    "opciones": [
+     "VISA ORO LM •0060"
+    ]
+   },
+   {
+    "pedido": "Tarjeta",
+    "enviado": "VISA ORO LM •0060",
+    "paso": "2.4.0.1.6",
+    "texto": "Antes de continuar, selecciona el rango de valor de la transacción que deseas reportar:",
+    "opciones": [
+     "Menor a $35.000",
+     "Entre $35.000 y $500.000",
+     "Mayor a $500.000"
+    ]
+   },
+   {
+    "pedido": "Entre $35.000",
+    "enviado": "Entre $35.000 y $500.000",
+    "paso": "2.4.0.1.7",
+    "texto": "Escribe la fecha en la que se realizó la compra no reconocida usando el formato DD/MM/AAAA. Consulta la fecha en tu extracto o en los movimientos de tu App BBVA y verifica que sea una transacción sin estado pendiente para poder validarla desde este canal.",
+    "opciones": []
+   },
+   {
+    "pedido": "06/08/2026",
+    "enviado": "06/08/2026",
+    "paso": "2.4.0.1.9",
+    "texto": "Encontré estas transacciones en la fecha indicada. Selecciona la compra que no reconoces:",
+    "opciones": [
+     "COMPRA FALABELLA CALLE 80 — $120.000 06/08/2026",
+     "COMPRA MERCADOLIBRE.COM.CO — $89.990 06/08/2026",
+     "COMPRA EXITO SUPERMERCADO — $250.000 06/08/2026",
+     "No encuentro la transacción en este listado."
+    ]
+   },
+   {
+    "pedido": "@movimiento",
+    "enviado": "COMPRA FALABELLA CALLE 80 — $120.000 06/08/2026",
+    "paso": "2.4.0.1.10.pqr",
+    "texto": "Con la información disponible no podemos resolver esta solicitud en este canal. Por favor registra tu solicitud en el formulario.",
+    "opciones": [
+     "Formulario PQR"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "E4",
+  "uid": "1010223694",
+  "proposito": "2.4.0.1.5 [Producto 2]: cliente con TDC + Pasivo",
+  "turnos": [
+   {
+    "pedido": "No reconozco esta compra",
+    "enviado": "No reconozco esta compra",
+    "paso": "2.4.0",
+    "texto": "Antes de iniciar el proceso de análisis, confírmame por favor si fuiste víctima de alguno de estos sucesos:",
+    "opciones": [
+     "Me cambiaron la tarjeta (cambiazo)",
+     "Hurto o pérdida",
+     "Alguien obtuvo tus datos bancarios por llamada, mensaje, correo o enlace",
+     "Hiciste una compra presencial o por internet"
+    ]
+   },
+   {
+    "pedido": "Compra presencial",
+    "enviado": "Hiciste una compra presencial o por internet",
+    "paso": "2.4.0.1.1",
+    "texto": "¿Cuántas transacciones quieres reportar?",
+    "opciones": [
+     "1",
+     "2",
+     "3",
+     "Más de 3"
+    ]
+   },
+   {
+    "pedido": "1",
+    "enviado": "1",
+    "paso": "2.4.0.1.2",
+    "texto": "Revisaremos una transacción a la vez para darte el detalle de cada caso. Al terminar la primera, continuaremos de inmediato con la siguiente.",
+    "opciones": [
+     "Empezar ahora"
+    ]
+   },
+   {
+    "pedido": "Empezar ahora",
+    "enviado": "Empezar ahora",
+    "paso": "2.4.0.1.3",
+    "texto": "Antes de empezar, ten en cuenta que desde aquí puedes reportar hasta 3 transacciones de entre $35.000 y $500.000 cada una. Al continuar, confirmas que tus datos de contacto y dirección están actualizados para el envío de tu tarjeta si se requiere. ¿Quieres continuar?",
+    "opciones": [
+     "Sí, continuar",
+     "Finalizar conversacion"
+    ]
+   },
+   {
+    "pedido": "Si, continuar",
+    "enviado": "Sí, continuar",
+    "paso": "2.4.0.1.5",
+    "texto": "Selecciona la cuenta o tarjeta en la que aparece la compra que no reconoces: - VISA ORO LM •4979",
+    "opciones": [
+     "VISA ORO LM •4979"
+    ]
+   },
+   {
+    "pedido": "@producto2",
+    "enviado": "VISA ORO LM •4979",
+    "paso": "2.4.0.1.6",
+    "texto": "Antes de continuar, selecciona el rango de valor de la transacción que deseas reportar:",
+    "opciones": [
+     "Menor a $35.000",
+     "Entre $35.000 y $500.000",
+     "Mayor a $500.000"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "E5",
+  "uid": "1013634968",
+  "proposito": "2.4.0.1.9 [Movimiento 2]",
+  "turnos": [
+   {
+    "pedido": "No reconozco esta compra",
+    "enviado": "No reconozco esta compra",
+    "paso": "2.4.0",
+    "texto": "Antes de iniciar el proceso de análisis, confírmame por favor si fuiste víctima de alguno de estos sucesos:",
+    "opciones": [
+     "Me cambiaron la tarjeta (cambiazo)",
+     "Hurto o pérdida",
+     "Alguien obtuvo tus datos bancarios por llamada, mensaje, correo o enlace",
+     "Hiciste una compra presencial o por internet"
+    ]
+   },
+   {
+    "pedido": "Compra presencial",
+    "enviado": "Hiciste una compra presencial o por internet",
+    "paso": "2.4.0.1.1",
+    "texto": "¿Cuántas transacciones quieres reportar?",
+    "opciones": [
+     "1",
+     "2",
+     "3",
+     "Más de 3"
+    ]
+   },
+   {
+    "pedido": "1",
+    "enviado": "1",
+    "paso": "2.4.0.1.2",
+    "texto": "Revisaremos una transacción a la vez para darte el detalle de cada caso. Al terminar la primera, continuaremos de inmediato con la siguiente.",
+    "opciones": [
+     "Empezar ahora"
+    ]
+   },
+   {
+    "pedido": "Empezar ahora",
+    "enviado": "Empezar ahora",
+    "paso": "2.4.0.1.3",
+    "texto": "Antes de empezar, ten en cuenta que desde aquí puedes reportar hasta 3 transacciones de entre $35.000 y $500.000 cada una. Al continuar, confirmas que tus datos de contacto y dirección están actualizados para el envío de tu tarjeta si se requiere. ¿Quieres continuar?",
+    "opciones": [
+     "Sí, continuar",
+     "Finalizar conversacion"
+    ]
+   },
+   {
+    "pedido": "Si, continuar",
+    "enviado": "Sí, continuar",
+    "paso": "2.4.0.1.5",
+    "texto": "Selecciona la cuenta o tarjeta en la que aparece la compra que no reconoces: - VISA ORO LM •4444",
+    "opciones": [
+     "VISA ORO LM •4444"
+    ]
+   },
+   {
+    "pedido": "Tarjeta",
+    "enviado": "VISA ORO LM •4444",
+    "paso": "2.4.0.1.6",
+    "texto": "Antes de continuar, selecciona el rango de valor de la transacción que deseas reportar:",
+    "opciones": [
+     "Menor a $35.000",
+     "Entre $35.000 y $500.000",
+     "Mayor a $500.000"
+    ]
+   },
+   {
+    "pedido": "Entre $35.000",
+    "enviado": "Entre $35.000 y $500.000",
+    "paso": "2.4.0.1.7",
+    "texto": "Escribe la fecha en la que se realizó la compra no reconocida usando el formato DD/MM/AAAA. Consulta la fecha en tu extracto o en los movimientos de tu App BBVA y verifica que sea una transacción sin estado pendiente para poder validarla desde este canal.",
+    "opciones": []
+   },
+   {
+    "pedido": "06/08/2026",
+    "enviado": "06/08/2026",
+    "paso": "2.4.0.1.9",
+    "texto": "Encontré estas transacciones en la fecha indicada. Selecciona la compra que no reconoces: Te muestro las 5 primeras de ese día; hay 2 más. Si la tuya no está aquí, elige \"No encuentro la transacción en este listado\".",
+    "opciones": [
+     "COMPRA ALKOSTO AV 68 — $120.000 06/08/2026",
+     "COMPRA RAPPI BOGOTA — $89.990 06/08/2026",
+     "COMPRA D1 CHAPINERO — $45.000 06/08/2026",
+     "COMPRA HOMECENTER CALLE 80 — $210.000 06/08/2026",
+     "COMPRA FARMATODO 93 — $65.000 06/08/2026",
+     "No encuentro la transacción en este listado."
+    ]
+   },
+   {
+    "pedido": "@movimiento2",
+    "enviado": "COMPRA RAPPI BOGOTA — $89.990 06/08/2026",
+    "paso": "2.4.0.1.11",
+    "texto": "Confirma los datos de la compra seleccionada. • COMPRA RAPPI BOGOTA • Valor: $89.990 • Fecha: 06/08/2026 • VISA ORO LM terminado en *4444 ¿Es la transacción que deseas reportar?",
+    "opciones": [
+     "Sí, continuar con el reporte",
+     "No es necesario, ya reconozco la transacción"
+    ]
+   }
+  ]
+ },
+ {
+  "id": "E6",
+  "uid": "1013634968",
+  "proposito": "2.4.0.1.9 [Movimiento 3]",
+  "turnos": [
+   {
+    "pedido": "No reconozco esta compra",
+    "enviado": "No reconozco esta compra",
+    "paso": "2.4.0",
+    "texto": "Antes de iniciar el proceso de análisis, confírmame por favor si fuiste víctima de alguno de estos sucesos:",
+    "opciones": [
+     "Me cambiaron la tarjeta (cambiazo)",
+     "Hurto o pérdida",
+     "Alguien obtuvo tus datos bancarios por llamada, mensaje, correo o enlace",
+     "Hiciste una compra presencial o por internet"
+    ]
+   },
+   {
+    "pedido": "Compra presencial",
+    "enviado": "Hiciste una compra presencial o por internet",
+    "paso": "2.4.0.1.1",
+    "texto": "¿Cuántas transacciones quieres reportar?",
+    "opciones": [
+     "1",
+     "2",
+     "3",
+     "Más de 3"
+    ]
+   },
+   {
+    "pedido": "1",
+    "enviado": "1",
+    "paso": "2.4.0.1.2",
+    "texto": "Revisaremos una transacción a la vez para darte el detalle de cada caso. Al terminar la primera, continuaremos de inmediato con la siguiente.",
+    "opciones": [
+     "Empezar ahora"
+    ]
+   },
+   {
+    "pedido": "Empezar ahora",
+    "enviado": "Empezar ahora",
+    "paso": "2.4.0.1.3",
+    "texto": "Antes de empezar, ten en cuenta que desde aquí puedes reportar hasta 3 transacciones de entre $35.000 y $500.000 cada una. Al continuar, confirmas que tus datos de contacto y dirección están actualizados para el envío de tu tarjeta si se requiere. ¿Quieres continuar?",
+    "opciones": [
+     "Sí, continuar",
+     "Finalizar conversacion"
+    ]
+   },
+   {
+    "pedido": "Si, continuar",
+    "enviado": "Sí, continuar",
+    "paso": "2.4.0.1.5",
+    "texto": "Selecciona la cuenta o tarjeta en la que aparece la compra que no reconoces: - VISA ORO LM •4444",
+    "opciones": [
+     "VISA ORO LM •4444"
+    ]
+   },
+   {
+    "pedido": "Tarjeta",
+    "enviado": "VISA ORO LM •4444",
+    "paso": "2.4.0.1.6",
+    "texto": "Antes de continuar, selecciona el rango de valor de la transacción que deseas reportar:",
+    "opciones": [
+     "Menor a $35.000",
+     "Entre $35.000 y $500.000",
+     "Mayor a $500.000"
+    ]
+   },
+   {
+    "pedido": "Entre $35.000",
+    "enviado": "Entre $35.000 y $500.000",
+    "paso": "2.4.0.1.7",
+    "texto": "Escribe la fecha en la que se realizó la compra no reconocida usando el formato DD/MM/AAAA. Consulta la fecha en tu extracto o en los movimientos de tu App BBVA y verifica que sea una transacción sin estado pendiente para poder validarla desde este canal.",
+    "opciones": []
+   },
+   {
+    "pedido": "06/08/2026",
+    "enviado": "06/08/2026",
+    "paso": "2.4.0.1.9",
+    "texto": "Encontré estas transacciones en la fecha indicada. Selecciona la compra que no reconoces: Te muestro las 5 primeras de ese día; hay 2 más. Si la tuya no está aquí, elige \"No encuentro la transacción en este listado\".",
+    "opciones": [
+     "COMPRA ALKOSTO AV 68 — $120.000 06/08/2026",
+     "COMPRA RAPPI BOGOTA — $89.990 06/08/2026",
+     "COMPRA D1 CHAPINERO — $45.000 06/08/2026",
+     "COMPRA HOMECENTER CALLE 80 — $210.000 06/08/2026",
+     "COMPRA FARMATODO 93 — $65.000 06/08/2026",
+     "No encuentro la transacción en este listado."
+    ]
+   },
+   {
+    "pedido": "@movimiento3",
+    "enviado": "COMPRA D1 CHAPINERO — $45.000 06/08/2026",
+    "paso": "2.4.0.1.11",
+    "texto": "Confirma los datos de la compra seleccionada. • COMPRA D1 CHAPINERO • Valor: $45.000 • Fecha: 06/08/2026 • VISA ORO LM terminado en *4444 ¿Es la transacción que deseas reportar?",
+    "opciones": [
+     "Sí, continuar con el reporte",
+     "No es necesario, ya reconozco la transacción"
+    ]
+   }
+  ]
+ }
+]

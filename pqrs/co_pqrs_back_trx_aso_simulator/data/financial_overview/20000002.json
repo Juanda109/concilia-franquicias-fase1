@@ -1,0 +1,64 @@
+{
+ "data": {
+  "hasMoreData": false,
+  "contracts": [
+   {
+    "id": "4222222222220001",
+    "number": "0001",
+    "numberType": {
+     "id": "PAN"
+    },
+    "countryId": "CO",
+    "bank": {
+     "id": "0013",
+     "name": "BBVA COLOMBIA"
+    },
+    "branch": {
+     "id": "0766",
+     "name": ""
+    },
+    "status": {
+     "id": "OPERATIVE",
+     "name": ""
+    },
+    "currencies": [
+     {
+      "currency": "COP",
+      "isMajor": true
+     }
+    ],
+    "participant": {
+     "participantType": {
+      "id": "HOLDER"
+     },
+     "name": "MARIA FERNANDA GOMEZ RUIZ"
+    },
+    "product": {
+     "id": "50",
+     "name": "VISA CLASICA",
+     "description": ""
+    },
+    "productType": "CARD",
+    "subProductType": {
+     "id": "CREDIT_CARD",
+     "name": ""
+    },
+    "formats": [],
+    "isLegacy": false,
+    "detail": {
+     "agreementContract": "",
+     "indicators": [
+      {
+       "id": "BLOCKABLE",
+       "isActive": true
+      }
+     ],
+     "status": {
+      "id": "OPERATIVE",
+      "name": "APAGADA"
+     }
+    }
+   }
+  ]
+ }
+}

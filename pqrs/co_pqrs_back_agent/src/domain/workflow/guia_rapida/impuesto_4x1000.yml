@@ -1,0 +1,19 @@
+version: 1
+start_step: "1"
+steps:
+  "1":
+    question: |
+      En este momento puedo contarte información importante sobre el cobro del 4x1.000.
+
+      - **¿Qué es?** Es el Gravamen a los Movimientos Financieros (GMF), un impuesto nacional que se aplica a las transacciones en Colombia.
+      - **¿Cuánto se cobra?** El `0,4%` del valor de tu operación. Es decir, por cada mil pesos se pagan cuatro pesos de impuesto.
+      - **¿Quién lo recauda?** El banco actúa solo como recaudador; este dinero se transfiere directamente al Estado.
+
+      📚 **Aprende más:** Para conocer excepciones (como la cuenta exenta) y más detalles, ingresa a nuestro [blog de educación financiera](https://www.bbva.com.co/personas/blog/finanzas-personales/todo-sobre-el-4x1000.html).
+
+      💡 **¿Tienes una duda específica sobre un cobro?** Si consideras que hay un error en tu caso, nuestro equipo te ayudará en la línea: `601 4010000`.
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "satisfaction_check"

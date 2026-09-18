@@ -1,0 +1,680 @@
+{
+  "routes": [
+    {
+      "group": "hazlo_tu_mismo",
+      "key": "certificado_de_cuenta",
+      "workflow": "certificado_de_cuenta",
+      "limit_category": "general",
+      "label": "Certificado de Cuenta"
+    },
+    {
+      "group": "hazlo_tu_mismo",
+      "key": "consulta_de_movimientos",
+      "workflow": "consulta_de_movimientos",
+      "limit_category": "general",
+      "label": "Consulta de Movimientos"
+    },
+    {
+      "group": "hazlo_tu_mismo",
+      "key": "certificado_tributario",
+      "workflow": "certificado_tributario",
+      "limit_category": "general",
+      "label": "Certificado Tributario"
+    },
+    {
+      "group": "hazlo_tu_mismo",
+      "key": "extractos_bancarios",
+      "workflow": "extractos_bancarios",
+      "limit_category": "general",
+      "label": "Extractos Bancarios"
+    },
+    {
+      "group": "hazlo_tu_mismo",
+      "key": "paz_y_salvo",
+      "workflow": "paz_y_salvo",
+      "limit_category": "general",
+      "label": "Paz y Salvo"
+    },
+    {
+      "group": "hazlo_tu_mismo",
+      "key": "solicitud_de_documentos_leasing",
+      "workflow": "solicitud_de_documentos_leasing",
+      "limit_category": "general",
+      "label": "Solicitud de documentos Leasing"
+    },
+    {
+      "group": "hazlo_tu_mismo",
+      "key": "certificado_de_deuda",
+      "workflow": "certificado_de_deuda",
+      "limit_category": "general",
+      "label": "Certificado de deuda"
+    },
+    {
+      "group": "hazlo_tu_mismo",
+      "key": "certificados_fondos_de_inversion",
+      "workflow": "certificados_fondos_de_inversion",
+      "limit_category": "general",
+      "label": "Certificados fondos de inversion"
+    },
+    {
+      "group": "guia_rapida",
+      "key": "impuesto_4x1000",
+      "workflow": "impuesto_4x1000",
+      "limit_category": "general",
+      "label": "Impuesto 4x1000"
+    },
+    {
+      "group": "guia_rapida",
+      "key": "puntos_y_promociones",
+      "workflow": "puntos_y_promociones",
+      "limit_category": "general",
+      "label": "Puntos y Promociones"
+    },
+    {
+      "group": "guia_rapida",
+      "key": "cuota_de_manejo",
+      "workflow": "cuota_de_manejo",
+      "limit_category": "general",
+      "label": "Cuota de manejo"
+    },
+    {
+      "group": "guia_rapida",
+      "key": "limites_transaccionales",
+      "workflow": "limites_transaccionales",
+      "limit_category": "general",
+      "label": "Limites Transaccionales"
+    },
+    {
+      "group": "guia_rapida",
+      "key": "faq_cuenta_embargada",
+      "workflow": "faq_cuenta_embargada",
+      "limit_category": "general",
+      "label": "Cuenta embargada"
+    },
+    {
+      "group": "pqrs",
+      "key": "centrales_de_riesgo",
+      "workflow": "centrales_de_riesgo",
+      "limit_category": "centrales",
+      "label": "Centrales de Riesgo"
+    },
+    {
+      "group": "preguntas_frecuentes",
+      "key": "faq_plazos_reporte_negativo",
+      "workflow": "faq_plazos_reporte_negativo",
+      "limit_category": "general",
+      "label": "Plazos de permanencia de reportes negativos"
+    },
+    {
+      "group": "preguntas_frecuentes",
+      "key": "faq_definicion_tipos_reporte",
+      "workflow": "faq_definicion_tipos_reporte",
+      "limit_category": "general",
+      "label": "Que es un reporte y tipos que existen"
+    },
+    {
+      "group": "preguntas_frecuentes",
+      "key": "faq_notificacion_previa_reporte",
+      "workflow": "faq_notificacion_previa_reporte",
+      "limit_category": "general",
+      "label": "Notificacion previa antes de un reporte negativo"
+    },
+    {
+      "group": "preguntas_frecuentes",
+      "key": "faq_frecuencia_actualizacion_centrales",
+      "workflow": "faq_frecuencia_actualizacion_centrales",
+      "limit_category": "general",
+      "label": "Frecuencia de actualizacion de datos en centrales"
+    },
+    {
+      "group": "preguntas_frecuentes",
+      "key": "faq_solicitud_actualizacion_tras_pago",
+      "workflow": "faq_solicitud_actualizacion_tras_pago",
+      "limit_category": "general",
+      "label": "Solicitud de actualizacion de datos tras el pago"
+    },
+    {
+      "group": "trx_no_reconocida",
+      "key": "trx_no_reconocida",
+      "workflow": "trx_no_reconocida",
+      "limit_category": "trx_no_reconocida",
+      "label": "Transaccion no reconocida"
+    },
+    {
+      "group": "doble_cobro",
+      "key": "doble_cobro",
+      "workflow": "doble_cobro",
+      "limit_category": "doble_cobro",
+      "label": "Duplicidad en el cobro o doble cobro"
+    }
+  ],
+  "actions": [
+    {
+      "action": "bloqueo_permanente_trx",
+      "class": "accion_producto",
+      "where": "chat_service._prefetch_trx_data_if_needed (gate por paso)",
+      "service": "back_trx /bloqueo (ASO)",
+      "note": "gate 2.4.0.1.17.2; antes 2.4.0.1.17.1 pide autorización en la App; candado durable contra reejecución",
+      "declared_in": [
+        "trx_no_reconocida:2.4.0.1.17.2"
+      ]
+    },
+    {
+      "action": "bloqueo_temporal_trx",
+      "class": "accion_producto",
+      "where": "chat_service._prefetch_trx_data_if_needed (gate por paso)",
+      "service": "back_trx /bloqueo (ASO)",
+      "note": "gate 2.4.0.1.16.2; antes 2.4.0.1.16.1 pide autorización en la App; candado durable contra reejecución",
+      "declared_in": [
+        "trx_no_reconocida:2.4.0.1.16.2"
+      ]
+    },
+    {
+      "action": "build_satisfaction_check_message",
+      "class": "presentacion",
+      "where": "workflow_actions.py (if-chain)",
+      "service": "-",
+      "note": "",
+      "declared_in": [
+        "shared:satisfaction_check",
+        "shared:satisfaction_check_faq"
+      ]
+    },
+    {
+      "action": "build_satisfaction_no_message",
+      "class": "presentacion",
+      "where": "workflow_actions.py (if-chain)",
+      "service": "-",
+      "note": "",
+      "declared_in": [
+        "shared:satisfaction_no"
+      ]
+    },
+    {
+      "action": "build_satisfaction_si_message",
+      "class": "presentacion",
+      "where": "workflow_actions.py (if-chain)",
+      "service": "-",
+      "note": "",
+      "declared_in": [
+        "shared:satisfaction_si"
+      ]
+    },
+    {
+      "action": "cierre_bucle_trx",
+      "class": "validacion",
+      "where": "chat_service._prefetch_trx_data_if_needed (gate por paso)",
+      "service": "-",
+      "note": "gate 2.4.0.1.20.0: otra transacción o fin",
+      "declared_in": [
+        "trx_no_reconocida:2.4.0.1.20.0"
+      ]
+    },
+    {
+      "action": "confirmar_movimiento_trx",
+      "class": "presentacion",
+      "where": "workflow_actions.py (if-chain)",
+      "service": "-",
+      "note": "el cliente confirma que NO reconoce ese movimiento",
+      "declared_in": [
+        "trx_no_reconocida:2.4.0.1.11"
+      ]
+    },
+    {
+      "action": "consultar_centrales_producto_seleccionado",
+      "class": "lectura",
+      "where": "workflow_actions.py (if-chain)",
+      "service": "back_data",
+      "note": "",
+      "declared_in": [
+        "centrales_de_riesgo:1.4.1.1.1.1"
+      ]
+    },
+    {
+      "action": "consultar_detalle_trx",
+      "class": "lectura",
+      "where": "chat_service._prefetch_trx_data_if_needed (gate por paso)",
+      "service": "back_trx /detalle (ASO operations)",
+      "note": "gate 2.4.0.1.10",
+      "declared_in": [
+        "trx_no_reconocida:2.4.0.1.10"
+      ]
+    },
+    {
+      "action": "consultar_estado_doble_cobro",
+      "class": "lectura",
+      "where": "workflows/doble_cobro_hook.py (prefetch por paso)",
+      "service": "OpenSearch trx-no-reconocida-cases",
+      "note": "",
+      "declared_in": [
+        "doble_cobro:3.4.0.8"
+      ]
+    },
+    {
+      "action": "consultar_movimientos_trx",
+      "class": "lectura",
+      "where": "chat_service._prefetch_trx_data_if_needed (gate por paso)",
+      "service": "back_trx /movimientos-aso (ASO financial-overview + transactions)",
+      "note": "gate 2.4.0.1.8, vigencia por franquicia",
+      "declared_in": [
+        "trx_no_reconocida:2.4.0.1.8"
+      ]
+    },
+    {
+      "action": "consultar_notificacion_producto_seleccionado",
+      "class": "lectura",
+      "where": "workflow_actions.py (if-chain)",
+      "service": "back_data",
+      "note": "",
+      "declared_in": [
+        "centrales_de_riesgo:1.4.1.3.1"
+      ]
+    },
+    {
+      "action": "consultar_productos_cliente",
+      "class": "lectura",
+      "where": "workflow_actions.py (if-chain)",
+      "service": "back_data",
+      "note": "productos del cliente para el selector",
+      "declared_in": [
+        "centrales_de_riesgo:1.4.1.1",
+        "centrales_de_riesgo:1.4.1.3.0"
+      ]
+    },
+    {
+      "action": "consultar_productos_consulta_sin_permiso",
+      "class": "lectura",
+      "where": "workflow_actions.py (if-chain)",
+      "service": "back_data",
+      "note": "",
+      "declared_in": [
+        "centrales_de_riesgo:1.4.1.2"
+      ]
+    },
+    {
+      "action": "consultar_recurrencia_salesforce",
+      "class": "lectura",
+      "where": "chat_service._prefetch_trx_data_if_needed (gate por paso)",
+      "service": "back_trx /validar-recurrencia",
+      "note": "gate 2.4.0.1: recurrencia Salesforce y del bot",
+      "declared_in": [
+        "trx_no_reconocida:2.4.0.1"
+      ]
+    },
+    {
+      "action": "consultar_todos_productos_centrales",
+      "class": "lectura",
+      "where": "workflow_actions.py (if-chain)",
+      "service": "back_data",
+      "note": "",
+      "declared_in": [
+        "centrales_de_riesgo:1.4.1.0"
+      ]
+    },
+    {
+      "action": "consultar_todos_productos_centrales_sin_notificacion",
+      "class": "lectura",
+      "where": "workflow_actions.py (if-chain)",
+      "service": "back_data",
+      "note": "",
+      "declared_in": [
+        "centrales_de_riesgo:1.4.1.3"
+      ]
+    },
+    {
+      "action": "goto_centrales_de_riesgo",
+      "class": "derivacion",
+      "where": "workflow_actions.py (if-chain)",
+      "service": "-",
+      "note": "",
+      "declared_in": [
+        "shared:faq_no_goto_centrales"
+      ]
+    },
+    {
+      "action": "goto_extractos_bancarios",
+      "class": "derivacion",
+      "where": "workflow_actions.py (if-chain)",
+      "service": "-",
+      "note": "",
+      "declared_in": [
+        "centrales_de_riesgo:1.4.1.3.4"
+      ]
+    },
+    {
+      "action": "mostrar_bloqueo_definitivo_trx",
+      "class": "presentacion",
+      "where": "workflow_actions.py (if-chain)",
+      "service": "-",
+      "note": "",
+      "declared_in": [
+        "trx_no_reconocida:2.4.0.1.17.3"
+      ]
+    },
+    {
+      "action": "mostrar_bloqueo_temporal_trx",
+      "class": "presentacion",
+      "where": "workflow_actions.py (if-chain)",
+      "service": "-",
+      "note": "",
+      "declared_in": [
+        "trx_no_reconocida:2.4.0.1.16.3"
+      ]
+    },
+    {
+      "action": "mostrar_grupos_doble_cobro",
+      "class": "lectura",
+      "where": "workflows/doble_cobro_hook.py (prefetch por paso)",
+      "service": "back_doble_cobro /grupos-duplicados (ASO)",
+      "note": "paginado, selección múltiple",
+      "declared_in": [
+        "doble_cobro:3.4.0.6"
+      ]
+    },
+    {
+      "action": "mostrar_movimientos_trx",
+      "class": "presentacion",
+      "where": "workflow_actions.py (if-chain)",
+      "service": "-",
+      "note": "",
+      "declared_in": [
+        "trx_no_reconocida:2.4.0.1.9"
+      ]
+    },
+    {
+      "action": "mostrar_productos_activos_dc",
+      "class": "lectura",
+      "where": "actions/doble_cobro.py (registro)",
+      "service": "back_doble_cobro /productos-activos",
+      "note": "",
+      "declared_in": [
+        "doble_cobro:3.4.0.1"
+      ]
+    },
+    {
+      "action": "mostrar_productos_activos_trx",
+      "class": "lectura",
+      "where": "workflow_actions.py (if-chain)",
+      "service": "-",
+      "note": "selector dinámico con lo ya leído",
+      "declared_in": [
+        "trx_no_reconocida:2.4.0.1.5"
+      ]
+    },
+    {
+      "action": "mostrar_trx_no_reconocida",
+      "class": "presentacion",
+      "where": "workflow_actions.py (if-chain)",
+      "service": "-",
+      "note": "",
+      "declared_in": [
+        "trx_no_reconocida:2.4.0.1.19.1"
+      ]
+    },
+    {
+      "action": "mostrar_trx_reversada",
+      "class": "presentacion",
+      "where": "workflow_actions.py (if-chain)",
+      "service": "-",
+      "note": "",
+      "declared_in": [
+        "trx_no_reconocida:2.4.0.1.19.2"
+      ]
+    },
+    {
+      "action": "registrar_caso_doble_cobro",
+      "class": "escritura_caso",
+      "where": "workflows/doble_cobro_hook.py (prefetch por paso)",
+      "service": "OpenSearch trx-no-reconocida-cases",
+      "note": "solo grupos con 2+ cargos iguales; reemplaza el reporte previo equivalente",
+      "declared_in": [
+        "doble_cobro:3.4.0.7"
+      ]
+    },
+    {
+      "action": "registrar_devolucion_trx",
+      "class": "escritura_caso",
+      "where": "workflow_actions.py (if-chain) + chat_service._prefetch_trx_data_if_needed (gate por paso)",
+      "service": "OpenSearch trx-no-reconocida-cases",
+      "note": "hito `devolucion` y fila para el CSV de Tantia; idempotente por huella statementId|movementId",
+      "declared_in": [
+        "trx_no_reconocida:2.4.0.1.20"
+      ]
+    },
+    {
+      "action": "validar_investigacion_trx",
+      "class": "validacion",
+      "where": "chat_service._prefetch_trx_data_if_needed (gate por paso)",
+      "service": "-",
+      "note": "gate 2.4.0.1.19: presencial / reversada / procede",
+      "declared_in": [
+        "trx_no_reconocida:2.4.0.1.19"
+      ]
+    },
+    {
+      "action": "validar_pendiente_trx",
+      "class": "validacion",
+      "where": "chat_service._prefetch_trx_data_if_needed (gate por paso)",
+      "service": "-",
+      "note": "gate 2.4.0.1.12: compra con TDC pendiente",
+      "declared_in": [
+        "trx_no_reconocida:2.4.0.1.12"
+      ]
+    },
+    {
+      "action": "validar_recurrencia_doble_cobro",
+      "class": "validacion",
+      "where": "workflows/doble_cobro_hook.py (prefetch por paso)",
+      "service": "OpenSearch trx-no-reconocida-cases",
+      "note": "reportes previos del cliente",
+      "declared_in": [
+        "doble_cobro:3.4.0.5"
+      ]
+    },
+    {
+      "action": "validar_vigencia_doble_cobro",
+      "class": "validacion",
+      "where": "workflows/doble_cobro_hook.py (prefetch por paso)",
+      "service": "back_doble_cobro /validar-vigencia",
+      "note": "7 días hábiles de conciliación",
+      "declared_in": [
+        "doble_cobro:3.4.0.3"
+      ]
+    },
+    {
+      "action": "verificar_productos_trx",
+      "class": "lectura",
+      "where": "chat_service._prefetch_trx_data_if_needed (gate por paso)",
+      "service": "back_trx /productos-activos",
+      "note": "gate 2.4.0.1.4",
+      "declared_in": [
+        "trx_no_reconocida:2.4.0.1.4"
+      ]
+    }
+  ],
+  "classes": {
+    "lectura": "Lectura de datos. Sin efecto sobre el cliente ni sus productos.",
+    "presentacion": "Construye el mensaje que se muestra. Sin efecto.",
+    "validacion": "Regla determinista que decide el siguiente paso. Sin efecto.",
+    "derivacion": "Cambia de flujo. Sin efecto.",
+    "escritura_caso": "Escribe la ficha del caso en OpenSearch. No mueve dinero: el abono lo ejecuta el RPA de Tantia fuera del agente.",
+    "accion_producto": "Acción sobre un producto del cliente (POST al ASO vía back_trx). Exige autorización del cliente en la App."
+  },
+  "gates": {
+    "registrar_devolucion_trx": {
+      "flow": "trx_no_reconocida",
+      "steps": [
+        "2.4.0.1.20"
+      ],
+      "paths": 1,
+      "mandatory": [
+        "2.4.0",
+        "2.4.0.1",
+        "2.4.0.1.1",
+        "2.4.0.1.10",
+        "2.4.0.1.11",
+        "2.4.0.1.12",
+        "2.4.0.1.13",
+        "2.4.0.1.15",
+        "2.4.0.1.17",
+        "2.4.0.1.17.1",
+        "2.4.0.1.17.2",
+        "2.4.0.1.17.3",
+        "2.4.0.1.18",
+        "2.4.0.1.19",
+        "2.4.0.1.2",
+        "2.4.0.1.3",
+        "2.4.0.1.4",
+        "2.4.0.1.5",
+        "2.4.0.1.6",
+        "2.4.0.1.7",
+        "2.4.0.1.8",
+        "2.4.0.1.9"
+      ],
+      "expected_gates": [
+        "2.4.0.1.11",
+        "2.4.0.1.12",
+        "2.4.0.1.13",
+        "2.4.0.1.19",
+        "2.4.0.1.3",
+        "2.4.0.1.6"
+      ],
+      "missing_gates": [],
+      "shortest": 23
+    },
+    "bloqueo_temporal_trx": {
+      "flow": "trx_no_reconocida",
+      "steps": [
+        "2.4.0.1.16.2"
+      ],
+      "paths": 1,
+      "mandatory": [
+        "2.4.0",
+        "2.4.0.1",
+        "2.4.0.1.1",
+        "2.4.0.1.10",
+        "2.4.0.1.11",
+        "2.4.0.1.12",
+        "2.4.0.1.13",
+        "2.4.0.1.15",
+        "2.4.0.1.16",
+        "2.4.0.1.16.1",
+        "2.4.0.1.2",
+        "2.4.0.1.3",
+        "2.4.0.1.4",
+        "2.4.0.1.5",
+        "2.4.0.1.6",
+        "2.4.0.1.7",
+        "2.4.0.1.8",
+        "2.4.0.1.9"
+      ],
+      "expected_gates": [
+        "2.4.0.1.11",
+        "2.4.0.1.15",
+        "2.4.0.1.16",
+        "2.4.0.1.16.1"
+      ],
+      "missing_gates": [],
+      "shortest": 19
+    },
+    "bloqueo_permanente_trx": {
+      "flow": "trx_no_reconocida",
+      "steps": [
+        "2.4.0.1.17.2"
+      ],
+      "paths": 1,
+      "mandatory": [
+        "2.4.0",
+        "2.4.0.1",
+        "2.4.0.1.1",
+        "2.4.0.1.10",
+        "2.4.0.1.11",
+        "2.4.0.1.12",
+        "2.4.0.1.13",
+        "2.4.0.1.15",
+        "2.4.0.1.17",
+        "2.4.0.1.17.1",
+        "2.4.0.1.2",
+        "2.4.0.1.3",
+        "2.4.0.1.4",
+        "2.4.0.1.5",
+        "2.4.0.1.6",
+        "2.4.0.1.7",
+        "2.4.0.1.8",
+        "2.4.0.1.9"
+      ],
+      "expected_gates": [
+        "2.4.0.1.11",
+        "2.4.0.1.15",
+        "2.4.0.1.17",
+        "2.4.0.1.17.1"
+      ],
+      "missing_gates": [],
+      "shortest": 19
+    },
+    "registrar_caso_doble_cobro": {
+      "flow": "doble_cobro",
+      "steps": [
+        "3.4.0.7"
+      ],
+      "paths": 1,
+      "mandatory": [
+        "3.4.0",
+        "3.4.0.1",
+        "3.4.0.2",
+        "3.4.0.3",
+        "3.4.0.4",
+        "3.4.0.5",
+        "3.4.0.6"
+      ],
+      "expected_gates": [
+        "3.4.0.3",
+        "3.4.0.5",
+        "3.4.0.6"
+      ],
+      "missing_gates": [],
+      "shortest": 8
+    }
+  },
+  "direct_jumps": {},
+  "trx_parameters": [
+    [
+      "DIAS_HABILES_DEVOLUCION",
+      "10"
+    ],
+    [
+      "LLM_CLOSURE_ENABLED",
+      "false"
+    ],
+    [
+      "MAX_TRX_BOT_RECURRENCE",
+      "1"
+    ],
+    [
+      "VIGENCIA_MASTER_DIAS",
+      "120"
+    ],
+    [
+      "VIGENCIA_VISA_DIAS",
+      "180"
+    ]
+  ],
+  "daily_limits": [
+    [
+      "MAX_DAILY_SESSIONS",
+      "3"
+    ],
+    [
+      "MAX_DAILY_CATEGORY_INTERACTIONS",
+      "100"
+    ],
+    [
+      "TRX_FLOW_ENABLED",
+      "true"
+    ],
+    [
+      "MAX_TRX_BOT_RECURRENCE",
+      "1000"
+    ]
+  ]
+}

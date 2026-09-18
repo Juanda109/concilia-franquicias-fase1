@@ -1,0 +1,4 @@
+services:
+  co_pqrs_front_test:
+    environment:
+      PQRS_AGENT_API_URL: http://host.containers.internal:8000

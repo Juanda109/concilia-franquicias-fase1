@@ -1,0 +1,2887 @@
+{
+  "data": [
+    {
+      "operations": [
+        {
+          "id": "RC01",
+          "amountOperation": {
+            "amount": 18000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-09-03",
+          "hourOperation": "081500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|PANADERIA LA ESQUINA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "RC01"
+          }
+        },
+        {
+          "id": "RC02",
+          "amountOperation": {
+            "amount": 18000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-09-03",
+          "hourOperation": "081900",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|PANADERIA LA ESQUINA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "RC02"
+          }
+        },
+        {
+          "id": "FR01",
+          "amountOperation": {
+            "amount": 62000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-28",
+          "hourOperation": "173000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|ALMACEN EXITO CHAPINERO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "FR01"
+          }
+        },
+        {
+          "id": "FR02",
+          "amountOperation": {
+            "amount": 62000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-28",
+          "hourOperation": "173500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|ALMACEN EXITO CHAPINERO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "FR02"
+          }
+        },
+        {
+          "id": "DC001",
+          "amountOperation": {
+            "amount": 145000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-21",
+          "hourOperation": "101500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|SUPERMERCADO LA 14 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "DC001"
+          }
+        },
+        {
+          "id": "DC002",
+          "amountOperation": {
+            "amount": 145000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-21",
+          "hourOperation": "101900",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|SUPERMERCADO LA 14 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "DC002"
+          }
+        },
+        {
+          "id": "DC003",
+          "amountOperation": {
+            "amount": 32000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-21",
+          "hourOperation": "113000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|DROGUERIA CRUZ VERDE |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "DC003"
+          }
+        },
+        {
+          "id": "DC004",
+          "amountOperation": {
+            "amount": 88000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-21",
+          "hourOperation": "140200",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|EDS PRIMAX CALLE 80 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "DC004"
+          }
+        },
+        {
+          "id": "DC005",
+          "amountOperation": {
+            "amount": 88000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-21",
+          "hourOperation": "140800",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|EDS PRIMAX CALLE 80 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "DC005"
+          }
+        },
+        {
+          "id": "DC006",
+          "amountOperation": {
+            "amount": 145000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-21",
+          "hourOperation": "143000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|SUPERMERCADO LA 14 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "DC006"
+          }
+        },
+        {
+          "id": "DC007",
+          "amountOperation": {
+            "amount": 210000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-21",
+          "hourOperation": "201500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|RESTAURANTE ANDRES |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "DC007"
+          }
+        },
+        {
+          "id": "CL01",
+          "amountOperation": {
+            "amount": 24500,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-10",
+          "hourOperation": "091000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|TIENDA D1 CEDRITOS |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "CL01"
+          }
+        },
+        {
+          "id": "CL02",
+          "amountOperation": {
+            "amount": 24500,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-10",
+          "hourOperation": "091400",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|TIENDA D1 CEDRITOS |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "CL02"
+          }
+        },
+        {
+          "id": "CL03",
+          "amountOperation": {
+            "amount": 24500,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-10",
+          "hourOperation": "091800",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|TIENDA D1 CEDRITOS |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "CL03"
+          }
+        },
+        {
+          "id": "CL04",
+          "amountOperation": {
+            "amount": 47000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-10",
+          "hourOperation": "120000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|CINE COLOMBIA UNICENTRO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "CL04"
+          }
+        },
+        {
+          "id": "CL05",
+          "amountOperation": {
+            "amount": 47000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-10",
+          "hourOperation": "150000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|CINE COLOMBIA UNICENTRO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "CL05"
+          }
+        },
+        {
+          "id": "CL06",
+          "amountOperation": {
+            "amount": 76000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-10",
+          "hourOperation": "163000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|FARMACIA CAFAM 127 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "CL06"
+          }
+        },
+        {
+          "id": "CL07",
+          "amountOperation": {
+            "amount": 76500,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-10",
+          "hourOperation": "163200",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|FARMACIA CAFAM 127 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "CL07"
+          }
+        },
+        {
+          "id": "CL08",
+          "amountOperation": {
+            "amount": 15000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-10",
+          "hourOperation": "181000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|PARQUEADERO CENTRO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "CL08"
+          }
+        },
+        {
+          "id": "CL09",
+          "amountOperation": {
+            "amount": 15000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-10",
+          "hourOperation": "181100",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|PARQUEADERO NORTE |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "CL09"
+          }
+        },
+        {
+          "id": "CL10",
+          "amountOperation": {
+            "amount": 57000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-10",
+          "hourOperation": "191500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|LIBRERIA NACIONAL |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "CL10"
+          }
+        },
+        {
+          "id": "PG01A",
+          "amountOperation": {
+            "amount": 34000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-07-31",
+          "hourOperation": "090100",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|COMERCIO PAGINACION 01 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PG01A"
+          }
+        },
+        {
+          "id": "PG01B",
+          "amountOperation": {
+            "amount": 34000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-07-31",
+          "hourOperation": "100100",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|COMERCIO PAGINACION 01 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PG01B"
+          }
+        },
+        {
+          "id": "PG02A",
+          "amountOperation": {
+            "amount": 34000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-07-31",
+          "hourOperation": "090200",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|COMERCIO PAGINACION 02 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PG02A"
+          }
+        },
+        {
+          "id": "PG02B",
+          "amountOperation": {
+            "amount": 34000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-07-31",
+          "hourOperation": "100200",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|COMERCIO PAGINACION 02 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PG02B"
+          }
+        },
+        {
+          "id": "PG03A",
+          "amountOperation": {
+            "amount": 34000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-07-31",
+          "hourOperation": "090300",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|COMERCIO PAGINACION 03 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PG03A"
+          }
+        },
+        {
+          "id": "PG03B",
+          "amountOperation": {
+            "amount": 34000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-07-31",
+          "hourOperation": "100300",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|COMERCIO PAGINACION 03 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PG03B"
+          }
+        },
+        {
+          "id": "PG04A",
+          "amountOperation": {
+            "amount": 34000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-07-31",
+          "hourOperation": "090400",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|COMERCIO PAGINACION 04 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PG04A"
+          }
+        },
+        {
+          "id": "PG04B",
+          "amountOperation": {
+            "amount": 34000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-07-31",
+          "hourOperation": "100400",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|COMERCIO PAGINACION 04 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PG04B"
+          }
+        },
+        {
+          "id": "PG05A",
+          "amountOperation": {
+            "amount": 34000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-07-31",
+          "hourOperation": "090500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|COMERCIO PAGINACION 05 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PG05A"
+          }
+        },
+        {
+          "id": "PG05B",
+          "amountOperation": {
+            "amount": 34000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-07-31",
+          "hourOperation": "100500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|COMERCIO PAGINACION 05 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PG05B"
+          }
+        },
+        {
+          "id": "PG06A",
+          "amountOperation": {
+            "amount": 34000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-07-31",
+          "hourOperation": "090600",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|COMERCIO PAGINACION 06 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PG06A"
+          }
+        },
+        {
+          "id": "PG06B",
+          "amountOperation": {
+            "amount": 34000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-07-31",
+          "hourOperation": "100600",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|COMERCIO PAGINACION 06 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PG06B"
+          }
+        },
+        {
+          "id": "PG07A",
+          "amountOperation": {
+            "amount": 34000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-07-31",
+          "hourOperation": "090700",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|COMERCIO PAGINACION 07 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PG07A"
+          }
+        },
+        {
+          "id": "PG07B",
+          "amountOperation": {
+            "amount": 34000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-07-31",
+          "hourOperation": "100700",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|COMERCIO PAGINACION 07 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PG07B"
+          }
+        },
+        {
+          "id": "PG08A",
+          "amountOperation": {
+            "amount": 34000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-07-31",
+          "hourOperation": "090800",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|COMERCIO PAGINACION 08 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PG08A"
+          }
+        },
+        {
+          "id": "PG08B",
+          "amountOperation": {
+            "amount": 34000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-07-31",
+          "hourOperation": "100800",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|COMERCIO PAGINACION 08 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PG08B"
+          }
+        },
+        {
+          "id": "VC01",
+          "amountOperation": {
+            "amount": 320000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-01-09",
+          "hourOperation": "150000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|HOTEL ESTELAR |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VC01"
+          }
+        },
+        {
+          "id": "VC02",
+          "amountOperation": {
+            "amount": 320000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-01-09",
+          "hourOperation": "150500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|HOTEL ESTELAR |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VC02"
+          }
+        },
+        {
+          "id": "PAG001",
+          "amountOperation": {
+            "amount": 7000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "080500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|CAFE ANDINO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PAG001"
+          }
+        },
+        {
+          "id": "PAG002",
+          "amountOperation": {
+            "amount": 7000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "080700",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|CAFE ANDINO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PAG002"
+          }
+        },
+        {
+          "id": "PAG003",
+          "amountOperation": {
+            "amount": 8500,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "082000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|MINISO CALLE 80 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PAG003"
+          }
+        },
+        {
+          "id": "PAG004",
+          "amountOperation": {
+            "amount": 8500,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "082200",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|MINISO CALLE 80 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PAG004"
+          }
+        },
+        {
+          "id": "PAG005",
+          "amountOperation": {
+            "amount": 8500,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "082400",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|MINISO CALLE 80 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PAG005"
+          }
+        },
+        {
+          "id": "PAG006",
+          "amountOperation": {
+            "amount": 7500,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "081000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|PAN PA YA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PAG006"
+          }
+        },
+        {
+          "id": "PAG007",
+          "amountOperation": {
+            "amount": 8000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "081500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|TIENDA UNO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PAG007"
+          }
+        },
+        {
+          "id": "PAG008",
+          "amountOperation": {
+            "amount": 9000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "083000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|DROGUERIA AZUL |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PAG008"
+          }
+        },
+        {
+          "id": "PAG009",
+          "amountOperation": {
+            "amount": 9500,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "084000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|PIZZA EXPRESS |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PAG009"
+          }
+        },
+        {
+          "id": "PAG010",
+          "amountOperation": {
+            "amount": 10000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "090000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|PARKING CENTRO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PAG010"
+          }
+        },
+        {
+          "id": "PAG011",
+          "amountOperation": {
+            "amount": 6500,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "091000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|LIBRERIA CENTRAL |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PAG011"
+          }
+        },
+        {
+          "id": "PAG012",
+          "amountOperation": {
+            "amount": 7200,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "092000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|SUPERMERCADO NORTE |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PAG012"
+          }
+        },
+        {
+          "id": "PAG013",
+          "amountOperation": {
+            "amount": 8200,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "093000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|HELADOS BOGOTA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PAG013"
+          }
+        },
+        {
+          "id": "PAG014",
+          "amountOperation": {
+            "amount": 9200,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "094000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|RESTAURANTE 93 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PAG014"
+          }
+        },
+        {
+          "id": "PAG015",
+          "amountOperation": {
+            "amount": 9900,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "095000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|FARMACIA VIDA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PAG015"
+          }
+        },
+        {
+          "id": "PAG016",
+          "amountOperation": {
+            "amount": 6100,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "100500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|PAPELERIA LA 15 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PAG016"
+          }
+        },
+        {
+          "id": "PAG017",
+          "amountOperation": {
+            "amount": 6800,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "102000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|LAVANDERIA EXPRESS |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PAG017"
+          }
+        },
+        {
+          "id": "PAG018",
+          "amountOperation": {
+            "amount": 7800,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "103500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|FRUTERIA EL PORTAL |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "PAG018"
+          }
+        },
+        {
+          "id": "VOL001",
+          "amountOperation": {
+            "amount": 13370,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "083000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|ARA SUBA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL001"
+          }
+        },
+        {
+          "id": "VOL002",
+          "amountOperation": {
+            "amount": 14740,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "083500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|OLIMPICA CEDRITOS |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL002"
+          }
+        },
+        {
+          "id": "VOL003",
+          "amountOperation": {
+            "amount": 16110,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "084000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|CARULLA CALLE 85 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL003"
+          }
+        },
+        {
+          "id": "VOL004",
+          "amountOperation": {
+            "amount": 17480,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "084500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|JUAN VALDEZ USAQUEN |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL004"
+          }
+        },
+        {
+          "id": "VOL005",
+          "amountOperation": {
+            "amount": 18850,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "085000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|PANADERIA LA ESQUINA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL005"
+          }
+        },
+        {
+          "id": "VOL006",
+          "amountOperation": {
+            "amount": 20220,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "085500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|DROGUERIA COLSUBSIDIO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL006"
+          }
+        },
+        {
+          "id": "VOL007",
+          "amountOperation": {
+            "amount": 21590,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "090000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|CRUZ VERDE CHICO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL007"
+          }
+        },
+        {
+          "id": "VOL008",
+          "amountOperation": {
+            "amount": 22960,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "090500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|FARMATODO CALLE 92 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL008"
+          }
+        },
+        {
+          "id": "VOL009",
+          "amountOperation": {
+            "amount": 24330,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "091000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|RAPPI COLOMBIA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL009"
+          }
+        },
+        {
+          "id": "VOL010",
+          "amountOperation": {
+            "amount": 25700,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "091500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|UBER TRIP BOGOTA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL010"
+          }
+        },
+        {
+          "id": "VOL011",
+          "amountOperation": {
+            "amount": 27070,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "092000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|DIDI MOVILIDAD |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL011"
+          }
+        },
+        {
+          "id": "VOL012",
+          "amountOperation": {
+            "amount": 28440,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "092500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|TERPEL AUTOPISTA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL012"
+          }
+        },
+        {
+          "id": "VOL013",
+          "amountOperation": {
+            "amount": 29810,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "093000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|PRIMAX CALLE 80 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL013"
+          }
+        },
+        {
+          "id": "VOL014",
+          "amountOperation": {
+            "amount": 31180,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "093500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|HOMECENTER CALLE 170 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL014"
+          }
+        },
+        {
+          "id": "VOL015",
+          "amountOperation": {
+            "amount": 32550,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "094000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|FALABELLA SANTAFE |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL015"
+          }
+        },
+        {
+          "id": "VOL016",
+          "amountOperation": {
+            "amount": 33920,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "094500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|ZARA UNICENTRO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL016"
+          }
+        },
+        {
+          "id": "VOL017",
+          "amountOperation": {
+            "amount": 35290,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "095000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|ARTURO CALLE GRAN ESTACION |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL017"
+          }
+        },
+        {
+          "id": "VOL018",
+          "amountOperation": {
+            "amount": 36660,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "095500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|CINE COLOMBIA TITAN |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL018"
+          }
+        },
+        {
+          "id": "VOL019",
+          "amountOperation": {
+            "amount": 38030,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "100000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|NETFLIX COM |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL019"
+          }
+        },
+        {
+          "id": "VOL020",
+          "amountOperation": {
+            "amount": 39400,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "100500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|SPOTIFY AB |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL020"
+          }
+        },
+        {
+          "id": "VOL021",
+          "amountOperation": {
+            "amount": 40770,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "101000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|CLARO SOLUCIONES FIJAS |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL021"
+          }
+        },
+        {
+          "id": "VOL022",
+          "amountOperation": {
+            "amount": 42140,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "101500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|MOVISTAR RECARGA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL022"
+          }
+        },
+        {
+          "id": "VOL023",
+          "amountOperation": {
+            "amount": 43510,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "102000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|ETB SERVICIOS |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL023"
+          }
+        },
+        {
+          "id": "VOL024",
+          "amountOperation": {
+            "amount": 44880,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "102500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|TRANSMILENIO TULLAVE |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL024"
+          }
+        },
+        {
+          "id": "VOL025",
+          "amountOperation": {
+            "amount": 46250,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "103000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|CITY PARKING CALLE 93 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL025"
+          }
+        },
+        {
+          "id": "VOL026",
+          "amountOperation": {
+            "amount": 47620,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "103500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|CREPES Y WAFFLES ANDINO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL026"
+          }
+        },
+        {
+          "id": "VOL027",
+          "amountOperation": {
+            "amount": 48990,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "104000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|EL CORRAL CALLE 116 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL027"
+          }
+        },
+        {
+          "id": "VOL028",
+          "amountOperation": {
+            "amount": 50360,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "104500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|FRISBY CHAPINERO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL028"
+          }
+        },
+        {
+          "id": "VOL029",
+          "amountOperation": {
+            "amount": 51730,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "105000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|SUBWAY CALLE 72 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL029"
+          }
+        },
+        {
+          "id": "VOL030",
+          "amountOperation": {
+            "amount": 53100,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "105500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|D1 CALLE 100 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL030"
+          }
+        },
+        {
+          "id": "VOL031",
+          "amountOperation": {
+            "amount": 54470,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "110000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|ARA SUBA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL031"
+          }
+        },
+        {
+          "id": "VOL032",
+          "amountOperation": {
+            "amount": 55840,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "110500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|OLIMPICA CEDRITOS |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL032"
+          }
+        },
+        {
+          "id": "VOL033",
+          "amountOperation": {
+            "amount": 57210,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "111000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|CARULLA CALLE 85 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL033"
+          }
+        },
+        {
+          "id": "VOL034",
+          "amountOperation": {
+            "amount": 58580,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "111500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|JUAN VALDEZ USAQUEN |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL034"
+          }
+        },
+        {
+          "id": "VOL035",
+          "amountOperation": {
+            "amount": 59950,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "112000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|PANADERIA LA ESQUINA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL035"
+          }
+        },
+        {
+          "id": "VOL036",
+          "amountOperation": {
+            "amount": 61320,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "112500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|DROGUERIA COLSUBSIDIO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL036"
+          }
+        },
+        {
+          "id": "VOL037",
+          "amountOperation": {
+            "amount": 62690,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "113000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|CRUZ VERDE CHICO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL037"
+          }
+        },
+        {
+          "id": "VOL038",
+          "amountOperation": {
+            "amount": 64060,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "113500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|FARMATODO CALLE 92 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL038"
+          }
+        },
+        {
+          "id": "VOL039",
+          "amountOperation": {
+            "amount": 65430,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "114000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|RAPPI COLOMBIA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL039"
+          }
+        },
+        {
+          "id": "VOL040",
+          "amountOperation": {
+            "amount": 66800,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "114500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|UBER TRIP BOGOTA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL040"
+          }
+        },
+        {
+          "id": "VOL041",
+          "amountOperation": {
+            "amount": 68170,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "115000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|DIDI MOVILIDAD |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL041"
+          }
+        },
+        {
+          "id": "VOL042",
+          "amountOperation": {
+            "amount": 69540,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "115500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|TERPEL AUTOPISTA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL042"
+          }
+        },
+        {
+          "id": "VOL043",
+          "amountOperation": {
+            "amount": 70910,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "120000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|PRIMAX CALLE 80 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL043"
+          }
+        },
+        {
+          "id": "VOL044",
+          "amountOperation": {
+            "amount": 72280,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "120500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|HOMECENTER CALLE 170 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL044"
+          }
+        },
+        {
+          "id": "VOL045",
+          "amountOperation": {
+            "amount": 73650,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "121000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|FALABELLA SANTAFE |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL045"
+          }
+        },
+        {
+          "id": "VOL046",
+          "amountOperation": {
+            "amount": 75020,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "121500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|ZARA UNICENTRO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL046"
+          }
+        },
+        {
+          "id": "VOL047",
+          "amountOperation": {
+            "amount": 76390,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "122000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|ARTURO CALLE GRAN ESTACION |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL047"
+          }
+        },
+        {
+          "id": "VOL048",
+          "amountOperation": {
+            "amount": 77760,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "122500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|CINE COLOMBIA TITAN |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL048"
+          }
+        },
+        {
+          "id": "VOL049",
+          "amountOperation": {
+            "amount": 79130,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "123000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|NETFLIX COM |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL049"
+          }
+        },
+        {
+          "id": "VOL050",
+          "amountOperation": {
+            "amount": 80500,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "123500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|SPOTIFY AB |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL050"
+          }
+        },
+        {
+          "id": "VOL051",
+          "amountOperation": {
+            "amount": 81870,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "124000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|CLARO SOLUCIONES FIJAS |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL051"
+          }
+        },
+        {
+          "id": "VOL052",
+          "amountOperation": {
+            "amount": 83240,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "124500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|MOVISTAR RECARGA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL052"
+          }
+        },
+        {
+          "id": "VOL053",
+          "amountOperation": {
+            "amount": 84610,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "125000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|ETB SERVICIOS |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL053"
+          }
+        },
+        {
+          "id": "VOL054",
+          "amountOperation": {
+            "amount": 85980,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "125500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|TRANSMILENIO TULLAVE |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL054"
+          }
+        },
+        {
+          "id": "VOL055",
+          "amountOperation": {
+            "amount": 87350,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "130000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|CITY PARKING CALLE 93 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL055"
+          }
+        },
+        {
+          "id": "VOL056",
+          "amountOperation": {
+            "amount": 88720,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "130500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|CREPES Y WAFFLES ANDINO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL056"
+          }
+        },
+        {
+          "id": "VOL057",
+          "amountOperation": {
+            "amount": 90090,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "131000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|EL CORRAL CALLE 116 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL057"
+          }
+        },
+        {
+          "id": "VOL058",
+          "amountOperation": {
+            "amount": 91460,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "131500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|FRISBY CHAPINERO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL058"
+          }
+        },
+        {
+          "id": "VOL059",
+          "amountOperation": {
+            "amount": 92830,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "132000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|SUBWAY CALLE 72 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL059"
+          }
+        },
+        {
+          "id": "VOL060",
+          "amountOperation": {
+            "amount": 94200,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "132500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|D1 CALLE 100 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL060"
+          }
+        },
+        {
+          "id": "VOL061",
+          "amountOperation": {
+            "amount": 95570,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "133000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|ARA SUBA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL061"
+          }
+        },
+        {
+          "id": "VOL062",
+          "amountOperation": {
+            "amount": 96940,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "133500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|OLIMPICA CEDRITOS |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL062"
+          }
+        },
+        {
+          "id": "VOL063",
+          "amountOperation": {
+            "amount": 98310,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "134000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|CARULLA CALLE 85 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL063"
+          }
+        },
+        {
+          "id": "VOL064",
+          "amountOperation": {
+            "amount": 99680,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "134500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|JUAN VALDEZ USAQUEN |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL064"
+          }
+        },
+        {
+          "id": "VOL065",
+          "amountOperation": {
+            "amount": 101050,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "135000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|PANADERIA LA ESQUINA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL065"
+          }
+        },
+        {
+          "id": "VOL066",
+          "amountOperation": {
+            "amount": 102420,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "135500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|DROGUERIA COLSUBSIDIO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL066"
+          }
+        },
+        {
+          "id": "VOL067",
+          "amountOperation": {
+            "amount": 103790,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "140000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|CRUZ VERDE CHICO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL067"
+          }
+        },
+        {
+          "id": "VOL068",
+          "amountOperation": {
+            "amount": 105160,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "140500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|FARMATODO CALLE 92 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL068"
+          }
+        },
+        {
+          "id": "VOL069",
+          "amountOperation": {
+            "amount": 106530,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "141000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|RAPPI COLOMBIA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL069"
+          }
+        },
+        {
+          "id": "VOL070",
+          "amountOperation": {
+            "amount": 107900,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "141500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|UBER TRIP BOGOTA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL070"
+          }
+        },
+        {
+          "id": "VOL071",
+          "amountOperation": {
+            "amount": 109270,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "142000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|DIDI MOVILIDAD |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL071"
+          }
+        },
+        {
+          "id": "VOL072",
+          "amountOperation": {
+            "amount": 110640,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "142500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|TERPEL AUTOPISTA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL072"
+          }
+        },
+        {
+          "id": "VOL073",
+          "amountOperation": {
+            "amount": 112010,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "143000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|PRIMAX CALLE 80 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL073"
+          }
+        },
+        {
+          "id": "VOL074",
+          "amountOperation": {
+            "amount": 113380,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "143500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|HOMECENTER CALLE 170 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL074"
+          }
+        },
+        {
+          "id": "VOL075",
+          "amountOperation": {
+            "amount": 114750,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "144000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|FALABELLA SANTAFE |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL075"
+          }
+        },
+        {
+          "id": "VOL076",
+          "amountOperation": {
+            "amount": 116120,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "144500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|ZARA UNICENTRO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL076"
+          }
+        },
+        {
+          "id": "VOL077",
+          "amountOperation": {
+            "amount": 117490,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "145000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|ARTURO CALLE GRAN ESTACION |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL077"
+          }
+        },
+        {
+          "id": "VOL078",
+          "amountOperation": {
+            "amount": 118860,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "145500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|CINE COLOMBIA TITAN |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL078"
+          }
+        },
+        {
+          "id": "VOL079",
+          "amountOperation": {
+            "amount": 120230,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "150000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|NETFLIX COM |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL079"
+          }
+        },
+        {
+          "id": "VOL080",
+          "amountOperation": {
+            "amount": 121600,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "150500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|SPOTIFY AB |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL080"
+          }
+        },
+        {
+          "id": "VOL081",
+          "amountOperation": {
+            "amount": 122970,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "151000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|CLARO SOLUCIONES FIJAS |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL081"
+          }
+        },
+        {
+          "id": "VOL082",
+          "amountOperation": {
+            "amount": 124340,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "151500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|MOVISTAR RECARGA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL082"
+          }
+        },
+        {
+          "id": "VOL083",
+          "amountOperation": {
+            "amount": 125710,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "152000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|ETB SERVICIOS |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL083"
+          }
+        },
+        {
+          "id": "VOL084",
+          "amountOperation": {
+            "amount": 127080,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "152500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|TRANSMILENIO TULLAVE |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL084"
+          }
+        },
+        {
+          "id": "VOL085",
+          "amountOperation": {
+            "amount": 128450,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "153000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|CITY PARKING CALLE 93 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL085"
+          }
+        },
+        {
+          "id": "VOL086",
+          "amountOperation": {
+            "amount": 129820,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "153500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|CREPES Y WAFFLES ANDINO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL086"
+          }
+        },
+        {
+          "id": "VOL087",
+          "amountOperation": {
+            "amount": 131190,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "154000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|EL CORRAL CALLE 116 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL087"
+          }
+        },
+        {
+          "id": "VOL088",
+          "amountOperation": {
+            "amount": 132560,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "154500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|FRISBY CHAPINERO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL088"
+          }
+        },
+        {
+          "id": "VOL089",
+          "amountOperation": {
+            "amount": 133930,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "155000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|SUBWAY CALLE 72 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL089"
+          }
+        },
+        {
+          "id": "VOL090",
+          "amountOperation": {
+            "amount": 135300,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "155500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|D1 CALLE 100 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL090"
+          }
+        },
+        {
+          "id": "VOL091",
+          "amountOperation": {
+            "amount": 136670,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "160000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|ARA SUBA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL091"
+          }
+        },
+        {
+          "id": "VOL092",
+          "amountOperation": {
+            "amount": 138040,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "160500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|OLIMPICA CEDRITOS |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL092"
+          }
+        },
+        {
+          "id": "VOL093",
+          "amountOperation": {
+            "amount": 139410,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "161000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|CARULLA CALLE 85 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL093"
+          }
+        },
+        {
+          "id": "VOL094",
+          "amountOperation": {
+            "amount": 140780,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "161500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|JUAN VALDEZ USAQUEN |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL094"
+          }
+        },
+        {
+          "id": "VOL095",
+          "amountOperation": {
+            "amount": 142150,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "162000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|PANADERIA LA ESQUINA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL095"
+          }
+        },
+        {
+          "id": "VOL096",
+          "amountOperation": {
+            "amount": 143520,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "162500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|DROGUERIA COLSUBSIDIO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL096"
+          }
+        },
+        {
+          "id": "VOL097",
+          "amountOperation": {
+            "amount": 144890,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "163000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|CRUZ VERDE CHICO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL097"
+          }
+        },
+        {
+          "id": "VOL098",
+          "amountOperation": {
+            "amount": 146260,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "163500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|FARMATODO CALLE 92 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL098"
+          }
+        },
+        {
+          "id": "VOL099",
+          "amountOperation": {
+            "amount": 147630,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "164000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|RAPPI COLOMBIA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL099"
+          }
+        },
+        {
+          "id": "VOL100",
+          "amountOperation": {
+            "amount": 149000,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "164500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|UBER TRIP BOGOTA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL100"
+          }
+        },
+        {
+          "id": "VOL101",
+          "amountOperation": {
+            "amount": 150370,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "165000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|DIDI MOVILIDAD |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL101"
+          }
+        },
+        {
+          "id": "VOL102",
+          "amountOperation": {
+            "amount": 151740,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "165500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|TERPEL AUTOPISTA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL102"
+          }
+        },
+        {
+          "id": "VOL103",
+          "amountOperation": {
+            "amount": 153110,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "170000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|PRIMAX CALLE 80 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL103"
+          }
+        },
+        {
+          "id": "VOL104",
+          "amountOperation": {
+            "amount": 154480,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "170500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|HOMECENTER CALLE 170 |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL104"
+          }
+        },
+        {
+          "id": "VOL105",
+          "amountOperation": {
+            "amount": 155850,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "171000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|FALABELLA SANTAFE |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL105"
+          }
+        },
+        {
+          "id": "VOL106",
+          "amountOperation": {
+            "amount": 157220,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "171500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|ZARA UNICENTRO |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL106"
+          }
+        },
+        {
+          "id": "VOL107",
+          "amountOperation": {
+            "amount": 158590,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "172000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|ARTURO CALLE GRAN ESTACION |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL107"
+          }
+        },
+        {
+          "id": "VOL108",
+          "amountOperation": {
+            "amount": 159960,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "172500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|CINE COLOMBIA TITAN |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL108"
+          }
+        },
+        {
+          "id": "VOL109",
+          "amountOperation": {
+            "amount": 161330,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "173000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|NETFLIX COM |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL109"
+          }
+        },
+        {
+          "id": "VOL110",
+          "amountOperation": {
+            "amount": 162700,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "173500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|SPOTIFY AB |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL110"
+          }
+        },
+        {
+          "id": "VOL111",
+          "amountOperation": {
+            "amount": 164070,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "174000",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|CLARO SOLUCIONES FIJAS |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL111"
+          }
+        },
+        {
+          "id": "VOL112",
+          "amountOperation": {
+            "amount": 165440,
+            "currency": "COP"
+          },
+          "dateOper": "2026-08-20",
+          "hourOperation": "174500",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA |051 05|000|MOVISTAR RECARGA |",
+          "observation_desc": "Operacion exitosa",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "VOL112"
+          }
+        }
+      ]
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "totalPages": 1,
+    "totalElements": 169,
+    "pageSize": 169
+  }
+}

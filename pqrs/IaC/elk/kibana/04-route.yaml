@@ -1,0 +1,15 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: kibana-dashboard
+  labels:
+    app.kubernetes.io/part-of: elk-metrics
+spec:
+  to:
+    kind: Service
+    name: kibana-service
+  port:
+    targetPort: 5601
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

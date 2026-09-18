@@ -1,0 +1,18 @@
+services:
+  co-pqrs-back-data:
+    build:
+      context: .
+      dockerfile: Containerfile
+    image: co-pqrs-back-data:local
+    container_name: co-pqrs-back-data
+    env_file:
+      - .env
+    environment:
+      PYTHONPATH: /app/src
+    ports:
+      - "8003:8003"
+    volumes:
+      - ./src:/app/src
+      - ./data:/app/data
+      - ./config:/app/config
+    restart: unless-stopped

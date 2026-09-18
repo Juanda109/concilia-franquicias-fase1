@@ -1,0 +1,45 @@
+[
+  {
+    "question": "Me cobraron dos veces.",
+    "expect_output": "doble_cobro",
+    "nota": "canario: ejemplo literal del catalogo; si falla, el problema es el sistema, no el caso"
+  },
+  {
+    "question": "No reconozco esta compra",
+    "expect_output": "trx_no_reconocida",
+    "nota": "canario: tipologia de mayor volumen"
+  },
+  {
+    "question": "No reconozco un reporte que aparece en Datacredito",
+    "expect_output": "centrales_de_riesgo",
+    "nota": "canario: frontera clasica reporte vs transaccion"
+  },
+  {
+    "question": "Quiero ver mis ultimos movimientos",
+    "expect_output": "consulta_de_movimientos",
+    "nota": "canario: consulta simple, sin reclamo"
+  },
+  {
+    "question": "Necesito descargar el extracto de mi tarjeta del mes pasado",
+    "expect_output": "extractos_bancarios",
+    "nota": "canario: autogestion documental"
+  },
+  {
+    "question": "¿Por qué me están cobrando cuota de manejo?",
+    "expect_output": "cuota_de_manejo",
+    "nota": "canario: 'me estan cobrando' sin duplicidad"
+  },
+  {
+    "question": "No me deja hacer la transferencia porque supero el límite",
+    "expect_output": "limites_transaccionales",
+    "nota": "canario: limites operativos"
+  },
+  {
+    "question": "Me siguen descontando el pago de una afiliación a Disney Plus que ya cancelé",
+    "expect_output": "pqrs_no_ruteo",
+    "follow_ups": [
+      "Quiero reclamar por un cobro recurrente de una suscripción que ya cancelé."
+    ],
+    "nota": "canario: recurrente -> formulario (caso real de produccion ago-2026)"
+  }
+]

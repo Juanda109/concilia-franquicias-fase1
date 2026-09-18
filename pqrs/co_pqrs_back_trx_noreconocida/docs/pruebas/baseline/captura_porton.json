@@ -1,0 +1,40 @@
+[
+ {
+  "id": "G1",
+  "uid": "1013634962",
+  "proposito": "porton cerrado -> 2.4.0.4.pqr -> Formulario PQR",
+  "turnos": [
+   {
+    "pedido": "No reconozco esta compra",
+    "enviado": "No reconozco esta compra",
+    "paso": "2.4.0",
+    "texto": "Antes de iniciar el proceso de análisis, confírmame por favor si fuiste víctima de alguno de estos sucesos:",
+    "opciones": [
+     "Me cambiaron la tarjeta (cambiazo)",
+     "Hurto o pérdida",
+     "Alguien obtuvo tus datos bancarios por llamada, mensaje, correo o enlace",
+     "Hiciste una compra presencial o por internet"
+    ]
+   },
+   {
+    "pedido": "Hiciste una compra",
+    "enviado": "Hiciste una compra presencial o por internet",
+    "paso": "2.4.0.4.pqr",
+    "texto": "Por las caracteristicas de lo ocurrido, necesitamos que nuestro equipo de especialistas revise tu caso detalladamente. Por favor registra tu solicitud en el formulario.",
+    "opciones": [
+     "Formulario PQR"
+    ]
+   },
+   {
+    "pedido": "Formulario PQR",
+    "enviado": "Formulario PQR",
+    "paso": "satisfaction_check",
+    "texto": "¿He resuelto tu consulta?",
+    "opciones": [
+     "Sí, me ayudó",
+     "No, ver línea de atención"
+    ]
+   }
+  ]
+ }
+]

@@ -1,0 +1,75 @@
+{
+  "data": [
+    {
+      "customer": {
+        "fullName": "CLIENTE J PRUEBA",
+        "firstName": "CLIENTE",
+        "secondName": "J",
+        "lastName": "PRUEBA",
+        "contact": {
+          "phone": "3001234569",
+          "email": "j@mail.com"
+        }
+      },
+      "operations": [
+        {
+          "id": "TXJ01",
+          "accountDesti": "4476",
+          "accountOrigin": "001300090200940069",
+          "amountCommi": {
+            "amount": "0.00",
+            "currency": "COP"
+          },
+          "amountDonation": {
+            "amount": "99000",
+            "currency": "COP"
+          },
+          "amountOperation": {
+            "amount": 99000,
+            "currency": "COP"
+          },
+          "dateExpiration": "12/2032",
+          "dateOper": "2026-08-06",
+          "descProvision": "COMPRA PRUEBA ECI VACIO",
+          "eCard": true,
+          "eci": "",
+          "hourOperation": "121000",
+          "observations": "99 SIN CLASIFICAR",
+          "observation_desc": "Sin decisión",
+          "origin": "2912",
+          "placeOperation": "PRUEBA ECI VACIO",
+          "policy": {
+            "amountIva": "0",
+            "amountPolicy": "0.00",
+            "id": "0000000000",
+            "positionIndicator": "1"
+          },
+          "process": {
+            "date": "2026-08-06",
+            "hour": "121010",
+            "responseOperati": "Exitosa"
+          },
+          "responseOperati": "Exitosa",
+          "terminal": {
+            "id": "6789012352"
+          },
+          "version": "2",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "000069"
+          },
+          "interest": 1980
+        }
+      ]
+    }
+  ],
+  "pagination": {
+    "links": {
+      "first": "/cards/v2/operations?operationDate=20260806&cardId=4912680517940069&pageSize=100"
+    },
+    "page": 1,
+    "totalPages": 1,
+    "totalElements": 1,
+    "pageSize": 100
+  }
+}

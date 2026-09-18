@@ -1,0 +1,959 @@
+{
+ "data": [
+  {
+   "customer": {
+    "fullName": "CARLOS ANDRES RAMIREZ TORRES"
+   },
+   "operations": [
+    {
+     "id": "C000",
+     "accountDesti": "0070",
+     "accountOrigin": "001300090200940067",
+     "amountCommi": {
+      "amount": "0.00",
+      "currency": "COP"
+     },
+     "amountDonation": {
+      "amount": "40000",
+      "currency": "COP"
+     },
+     "amountOperation": {
+      "amount": 40000,
+      "currency": "COP"
+     },
+     "dateExpiration": "10/2032",
+     "dateOper": "2026-08-04",
+     "descProvision": "ACEPTADA",
+     "eCard": true,
+     "eci": "0",
+     "hourOperation": "101500",
+     "observations": "OPER FINALIZADA CON EXITO |COMPRA INTERNET | |051 05|SUPERMERCADO EXITO |10000000013|",
+     "observation_desc": "Operacion exitosa",
+     "origin": "NACIONAL",
+     "placeOperation": "SUPERMERCADO EXITO",
+     "policy": {
+      "id": "0000000000",
+      "amountPolicy": "0.00",
+      "amountIva": "0.00"
+     },
+     "process": {
+      "date": "2026-08-04",
+      "hour": "101500"
+     },
+     "responseOperati": "000000",
+     "terminal": {
+      "id": "0000001234"
+     },
+     "version": "1",
+     "statementDetail": {
+      "statementId": "0102",
+      "movementId": "000"
+     }
+    },
+    {
+     "id": "C001",
+     "accountDesti": "0070",
+     "accountOrigin": "001300090200940067",
+     "amountCommi": {
+      "amount": "0.00",
+      "currency": "COP"
+     },
+     "amountDonation": {
+      "amount": "101000",
+      "currency": "COP"
+     },
+     "amountOperation": {
+      "amount": 101000,
+      "currency": "COP"
+     },
+     "dateExpiration": "10/2032",
+     "dateOper": "2026-08-04",
+     "descProvision": "ACEPTADA",
+     "eCard": true,
+     "eci": "0",
+     "hourOperation": "101500",
+     "observations": "OPER FINALIZADA CON EXITO |COMPRA PRESENCIAL | |10 POS 05|ALMACEN FALABELLA |10000000013|",
+     "observation_desc": "Operacion exitosa",
+     "origin": "NACIONAL",
+     "placeOperation": "ALMACEN FALABELLA",
+     "policy": {
+      "id": "0000000000",
+      "amountPolicy": "0.00",
+      "amountIva": "0.00"
+     },
+     "process": {
+      "date": "2026-08-04",
+      "hour": "101500"
+     },
+     "responseOperati": "000000",
+     "terminal": {
+      "id": "0000001234"
+     },
+     "version": "1",
+     "statementDetail": {
+      "statementId": "0102",
+      "movementId": "001"
+     }
+    },
+    {
+     "id": "C002",
+     "accountDesti": "0070",
+     "accountOrigin": "001300090200940067",
+     "amountCommi": {
+      "amount": "0.00",
+      "currency": "COP"
+     },
+     "amountDonation": {
+      "amount": "162000",
+      "currency": "COP"
+     },
+     "amountOperation": {
+      "amount": 162000,
+      "currency": "COP"
+     },
+     "dateExpiration": "10/2032",
+     "dateOper": "2026-08-04",
+     "descProvision": "ACEPTADA",
+     "eCard": true,
+     "eci": "0",
+     "hourOperation": "101500",
+     "observations": "01CRUZADA |CONDONACION | |051 05|TIENDA MERCADOLIBRE |10000000013|",
+     "observation_desc": "Reverso Aceptada por el banco",
+     "origin": "NACIONAL",
+     "placeOperation": "TIENDA MERCADOLIBRE",
+     "policy": {
+      "id": "0000000000",
+      "amountPolicy": "0.00",
+      "amountIva": "0.00"
+     },
+     "process": {
+      "date": "2026-08-04",
+      "hour": "101500"
+     },
+     "responseOperati": "000000",
+     "terminal": {
+      "id": "0000001234"
+     },
+     "version": "1",
+     "statementDetail": {
+      "statementId": "0102",
+      "movementId": "002"
+     }
+    },
+    {
+     "id": "C003",
+     "accountDesti": "0070",
+     "accountOrigin": "001300090200940067",
+     "amountCommi": {
+      "amount": "0.00",
+      "currency": "COP"
+     },
+     "amountDonation": {
+      "amount": "223000",
+      "currency": "COP"
+     },
+     "amountOperation": {
+      "amount": 223000,
+      "currency": "COP"
+     },
+     "dateExpiration": "10/2032",
+     "dateOper": "2026-08-04",
+     "descProvision": "ACEPTADA",
+     "eCard": true,
+     "eci": "4",
+     "hourOperation": "101500",
+     "observations": "OPER FINALIZADA CON EXITO |COMPRA INTERNET | |051 05|RESTAURANTE EL CORRAL |10000000013|",
+     "observation_desc": "Operacion exitosa",
+     "origin": "NACIONAL",
+     "placeOperation": "RESTAURANTE EL CORRA",
+     "policy": {
+      "id": "0000000000",
+      "amountPolicy": "0.00",
+      "amountIva": "0.00"
+     },
+     "process": {
+      "date": "2026-08-04",
+      "hour": "101500"
+     },
+     "responseOperati": "000000",
+     "terminal": {
+      "id": "0000001234"
+     },
+     "version": "1",
+     "statementDetail": {
+      "statementId": "0102",
+      "movementId": "003"
+     }
+    },
+    {
+     "id": "C004",
+     "accountDesti": "0070",
+     "accountOrigin": "001300090200940067",
+     "amountCommi": {
+      "amount": "0.00",
+      "currency": "COP"
+     },
+     "amountDonation": {
+      "amount": "284000",
+      "currency": "COP"
+     },
+     "amountOperation": {
+      "amount": 284000,
+      "currency": "COP"
+     },
+     "dateExpiration": "10/2032",
+     "dateOper": "2026-08-04",
+     "descProvision": "ACEPTADA",
+     "eCard": true,
+     "eci": "0",
+     "hourOperation": "101500",
+     "observations": "OPER FINALIZADA CON EXITO |COMPRA INTERNET | |051 05|VIAJES DESPEGAR |10000000013|",
+     "observation_desc": "Operacion exitosa",
+     "origin": "NACIONAL",
+     "placeOperation": "VIAJES DESPEGAR",
+     "policy": {
+      "id": "0000000000",
+      "amountPolicy": "0.00",
+      "amountIva": "0.00"
+     },
+     "process": {
+      "date": "2026-08-04",
+      "hour": "101500"
+     },
+     "responseOperati": "000000",
+     "terminal": {
+      "id": "0000001234"
+     },
+     "version": "1",
+     "statementDetail": {
+      "statementId": "0102",
+      "movementId": "004"
+     }
+    },
+    {
+     "id": "C005",
+     "accountDesti": "0070",
+     "accountOrigin": "001300090200940067",
+     "amountCommi": {
+      "amount": "0.00",
+      "currency": "COP"
+     },
+     "amountDonation": {
+      "amount": "345000",
+      "currency": "COP"
+     },
+     "amountOperation": {
+      "amount": 345000,
+      "currency": "COP"
+     },
+     "dateExpiration": "10/2032",
+     "dateOper": "2026-08-04",
+     "descProvision": "ACEPTADA",
+     "eCard": true,
+     "eci": "4",
+     "hourOperation": "101500",
+     "observations": "OPER FINALIZADA CON EXITO |COMPRA INTERNET | |051 05|FARMACIA CRUZ VERDE |10000000013|",
+     "observation_desc": "Operacion exitosa",
+     "origin": "NACIONAL",
+     "placeOperation": "FARMACIA CRUZ VERDE",
+     "policy": {
+      "id": "0000000000",
+      "amountPolicy": "0.00",
+      "amountIva": "0.00"
+     },
+     "process": {
+      "date": "2026-08-04",
+      "hour": "101500"
+     },
+     "responseOperati": "000000",
+     "terminal": {
+      "id": "0000001234"
+     },
+     "version": "1",
+     "statementDetail": {
+      "statementId": "0102",
+      "movementId": "005"
+     }
+    },
+    {
+     "id": "C006",
+     "accountDesti": "0070",
+     "accountOrigin": "001300090200940067",
+     "amountCommi": {
+      "amount": "0.00",
+      "currency": "COP"
+     },
+     "amountDonation": {
+      "amount": "406000",
+      "currency": "COP"
+     },
+     "amountOperation": {
+      "amount": 406000,
+      "currency": "COP"
+     },
+     "dateExpiration": "10/2032",
+     "dateOper": "2026-08-04",
+     "descProvision": "ACEPTADA",
+     "eCard": true,
+     "eci": "0",
+     "hourOperation": "101500",
+     "observations": "OPER FINALIZADA CON EXITO |COMPRA PRESENCIAL | |10 POS 05|ELECTRO ALKOSTO |10000000013|",
+     "observation_desc": "Operacion exitosa",
+     "origin": "NACIONAL",
+     "placeOperation": "ELECTRO ALKOSTO",
+     "policy": {
+      "id": "0000000000",
+      "amountPolicy": "0.00",
+      "amountIva": "0.00"
+     },
+     "process": {
+      "date": "2026-08-04",
+      "hour": "101500"
+     },
+     "responseOperati": "000000",
+     "terminal": {
+      "id": "0000001234"
+     },
+     "version": "1",
+     "statementDetail": {
+      "statementId": "0102",
+      "movementId": "006"
+     }
+    },
+    {
+     "id": "C100",
+     "accountDesti": "0070",
+     "accountOrigin": "001300090200940067",
+     "amountCommi": {
+      "amount": "0.00",
+      "currency": "COP"
+     },
+     "amountDonation": {
+      "amount": "55000",
+      "currency": "COP"
+     },
+     "amountOperation": {
+      "amount": 55000,
+      "currency": "COP"
+     },
+     "dateExpiration": "10/2032",
+     "dateOper": "2026-08-05",
+     "descProvision": "ACEPTADA",
+     "eCard": true,
+     "eci": "0",
+     "hourOperation": "101500",
+     "observations": "OPER FINALIZADA CON EXITO |COMPRA INTERNET | |051 05|GASOLINERA TERPEL |10000000013|",
+     "observation_desc": "Operacion exitosa",
+     "origin": "NACIONAL",
+     "placeOperation": "GASOLINERA TERPEL",
+     "policy": {
+      "id": "0000000000",
+      "amountPolicy": "0.00",
+      "amountIva": "0.00"
+     },
+     "process": {
+      "date": "2026-08-05",
+      "hour": "101500"
+     },
+     "responseOperati": "000000",
+     "terminal": {
+      "id": "0000001234"
+     },
+     "version": "1",
+     "statementDetail": {
+      "statementId": "0102",
+      "movementId": "100"
+     }
+    },
+    {
+     "id": "C101",
+     "accountDesti": "0070",
+     "accountOrigin": "001300090200940067",
+     "amountCommi": {
+      "amount": "0.00",
+      "currency": "COP"
+     },
+     "amountDonation": {
+      "amount": "116000",
+      "currency": "COP"
+     },
+     "amountOperation": {
+      "amount": 116000,
+      "currency": "COP"
+     },
+     "dateExpiration": "10/2032",
+     "dateOper": "2026-08-05",
+     "descProvision": "ACEPTADA",
+     "eCard": true,
+     "eci": "0",
+     "hourOperation": "101500",
+     "observations": "OPER FINALIZADA CON EXITO |COMPRA PRESENCIAL | |10 POS 05|CINE COLOMBIA |10000000013|",
+     "observation_desc": "Operacion exitosa",
+     "origin": "NACIONAL",
+     "placeOperation": "CINE COLOMBIA",
+     "policy": {
+      "id": "0000000000",
+      "amountPolicy": "0.00",
+      "amountIva": "0.00"
+     },
+     "process": {
+      "date": "2026-08-05",
+      "hour": "101500"
+     },
+     "responseOperati": "000000",
+     "terminal": {
+      "id": "0000001234"
+     },
+     "version": "1",
+     "statementDetail": {
+      "statementId": "0102",
+      "movementId": "101"
+     }
+    },
+    {
+     "id": "C102",
+     "accountDesti": "0070",
+     "accountOrigin": "001300090200940067",
+     "amountCommi": {
+      "amount": "0.00",
+      "currency": "COP"
+     },
+     "amountDonation": {
+      "amount": "177000",
+      "currency": "COP"
+     },
+     "amountOperation": {
+      "amount": 177000,
+      "currency": "COP"
+     },
+     "dateExpiration": "10/2032",
+     "dateOper": "2026-08-05",
+     "descProvision": "ACEPTADA",
+     "eCard": true,
+     "eci": "0",
+     "hourOperation": "101500",
+     "observations": "01CRUZADA |CONDONACION | |051 05|NETFLIX COL |10000000013|",
+     "observation_desc": "Reverso Aceptada por el banco",
+     "origin": "NACIONAL",
+     "placeOperation": "NETFLIX COL",
+     "policy": {
+      "id": "0000000000",
+      "amountPolicy": "0.00",
+      "amountIva": "0.00"
+     },
+     "process": {
+      "date": "2026-08-05",
+      "hour": "101500"
+     },
+     "responseOperati": "000000",
+     "terminal": {
+      "id": "0000001234"
+     },
+     "version": "1",
+     "statementDetail": {
+      "statementId": "0102",
+      "movementId": "102"
+     }
+    },
+    {
+     "id": "C103",
+     "accountDesti": "0070",
+     "accountOrigin": "001300090200940067",
+     "amountCommi": {
+      "amount": "0.00",
+      "currency": "COP"
+     },
+     "amountDonation": {
+      "amount": "238000",
+      "currency": "COP"
+     },
+     "amountOperation": {
+      "amount": 238000,
+      "currency": "COP"
+     },
+     "dateExpiration": "10/2032",
+     "dateOper": "2026-08-05",
+     "descProvision": "ACEPTADA",
+     "eCard": true,
+     "eci": "4",
+     "hourOperation": "101500",
+     "observations": "OPER FINALIZADA CON EXITO |COMPRA INTERNET | |051 05|SUPERMERCADO EXITO |10000000013|",
+     "observation_desc": "Operacion exitosa",
+     "origin": "NACIONAL",
+     "placeOperation": "SUPERMERCADO EXITO",
+     "policy": {
+      "id": "0000000000",
+      "amountPolicy": "0.00",
+      "amountIva": "0.00"
+     },
+     "process": {
+      "date": "2026-08-05",
+      "hour": "101500"
+     },
+     "responseOperati": "000000",
+     "terminal": {
+      "id": "0000001234"
+     },
+     "version": "1",
+     "statementDetail": {
+      "statementId": "0102",
+      "movementId": "103"
+     }
+    },
+    {
+     "id": "C104",
+     "accountDesti": "0070",
+     "accountOrigin": "001300090200940067",
+     "amountCommi": {
+      "amount": "0.00",
+      "currency": "COP"
+     },
+     "amountDonation": {
+      "amount": "299000",
+      "currency": "COP"
+     },
+     "amountOperation": {
+      "amount": 299000,
+      "currency": "COP"
+     },
+     "dateExpiration": "10/2032",
+     "dateOper": "2026-08-05",
+     "descProvision": "ACEPTADA",
+     "eCard": true,
+     "eci": "0",
+     "hourOperation": "101500",
+     "observations": "OPER FINALIZADA CON EXITO |COMPRA INTERNET | |051 05|ALMACEN FALABELLA |10000000013|",
+     "observation_desc": "Operacion exitosa",
+     "origin": "NACIONAL",
+     "placeOperation": "ALMACEN FALABELLA",
+     "policy": {
+      "id": "0000000000",
+      "amountPolicy": "0.00",
+      "amountIva": "0.00"
+     },
+     "process": {
+      "date": "2026-08-05",
+      "hour": "101500"
+     },
+     "responseOperati": "000000",
+     "terminal": {
+      "id": "0000001234"
+     },
+     "version": "1",
+     "statementDetail": {
+      "statementId": "0102",
+      "movementId": "104"
+     }
+    },
+    {
+     "id": "C105",
+     "accountDesti": "0070",
+     "accountOrigin": "001300090200940067",
+     "amountCommi": {
+      "amount": "0.00",
+      "currency": "COP"
+     },
+     "amountDonation": {
+      "amount": "360000",
+      "currency": "COP"
+     },
+     "amountOperation": {
+      "amount": 360000,
+      "currency": "COP"
+     },
+     "dateExpiration": "10/2032",
+     "dateOper": "2026-08-05",
+     "descProvision": "ACEPTADA",
+     "eCard": true,
+     "eci": "4",
+     "hourOperation": "101500",
+     "observations": "OPER FINALIZADA CON EXITO |COMPRA INTERNET | |051 05|TIENDA MERCADOLIBRE |10000000013|",
+     "observation_desc": "Operacion exitosa",
+     "origin": "NACIONAL",
+     "placeOperation": "TIENDA MERCADOLIBRE",
+     "policy": {
+      "id": "0000000000",
+      "amountPolicy": "0.00",
+      "amountIva": "0.00"
+     },
+     "process": {
+      "date": "2026-08-05",
+      "hour": "101500"
+     },
+     "responseOperati": "000000",
+     "terminal": {
+      "id": "0000001234"
+     },
+     "version": "1",
+     "statementDetail": {
+      "statementId": "0102",
+      "movementId": "105"
+     }
+    },
+    {
+     "id": "C106",
+     "accountDesti": "0070",
+     "accountOrigin": "001300090200940067",
+     "amountCommi": {
+      "amount": "0.00",
+      "currency": "COP"
+     },
+     "amountDonation": {
+      "amount": "421000",
+      "currency": "COP"
+     },
+     "amountOperation": {
+      "amount": 421000,
+      "currency": "COP"
+     },
+     "dateExpiration": "10/2032",
+     "dateOper": "2026-08-05",
+     "descProvision": "ACEPTADA",
+     "eCard": true,
+     "eci": "0",
+     "hourOperation": "101500",
+     "observations": "OPER FINALIZADA CON EXITO |COMPRA PRESENCIAL | |10 POS 05|RESTAURANTE EL CORRAL |10000000013|",
+     "observation_desc": "Operacion exitosa",
+     "origin": "NACIONAL",
+     "placeOperation": "RESTAURANTE EL CORRA",
+     "policy": {
+      "id": "0000000000",
+      "amountPolicy": "0.00",
+      "amountIva": "0.00"
+     },
+     "process": {
+      "date": "2026-08-05",
+      "hour": "101500"
+     },
+     "responseOperati": "000000",
+     "terminal": {
+      "id": "0000001234"
+     },
+     "version": "1",
+     "statementDetail": {
+      "statementId": "0102",
+      "movementId": "106"
+     }
+    },
+    {
+     "id": "C200",
+     "accountDesti": "0070",
+     "accountOrigin": "001300090200940067",
+     "amountCommi": {
+      "amount": "0.00",
+      "currency": "COP"
+     },
+     "amountDonation": {
+      "amount": "70000",
+      "currency": "COP"
+     },
+     "amountOperation": {
+      "amount": 70000,
+      "currency": "COP"
+     },
+     "dateExpiration": "10/2032",
+     "dateOper": "2026-08-06",
+     "descProvision": "ACEPTADA",
+     "eCard": true,
+     "eci": "0",
+     "hourOperation": "101500",
+     "observations": "OPER FINALIZADA CON EXITO |COMPRA INTERNET | |051 05|VIAJES DESPEGAR |10000000013|",
+     "observation_desc": "Operacion exitosa",
+     "origin": "NACIONAL",
+     "placeOperation": "VIAJES DESPEGAR",
+     "policy": {
+      "id": "0000000000",
+      "amountPolicy": "0.00",
+      "amountIva": "0.00"
+     },
+     "process": {
+      "date": "2026-08-06",
+      "hour": "101500"
+     },
+     "responseOperati": "000000",
+     "terminal": {
+      "id": "0000001234"
+     },
+     "version": "1",
+     "statementDetail": {
+      "statementId": "0102",
+      "movementId": "200"
+     }
+    },
+    {
+     "id": "C201",
+     "accountDesti": "0070",
+     "accountOrigin": "001300090200940067",
+     "amountCommi": {
+      "amount": "0.00",
+      "currency": "COP"
+     },
+     "amountDonation": {
+      "amount": "131000",
+      "currency": "COP"
+     },
+     "amountOperation": {
+      "amount": 131000,
+      "currency": "COP"
+     },
+     "dateExpiration": "10/2032",
+     "dateOper": "2026-08-06",
+     "descProvision": "ACEPTADA",
+     "eCard": true,
+     "eci": "0",
+     "hourOperation": "101500",
+     "observations": "OPER FINALIZADA CON EXITO |COMPRA PRESENCIAL | |10 POS 05|FARMACIA CRUZ VERDE |10000000013|",
+     "observation_desc": "Operacion exitosa",
+     "origin": "NACIONAL",
+     "placeOperation": "FARMACIA CRUZ VERDE",
+     "policy": {
+      "id": "0000000000",
+      "amountPolicy": "0.00",
+      "amountIva": "0.00"
+     },
+     "process": {
+      "date": "2026-08-06",
+      "hour": "101500"
+     },
+     "responseOperati": "000000",
+     "terminal": {
+      "id": "0000001234"
+     },
+     "version": "1",
+     "statementDetail": {
+      "statementId": "0102",
+      "movementId": "201"
+     }
+    },
+    {
+     "id": "C202",
+     "accountDesti": "0070",
+     "accountOrigin": "001300090200940067",
+     "amountCommi": {
+      "amount": "0.00",
+      "currency": "COP"
+     },
+     "amountDonation": {
+      "amount": "192000",
+      "currency": "COP"
+     },
+     "amountOperation": {
+      "amount": 192000,
+      "currency": "COP"
+     },
+     "dateExpiration": "10/2032",
+     "dateOper": "2026-08-06",
+     "descProvision": "ACEPTADA",
+     "eCard": true,
+     "eci": "0",
+     "hourOperation": "101500",
+     "observations": "01CRUZADA |CONDONACION | |051 05|ELECTRO ALKOSTO |10000000013|",
+     "observation_desc": "Reverso Aceptada por el banco",
+     "origin": "NACIONAL",
+     "placeOperation": "ELECTRO ALKOSTO",
+     "policy": {
+      "id": "0000000000",
+      "amountPolicy": "0.00",
+      "amountIva": "0.00"
+     },
+     "process": {
+      "date": "2026-08-06",
+      "hour": "101500"
+     },
+     "responseOperati": "000000",
+     "terminal": {
+      "id": "0000001234"
+     },
+     "version": "1",
+     "statementDetail": {
+      "statementId": "0102",
+      "movementId": "202"
+     }
+    },
+    {
+     "id": "C203",
+     "accountDesti": "0070",
+     "accountOrigin": "001300090200940067",
+     "amountCommi": {
+      "amount": "0.00",
+      "currency": "COP"
+     },
+     "amountDonation": {
+      "amount": "253000",
+      "currency": "COP"
+     },
+     "amountOperation": {
+      "amount": 253000,
+      "currency": "COP"
+     },
+     "dateExpiration": "10/2032",
+     "dateOper": "2026-08-06",
+     "descProvision": "ACEPTADA",
+     "eCard": true,
+     "eci": "4",
+     "hourOperation": "101500",
+     "observations": "OPER FINALIZADA CON EXITO |COMPRA INTERNET | |051 05|GASOLINERA TERPEL |10000000013|",
+     "observation_desc": "Operacion exitosa",
+     "origin": "NACIONAL",
+     "placeOperation": "GASOLINERA TERPEL",
+     "policy": {
+      "id": "0000000000",
+      "amountPolicy": "0.00",
+      "amountIva": "0.00"
+     },
+     "process": {
+      "date": "2026-08-06",
+      "hour": "101500"
+     },
+     "responseOperati": "000000",
+     "terminal": {
+      "id": "0000001234"
+     },
+     "version": "1",
+     "statementDetail": {
+      "statementId": "0102",
+      "movementId": "203"
+     }
+    },
+    {
+     "id": "C204",
+     "accountDesti": "0070",
+     "accountOrigin": "001300090200940067",
+     "amountCommi": {
+      "amount": "0.00",
+      "currency": "COP"
+     },
+     "amountDonation": {
+      "amount": "314000",
+      "currency": "COP"
+     },
+     "amountOperation": {
+      "amount": 314000,
+      "currency": "COP"
+     },
+     "dateExpiration": "10/2032",
+     "dateOper": "2026-08-06",
+     "descProvision": "ACEPTADA",
+     "eCard": true,
+     "eci": "0",
+     "hourOperation": "101500",
+     "observations": "OPER FINALIZADA CON EXITO |COMPRA INTERNET | |051 05|CINE COLOMBIA |10000000013|",
+     "observation_desc": "Operacion exitosa",
+     "origin": "NACIONAL",
+     "placeOperation": "CINE COLOMBIA",
+     "policy": {
+      "id": "0000000000",
+      "amountPolicy": "0.00",
+      "amountIva": "0.00"
+     },
+     "process": {
+      "date": "2026-08-06",
+      "hour": "101500"
+     },
+     "responseOperati": "000000",
+     "terminal": {
+      "id": "0000001234"
+     },
+     "version": "1",
+     "statementDetail": {
+      "statementId": "0102",
+      "movementId": "204"
+     }
+    },
+    {
+     "id": "C205",
+     "accountDesti": "0070",
+     "accountOrigin": "001300090200940067",
+     "amountCommi": {
+      "amount": "0.00",
+      "currency": "COP"
+     },
+     "amountDonation": {
+      "amount": "375000",
+      "currency": "COP"
+     },
+     "amountOperation": {
+      "amount": 375000,
+      "currency": "COP"
+     },
+     "dateExpiration": "10/2032",
+     "dateOper": "2026-08-06",
+     "descProvision": "ACEPTADA",
+     "eCard": true,
+     "eci": "4",
+     "hourOperation": "101500",
+     "observations": "OPER FINALIZADA CON EXITO |COMPRA INTERNET | |051 05|NETFLIX COL |10000000013|",
+     "observation_desc": "Operacion exitosa",
+     "origin": "NACIONAL",
+     "placeOperation": "NETFLIX COL",
+     "policy": {
+      "id": "0000000000",
+      "amountPolicy": "0.00",
+      "amountIva": "0.00"
+     },
+     "process": {
+      "date": "2026-08-06",
+      "hour": "101500"
+     },
+     "responseOperati": "000000",
+     "terminal": {
+      "id": "0000001234"
+     },
+     "version": "1",
+     "statementDetail": {
+      "statementId": "0102",
+      "movementId": "205"
+     }
+    },
+    {
+     "id": "C206",
+     "accountDesti": "0070",
+     "accountOrigin": "001300090200940067",
+     "amountCommi": {
+      "amount": "0.00",
+      "currency": "COP"
+     },
+     "amountDonation": {
+      "amount": "436000",
+      "currency": "COP"
+     },
+     "amountOperation": {
+      "amount": 436000,
+      "currency": "COP"
+     },
+     "dateExpiration": "10/2032",
+     "dateOper": "2026-08-06",
+     "descProvision": "ACEPTADA",
+     "eCard": true,
+     "eci": "0",
+     "hourOperation": "101500",
+     "observations": "OPER FINALIZADA CON EXITO |COMPRA PRESENCIAL | |10 POS 05|SUPERMERCADO EXITO |10000000013|",
+     "observation_desc": "Operacion exitosa",
+     "origin": "NACIONAL",
+     "placeOperation": "SUPERMERCADO EXITO",
+     "policy": {
+      "id": "0000000000",
+      "amountPolicy": "0.00",
+      "amountIva": "0.00"
+     },
+     "process": {
+      "date": "2026-08-06",
+      "hour": "101500"
+     },
+     "responseOperati": "000000",
+     "terminal": {
+      "id": "0000001234"
+     },
+     "version": "1",
+     "statementDetail": {
+      "statementId": "0102",
+      "movementId": "206"
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "hasMoreData": false
+ }
+}

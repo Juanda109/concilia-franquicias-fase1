@@ -1,0 +1,16 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: pgadmin
+  labels:
+    app.kubernetes.io/part-of: database
+spec:
+  to:
+    kind: Service
+    name: pgadmin
+
+  port:
+    targetPort: http
+
+  tls:
+    termination: edge

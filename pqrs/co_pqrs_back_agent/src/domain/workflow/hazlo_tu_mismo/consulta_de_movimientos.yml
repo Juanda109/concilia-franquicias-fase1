@@ -1,0 +1,24 @@
+version: 1
+start_step: "1"
+steps:
+  "1":
+    question: |
+      Consulta los movimientos de tus productos BBVA desde la App o la Net siguiendo estos pasos:
+
+      ## 1. Desde tu App BBVA (Móvil 📱)
+
+      - Abre tu App y selecciona la cuenta que necesitas.
+      - Entra a la opción **Buscar movimientos**.
+
+      ¡Listo! Puedes filtrar por **rango de fecha**, **valor** y **categoría** para que los resultados sean más precisos.
+
+      ## 2. Desde BBVA Net (Banca Online 💻)
+
+      - Ingresa a `bbva.com.co` y haz clic en **Acceso**. Inicia sesión con tu documento de identidad y contraseña de la Net.
+      - Haz clic en la cuenta que quieres consultar.
+      - En el detalle de la cuenta podrás ver toda la información de tus últimos movimientos. Puedes descargar el listado en formato **Excel**, **PDF** o imprimirlos directamente.
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "satisfaction_check"

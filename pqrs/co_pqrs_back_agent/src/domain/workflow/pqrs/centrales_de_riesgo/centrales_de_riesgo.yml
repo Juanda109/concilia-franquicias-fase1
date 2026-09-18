@@ -1,0 +1,311 @@
+version: 1
+start_step: "1.4.1"
+steps:
+  "1.4.1":
+    question: |
+      Para brindarte la solución adecuada, indícame cuál es tu situación:
+
+    input_type: "choice"
+    save_as: "tipo_inconveniente_centrales_de_riesgo"
+    options:
+      - key: "reporte_no_reconocido_o_incorrecto"
+        label: "No estoy de acuerdo con mi reporte en centrales de riesgo"
+        next_step: "1.4.1.0"
+      - key: "embargo_o_desembargo"
+        label: "Tengo un embargo o requiero información sobre un desembargo"
+        next_step: "1.4.1.0.embargo"
+      - key: "cartera_vendida_o_cedida"
+        label: "Mi cartera fue vendida o cedida"
+        next_step: "1.4.1.0.cartera_vendida"
+      - key: "consulta_sin_permiso"
+        label: "Consultaron mi información en centrales de riesgo sin mi autorización"
+        next_step: "1.4.1.2"
+      - key: "reporte_negativo_sin_notificacion"
+        label: "Tengo un reporte negativo en centrales de riesgo y no recibí notificación"
+        next_step: "1.4.1.3"
+
+  "1.4.1.0":
+    question: "Consultando el estado de tus productos en centrales de riesgo."
+    action: "consultar_todos_productos_centrales"
+    input_type: "choice"
+    options:
+      - key: "continuar_seleccion_producto"
+        label: "Continuar"
+        next_step: "satisfaction_check"
+
+  "1.4.1.0.embargo":
+    question: "Consultando el estado de tus productos para revisar tu embargo."
+    action: "consultar_productos_embargo_centrales"
+    input_type: "choice"
+    options:
+      - key: "continuar_seleccion_producto"
+        label: "Continuar"
+        next_step: "satisfaction_check"
+
+  "1.4.1.0.cartera_vendida":
+    question: "Consultando el estado de tus productos para revisar la venta de cartera."
+    action: "consultar_productos_cartera_vendida_centrales"
+    input_type: "choice"
+    options:
+      - key: "continuar_seleccion_producto"
+        label: "Continuar"
+        next_step: "satisfaction_check"
+
+  "1.4.1.0.embargo.sin_resultados":
+    question: "No encontré productos con embargo o desembargo para revisar en este momento."
+    input_type: "terminal"
+    terminal: true
+
+  "1.4.1.0.embargo.sin_embargos":
+    question: |
+      No encontré embargos vigentes asociados a tus productos.
+
+      Si quieres, también puedo revisar si tienes **desembargos registrados**. ¿Te gustaría consultarlos?
+    input_type: "choice"
+    options:
+      - key: "si_consultar_desembargos"
+        label: "Sí, consultar"
+        next_step: "1.4.1.1.embargo.desembargos"
+      - key: "no_consultar_desembargos"
+        label: "No, gracias"
+        next_step: "satisfaction_check"
+
+  "1.4.1.0.embargo.sin_embargos.sin_desembargos":
+    question: "No encontré embargos vigentes asociados a tus productos."
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "satisfaction_check"
+
+  "1.4.1.1.embargo.ofrecer_desembargos":
+    question: "Si quieres, también puedo revisar si tienes **desembargos registrados**. ¿Te gustaría consultarlos?"
+    input_type: "choice"
+    options:
+      - key: "si_consultar_desembargos"
+        label: "Sí, consultar"
+        next_step: "1.4.1.1.embargo.desembargos"
+      - key: "no_consultar_desembargos"
+        label: "No, gracias"
+        next_step: "satisfaction_check"
+
+  "1.4.1.1.embargo.desembargos":
+    question: "Consultando los desembargos registrados en tus productos."
+    action: "mostrar_productos_desembargo_centrales"
+    input_type: "choice"
+    options:
+      - key: "continuar_seleccion_producto"
+        label: "Continuar"
+        next_step: "satisfaction_check"
+
+  "1.4.1.1.continuar_resultado":
+    question: "Continuando con tu consulta."
+    action: "continuar_resultado_centrales"
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "satisfaction_check"
+
+  "1.4.1.0.cartera_vendida.sin_resultados":
+    question: "No encontré productos con venta o cesión de cartera para revisar en este momento."
+    input_type: "terminal"
+    terminal: true
+
+  "1.4.1.1":
+    question: "Selecciona el producto que deseas consultar."
+    action: "consultar_productos_cliente"
+    input_type: "choice"
+    save_as: "producto_centrales_de_riesgo"
+    options:
+      - key: "producto_1"
+        label: "Producto 1"
+        next_step: "1.4.1.1.1.1"
+      - key: "producto_2"
+        label: "Producto 2"
+        next_step: "1.4.1.1.1.1"
+      - key: "producto_3"
+        label: "Producto 3"
+        next_step: "1.4.1.1.1.1"
+      - key: "producto_4"
+        label: "Producto 4"
+        next_step: "1.4.1.1.1.1"
+      - key: "producto_5"
+        label: "Producto 5"
+        next_step: "1.4.1.1.1.1"
+      - key: "producto_6"
+        label: "Producto 6"
+        next_step: "1.4.1.1.1.1"
+      - key: "producto_7"
+        label: "Producto 7"
+        next_step: "1.4.1.1.1.1"
+      - key: "producto_8"
+        label: "Producto 8"
+        next_step: "1.4.1.1.1.1"
+      - key: "producto_9"
+        label: "Producto 9"
+        next_step: "1.4.1.1.1.1"
+      - key: "producto_10"
+        label: "Producto 10"
+        next_step: "1.4.1.1.1.1"
+      - key: "producto_11"
+        label: "Producto 11"
+        next_step: "1.4.1.1.1.1"
+      - key: "producto_12"
+        label: "Producto 12"
+        next_step: "1.4.1.1.1.1"
+      - key: "producto_13"
+        label: "Producto 13"
+        next_step: "1.4.1.1.1.1"
+      - key: "producto_14"
+        label: "Producto 14"
+        next_step: "1.4.1.1.1.1"
+      - key: "producto_15"
+        label: "Producto 15"
+        next_step: "1.4.1.1.1.1"
+      - key: "producto_16"
+        label: "Producto 16"
+        next_step: "1.4.1.1.1.1"
+      - key: "producto_17"
+        label: "Producto 17"
+        next_step: "1.4.1.1.1.1"
+      - key: "producto_18"
+        label: "Producto 18"
+        next_step: "1.4.1.1.1.1"
+      - key: "producto_19"
+        label: "Producto 19"
+        next_step: "1.4.1.1.1.1"
+      - key: "producto_20"
+        label: "Producto 20"
+        next_step: "1.4.1.1.1.1"
+
+  "1.4.1.2":
+    question: "Revisando tu informacion en centrales de riesgo."
+    action: "consultar_productos_consulta_sin_permiso"
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "satisfaction_check"
+  "1.4.1.3":
+    question: "Consultando el estado de tus productos en centrales de riesgo."
+    action: "consultar_todos_productos_centrales_sin_notificacion"
+    input_type: "choice"
+    options:
+      - key: "continuar_seleccion_producto"
+        label: "Continuar"
+        next_step: "satisfaction_check"
+  "1.4.1.1.1.1":
+    question: "Consultando el estado de tu cuenta en centrales de riesgo."
+    action: "consultar_centrales_producto_seleccionado"
+    input_type: "choice"
+    options:
+      - key: "continuar_a_satisfaccion"
+        label: "Continuar"
+        next_step: "1.4.1.1.continuar_resultado"
+
+
+
+  # ---- Flujo 3 (notificacion): seleccion de producto reportado + fase 2 ----
+  "1.4.1.3.0":
+    question: "Selecciona el producto reportado que deseas revisar."
+    action: "consultar_productos_cliente"
+    input_type: "choice"
+    save_as: "producto_notificacion_centrales"
+    options:
+      - key: "producto_1"
+        label: "Producto 1"
+        next_step: "1.4.1.3.1"
+      - key: "producto_2"
+        label: "Producto 2"
+        next_step: "1.4.1.3.1"
+      - key: "producto_3"
+        label: "Producto 3"
+        next_step: "1.4.1.3.1"
+      - key: "producto_4"
+        label: "Producto 4"
+        next_step: "1.4.1.3.1"
+      - key: "producto_5"
+        label: "Producto 5"
+        next_step: "1.4.1.3.1"
+      - key: "producto_6"
+        label: "Producto 6"
+        next_step: "1.4.1.3.1"
+      - key: "producto_7"
+        label: "Producto 7"
+        next_step: "1.4.1.3.1"
+      - key: "producto_8"
+        label: "Producto 8"
+        next_step: "1.4.1.3.1"
+      - key: "producto_9"
+        label: "Producto 9"
+        next_step: "1.4.1.3.1"
+      - key: "producto_10"
+        label: "Producto 10"
+        next_step: "1.4.1.3.1"
+      - key: "producto_11"
+        label: "Producto 11"
+        next_step: "1.4.1.3.1"
+      - key: "producto_12"
+        label: "Producto 12"
+        next_step: "1.4.1.3.1"
+      - key: "producto_13"
+        label: "Producto 13"
+        next_step: "1.4.1.3.1"
+      - key: "producto_14"
+        label: "Producto 14"
+        next_step: "1.4.1.3.1"
+      - key: "producto_15"
+        label: "Producto 15"
+        next_step: "1.4.1.3.1"
+      - key: "producto_16"
+        label: "Producto 16"
+        next_step: "1.4.1.3.1"
+      - key: "producto_17"
+        label: "Producto 17"
+        next_step: "1.4.1.3.1"
+      - key: "producto_18"
+        label: "Producto 18"
+        next_step: "1.4.1.3.1"
+      - key: "producto_19"
+        label: "Producto 19"
+        next_step: "1.4.1.3.1"
+      - key: "producto_20"
+        label: "Producto 20"
+        next_step: "1.4.1.3.1"
+
+  "1.4.1.3.1":
+    question: "Analizando la notificación de tu producto en centrales de riesgo."
+    action: "consultar_notificacion_producto_seleccionado"
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "satisfaction_check"
+
+  "1.4.1.3.2":
+    question: "Notificación por extracto bancario."
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "1.4.1.3.3"
+
+  "1.4.1.3.3":
+    question: |
+      Para que puedas revisar todos los detalles, ¿te gustaría que te guíe paso a paso para descargar tu extracto desde nuestra App o Banca en línea?
+    input_type: "choice"
+    save_as: "guia_extracto_notificacion"
+    options:
+      - key: "si_ver_guia"
+        label: "Sí, ver guía"
+        next_step: "1.4.1.3.4"
+      - key: "no_es_necesario"
+        label: "No es necesario"
+        next_step: "satisfaction_si"
+
+  "1.4.1.3.4":
+    question: "Te llevo a la guía para descargar tu extracto."
+    action: "goto_extractos_bancarios"
+    input_type: "choice"
+    options: []

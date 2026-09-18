@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: co-pqrs-back-doble-cobro
+  labels:
+    app.kubernetes.io/part-of: backend
+spec:
+  selector:
+    app: co-pqrs-back-doble-cobro
+  ports:
+    - name: http
+      port: 8006
+      targetPort: 8006
+  type: ClusterIP

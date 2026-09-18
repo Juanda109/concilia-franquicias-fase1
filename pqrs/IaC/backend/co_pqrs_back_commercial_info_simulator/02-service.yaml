@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: co-pqrs-back-commercial-info-simulator
+  labels:
+    app: co-pqrs-back-commercial-info-simulator
+    app.kubernetes.io/part-of: backend
+spec:
+  type: ClusterIP
+  selector:
+    app: co-pqrs-back-commercial-info-simulator
+  ports:
+    - name: http-8050
+      protocol: TCP
+      port: 8050
+      targetPort: 8050

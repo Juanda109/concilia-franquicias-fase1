@@ -1,0 +1,63 @@
+{
+  "data": {
+    "history": {
+      "obligations": [
+        {
+          "financialInstitutionInformation": {
+            "name": "BBVA COLOMBIA",
+            "branch": {
+              "name": "ALCAZARES"
+            },
+            "city": {
+              "name": "BOGOTA"
+            }
+          },
+          "number": 1629,
+          "classificationStatus": {
+            "id": "PTOT"
+          },
+          "modality": {
+            "id": "CONS"
+          },
+          "productType": {
+            "id": "CAB",
+            "name": "CARTERA BANCARIA"
+          },
+          "openingDate": "2022-06-02T00:00:00.0-0500",
+          "expirationDate": "2027-06-02T00:00:00.0-0500",
+          "initial": {
+            "amount": 4900,
+            "currency": "ML"
+          },
+          "productBalance": {
+            "amount": 0,
+            "currency": "ML"
+          },
+          "monthly": {
+            "amount": 0,
+            "currency": "ML"
+          },
+          "pending": {
+            "amount": 0,
+            "currency": "ML"
+          },
+          "paymentDate": "2024-04-30T00:00:00.0-0500",
+          "productStatus": {
+            "id": "NORM"
+          },
+          "behaviorLiabilities": [
+            {
+              "behaviorType": "TWENTY_FOUR_MONTHS",
+              "description": "6 6 C C C C C C C C C C C C C C C C C N N N N N"
+            }
+          ],
+          "contractType": {
+            "id": "4350-CAB",
+            "description": "CARTERA BANCARIA",
+            "status": "NVIG"
+          }
+        }
+      ]
+    }
+  }
+}

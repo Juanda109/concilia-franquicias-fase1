@@ -1,0 +1,187 @@
+{
+  "data": [
+    {
+      "id": "TXC01",
+      "contract": {
+        "id": "4912680517940060",
+        "formats": [],
+        "product": {
+          "id": "CARDS",
+          "name": "Cards"
+        }
+      },
+      "accountedDate": "2026-08-06T00:00:00.000-0500",
+      "valueDate": "2026-08-06T00:00:00.000-0500",
+      "operationDate": "2026-08-06T10:00:00.000-0500",
+      "moneyFlow": {
+        "id": "EXPENSE",
+        "name": "Cash flow that is taken from the product contract."
+      },
+      "operationAmounts": [
+        {
+          "id": "ORIGIN_AMOUNT",
+          "amount": -120000.0,
+          "currency": "COP"
+        },
+        {
+          "id": "CONTRACT_AMOUNT",
+          "amount": -120000.0,
+          "currency": "COP"
+        }
+      ],
+      "status": {
+        "id": "SETTLED",
+        "name": "Represents that transaction has been fulfilled."
+      },
+      "concept": "COMPRA FALABELLA CALLE 80",
+      "transactionNumber": "400060",
+      "transactionType": {
+        "id": "UNCATEGORIZED",
+        "name": " ",
+        "internalCode": {
+          "id": "00",
+          "name": "COMPRAS ESTABLECIMIENTOS"
+        }
+      },
+      "additionalInformation": {
+        "additionalData": "T 1",
+        "balances": [],
+        "rewardBenefits": [],
+        "user": {
+          "id": "MP4C1916"
+        },
+        "isCredit": false
+      },
+      "bank": {
+        "id": "CO0013"
+      },
+      "hasAttachments": false,
+      "comments": []
+    },
+    {
+      "id": "TXC02",
+      "contract": {
+        "id": "4912680517940060",
+        "formats": [],
+        "product": {
+          "id": "CARDS",
+          "name": "Cards"
+        }
+      },
+      "accountedDate": "2026-08-06T00:00:00.000-0500",
+      "valueDate": "2026-08-06T00:00:00.000-0500",
+      "operationDate": "2026-08-06T12:30:00.000-0500",
+      "moneyFlow": {
+        "id": "EXPENSE",
+        "name": "Cash flow that is taken from the product contract."
+      },
+      "operationAmounts": [
+        {
+          "id": "ORIGIN_AMOUNT",
+          "amount": -89990.0,
+          "currency": "COP"
+        },
+        {
+          "id": "CONTRACT_AMOUNT",
+          "amount": -89990.0,
+          "currency": "COP"
+        }
+      ],
+      "status": {
+        "id": "SETTLED",
+        "name": "Represents that transaction has been fulfilled."
+      },
+      "concept": "COMPRA MERCADOLIBRE.COM.CO",
+      "transactionNumber": "400061",
+      "transactionType": {
+        "id": "UNCATEGORIZED",
+        "name": " ",
+        "internalCode": {
+          "id": "00",
+          "name": "COMPRAS ESTABLECIMIENTOS"
+        }
+      },
+      "additionalInformation": {
+        "additionalData": "T 1",
+        "balances": [],
+        "rewardBenefits": [],
+        "user": {
+          "id": "MP4C1916"
+        },
+        "isCredit": false
+      },
+      "bank": {
+        "id": "CO0013"
+      },
+      "hasAttachments": false,
+      "comments": []
+    },
+    {
+      "id": "TXC03",
+      "contract": {
+        "id": "4912680517940060",
+        "formats": [],
+        "product": {
+          "id": "CARDS",
+          "name": "Cards"
+        }
+      },
+      "accountedDate": "2026-08-06T00:00:00.000-0500",
+      "valueDate": "2026-08-06T00:00:00.000-0500",
+      "operationDate": "2026-08-06T18:45:00.000-0500",
+      "moneyFlow": {
+        "id": "EXPENSE",
+        "name": "Cash flow that is taken from the product contract."
+      },
+      "operationAmounts": [
+        {
+          "id": "ORIGIN_AMOUNT",
+          "amount": -250000.0,
+          "currency": "COP"
+        },
+        {
+          "id": "CONTRACT_AMOUNT",
+          "amount": -250000.0,
+          "currency": "COP"
+        }
+      ],
+      "status": {
+        "id": "SETTLED",
+        "name": "Represents that transaction has been fulfilled."
+      },
+      "concept": "COMPRA EXITO SUPERMERCADO",
+      "transactionNumber": "400062",
+      "transactionType": {
+        "id": "UNCATEGORIZED",
+        "name": " ",
+        "internalCode": {
+          "id": "00",
+          "name": "COMPRAS ESTABLECIMIENTOS"
+        }
+      },
+      "additionalInformation": {
+        "additionalData": "T 1",
+        "balances": [],
+        "rewardBenefits": [],
+        "user": {
+          "id": "MP4C1916"
+        },
+        "isCredit": false
+      },
+      "bank": {
+        "id": "CO0013"
+      },
+      "hasAttachments": false,
+      "comments": []
+    }
+  ],
+  "pagination": {
+    "links": {
+      "first": "/cards/v2/cards/4912680517940060/transactions"
+    },
+    "page": 0,
+    "totalPages": 1,
+    "totalElements": 3,
+    "pageSize": 17
+  }
+}

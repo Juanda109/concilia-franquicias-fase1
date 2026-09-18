@@ -1,0 +1,42 @@
+# Imagen del front de pruebas CON la vista "Benchmark".
+#
+# La vista corre co_pqrs_benchmark/main.py como subproceso, asi que la imagen
+# necesita el codigo del benchmark ademas del front. Como ese codigo vive en
+# otra carpeta del monorepo, este Dockerfile se construye con el contexto en la
+# RAIZ del repositorio (a diferencia de ./Dockerfile, que usa esta carpeta):
+#
+#   podman build -f co_pqrs_front_test/Dockerfile.benchmark \
+#       -t quay.apps.work.ocp.co.igrupobbva/pqr-genai/co_pqrs_front_test:<tag nuevo> .
+#
+# El tag nuevo tiene que ser distinto de los que ya existen en quay (v1 a v5; dev usa v5):
+# ver docs/DESPLIEGUE_ANALITICA_OKD.md, seccion 8d.
+#
+# En OKD el deployment fija BENCHMARK_DIR=/app/benchmark (ver IaC/frontend).
+FROM python:3.14-slim
+
+ARG BUILD_HTTP_PROXY=
+ARG BUILD_HTTPS_PROXY=
+ARG BUILD_NO_PROXY=localhost,127.0.0.1,host.containers.internal
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+RUN python -m pip install --no-cache-dir uv
+
+COPY co_pqrs_front_test/pyproject.toml ./
+RUN uv pip install --system --no-cache .
+
+COPY co_pqrs_front_test/ ./
+# El benchmark: codigo, main.py y los datasets versionados (la imagen propia del
+# benchmark no trae datasets/; aqui si, porque es lo que el selector ofrece).
+COPY co_pqrs_benchmark/main.py co_pqrs_benchmark/requirements.txt ./benchmark/
+COPY co_pqrs_benchmark/src ./benchmark/src
+COPY co_pqrs_benchmark/datasets/*.json ./benchmark/datasets/
+
+ENV BENCHMARK_DIR=/app/benchmark
+
+EXPOSE 8501
+
+CMD ["streamlit", "run", "main.py", "--server.address=0.0.0.0", "--server.port=8501"]

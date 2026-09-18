@@ -1,0 +1,663 @@
+[
+  {
+    "category": "saludo",
+    "user_id": "56780000",
+    "question": "Hola",
+    "expect_outcome_any": [
+      "greeting",
+      "clarify_retry",
+      "no_match"
+    ],
+    "must_contain": [
+      "Hola, Pablo Eduardo,"
+    ],
+    "must_not_invent": [
+      "Mosquera",
+      "Hola, ,",
+      "Hola, None",
+      "Hola, nan",
+      "Hola, \\{",
+      "customer_name"
+    ],
+    "nota": "saludo fuente presente: nombres de pila si, apellido no"
+  },
+  {
+    "category": "saludo",
+    "user_id": "56780001",
+    "question": "Buenas tardes",
+    "expect_outcome_any": [
+      "greeting",
+      "clarify_retry",
+      "no_match"
+    ],
+    "must_contain": [
+      "Hola, Maria Del Carmen,"
+    ],
+    "must_not_invent": [
+      "Gonzalez",
+      "Hoyos",
+      "Hola, ,",
+      "Hola, None",
+      "Hola, nan",
+      "Hola, \\{",
+      "customer_name"
+    ],
+    "nota": "saludo fuente presente: nombre compuesto, dos apellidos fuera"
+  },
+  {
+    "category": "saludo",
+    "user_id": "56780004",
+    "question": "Buenos días",
+    "expect_outcome_any": [
+      "greeting",
+      "clarify_retry",
+      "no_match"
+    ],
+    "must_contain": [
+      "Hola, Nelson De Jesus,"
+    ],
+    "must_not_invent": [
+      "Gonzalez",
+      "Hoyos",
+      "Hola, ,",
+      "Hola, None",
+      "Hola, nan",
+      "Hola, \\{",
+      "customer_name"
+    ],
+    "nota": "saludo fuente presente: ejemplo documentado en back_data"
+  },
+  {
+    "category": "saludo",
+    "user_id": "56780003",
+    "question": "Hola",
+    "expect_outcome_any": [
+      "greeting",
+      "clarify_retry",
+      "no_match"
+    ],
+    "must_contain": [
+      "Hola, soy \\*\\*Blue\\*\\*"
+    ],
+    "must_not_invent": [
+      "Hola, ,",
+      "Hola, None",
+      "Hola, nan",
+      "Hola, \\{",
+      "customer_name",
+      "Hola, [A-Z][a-z]+,"
+    ],
+    "nota": "saludo fuente ausente: cliente existe pero sin nombre -> plantilla sin nombre, no inventa"
+  },
+  {
+    "category": "saludo",
+    "question": "Hola",
+    "expect_outcome_any": [
+      "greeting",
+      "clarify_retry",
+      "no_match"
+    ],
+    "must_contain": [
+      "Hola, soy \\*\\*Blue\\*\\*"
+    ],
+    "must_not_invent": [
+      "Hola, ,",
+      "Hola, None",
+      "Hola, nan",
+      "Hola, \\{",
+      "customer_name",
+      "Hola, [A-Z][a-z]+,"
+    ],
+    "nota": "saludo fuente ausente: cliente desconocido -> plantilla sin nombre"
+  },
+  {
+    "category": "saludo",
+    "user_id": "56780002",
+    "question": "Hola",
+    "expect_outcome_any": [
+      "greeting",
+      "clarify_retry",
+      "no_match"
+    ],
+    "must_not_invent": [
+      "Hola, Inversiones",
+      "Sas,",
+      "Hola, ,",
+      "Hola, None",
+      "Hola, nan",
+      "Hola, \\{",
+      "customer_name"
+    ],
+    "nota": "saludo fuente contradictoria: persona juridica, la razon social NO es un nombre de pila (decision de producto si falla)"
+  },
+  {
+    "category": "cierre_guia",
+    "question": "¿Qué es ese cobro de GMF que me aparece cada vez que hago una transferencia?",
+    "follow_ups": [
+      "Continuar",
+      "Sí, me ayudó"
+    ],
+    "expect_output": "impuesto_4x1000",
+    "must_contain": [
+      "0,4\\s?%",
+      "601 4010000"
+    ],
+    "must_not_invent": [
+      "hemos recibido tu (consulta|solicitud)",
+      "la informaci[oó]n (fue|ha sido|qued[oó]) registrada",
+      "radicad",
+      "n[uú]mero de caso",
+      "te (llamaremos|contactaremos|estaremos llamando)",
+      "en (24|48|72) horas",
+      "ya (qued[oó]|fue) (resuelt|solucionad|reversad|devuelt)",
+      "abono aplicado",
+      "te devolveremos",
+      "0,3\\s?%",
+      "0,5\\s?%",
+      "exent[oa] autom[aá]tic"
+    ],
+    "nota": "cierre 4x1000: tasa y linea de atencion de la fuente"
+  },
+  {
+    "category": "cierre_guia",
+    "question": "¿Por qué me están cobrando cuota de manejo?",
+    "follow_ups": [
+      "Continuar",
+      "Sí, me ayudó"
+    ],
+    "expect_output": "cuota_de_manejo",
+    "must_contain": [
+      "601 401 00 00",
+      "01 8000 912 227"
+    ],
+    "must_not_invent": [
+      "hemos recibido tu (consulta|solicitud)",
+      "la informaci[oó]n (fue|ha sido|qued[oó]) registrada",
+      "radicad",
+      "n[uú]mero de caso",
+      "te (llamaremos|contactaremos|estaremos llamando)",
+      "en (24|48|72) horas",
+      "ya (qued[oó]|fue) (resuelt|solucionad|reversad|devuelt)",
+      "abono aplicado",
+      "te devolveremos",
+      "te la (vamos a )?reembols",
+      "elimin(aremos|amos) (la|el) cobro"
+    ],
+    "nota": "cierre cuota de manejo: telefonos de la fuente"
+  },
+  {
+    "category": "cierre_guia",
+    "question": "No me deja hacer la transferencia porque supero el límite",
+    "follow_ups": [
+      "Continuar",
+      "Sí, me ayudó"
+    ],
+    "expect_output": "limites_transaccionales",
+    "must_contain": [
+      "L[ií]mites operacionales",
+      "Token Digital",
+      "BBVA Net Cash"
+    ],
+    "must_not_invent": [
+      "hemos recibido tu (consulta|solicitud)",
+      "la informaci[oó]n (fue|ha sido|qued[oó]) registrada",
+      "radicad",
+      "n[uú]mero de caso",
+      "te (llamaremos|contactaremos|estaremos llamando)",
+      "en (24|48|72) horas",
+      "ya (qued[oó]|fue) (resuelt|solucionad|reversad|devuelt)",
+      "abono aplicado",
+      "te devolveremos",
+      "(ya )?(te )?aument(amos|é) (el|tu) l[ií]mite",
+      "l[ií]mite (fue|qued[oó]) ampliado"
+    ],
+    "nota": "cierre limites: pasos y validaciones de la fuente"
+  },
+  {
+    "category": "cierre_guia",
+    "question": "¿Cómo consulto mis puntos BBVA?",
+    "follow_ups": [
+      "Continuar",
+      "Sí, me ayudó"
+    ],
+    "expect_output": "puntos_y_promociones",
+    "must_contain": [
+      "Experiencias BBVA",
+      "601 4010000"
+    ],
+    "must_not_invent": [
+      "hemos recibido tu (consulta|solicitud)",
+      "la informaci[oó]n (fue|ha sido|qued[oó]) registrada",
+      "radicad",
+      "n[uú]mero de caso",
+      "te (llamaremos|contactaremos|estaremos llamando)",
+      "en (24|48|72) horas",
+      "ya (qued[oó]|fue) (resuelt|solucionad|reversad|devuelt)",
+      "abono aplicado",
+      "te devolveremos",
+      "tienes \\d[\\d.]* puntos",
+      "puntos (vencen|caducan) el"
+    ],
+    "nota": "cierre puntos: programa y linea de la fuente"
+  },
+  {
+    "category": "cierre_guia",
+    "question": "Quisiera conocer sobre el proceso de embargos",
+    "follow_ups": [
+      "Continuar",
+      "Sí, me ayudó"
+    ],
+    "expect_output": "faq_cuenta_embargada",
+    "must_contain": [
+      "3 y 15 d[ií]as h[aá]biles",
+      "paz y salvo"
+    ],
+    "must_not_invent": [
+      "hemos recibido tu (consulta|solicitud)",
+      "la informaci[oó]n (fue|ha sido|qued[oó]) registrada",
+      "radicad",
+      "n[uú]mero de caso",
+      "te (llamaremos|contactaremos|estaremos llamando)",
+      "en (24|48|72) horas",
+      "ya (qued[oó]|fue) (resuelt|solucionad|reversad|devuelt)",
+      "abono aplicado",
+      "te devolveremos",
+      "(24|48) horas",
+      "levantar(emos|é) (el )?embargo",
+      "tu embargo (fue|ya) levantado"
+    ],
+    "nota": "cierre embargos: plazo y requisito de la fuente"
+  },
+  {
+    "category": "cierre_guia",
+    "question": "¿Qué es ese cobro de GMF que me aparece cada vez que hago una transferencia?",
+    "follow_ups": [
+      "Continuar",
+      "No, ver línea de atención"
+    ],
+    "expect_output": "impuesto_4x1000",
+    "must_contain": [
+      "0,4\\s?%"
+    ],
+    "must_not_invent": [
+      "hemos recibido tu (consulta|solicitud)",
+      "la informaci[oó]n (fue|ha sido|qued[oó]) registrada",
+      "radicad",
+      "n[uú]mero de caso",
+      "te (llamaremos|contactaremos|estaremos llamando)",
+      "en (24|48|72) horas",
+      "ya (qued[oó]|fue) (resuelt|solucionad|reversad|devuelt)",
+      "abono aplicado",
+      "te devolveremos"
+    ],
+    "nota": "cierre 4x1000 rama NO: deriva a linea sin prometer gestion"
+  },
+  {
+    "category": "cierre_guia",
+    "question": "¿Por qué me están cobrando cuota de manejo?",
+    "follow_ups": [
+      "Continuar",
+      "No, ver línea de atención"
+    ],
+    "expect_output": "cuota_de_manejo",
+    "must_contain": [
+      "601 401 00 00"
+    ],
+    "must_not_invent": [
+      "hemos recibido tu (consulta|solicitud)",
+      "la informaci[oó]n (fue|ha sido|qued[oó]) registrada",
+      "radicad",
+      "n[uú]mero de caso",
+      "te (llamaremos|contactaremos|estaremos llamando)",
+      "en (24|48|72) horas",
+      "ya (qued[oó]|fue) (resuelt|solucionad|reversad|devuelt)",
+      "abono aplicado",
+      "te devolveremos",
+      "exoner",
+      "reembols"
+    ],
+    "nota": "cierre cuota rama NO: no promete exoneracion"
+  },
+  {
+    "category": "aclaracion",
+    "question": "Me hicieron un cobro que no autoricé.",
+    "follow_ups": [
+      "Fue una sola vez, una compra por internet de 89.900."
+    ],
+    "expect_output": "trx_no_reconocida",
+    "must_contain": [
+      "\\?|escr[ií]bela de nuevo|m[aá]s detalle|cu[eé]ntame|ind[ií]came|con m[aá]s detalle"
+    ],
+    "must_not_invent": [
+      "hemos recibido tu (consulta|solicitud)",
+      "la informaci[oó]n (fue|ha sido|qued[oó]) registrada",
+      "radicad",
+      "n[uú]mero de caso",
+      "te (llamaremos|contactaremos|estaremos llamando)",
+      "en (24|48|72) horas",
+      "ya (qued[oó]|fue) (resuelt|solucionad|reversad|devuelt)",
+      "abono aplicado",
+      "te devolveremos",
+      "leasing",
+      "fondo de inversi[oó]n",
+      "CDT"
+    ],
+    "nota": "aclaracion unico/recurrente: pregunta, no adivina; no menciona productos que el cliente no nombro (la aclaracion que ve el cliente es determinista: pide reformular; el LLM solo decide is_match)"
+  },
+  {
+    "category": "aclaracion",
+    "question": "Me hicieron un cobro que no autoricé.",
+    "follow_ups": [
+      "Es todos los meses, un seguro que me descuentan de la tarjeta."
+    ],
+    "expect_output": "pqrs_no_ruteo",
+    "must_contain": [
+      "\\?|escr[ií]bela de nuevo|m[aá]s detalle|cu[eé]ntame|ind[ií]came|con m[aá]s detalle"
+    ],
+    "must_not_invent": [
+      "hemos recibido tu (consulta|solicitud)",
+      "la informaci[oó]n (fue|ha sido|qued[oó]) registrada",
+      "radicad",
+      "n[uú]mero de caso",
+      "te (llamaremos|contactaremos|estaremos llamando)",
+      "en (24|48|72) horas",
+      "ya (qued[oó]|fue) (resuelt|solucionad|reversad|devuelt)",
+      "abono aplicado",
+      "te devolveremos",
+      "leasing",
+      "fondo de inversi[oó]n",
+      "CDT",
+      "te devolv",
+      "reembols"
+    ],
+    "nota": "aclaracion unico/recurrente: la respuesta lleva al formulario sin prometer devolucion (la aclaracion que ve el cliente es determinista: pide reformular; el LLM solo decide is_match)"
+  },
+  {
+    "category": "aclaracion",
+    "question": "Creo que me estafaron.",
+    "follow_ups": [
+      "Sí, hay una compra de 200 mil en mi tarjeta que yo no hice."
+    ],
+    "expect_output": "trx_no_reconocida",
+    "must_contain": [
+      "\\?|escr[ií]bela de nuevo|m[aá]s detalle|cu[eé]ntame|ind[ií]came|con m[aá]s detalle"
+    ],
+    "must_not_invent": [
+      "hemos recibido tu (consulta|solicitud)",
+      "la informaci[oó]n (fue|ha sido|qued[oó]) registrada",
+      "radicad",
+      "n[uú]mero de caso",
+      "te (llamaremos|contactaremos|estaremos llamando)",
+      "en (24|48|72) horas",
+      "ya (qued[oó]|fue) (resuelt|solucionad|reversad|devuelt)",
+      "abono aplicado",
+      "te devolveremos",
+      "leasing",
+      "fondo de inversi[oó]n",
+      "CDT",
+      "confirmo que (fuiste|has sido) v[ií]ctima",
+      "bloque(amos|é) tu tarjeta"
+    ],
+    "nota": "aclaracion fraude sin transaccion: pregunta por el movimiento; no afirma que hubo fraude (la aclaracion que ve el cliente es determinista: pide reformular; el LLM solo decide is_match)"
+  },
+  {
+    "category": "aclaracion",
+    "question": "Tengo un problema con el banco.",
+    "follow_ups": [
+      "Aparece una compra en mi tarjeta que yo no hice."
+    ],
+    "expect_output": "trx_no_reconocida",
+    "must_contain": [
+      "\\?|escr[ií]bela de nuevo|m[aá]s detalle|cu[eé]ntame|ind[ií]came|con m[aá]s detalle"
+    ],
+    "must_not_invent": [
+      "hemos recibido tu (consulta|solicitud)",
+      "la informaci[oó]n (fue|ha sido|qued[oó]) registrada",
+      "radicad",
+      "n[uú]mero de caso",
+      "te (llamaremos|contactaremos|estaremos llamando)",
+      "en (24|48|72) horas",
+      "ya (qued[oó]|fue) (resuelt|solucionad|reversad|devuelt)",
+      "abono aplicado",
+      "te devolveremos",
+      "leasing",
+      "fondo de inversi[oó]n",
+      "CDT",
+      "(tu|el) cr[eé]dito",
+      "tu embargo"
+    ],
+    "nota": "aclaracion vaga: una pregunta corta, sin inventar el problema (la aclaracion que ve el cliente es determinista: pide reformular; el LLM solo decide is_match)"
+  },
+  {
+    "category": "aclaracion",
+    "question": "Necesito ayuda con mi tarjeta.",
+    "follow_ups": [
+      "Me cobraron dos veces la misma compra."
+    ],
+    "expect_output": "doble_cobro",
+    "must_contain": [
+      "\\?|escr[ií]bela de nuevo|m[aá]s detalle|cu[eé]ntame|ind[ií]came|con m[aá]s detalle"
+    ],
+    "must_not_invent": [
+      "hemos recibido tu (consulta|solicitud)",
+      "la informaci[oó]n (fue|ha sido|qued[oó]) registrada",
+      "radicad",
+      "n[uú]mero de caso",
+      "te (llamaremos|contactaremos|estaremos llamando)",
+      "en (24|48|72) horas",
+      "ya (qued[oó]|fue) (resuelt|solucionad|reversad|devuelt)",
+      "abono aplicado",
+      "te devolveremos",
+      "leasing",
+      "fondo de inversi[oó]n",
+      "CDT",
+      "bloque",
+      "fraude confirmado"
+    ],
+    "nota": "aclaracion producto sin causal: pregunta el motivo; no asume bloqueo ni fraude (la aclaracion que ve el cliente es determinista: pide reformular; el LLM solo decide is_match)"
+  },
+  {
+    "category": "validacion_fecha",
+    "question": "Hay una compra en mi tarjeta que yo no hice.",
+    "follow_ups": [
+      "Hiciste una compra presencial o por internet",
+      "Continuar",
+      "1",
+      "Empezar ahora",
+      "Sí, continuar",
+      "Continuar",
+      "Producto 1",
+      "Entre $35.000 y $500.000",
+      "30/02/2026"
+    ],
+    "expect_output_any": [
+      "trx_no_reconocida"
+    ],
+    "expect_outcome_any": [
+      "matched",
+      "in_flow",
+      "other"
+    ],
+    "must_contain": [
+      "DD/MM/AAAA"
+    ],
+    "must_not_invent": [
+      "28/02/2026",
+      "01/03/2026",
+      "02/03/2026",
+      "hemos recibido tu (consulta|solicitud)",
+      "la informaci[oó]n (fue|ha sido|qued[oó]) registrada",
+      "radicad",
+      "n[uú]mero de caso",
+      "te (llamaremos|contactaremos|estaremos llamando)",
+      "en (24|48|72) horas",
+      "ya (qued[oó]|fue) (resuelt|solucionad|reversad|devuelt)",
+      "abono aplicado",
+      "te devolveremos"
+    ],
+    "nota": "validacion fecha inexistente: repregunta sin corregirla por su cuenta (cliente 1010223694: tiene productos en el simulador)",
+    "user_id": "1010223694"
+  },
+  {
+    "category": "validacion_fecha",
+    "question": "Hay una compra en mi tarjeta que yo no hice.",
+    "follow_ups": [
+      "Hiciste una compra presencial o por internet",
+      "Continuar",
+      "1",
+      "Empezar ahora",
+      "Sí, continuar",
+      "Continuar",
+      "Producto 1",
+      "Entre $35.000 y $500.000",
+      "31/12/2099"
+    ],
+    "expect_output_any": [
+      "trx_no_reconocida"
+    ],
+    "expect_outcome_any": [
+      "matched",
+      "in_flow",
+      "other"
+    ],
+    "must_contain": [
+      "todav[ií]a no ha ocurrido|DD/MM/AAAA"
+    ],
+    "must_not_invent": [
+      "movimientos en la fecha indicada",
+      "Encontr[eé] estas transacciones",
+      "hemos recibido tu (consulta|solicitud)",
+      "la informaci[oó]n (fue|ha sido|qued[oó]) registrada",
+      "radicad",
+      "n[uú]mero de caso",
+      "te (llamaremos|contactaremos|estaremos llamando)",
+      "en (24|48|72) horas",
+      "ya (qued[oó]|fue) (resuelt|solucionad|reversad|devuelt)",
+      "abono aplicado",
+      "te devolveremos"
+    ],
+    "nota": "validacion fecha futura: avisa que no ha ocurrido y no consulta movimientos (cliente 1010223694: tiene productos en el simulador)",
+    "user_id": "1010223694"
+  },
+  {
+    "category": "validacion_fecha",
+    "question": "Hay una compra en mi tarjeta que yo no hice.",
+    "follow_ups": [
+      "Hiciste una compra presencial o por internet",
+      "Continuar",
+      "1",
+      "Empezar ahora",
+      "Sí, continuar",
+      "Continuar",
+      "Producto 1",
+      "Entre $35.000 y $500.000",
+      "la semana pasada"
+    ],
+    "expect_output_any": [
+      "trx_no_reconocida"
+    ],
+    "expect_outcome_any": [
+      "matched",
+      "in_flow",
+      "other"
+    ],
+    "must_contain": [
+      "DD/MM/AAAA"
+    ],
+    "must_not_invent": [
+      "Encontr[eé] estas transacciones",
+      "hemos recibido tu (consulta|solicitud)",
+      "la informaci[oó]n (fue|ha sido|qued[oó]) registrada",
+      "radicad",
+      "n[uú]mero de caso",
+      "te (llamaremos|contactaremos|estaremos llamando)",
+      "en (24|48|72) horas",
+      "ya (qued[oó]|fue) (resuelt|solucionad|reversad|devuelt)",
+      "abono aplicado",
+      "te devolveremos"
+    ],
+    "nota": "validacion fecha relativa: pide el formato en vez de asumir un dia (cliente 1010223694: tiene productos en el simulador)",
+    "user_id": "1010223694"
+  },
+  {
+    "category": "validacion_fecha",
+    "question": "Hay una compra en mi tarjeta que yo no hice.",
+    "follow_ups": [
+      "Hiciste una compra presencial o por internet",
+      "Continuar",
+      "1",
+      "Empezar ahora",
+      "Sí, continuar",
+      "Continuar",
+      "Producto 1",
+      "Entre $35.000 y $500.000",
+      "no me acuerdo"
+    ],
+    "expect_output_any": [
+      "trx_no_reconocida"
+    ],
+    "expect_outcome_any": [
+      "matched",
+      "in_flow",
+      "other"
+    ],
+    "must_contain": [
+      "DD/MM/AAAA|extracto"
+    ],
+    "must_not_invent": [
+      "Encontr[eé] estas transacciones",
+      "hemos recibido tu (consulta|solicitud)",
+      "la informaci[oó]n (fue|ha sido|qued[oó]) registrada",
+      "radicad",
+      "n[uú]mero de caso",
+      "te (llamaremos|contactaremos|estaremos llamando)",
+      "en (24|48|72) horas",
+      "ya (qued[oó]|fue) (resuelt|solucionad|reversad|devuelt)",
+      "abono aplicado",
+      "te devolveremos"
+    ],
+    "nota": "validacion sin dato: no inventa una fecha ni avanza (cliente 1010223694: tiene productos en el simulador)",
+    "user_id": "1010223694"
+  },
+  {
+    "category": "validacion_fecha",
+    "question": "Hay una compra en mi tarjeta que yo no hice.",
+    "follow_ups": [
+      "Hiciste una compra presencial o por internet",
+      "Continuar",
+      "1",
+      "Empezar ahora",
+      "Sí, continuar",
+      "Continuar",
+      "Producto 1",
+      "Entre $35.000 y $500.000",
+      "05/08/2026"
+    ],
+    "expect_output_any": [
+      "trx_no_reconocida"
+    ],
+    "expect_outcome_any": [
+      "matched",
+      "in_flow",
+      "other"
+    ],
+    "must_contain": [
+      "fecha indicada|No encontramos compras|Encontr[eé] estas transacciones"
+    ],
+    "must_not_invent": [
+      "todav[ií]a no ha ocurrido",
+      "No pude leer esa fecha",
+      "hemos recibido tu (consulta|solicitud)",
+      "la informaci[oó]n (fue|ha sido|qued[oó]) registrada",
+      "radicad",
+      "n[uú]mero de caso",
+      "te (llamaremos|contactaremos|estaremos llamando)",
+      "en (24|48|72) horas",
+      "ya (qued[oó]|fue) (resuelt|solucionad|reversad|devuelt)",
+      "abono aplicado",
+      "te devolveremos"
+    ],
+    "nota": "validacion fecha valida: avanza a consultar movimientos de ESA fecha (cliente 1010223694: tiene productos en el simulador)",
+    "user_id": "1010223694"
+  }
+]

@@ -1,0 +1,30 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - postgresql/01-statefulset.yaml
+  - postgresql/02-service.yaml
+  - postgresql/03-pdb.yaml
+  #- postgresql/04-vpa.yaml
+  #- pgadmin/00-secret.yaml
+  - pgadmin/01-pvc.yaml
+  - pgadmin/02-deployment.yaml
+  - pgadmin/03-service.yaml
+  - pgadmin/04-route.yaml
+  - opensearch/00-serviceaccount.yaml
+  - opensearch/01-rolebinding-anyuid.yaml
+  #- opensearch/02-secret.yaml
+  - opensearch/03-configmap-app.yaml
+  - opensearch/04-pvc.yaml
+  - opensearch/05-deployment-opensearch.yaml
+  - opensearch/06-service-opensearch.yaml
+  - opensearch/07-configmap-dashboards.yaml
+  - opensearch/08-deployment-dashboards.yaml
+  - opensearch/09-service-dashboards.yaml
+  - opensearch/10-route-dashboards.yaml
+  - opensearch/11-configmap-index-templates.yaml
+  - opensearch/12-job-bootstrap-templates.yaml
+  # CronJob suspendido (boton manual) para limpiar datos de OpenSearch en DEV.
+  - opensearch/13-job-wipe-data.yaml
+
+  

@@ -1,0 +1,206 @@
+[
+  {
+    "question": "No reconozco esta compra",
+    "expect_output": "trx_no_reconocida",
+    "nota": "sanity: ejemplo literal del catalogo"
+  },
+  {
+    "question": "Yo no autoricé ese cargo",
+    "expect_output": "trx_no_reconocida",
+    "nota": "sanity: ejemplo literal del catalogo"
+  },
+  {
+    "question": "Veo un retiro en cajero que no realicé",
+    "expect_output": "trx_no_reconocida",
+    "nota": "sanity: ejemplo literal del catalogo (retiro)"
+  },
+  {
+    "question": "Hay una transferencia que no autoricé",
+    "expect_output": "trx_no_reconocida",
+    "nota": "sanity: ejemplo literal del catalogo (transferencia)"
+  },
+  {
+    "question": "Me llegó una notificación de una compra que yo no hice",
+    "expect_output": "trx_no_reconocida",
+    "nota": "sanity: ejemplo literal del catalogo (notificacion)"
+  },
+  {
+    "question": "Me llegó un mensaje de una compra en el Éxito por 380 mil y yo ni he ido por allá.",
+    "expect_output": "trx_no_reconocida",
+    "nota": "generalizacion: compra presencial concreta con monto y comercio"
+  },
+  {
+    "question": "Aparece un cobro de un tal MERCPAGO*TIENDA22 que no tengo ni idea qué es.",
+    "expect_output": "trx_no_reconocida",
+    "nota": "generalizacion: descriptor desconocido"
+  },
+  {
+    "question": "me sacaron plata de la cuenta y yo no fui",
+    "expect_output": "trx_no_reconocida",
+    "nota": "generalizacion: jerga, sin tildes ni mayusculas"
+  },
+  {
+    "question": "Hay un descuento en mi tarjeta de crédito por una compra por internet que no hice.",
+    "expect_output": "trx_no_reconocida",
+    "nota": "generalizacion: compra por internet"
+  },
+  {
+    "question": "Compré en Falabella pero el cargo me sale con otro nombre raro que no conozco.",
+    "expect_output": "trx_no_reconocida",
+    "nota": "generalizacion: reconoce la compra pero el descriptor no coincide"
+  },
+  {
+    "question": "no se q es ese cobro q me aparece de 45.900",
+    "expect_output": "trx_no_reconocida",
+    "nota": "generalizacion: abreviaturas de chat"
+  },
+  {
+    "question": "Me hicieron el cambiazo en un cajero y ya me aparecen compras que no son mías.",
+    "expect_output": "trx_no_reconocida",
+    "nota": "generalizacion: cambiazo con transacciones ya visibles"
+  },
+  {
+    "question": "Me robaron la tarjeta ayer y hoy aparece un pago en una gasolinera que no hice.",
+    "expect_output": "trx_no_reconocida",
+    "nota": "generalizacion: hurto con transaccion concreta"
+  },
+  {
+    "question": "Me llamaron diciendo que eran del banco, di mis datos y ahora hay una transferencia que yo no hice.",
+    "expect_output": "trx_no_reconocida",
+    "nota": "generalizacion: ingenieria social con transaccion concreta"
+  },
+  {
+    "question": "Tengo un pago por PSE en mi cuenta que no reconozco.",
+    "expect_output": "trx_no_reconocida",
+    "nota": "generalizacion: PSE, canal distinto a tarjeta"
+  },
+  {
+    "question": "Salió un débito de 1.250.000 de mi cuenta de ahorros y no fue mío, ¿qué hago?",
+    "expect_output": "trx_no_reconocida",
+    "nota": "generalizacion: debito en cuenta con pregunta de accion"
+  },
+  {
+    "question": "Sí hice la compra, pero me la cobraron dos veces.",
+    "expect_output": "doble_cobro",
+    "nota": "frontera: reconoce la compra y esta DUPLICADA -> doble_cobro"
+  },
+  {
+    "question": "Pagué una sola vez en el restaurante y aparecen dos cargos iguales.",
+    "expect_output": "doble_cobro",
+    "nota": "frontera: dos cargos de una compra reconocida -> doble_cobro"
+  },
+  {
+    "question": "Aparecen dos compras que no reconozco en mi extracto.",
+    "expect_output": "trx_no_reconocida",
+    "nota": "frontera DURA: dice 'dos' pero las DESCONOCE -> trx, no doble_cobro"
+  },
+  {
+    "question": "Quiero ver qué movimientos tuve la semana pasada.",
+    "expect_output": "consulta_de_movimientos",
+    "nota": "frontera: consulta simple, no desconoce nada"
+  },
+  {
+    "question": "¿Me puedes mostrar las compras de mi tarjeta de agosto?",
+    "expect_output": "consulta_de_movimientos",
+    "nota": "frontera: consulta de historial sin reclamo"
+  },
+  {
+    "question": "Necesito descargar el extracto de mi tarjeta del mes pasado.",
+    "expect_output": "extractos_bancarios",
+    "nota": "frontera: extracto, sin reclamo"
+  },
+  {
+    "question": "Me aparece una deuda en Datacrédito que yo no reconozco.",
+    "expect_output": "centrales_de_riesgo",
+    "nota": "frontera: 'no reconozco' pero es un REPORTE, no una transaccion"
+  },
+  {
+    "question": "Me reportaron por una obligación que nunca tuve con ustedes.",
+    "expect_output": "centrales_de_riesgo",
+    "nota": "frontera: reporte negativo desconocido"
+  },
+  {
+    "question": "Mi plata aparece retenida por una orden de un juzgado y yo no debo nada.",
+    "expect_output": "centrales_de_riesgo",
+    "nota": "frontera: embargo/retencion judicial, no transaccion"
+  },
+  {
+    "question": "¿Qué es ese cobro de GMF que me aparece cada vez que hago una transferencia?",
+    "expect_output": "impuesto_4x1000",
+    "nota": "frontera: 4x1000, cobro tributario"
+  },
+  {
+    "question": "Me cobraron cuota de manejo y antes nunca me la cobraban.",
+    "expect_output": "cuota_de_manejo",
+    "nota": "frontera: cuota de manejo, cobro reconocido del banco"
+  },
+  {
+    "question": "La transferencia no me pasó porque dice que superé el límite diario.",
+    "expect_output": "limites_transaccionales",
+    "nota": "frontera: operacion NO ejecutada por tope"
+  },
+  {
+    "question": "Me siguen cobrando Spotify aunque cancelé la suscripción hace dos meses.",
+    "expect_output": "pqrs_no_ruteo",
+    "follow_ups": [
+      "Quiero reclamar por un cobro recurrente de una suscripción que ya cancelé."
+    ],
+    "nota": "frontera: cobro RECURRENTE -> formulario (patron real ago-2026)"
+  },
+  {
+    "question": "Me están descontando un seguro de vida todos los meses que yo nunca pedí.",
+    "expect_output": "pqrs_no_ruteo",
+    "follow_ups": [
+      "Reclamo por el cobro mensual de un seguro que no autoricé."
+    ],
+    "nota": "frontera: poliza periodica no autorizada -> formulario"
+  },
+  {
+    "question": "Quiero desvincular mi tarjeta de Rappi para que no me cobren más.",
+    "expect_output": "pqrs_no_ruteo",
+    "follow_ups": [
+      "Solicitud para desvincular mi tarjeta de un comercio."
+    ],
+    "nota": "frontera: desvinculacion de producto -> formulario"
+  },
+  {
+    "question": "Compré un celular por internet, me cobraron y nunca me lo entregaron.",
+    "expect_output": "pqrs_no_ruteo",
+    "follow_ups": [
+      "Reclamo porque pagué un producto que el comercio no me entregó."
+    ],
+    "nota": "frontera: incumplimiento del comercio, ruta no disponible -> formulario"
+  },
+  {
+    "question": "Creo que me estafaron.",
+    "expect_output": "trx_no_reconocida",
+    "follow_ups": [
+      "Sí, hay una compra de 200 mil en mi tarjeta que yo no hice."
+    ],
+    "nota": "desambiguacion: fraude sin transaccion -> pregunta; con transaccion concreta -> trx"
+  },
+  {
+    "question": "Me robaron la billetera con la tarjeta.",
+    "expect_output": "pqrs_no_ruteo",
+    "follow_ups": [
+      "Todavía no veo ningún movimiento raro, solo quiero bloquearla."
+    ],
+    "nota": "desambiguacion: hurto SIN transaccion -> seguridad/bloqueo no disponible -> formulario"
+  },
+  {
+    "question": "Me hicieron un cobro que no autoricé.",
+    "expect_output": "trx_no_reconocida",
+    "follow_ups": [
+      "Fue una sola vez, una compra por internet de 89.900."
+    ],
+    "nota": "desambiguacion: unico vs recurrente; unico -> trx"
+  },
+  {
+    "question": "Me hicieron un cobro que no autoricé.",
+    "expect_output": "pqrs_no_ruteo",
+    "follow_ups": [
+      "Es todos los meses, un seguro que me descuentan de la tarjeta."
+    ],
+    "nota": "desambiguacion: unico vs recurrente; recurrente -> formulario"
+  }
+]

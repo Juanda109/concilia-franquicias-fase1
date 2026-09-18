@@ -1,0 +1,12 @@
+# Volúmenes nombrados (perms correctos) en vez del bind-mount ./opensearch/data,
+# que en la VM de podman/Docker provoca AccessDeniedException.
+services:
+  opensearch-node1:
+    volumes:
+      - osdata1:/usr/share/opensearch/data
+  opensearch-node2:
+    volumes:
+      - osdata2:/usr/share/opensearch/data
+volumes:
+  osdata1:
+  osdata2:

@@ -1,0 +1,13 @@
+version: 1
+start_step: "respuesta"
+steps:
+  "respuesta":
+    question: |
+      Es muy importante tener esto en cuenta: las entidades financieras reportamos el estado de tus pagos a las centrales de información **una vez al mes**.
+
+      Por eso, si acabas de pagar tu deuda, es posible que el cambio no se vea reflejado de inmediato. Todo depende de tu **fecha de corte** y de los tiempos que se toma la central de información para procesar los datos.
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "satisfaction_check_faq"

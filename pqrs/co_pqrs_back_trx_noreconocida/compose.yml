@@ -1,0 +1,9 @@
+services:
+  trx-noreconocida:
+    build:
+      context: .
+      dockerfile: Containerfile
+    ports:
+      - "8004:8004"
+    environment:
+      TRX_LOG_LEVEL: INFO

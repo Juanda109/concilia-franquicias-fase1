@@ -1,0 +1,22 @@
+FROM python:3.14-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app/src
+ENV UV_PROJECT_ENVIRONMENT=/app/.venv
+
+WORKDIR /app
+
+RUN python -m pip install --no-cache-dir uv
+
+COPY pyproject.toml README.md ./
+RUN uv sync --no-dev --no-install-project
+
+COPY src ./src
+COPY data ./data
+COPY config ./config
+COPY main.py ./
+
+EXPOSE 8003
+
+CMD ["/app/.venv/bin/python", "-m", "uvicorn", "--app-dir", "src", "infrastructure.entrypoint.fastapi_app:app", "--host", "0.0.0.0", "--port", "8003"]

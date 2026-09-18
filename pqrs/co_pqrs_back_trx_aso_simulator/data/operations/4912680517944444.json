@@ -1,0 +1,497 @@
+{
+  "data": [
+    {
+      "customer": {
+        "fullName": "CLIENTE C PRUEBA",
+        "firstName": "CLIENTE",
+        "secondName": "C",
+        "lastName": "PRUEBA",
+        "contact": {
+          "phone": "3001234560",
+          "email": "c@mail.com"
+        }
+      },
+      "operations": [
+        {
+          "id": "TXK01",
+          "accountDesti": "4467",
+          "accountOrigin": "001300090200940060",
+          "amountCommi": {
+            "amount": "0.00",
+            "currency": "COP"
+          },
+          "amountDonation": {
+            "amount": "120000",
+            "currency": "COP"
+          },
+          "amountOperation": {
+            "amount": 120000,
+            "currency": "COP"
+          },
+          "dateExpiration": "05/2032",
+          "dateOper": "2026-08-06",
+          "descProvision": "COMPRA ALKOSTO AV 68",
+          "eCard": true,
+          "eci": "5",
+          "hourOperation": "100000",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA ESTABLECIMIENTO",
+          "origin": "2903",
+          "placeOperation": "FALABELLA CALLE 80 BOGOTA",
+          "policy": {
+            "amountIva": "0",
+            "amountPolicy": "0.00",
+            "id": "0000000000",
+            "positionIndicator": "1"
+          },
+          "process": {
+            "date": "2026-08-06",
+            "hour": "100005",
+            "responseOperati": "Exitosa"
+          },
+          "responseOperati": "Exitosa",
+          "terminal": {
+            "id": "6789012345"
+          },
+          "version": "2",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "000060"
+          },
+          "interest": 3600
+        },
+        {
+          "id": "TXK02",
+          "accountDesti": "4467",
+          "accountOrigin": "001300090200940060",
+          "amountCommi": {
+            "amount": "0.00",
+            "currency": "COP"
+          },
+          "amountDonation": {
+            "amount": "120000",
+            "currency": "COP"
+          },
+          "amountOperation": {
+            "amount": 120000,
+            "currency": "COP"
+          },
+          "dateExpiration": "05/2032",
+          "dateOper": "2026-08-06",
+          "descProvision": "COMPRA RAPPI BOGOTA",
+          "eCard": true,
+          "eci": "5",
+          "hourOperation": "100000",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA ESTABLECIMIENTO",
+          "origin": "2903",
+          "placeOperation": "FALABELLA CALLE 80 BOGOTA",
+          "policy": {
+            "amountIva": "0",
+            "amountPolicy": "0.00",
+            "id": "0000000000",
+            "positionIndicator": "1"
+          },
+          "process": {
+            "date": "2026-08-06",
+            "hour": "100005",
+            "responseOperati": "Exitosa"
+          },
+          "responseOperati": "Exitosa",
+          "terminal": {
+            "id": "6789012345"
+          },
+          "version": "2",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "000060"
+          },
+          "interest": 2400
+        },
+        {
+          "id": "TXK03",
+          "accountDesti": "4467",
+          "accountOrigin": "001300090200940060",
+          "amountCommi": {
+            "amount": "0.00",
+            "currency": "COP"
+          },
+          "amountDonation": {
+            "amount": "120000",
+            "currency": "COP"
+          },
+          "amountOperation": {
+            "amount": 120000,
+            "currency": "COP"
+          },
+          "dateExpiration": "05/2032",
+          "dateOper": "2026-08-06",
+          "descProvision": "COMPRA D1 CHAPINERO",
+          "eCard": true,
+          "eci": "5",
+          "hourOperation": "100000",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA ESTABLECIMIENTO",
+          "origin": "2903",
+          "placeOperation": "FALABELLA CALLE 80 BOGOTA",
+          "policy": {
+            "amountIva": "0",
+            "amountPolicy": "0.00",
+            "id": "0000000000",
+            "positionIndicator": "1"
+          },
+          "process": {
+            "date": "2026-08-06",
+            "hour": "100005",
+            "responseOperati": "Exitosa"
+          },
+          "responseOperati": "Exitosa",
+          "terminal": {
+            "id": "6789012345"
+          },
+          "version": "2",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "000060"
+          },
+          "interest": 1800
+        },
+        {
+          "id": "TXK04",
+          "accountDesti": "4467",
+          "accountOrigin": "001300090200940060",
+          "amountCommi": {
+            "amount": "0.00",
+            "currency": "COP"
+          },
+          "amountDonation": {
+            "amount": "120000",
+            "currency": "COP"
+          },
+          "amountOperation": {
+            "amount": 120000,
+            "currency": "COP"
+          },
+          "dateExpiration": "05/2032",
+          "dateOper": "2026-08-06",
+          "descProvision": "COMPRA HOMECENTER CALLE 80",
+          "eCard": true,
+          "eci": "5",
+          "hourOperation": "100000",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA ESTABLECIMIENTO",
+          "origin": "2903",
+          "placeOperation": "FALABELLA CALLE 80 BOGOTA",
+          "policy": {
+            "amountIva": "0",
+            "amountPolicy": "0.00",
+            "id": "0000000000",
+            "positionIndicator": "1"
+          },
+          "process": {
+            "date": "2026-08-06",
+            "hour": "100005",
+            "responseOperati": "Exitosa"
+          },
+          "responseOperati": "Exitosa",
+          "terminal": {
+            "id": "6789012345"
+          },
+          "version": "2",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "000060"
+          },
+          "interest": 3600
+        },
+        {
+          "id": "TXK05",
+          "accountDesti": "4467",
+          "accountOrigin": "001300090200940060",
+          "amountCommi": {
+            "amount": "0.00",
+            "currency": "COP"
+          },
+          "amountDonation": {
+            "amount": "120000",
+            "currency": "COP"
+          },
+          "amountOperation": {
+            "amount": 120000,
+            "currency": "COP"
+          },
+          "dateExpiration": "05/2032",
+          "dateOper": "2026-08-06",
+          "descProvision": "COMPRA TIENDA ESQUINA",
+          "eCard": true,
+          "eci": "5",
+          "hourOperation": "100000",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA ESTABLECIMIENTO",
+          "origin": "2903",
+          "placeOperation": "FALABELLA CALLE 80 BOGOTA",
+          "policy": {
+            "amountIva": "0",
+            "amountPolicy": "0.00",
+            "id": "0000000000",
+            "positionIndicator": "1"
+          },
+          "process": {
+            "date": "2026-08-06",
+            "hour": "100005",
+            "responseOperati": "Exitosa"
+          },
+          "responseOperati": "Exitosa",
+          "terminal": {
+            "id": "6789012345"
+          },
+          "version": "2",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "000060"
+          },
+          "interest": 1800
+        },
+        {
+          "id": "TXK06",
+          "accountDesti": "4467",
+          "accountOrigin": "001300090200940060",
+          "amountCommi": {
+            "amount": "0.00",
+            "currency": "COP"
+          },
+          "amountDonation": {
+            "amount": "120000",
+            "currency": "COP"
+          },
+          "amountOperation": {
+            "amount": 120000,
+            "currency": "COP"
+          },
+          "dateExpiration": "05/2032",
+          "dateOper": "2026-08-06",
+          "descProvision": "COMPRA ELECTRODOMESTICOS",
+          "eCard": true,
+          "eci": "5",
+          "hourOperation": "100000",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA ESTABLECIMIENTO",
+          "origin": "2903",
+          "placeOperation": "FALABELLA CALLE 80 BOGOTA",
+          "policy": {
+            "amountIva": "0",
+            "amountPolicy": "0.00",
+            "id": "0000000000",
+            "positionIndicator": "1"
+          },
+          "process": {
+            "date": "2026-08-06",
+            "hour": "100005",
+            "responseOperati": "Exitosa"
+          },
+          "responseOperati": "Exitosa",
+          "terminal": {
+            "id": "6789012345"
+          },
+          "version": "2",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "000060"
+          },
+          "interest": 3600
+        },
+        {
+          "id": "TXK07",
+          "accountDesti": "4467",
+          "accountOrigin": "001300090200940060",
+          "amountCommi": {
+            "amount": "0.00",
+            "currency": "COP"
+          },
+          "amountDonation": {
+            "amount": "120000",
+            "currency": "COP"
+          },
+          "amountOperation": {
+            "amount": 120000,
+            "currency": "COP"
+          },
+          "dateExpiration": "05/2032",
+          "dateOper": "2026-08-06",
+          "descProvision": "ABONO/DEVOLUCION COMERCIO",
+          "eCard": true,
+          "eci": "5",
+          "hourOperation": "100000",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA ESTABLECIMIENTO",
+          "origin": "2903",
+          "placeOperation": "FALABELLA CALLE 80 BOGOTA",
+          "policy": {
+            "amountIva": "0",
+            "amountPolicy": "0.00",
+            "id": "0000000000",
+            "positionIndicator": "1"
+          },
+          "process": {
+            "date": "2026-08-06",
+            "hour": "100005",
+            "responseOperati": "Exitosa"
+          },
+          "responseOperati": "Exitosa",
+          "terminal": {
+            "id": "6789012345"
+          },
+          "version": "2",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "000060"
+          },
+          "interest": 0
+        },
+        {
+          "id": "TXK08",
+          "accountDesti": "4467",
+          "accountOrigin": "001300090200940060",
+          "amountCommi": {
+            "amount": "0.00",
+            "currency": "COP"
+          },
+          "amountDonation": {
+            "amount": "120000",
+            "currency": "COP"
+          },
+          "amountOperation": {
+            "amount": 120000,
+            "currency": "COP"
+          },
+          "dateExpiration": "05/2032",
+          "dateOper": "2026-08-06",
+          "descProvision": "COMPRA FARMATODO 93",
+          "eCard": true,
+          "eci": "5",
+          "hourOperation": "100000",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA ESTABLECIMIENTO",
+          "origin": "2903",
+          "placeOperation": "FALABELLA CALLE 80 BOGOTA",
+          "policy": {
+            "amountIva": "0",
+            "amountPolicy": "0.00",
+            "id": "0000000000",
+            "positionIndicator": "1"
+          },
+          "process": {
+            "date": "2026-08-06",
+            "hour": "100005",
+            "responseOperati": "Exitosa"
+          },
+          "responseOperati": "Exitosa",
+          "terminal": {
+            "id": "6789012345"
+          },
+          "version": "2",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "000060"
+          },
+          "interest": 0
+        },
+        {
+          "id": "TXK09",
+          "accountDesti": "4467",
+          "accountOrigin": "001300090200940060",
+          "amountCommi": {
+            "amount": "0.00",
+            "currency": "COP"
+          },
+          "amountDonation": {
+            "amount": "120000",
+            "currency": "COP"
+          },
+          "amountOperation": {
+            "amount": 120000,
+            "currency": "COP"
+          },
+          "dateExpiration": "05/2032",
+          "dateOper": "2026-08-06",
+          "descProvision": "COMPRA CINE COLOMBIA",
+          "eCard": true,
+          "eci": "5",
+          "hourOperation": "100000",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA ESTABLECIMIENTO",
+          "origin": "2903",
+          "placeOperation": "FALABELLA CALLE 80 BOGOTA",
+          "policy": {
+            "amountIva": "0",
+            "amountPolicy": "0.00",
+            "id": "0000000000",
+            "positionIndicator": "1"
+          },
+          "process": {
+            "date": "2026-08-06",
+            "hour": "100005",
+            "responseOperati": "Exitosa"
+          },
+          "responseOperati": "Exitosa",
+          "terminal": {
+            "id": "6789012345"
+          },
+          "version": "2",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "000060"
+          },
+          "interest": 0
+        },
+        {
+          "id": "TXK10",
+          "accountDesti": "4467",
+          "accountOrigin": "001300090200940060",
+          "amountCommi": {
+            "amount": "0.00",
+            "currency": "COP"
+          },
+          "amountDonation": {
+            "amount": "120000",
+            "currency": "COP"
+          },
+          "amountOperation": {
+            "amount": 120000,
+            "currency": "COP"
+          },
+          "dateExpiration": "05/2032",
+          "dateOper": "2026-08-06",
+          "descProvision": "COMPRA LIBRERIA NACIONAL",
+          "eCard": true,
+          "eci": "5",
+          "hourOperation": "100000",
+          "observations": "OPER FINALIZADA CON EXITO |COMPRA ESTABLECIMIENTO",
+          "origin": "2903",
+          "placeOperation": "FALABELLA CALLE 80 BOGOTA",
+          "policy": {
+            "amountIva": "0",
+            "amountPolicy": "0.00",
+            "id": "0000000000",
+            "positionIndicator": "1"
+          },
+          "process": {
+            "date": "2026-08-06",
+            "hour": "100005",
+            "responseOperati": "Exitosa"
+          },
+          "responseOperati": "Exitosa",
+          "terminal": {
+            "id": "6789012345"
+          },
+          "version": "2",
+          "statementDetail": {
+            "statementId": "0001",
+            "movementId": "000060"
+          },
+          "interest": 2400
+        }
+      ]
+    }
+  ],
+  "pagination": {
+    "links": {
+      "first": "/cards/v2/operations?operationDate=20260806&cardId=4912680517940060&pageSize=100"
+    },
+    "page": 1,
+    "totalPages": 1,
+    "totalElements": 1,
+    "pageSize": 100
+  }
+}

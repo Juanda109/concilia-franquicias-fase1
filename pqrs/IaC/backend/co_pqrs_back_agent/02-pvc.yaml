@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: smb-pvc
+  labels:
+    app: agent
+    app.kubernetes.io/part-of: backend
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: cephfs-sc
+  resources:
+    requests:
+      storage: 10Gi
+  volumeMode: Filesystem

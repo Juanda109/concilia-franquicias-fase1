@@ -1,0 +1,23 @@
+FROM python:3.14-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app/src
+
+WORKDIR /app
+
+# Copiar manifiesto e instalar dependencias ligeras
+COPY pyproject.toml ./
+RUN pip install --no-cache-dir \
+    "fastapi>=0.135.2" "uvicorn>=0.35.0" "pydantic>=2.12.5" \
+    "httpx>=0.28.1" "python-dotenv>=1.2.2" "psycopg[binary]>=3.2.12"
+
+# Copiar el código fuente y artefactos
+COPY src ./src
+COPY config ./config
+COPY data ./data
+COPY main.py ./
+
+EXPOSE 8004
+
+CMD ["uvicorn", "--app-dir", "src", "infrastructure.entrypoint.fastapi_app:app", "--host", "0.0.0.0", "--port", "8004"]

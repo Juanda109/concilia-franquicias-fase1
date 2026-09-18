@@ -1,0 +1,27 @@
+version: 1
+start_step: "1"
+steps:
+  "1":
+    question: |
+      Descargar tus certificados tributarios es muy fácil. Te explico cómo hacerlo desde tu App BBVA y BBVA Net:
+
+      ## 1. Desde tu App BBVA (Móvil 📱)
+
+      - Abre tu app e inicia sesión.
+      - Ingresa a la opción **Opera** en el menú inferior. También puedes abrir el menú lateral.
+      - Escoge la opción **Certificados tributarios**.
+      - Selecciona el año que necesites consultar y toca el botón **Enviar a mi correo**.
+
+      ¡Listo! Te enviaremos los documentos en PDF a tu correo electrónico registrado. Para poder consultarlos, deberás ingresar como contraseña tu número de documento.
+
+      ## 2. Desde BBVA Net (Banca Online 💻)
+
+      - Ingresa a `bbva.com.co` y haz clic en **Acceso**. Inicia sesión con tu documento de identidad y contraseña de la Net.
+      - En la parte derecha, ubica la sección **Descarga tus certificados** e ingresa a **Otros certificados**.
+      - Elige **Tributarios** y selecciona el certificado que requieras (ej. Retención, GMF, Saldos e intereses).
+      - Indica el año gravable que deseas consultar y haz clic en descargar. Tu PDF estará listo al instante.
+    input_type: "choice"
+    options:
+      - key: "continuar"
+        label: "Continuar"
+        next_step: "satisfaction_check"

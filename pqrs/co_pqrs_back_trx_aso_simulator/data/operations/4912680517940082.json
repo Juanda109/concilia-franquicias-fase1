@@ -1,0 +1,168 @@
+{
+ "data": [
+  {
+   "customer": {
+    "fullName": "CLIENTE M ECI CERO",
+    "firstName": "CLIENTE",
+    "secondName": "H",
+    "lastName": "PRUEBA",
+    "contact": {
+     "phone": "3001234567",
+     "email": "h@mail.com"
+    }
+   },
+   "operations": [
+    {
+     "id": "TXM01",
+     "accountDesti": "0070",
+     "accountOrigin": "001300090200940067",
+     "amountCommi": {
+      "amount": "0.00",
+      "currency": "COP"
+     },
+     "amountDonation": {
+      "amount": "123000",
+      "currency": "COP"
+     },
+     "amountOperation": {
+      "amount": 145000,
+      "currency": "COP"
+     },
+     "dateExpiration": "10/2032",
+     "dateOper": "2026-08-06",
+     "descProvision": "COMPRA ECI CERO CONTRACARGABLE",
+     "eCard": true,
+     "eci": "0",
+     "hourOperation": "102000",
+     "observations": "OPER FINALIZADA CON EXITO |COMPRA INTERNET SIN 3DS",
+     "observation_desc": "Operacion exitosa",
+     "origin": "2910",
+     "placeOperation": "PRUEBA ECI9",
+     "policy": {
+      "amountIva": "0",
+      "amountPolicy": "0.00",
+      "id": "0000000000",
+      "positionIndicator": "1"
+     },
+     "process": {
+      "date": "2026-08-06",
+      "hour": "102010",
+      "responseOperati": "Exitosa"
+     },
+     "responseOperati": "Exitosa",
+     "terminal": {
+      "id": "6789012350"
+     },
+     "version": "2",
+     "statementDetail": {
+      "statementId": "0001",
+      "movementId": "000067"
+     }
+    },
+    {
+     "id": "TXM02",
+     "accountDesti": "0070",
+     "accountOrigin": "001300090200940067",
+     "amountCommi": {
+      "amount": "0.00",
+      "currency": "COP"
+     },
+     "amountDonation": {
+      "amount": "123000",
+      "currency": "COP"
+     },
+     "amountOperation": {
+      "amount": 88000.0,
+      "currency": "COP"
+     },
+     "dateExpiration": "10/2032",
+     "dateOper": "2026-08-06",
+     "descProvision": "COMPRA SEGUNDA NO RECONOCIDA",
+     "eCard": true,
+     "eci": "0",
+     "hourOperation": "102000",
+     "observations": "OPER FINALIZADA CON EXITO |COMPRA INTERNET SIN 3DS",
+     "observation_desc": "Operacion exitosa",
+     "origin": "2910",
+     "placeOperation": "PRUEBA ECI9",
+     "policy": {
+      "amountIva": "0",
+      "amountPolicy": "0.00",
+      "id": "0000000000",
+      "positionIndicator": "1"
+     },
+     "process": {
+      "date": "2026-08-06",
+      "hour": "102010",
+      "responseOperati": "Exitosa"
+     },
+     "responseOperati": "Exitosa",
+     "terminal": {
+      "id": "6789012350"
+     },
+     "version": "2",
+     "statementDetail": {
+      "statementId": "0001",
+      "movementId": "000067"
+     }
+    },
+    {
+     "id": "TXM03",
+     "accountDesti": "0070",
+     "accountOrigin": "001300090200940067",
+     "amountCommi": {
+      "amount": "0.00",
+      "currency": "COP"
+     },
+     "amountDonation": {
+      "amount": "123000",
+      "currency": "COP"
+     },
+     "amountOperation": {
+      "amount": 64000.0,
+      "currency": "COP"
+     },
+     "dateExpiration": "10/2032",
+     "dateOper": "2026-08-06",
+     "descProvision": "COMPRA TERCERA NO RECONOCIDA",
+     "eCard": true,
+     "eci": "0",
+     "hourOperation": "102000",
+     "observations": "OPER FINALIZADA CON EXITO |COMPRA INTERNET SIN 3DS",
+     "observation_desc": "Operacion exitosa",
+     "origin": "2910",
+     "placeOperation": "PRUEBA ECI9",
+     "policy": {
+      "amountIva": "0",
+      "amountPolicy": "0.00",
+      "id": "0000000000",
+      "positionIndicator": "1"
+     },
+     "process": {
+      "date": "2026-08-06",
+      "hour": "102010",
+      "responseOperati": "Exitosa"
+     },
+     "responseOperati": "Exitosa",
+     "terminal": {
+      "id": "6789012350"
+     },
+     "version": "2",
+     "statementDetail": {
+      "statementId": "0001",
+      "movementId": "000067"
+     }
+    }
+   ]
+  }
+ ],
+ "pagination": {
+  "links": {
+   "first": "/cards/v2/operations?operationDate=20260806&cardId=4912680517940067&pageSize=100"
+  },
+  "page": 1,
+  "totalPages": 1,
+  "totalElements": 1,
+  "pageSize": 100
+ }
+}

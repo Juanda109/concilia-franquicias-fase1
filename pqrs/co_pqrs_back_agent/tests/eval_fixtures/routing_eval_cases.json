@@ -1,0 +1,2634 @@
+[
+  {
+    "mensaje": "buenas tardes",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "no debe ir a formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "no debe ir a formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Buenas tardes",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "no debe ir a formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "buenos dias",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "no debe ir a formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Buenos días",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "no debe ir a formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "hola",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "no debe ir a formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Buen dia",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "no debe ir a formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Buen día",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "no debe ir a formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Buenos dias",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "no debe ir a formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Buenas Noches",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "no debe ir a formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Buenas noches",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "no debe ir a formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Buneas tardes",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "no debe ir a formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Buenos dias.",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "no debe ir a formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "buen dia",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "no debe ir a formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Holaa",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "no debe ir a formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "buenas",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "no debe ir a formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Buen más tardes",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "no debe ir a formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "HOLA",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "no debe ir a formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Buenas",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "no debe ir a formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Buenso dias",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "no debe ir a formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "BUENAS TARDES",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "no debe ir a formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hoka",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "no debe ir a formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "BUEN DIA",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "no debe ir a formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "buenas noches",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "no debe ir a formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "BUENOS  DIAS",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "no debe ir a formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "buen día",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "no debe ir a formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "buenos días",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "no debe ir a formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Bns días",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "typo real de producción",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola como vas",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "typo real de producción",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "buena tarde",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "typo real de producción",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Bns dias",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "typo real de producción",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "PARA COLOCAR UN PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito registrar un PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "radicar pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "realizar una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Quiero radicar una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "quiero radicar una PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito radicar una queja",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito hacer una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Radicar PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito enviar una solicitud",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "quiero poner una pqrs",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "pqrs",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito radicar una PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito poner una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Pqrs",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "como radicar pqrs",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "quiero registrar una queja",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito colocar una solicitud",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Radicar pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "como radicar una PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "quiero radicar una queja",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "RADICAR PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "radicar PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito radicar una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Radicar un pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito radicar un Pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Quiero poner un PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito poner una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "QUIERO HACER UNA PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "NECESITO RADICAR UNA PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "quiero colocar una queja",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Buenos dias para colocar un pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Quiero radicar un pqrs",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito radicar un derecho de petición",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "radicar pqrs",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito presentar una petición",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito poner un reclamo",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "hola necesito poner un pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "como hacer un PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito radicar un derecho de peticion",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "colocar pqrs",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito colocar un pqrs",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "NECESITO INSTAURAR UNA PQRS",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "quiero poner una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "colocar una PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito poner una pqrs",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola deseo radicar una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "hola quiero radicar una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Quiero una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Reclamacion",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito radicar PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "montar reclamacion",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Poner una PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Quiero hacer una reclamación",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Quiero poner una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hacer pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "hola necesito hacer una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito colocar una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola necesito radicar PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Quiero radicar pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito poner una pqrs",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Radicar un PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "quiero enviar un pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito poner una PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito enviar un pqrs",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola, necesito radicar pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Enviar pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito radicar un pqrs",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Requiero radicar una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Como radicar una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "quiero poner un pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "QUIERO COLOCAR UNA QUEJA",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito colocar una PQRS",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "HOLA QUIERO PONER UN PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "quiero montar un PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "radicar una PQRS",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Radicar una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Radicar una PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito poner un pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Quiero radicar un PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito enviar un PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "colocar un pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito radicar una solicitud",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito radicar una pqrs",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito montar una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "enviar un pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "quiero poner un pqrs",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Poner PQRS",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "RADICAR UNA PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "queja",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Solicitud",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "radicar queja",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola Necesito poner un reclamo",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Quiero colocar una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito enviar una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "quiero radicar una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Quiero poner un derecho de petición",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "colocar una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Quiero instaurar una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "hola, quieroradicar un pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "requiero radicar un derecho de peticion",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "hola, necesito radicar pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Deseo radicar un PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "hola quiero poner una reclamación",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito radicar un pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "voy a hacer una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Buenas tardes para poner una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "buenas tardes necesito colocar una PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "quiero montar un pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "hola, quiero presentar una reclamacion",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "radicar una queja",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "poner una peticion",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "hola buenos dias, necesito enviar un derecho de petición",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "quiero realizar un pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito colocar un derecho de peticion",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Buenas tardes, requiero radicar un derecho de peticion",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Quiero realizar una PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Radicar Derecho de Peticion",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "radicar derecho de peticion",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "deseo hacer una PQRS",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito hacer una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "una queja",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Colocar una PQRS",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola, quiero hacer un PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "radicar un pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "montar PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Quiero poner una queja",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Quiero hacer un PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "requiero radicar PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "QUIERO PONER PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola necesito colocar un pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito hacer una petición",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "presentar una peticion",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Colocar una reclamación",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "deseo colocar una pqrs",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "radicar una PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Quiero hacer una queja",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Quiero radicar un PQRS",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Queja",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "como poner una PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Poner una queja",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "presentar peticion",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "deseo radicar un pqrs",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "hola, necesito poner una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola necesito colocar un reclamo",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "RADICAR PETICIÓN",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Quiero poner un reclamo",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito colocar un PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Quiero radicar una PQRS",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Quiero realizar una solicitud",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Requiero presentar una PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "quiero radicar un derecho de petición",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito poner una queja",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Requiero poner una PQRS",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "quiero colocar una peticion",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito enviar un derecho de petición",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Buenas tardes, necesito radicar un PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito presentar una PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Deseo realizar una queja",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito radicar una PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Quiero radicar un derecho de petición",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "buena tarde , requiero realizar una PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola, PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola necesito enviar un derecho de peticion",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito enviar una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "poner pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito hacer una reclamacion",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola, para poner una PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito colocar una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "radicar una pqrs",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Quiero montar un PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "quiero realizar una PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "voy a hacer una PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "quiero poner una pQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "colocar un pqrs",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "hola buenos dias necesito enviar una PQRs",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Requiero realizar una PQRS",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito radicar una pqrs",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "hola, necesito radicar una solicitud",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "quiero radicar un derecho de peticion",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "hacer pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito colocar una queja",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "derecho de peticion",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "poner una PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "como colocar una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Colocar pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Deseo radicar una queja",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito enviar PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito radicar una PQr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito realizar una PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola necesito hacer una queja",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Quiero montar una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito radicar un pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola, quiero realizar un pqrs",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "deseo radicar PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "deseo radicar una PQRS",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "para radicar un PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Radicar PQRS",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "hola, necesito realizar un pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito radicar un derecho de peticiòn",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "quiero hacer un pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "radicar una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito radicar una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "presentar pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito colocar una PQRS",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "quiero presentar una queja",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Quiero radicar un Derecho de Petición",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "neceSito poner una PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Realizar una PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Como poner una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "buenos días necesito poner una PQR",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito registrar un PQRS",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "voy a realizar un pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Buena tarde pqrs",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "para una queja",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola quiero presentar un peticion",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "deseo instaurar una pqrs",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "meta sin causal",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "radicar una solicitud",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "equivalente; hoy incoherente",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "formulario pqr",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "equivalente; hoy incoherente",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Donde envio un pqrs",
+    "categoria": "meta_peticion",
+    "esperado": "pedir_motivo",
+    "nota": "equivalente; hoy incoherente",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "tengo algún reporte",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "embargo/desembargo/reporte SI es centrales por catalogo",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "quiero registrar una queja",
+    "categoria": "no_centrales",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "sin tema de catalogo: formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola tengo un reporte",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "embargo/desembargo/reporte SI es centrales por catalogo",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola como estas, me puedes por favor ayudar a validar un reporte que tengo ante las centrales de información",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "embargo/desembargo/reporte SI es centrales por catalogo",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Me encuentro embargada, pasé la solicitud de desembargo, solicito un radicado o confirmación de recibo del desembargo",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "embargo/desembargo/reporte SI es centrales por catalogo",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "se me hizo descuento el 10 de julio  por concepto de un embardo por valor de $300000 necesito una certificacion de ese retiro0",
+    "categoria": "no_centrales",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "sin tema de catalogo: formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito un certificado de desembargo d emi cuenta bbva",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "embargo/desembargo/reporte SI es centrales por catalogo",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "hola tengo mi cuenta embargada y voy a montar un derecho de peticion",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "embargo/desembargo/reporte SI es centrales por catalogo",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola blue necesito un certificado donde conste que mi cuenta no presenta embargos",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "embargo/desembargo/reporte SI es centrales por catalogo",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola Blue. Tengo un infonformidad con el tema con las tarjetasbde crédito. Una de las tarjetas de credito tiene plazo limite de pago el 18 de agosto y ésta booqueada porque pague la cuota anterior atrasada. Y esto menperjudica en las otras dos tarjetas de credito que tengo. Hasta el momentlo no tengo ninguna deuda y creo que se debe tener en cuenta que ya cancelé",
+    "categoria": "no_centrales",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "sin tema de catalogo: formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito poner un PQR por el bloqueo de mi cuenta de ahorros",
+    "categoria": "no_centrales",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "bloqueo/congelamiento: el catalogo lo manda al formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "cuenta embargada",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "embargo/desembargo/reporte SI es centrales por catalogo",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "No me actualizado los reportes en las centrales riesgo",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "embargo/desembargo/reporte SI es centrales por catalogo",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Como hago para el envio del documento para desembargar mi cuenta",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "embargo/desembargo/reporte SI es centrales por catalogo",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Solicito escalar el caso y que BBVA informe claramente las fechas exactas que originan los 53 días de mora y el detalle que sustenta dicho cálculo, así como aclarar la afirmación sobre mi comportamiento de pago.",
+    "categoria": "no_centrales",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "sin tema de catalogo: formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito hacer un pqr para quitar un embargo",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "embargo/desembargo/reporte SI es centrales por catalogo",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "buenos doas , es que tengo un saldo pendiente por pagar de un seguro del vehiculo el cual tengo la carta del endoso y aun no me quitan ese saldo y eso me esta generando intereses de mora y reportes negativo que debo hacer",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "embargo/desembargo/reporte SI es centrales por catalogo",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito un paz y salvo, pues me estan llegando mensajes de que tengo el pago vencido de mi tarjeta de credito pero yo no tengo ningun producto con BBA en este momento",
+    "categoria": "no_centrales",
+    "esperado": "paz_y_salvo",
+    "nota": "pide el documento; el catalogo lo manda a paz_y_salvo",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Deseo que actualicen mi reporte de mi tarjeta de credito",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "embargo/desembargo/reporte SI es centrales por catalogo",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola, porque me aparece un embargo?",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "embargo/desembargo/reporte SI es centrales por catalogo",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Acabobde recibir el extracto de una tarjeta de credito que esta en mora, que yo no solicite y jamas recibí. El unico producto que tengo con ustedes es un credito vehicular",
+    "categoria": "no_centrales",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "sin tema de catalogo: formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito radicar el paz y salvo del embargo",
+    "categoria": "no_centrales",
+    "esperado": "paz_y_salvo",
+    "nota": "pide el documento; el catalogo lo manda a paz_y_salvo",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Buenas tardes tengo mi cuenta embargada pero ya tengo orden del juzgado de levantamiento de orden judicial necesito que por favor me levante el embargo",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "embargo/desembargo/reporte SI es centrales por catalogo",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "El Banco me tiene en estado desaparecida como me corrigen ese estado",
+    "categoria": "no_centrales",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "sin tema de catalogo: formulario",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "No se ha levantado el embargo",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "embargo/desembargo/reporte SI es centrales por catalogo",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola buen dia necesito realizar proceso de desembargo, ya tengo carta de secretaria de movilidad pero ya no vivo enla ciudad donde esta mi oficina, pedi cambio y no lo realizaron por el embargo",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "embargo/desembargo/reporte SI es centrales por catalogo",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Me están cobrando seguros en mis dos tarjetas de crédito y no he dado en ningún momento alguna autorización para ello",
+    "categoria": "no_txnr",
+    "esperado": "no_txnr",
+    "nota": "cobro recurrente, no transacción puntual",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "El banco me está haciendo descuentos x domicializacion, uno x 8350 y otro por 1587, por favor no se de q es esos de cuántos, solicito el reembolso de ese dinero, además x que ya son varios meses.",
+    "categoria": "no_txnr",
+    "esperado": "no_txnr",
+    "nota": "cobro recurrente, no transacción puntual",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito bloquear a edrems que veo que me estan haciendo descuentos de mi tarjeta de credito que no he autorizado.... e dreams prime $39.900 y cobro prima seguro individual x $4.800...",
+    "categoria": "no_txnr",
+    "esperado": "no_txnr",
+    "nota": "cobro recurrente, no transacción puntual",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "ME SIGUEN DESCONTANDO EL PAGO DE UNA AFILIACION A DISNEY PLUS, CUANDO LLEVO MESES QUE NO TENGO ESA MEMBRESIA",
+    "categoria": "no_txnr",
+    "esperado": "no_txnr",
+    "nota": "cobro recurrente, no transacción puntual",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "el dia de hoy 11/08/2026 me llega un extracto de mi credito donde me estan cobrando un seguro del carro el cual nuca solicite ni he tomado con el banco ya que desde un principio lo adquirí con axa colpatria por lo anterior solicito me lo descuenten del cobro realizado el valor es de 199.880.00 quedo atenta a su respuesta flor angela pazmiño florangelapaz@hotmail.com",
+    "categoria": "no_txnr",
+    "esperado": "no_txnr",
+    "nota": "cobro recurrente, no transacción puntual",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito pasar una PQr en forma de queja y reclamo debido a que hubo un movimiento de dinero pagando un seguro por la uma modica de $34.745, y yo no autorice ni tenia conociminento de esto, me podrias dar el enlace para hacer la PQr?",
+    "categoria": "no_txnr",
+    "esperado": "no_txnr",
+    "nota": "cobro recurrente, no transacción puntual",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Por qué hicieron un cargo de un seguro en mi tarjeta de crédito que no solicité, ni aprobé y sin llegar mensaje del carho al correo",
+    "categoria": "no_txnr",
+    "esperado": "no_txnr",
+    "nota": "cobro recurrente, no transacción puntual",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "no estoy de acuerdo con mi reporte en centrales",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "caso legítimo de buró",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "tengo un problema en centrales de riesgo",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "caso legítimo de buró",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "hola, me gustaría revisar si me han enviado alguna notificación de Centrales de Riesgos",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "caso legítimo de buró",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "solicitar el levantamiento de un reporte negativo en centrales de riesgo",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "caso legítimo de buró",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito saber en qué central de riesgo tengo mora",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "caso legítimo de buró",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "problemas en centrales de riesgo",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "caso legítimo de buró",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "tengo un reporte en centrales",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "caso legítimo de buró",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Centrales de riesgo data crédito me sale un reporte negativo de una tarjeta de crédito terminado 1404, no me han actualizado esa información desde mes de mayo ya estamos en agosto, llame a BBVA me dijeron que esa tarjeta no sale en su base de datos.",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "caso legítimo de buró",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Eliminación reporte en centrales de riesgo ya estoy al dia",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "caso legítimo de buró",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "actualizar el reporte negativo",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "caso legítimo de buró",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "hola!! estoy súper preocupada! me podríais decir si estoy reportada en centrales de riesgos? gracias!",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "caso legítimo de buró",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola necesito actualización de la marcación ante Datacrédito debido a lo establecido en la l",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "caso legítimo de buró",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito actualizar datos porque gracias a un reporte que tengo con ustedes no he podido realizar ningún crédito, ya que hace más de 3 años pagué la deuda y tengo los paz y salvo de ambos productos pero en datacredito me sigue apareciendo uno de ellos como \"cancelado\" y no como positivo",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "caso legítimo de buró",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito que me actualicen la calificación en centrales de riesgo",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "caso legítimo de buró",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito actualización de mi calificación en las centrales de riesgo",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "caso legítimo de buró",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "como estoy en las centrales de riesgo",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "caso legítimo de buró",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Quiero que me informen si el banco me tienen castigada o vetada ya que tuve una resstructuracion que pague hace mas de 3 años",
+    "categoria": "si_centrales",
+    "esperado": "centrales_de_riesgo",
+    "nota": "caso legítimo de buró",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola, tengo un movimiento no autorizado",
+    "categoria": "si_txnr",
+    "esperado": "trx_no_reconocida",
+    "nota": "transacción puntual desconocida",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola, no reconozco varios cobros en mi cuenta de nómina bajo los conceptos “cobro adeudo com portafolio” y “cobro portafolio tarjetas”, realizados desde hace meses. No tengo productos asociados que justifiquen estos débitos. Además mi cuenta es de nómina",
+    "categoria": "si_txnr",
+    "esperado": "trx_no_reconocida",
+    "nota": "transacción puntual desconocida",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola no reconozco un movimiento en mi tarjeta de crédito",
+    "categoria": "si_txnr",
+    "esperado": "trx_no_reconocida",
+    "nota": "transacción puntual desconocida",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola, quiero poner una pqr por transacciones no reconocidas",
+    "categoria": "si_txnr",
+    "esperado": "trx_no_reconocida",
+    "nota": "transacción puntual desconocida",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Quiero reportar transacciones no autorizadas",
+    "categoria": "si_txnr",
+    "esperado": "trx_no_reconocida",
+    "nota": "transacción puntual desconocida",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "No reconozco transacciones en cajero",
+    "categoria": "si_txnr",
+    "esperado": "trx_no_reconocida",
+    "nota": "transacción puntual desconocida",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Buenas tardes, me llego notificiación de una compra con mi tarjeta de credito la cual no he hecho",
+    "categoria": "si_txnr",
+    "esperado": "trx_no_reconocida",
+    "nota": "transacción puntual desconocida",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito reportar una transacción que no reconozco con mi tarjeta debito",
+    "categoria": "si_txnr",
+    "esperado": "trx_no_reconocida",
+    "nota": "transacción puntual desconocida",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Gracias. Deseo presentar una reclamación sobre compra no reconocida ni autorizada",
+    "categoria": "si_txnr",
+    "esperado": "trx_no_reconocida",
+    "nota": "transacción puntual desconocida",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Poner un pqr sobre un movimiento de breve que no reconozco",
+    "categoria": "si_txnr",
+    "esperado": "trx_no_reconocida",
+    "nota": "transacción puntual desconocida",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Transacción no reconocida",
+    "categoria": "si_txnr",
+    "esperado": "trx_no_reconocida",
+    "nota": "transacción puntual desconocida",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "No reconozco una compra",
+    "categoria": "si_txnr",
+    "esperado": "trx_no_reconocida",
+    "nota": "transacción puntual desconocida",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Quieroo poner un par por una transacción que no reconozco",
+    "categoria": "si_txnr",
+    "esperado": "trx_no_reconocida",
+    "nota": "transacción puntual desconocida",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola tengo compras que no reconozco quiero cargar denuncia que realice en fiscalia",
+    "categoria": "si_txnr",
+    "esperado": "trx_no_reconocida",
+    "nota": "transacción puntual desconocida",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Transaccion no reconocida",
+    "categoria": "si_txnr",
+    "esperado": "trx_no_reconocida",
+    "nota": "transacción puntual desconocida",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Tengo un cobro por 1750000 en mi cuenta de ahorros y no he hecho ningun movimiento por ese valor",
+    "categoria": "si_txnr",
+    "esperado": "trx_no_reconocida",
+    "nota": "transacción puntual desconocida",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "TENGO UNA TRANSACCION QUE NO RECONOZCO",
+    "categoria": "si_txnr",
+    "esperado": "trx_no_reconocida",
+    "nota": "transacción puntual desconocida",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Fui víctima de un cambiazo de mi tarjeta débito. No entregué ni autoricé el uso de mi tarjeta y tampoco suministré mi clave. Posteriormente se realizaron cinco retiros que no reconozco ni autoricé en Sincelejo, por un total de $4.000.000. Solicito la investigación del fraude y el reintegro de los recursos.",
+    "categoria": "si_txnr",
+    "esperado": "trx_no_reconocida",
+    "nota": "transacción puntual desconocida",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "no reconozco una transacción",
+    "categoria": "si_txnr",
+    "esperado": "trx_no_reconocida",
+    "nota": "transacción puntual desconocida",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola no reconozco una transaccion",
+    "categoria": "si_txnr",
+    "esperado": "trx_no_reconocida",
+    "nota": "transacción puntual desconocida",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "reclamación transacciones no reconocidas",
+    "categoria": "si_txnr",
+    "esperado": "trx_no_reconocida",
+    "nota": "transacción puntual desconocida",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "PQR O TRANSACCIÓN NO RECONOCIDA",
+    "categoria": "si_txnr",
+    "esperado": "trx_no_reconocida",
+    "nota": "transacción puntual desconocida",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Transacciones no reconocidas, reporte por fraude por internet",
+    "categoria": "si_txnr",
+    "esperado": "trx_no_reconocida",
+    "nota": "transacción puntual desconocida",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito saber sobre una radicado por una compra no reconocida",
+    "categoria": "si_txnr",
+    "esperado": "trx_no_reconocida",
+    "nota": "transacción puntual desconocida",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Tengo un pago no reconocido de mi tarjeta de crédito, por favor reportarlo como robo. Por lo tanto deseo quien dió la orden de hacer esa transacción el 10 de agosto",
+    "categoria": "si_txnr",
+    "esperado": "trx_no_reconocida",
+    "nota": "transacción puntual desconocida",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "requiero poner una PQR por una transacción por pse no autorizada",
+    "categoria": "si_txnr",
+    "esperado": "trx_no_reconocida",
+    "nota": "transacción puntual desconocida",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Cancelacion fondo de inversion",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "cuando debo recibir los interes de un cdt el dia del vencimiento o al dia siguiente",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "no puedo monetizar un giro internacional a mi cuenta por que no lo veo disponible",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "cancelar tarjeta",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito su colaboacion con la cancelacion de un debito automatico qyue tengo de una pagina que se llama noveltells por us 16.99, ya cancele la suscripcion en mi celular pero me siguen debitando",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Buenos días, he estado mas de una semana llamando buscando asesoría sobre unos recursos internacionales que me enviaron y no me registran, nadia me da razon el estado en que se encuentran los recursos y necsito respuesta, los recursos no han sido devueltos a España lugar donde se hizo el giro",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Buenos dias quiero cancelar la cuenta en su totalidad",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola, necesito que me confirmen el proceso para cancelar el total de la deuda que tengo de crédito de vivienda con los fondos que tengo en la cuenta AFC con ustedes",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito saber si de verdad está cancelada mi tarjeta de crédito ya que tuve inconvenientes a la hora de realizar la cancelación por un pago pendiente",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Solicito la cancelación definitiva de mi cuenta de ahorros. El sistema digital me impide el cierre argumentando un saldo de 10 centavos, los cuales la misma aplicación bloquea y no permite transferir, vulnerando mi derecho a cancelar el producto",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Deseo cancelar mi cuenta de ahorros",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hace más de dos meses solicite la tarjeta física débito y no me ha llegado, en la línea telefónica no me resuelven y en las oficinas tampoco no saben decirme donde está mi tarjeta y no pueden cancelarla para darme otra",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "el dia 3 de agosto realice un pago $611000 a credito de consumo terminado en 1204 las 09:21am y dicho pago se fue a capital y no aplico a la cuota que vence el 10 de agosto. siempre realizo pagos a través de BBVA.NET y primer vez que presento novedades de esta índole, no tengo mas dinero para cubrir ese pago porque ya lo realice el día de ayer y no aplico, solicito devolución de mi dinero  a la cuenta de ahorros terminada en 9589 para pagar la cuota directamente en el banco en sucursal física y evitar interés de mora y gastos de cobranza teniendo en cuenta mi excelente comportamiento de pago",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Solicito la cancelación definitiva de mi tarjeta de crédito terminada en 6672. He intentado comunicarme telefónicamente en varias ocasiones sin éxito, ya que el sistema finaliza la llamada. Solicito la radicación y confirmación escrita de esta solicitud.",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Joan buenos días ,es que tengo el adelanto de nómina bloqueado porque debo un saldo de 5,300 pesos ,lo raro es que no puedo pagar ese valor h no se que hacer es molesto",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Buenas tardes, quiero saber por que por llamada no me deja cancelar mi tarjeta de credito",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito un asesor",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "necesito instalar un reclamo de devolucion credito libranza",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "cancelacion tarjeta de crédito",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hice una compra en temu, al cancelarla me fue devuelto el dinero que no me cobraron. Pero lugo volvieron a cargar la compre3 y el banco ya me descontó 3 cuotas. Compra no autorizada",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "informacion sobre CDT",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Pepito buenos días ,es que tengo el adelanto de nómina bloqueado porque debo un saldo de 5,300 pesos ,lo raro es que no puedo pagar ese valor h no se que hacer es molesto",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "cancelar cuenta",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "rechazar transferencia internacional",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "hola, me han cobrado dos veces un pago que hice de adelanto de nomina. como puedo solucionar el tema. Por telefono no pueden hacer nada",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hablar con un asesor",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Cancelar cuenta",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Solicito cancelar mi adelanto de nómina ya que hace años no lo uso y si me genera cobro",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "solicito un asesor",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Buenos días, necesito cancelar mi llave de bre-b inscrita",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola cómo estás? Tengo una suscripción con Chagpt pero no tengo acceso ni al número celular que registre ni al correo electrónico por eso no puedo cancelar la suscripción y el dinero sigue descontando de mi tarjeta de crédito personal necesito cancelar esa suscripción para que no me sigan cobrando un servicio que ya no puedo utilizar",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Gracias, estoy viviendo en Brasil y deseo cancelar un par de productos de bbva que soN. Seguro de Exequias y poliza hurto de tarjetas",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "El 18 de septiembre realicé una compra en la pagina de hopper por concepto de unos tiquetes, uno de los trayectos me lo cancelarony realicé una solicitud de devolución a la empresa, esta inicialmente no fue efectiva pero despues cuando en el mes de abril me apareció en el cobro total de la tarjeta nuevamente este valor, realicé la solicitud nuevamente y según la empresa el 19 de Abril se realizó de forma efectiva el reempolso por 208,930 COP, sin embargo, en los estractos de Abril, mayo, junio no aparece dicha devolución. La empresa me suministró un código como evidencia de la devolución, me comuniqué por la linea telefónica y no pudieron resolver el asunto",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito radicar una solicitud de reversión de pago por compra no recibida, artículo 51 de la Ley 1480 de 2011, sobre una transacción de mi tarjeta de crédito. Requiero número de radicado. Por favor comunícame con un asesor.",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola, mi CDT venció el 29 de julio y no lo veo en mi cuenta ni las utilidades",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "quiero cancelar las tarjetas de credito",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Necesito un asesor de confianza de banca preferencial",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Hola esolicitadona mi ogicina gestoea de mi cuenta canselar la obcion de adelanto de nomina para que ys no me aparesca esa obcion en mi cuenta y noean brindado ayuda",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "Presento una reclamación por una transferencia internacional que no ha sido abonada a mi cuenta BBVA. El envío fue realizado por un cliente el 22 de julio de 2026, quien me envió el comprobante donde consta que los fondos ya fueron entregados al banco receptor. Sin embargo, la operación no aparece registrada ni en la aplicación móvil ni en la banca por Internet, y el dinero no ha sido acreditado. Han transcurrido más de 7 días hábiles, plazo informado por el banco para este tipo de operaciones. He llamado en varias ocasiones a la línea de atención, pero no he recibido una solución; incluso algunas llamadas han sido finalizadas sin resolver mi caso. Solicito que se verifique el estado de la transferencia, se informe la causa del retraso y se realice el abono de los recursos a la mayor brevedad o se me indique qué trámite adicional debo realizar para solucionar este inconveniente.",
+    "categoria": "si_formulario",
+    "esperado": "pqrs_no_ruteo",
+    "nota": "fuera de catálogo: formulario correcto",
+    "fuente": "consolidado"
+  },
+  {
+    "mensaje": "tengo una queja",
+    "categoria": "meta_peticion",
+    "esperado": "meta_peticion",
+    "nota": "98909004_20260820 - caia al formulario",
+    "fuente": "qa_reporte"
+  },
+  {
+    "mensaje": "tengo un reclamo",
+    "categoria": "meta_peticion",
+    "esperado": "meta_peticion",
+    "nota": "patron posesivo",
+    "fuente": "qa_reporte"
+  },
+  {
+    "mensaje": "tengo una pqr",
+    "categoria": "meta_peticion",
+    "esperado": "meta_peticion",
+    "nota": "patron posesivo",
+    "fuente": "qa_reporte"
+  },
+  {
+    "mensaje": "tengo una inconformidad",
+    "categoria": "meta_peticion",
+    "esperado": "meta_peticion",
+    "nota": "patron posesivo",
+    "fuente": "qa_reporte"
+  },
+  {
+    "mensaje": "hay una queja",
+    "categoria": "meta_peticion",
+    "esperado": "meta_peticion",
+    "nota": "patron impersonal",
+    "fuente": "qa_reporte"
+  },
+  {
+    "mensaje": "tengo una queja formal",
+    "categoria": "meta_peticion",
+    "esperado": "meta_peticion",
+    "nota": "patron posesivo",
+    "fuente": "qa_reporte"
+  },
+  {
+    "mensaje": "Bule",
+    "categoria": "saludo",
+    "esperado": "saludo",
+    "nota": "2332358_20260808",
+    "fuente": "qa_reporte"
+  }
+]

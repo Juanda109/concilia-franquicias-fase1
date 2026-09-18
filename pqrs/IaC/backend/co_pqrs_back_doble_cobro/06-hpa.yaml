@@ -1,0 +1,30 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: co-pqrs-back-doble-cobro-hpa
+  labels:
+    app: co-pqrs-back-doble-cobro
+    app.kubernetes.io/part-of: backend
+# El servicio es SIN ESTADO: los casos se registran en OpenSearch desde el
+# agente, no en el disco del pod. Escalar es seguro; maxReplicas se deja en 1
+# solo por prudencia mientras el flujo esta en desarrollo.
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: co-pqrs-back-doble-cobro
+  minReplicas: 1
+  maxReplicas: 1
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80

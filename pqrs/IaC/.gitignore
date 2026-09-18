@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+
+# IDEs
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+
+# OpenShift/K8s temporales
+*.bak
+*.tmp

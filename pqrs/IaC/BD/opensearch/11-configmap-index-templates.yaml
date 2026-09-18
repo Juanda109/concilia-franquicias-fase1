@@ -1,0 +1,76 @@
+# =============================================================================
+# Index template de client-control-table
+# =============================================================================
+# OJO (03/09/2026): las ramas de este documento usan FECHAS como nombre de campo
+#
+#   daily_categories.<YYYYMMDD>.<categoria>.count
+#   monthly.<YYYY-MM>.workflows.<wf>.back_data_run_id
+#
+# asi que con mapping dinamico cada dia y cada mes anaden rutas NUEVAS al
+# esquema del indice. En produccion eso agoto el limite de 1000 campos y TODA
+# escritura empezo a responder 400 "Limit of total fields has been exceeded":
+# la del agente (que se traga la excepcion) y la de back_data. El cliente veia
+# "En este momento no puedo validar el estado de tus productos".
+#
+# De ahi el 'dynamic: false' en esas cuatro ramas: el contenido se guarda y se
+# lee igual (_source) pero NO se indexa, y nadie lo busca porque el agente lee
+# por id. Con eso el esquema no crece por mucho tiempo que pase.
+#
+# Este template solo aplica a indices NUEVOS. Para sanear uno que ya existe hay
+# un desplegable aparte:
+#   IaC/backend/co_pqrs_back_control_table_maintenance
+# =============================================================================
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: opensearch-index-templates
+data:
+  client-control-table-template.json: |
+    {
+      "index_patterns": ["client-control-table*"],
+      "priority": 100,
+      "template": {
+        "settings": {
+          "number_of_shards": 1,
+          "number_of_replicas": 1,
+          "index.mapping.total_fields.limit": 3000
+        },
+        "mappings": {
+          "dynamic": true,
+          "dynamic_templates": [
+            {
+              "monthly_workflow_data_blob": {
+                "path_match": "monthly.*.workflows.*.data",
+                "mapping": { "type": "object", "enabled": false }
+              }
+            },
+            {
+              "daily_workflow_data_blob": {
+                "path_match": "daily.*.workflows.*.data",
+                "mapping": { "type": "object", "enabled": false }
+              }
+            },
+            {
+              "top_workflow_data_blob": {
+                "path_match": "workflows.*.data",
+                "mapping": { "type": "object", "enabled": false }
+              }
+            }
+          ],
+          "properties": {
+            "client_id": { "type": "keyword" },
+            "total_interactions": { "type": "long" },
+            "last_interaction_at": { "type": "date" },
+            "last_flow_id": { "type": "keyword" },
+            "last_flow_label": { "type": "keyword" },
+            "updated_at": { "type": "date" },
+            "expires_at": { "type": "date" },
+            "workflows": { "type": "object", "dynamic": false },
+            "daily": { "type": "object", "dynamic": false },
+            "monthly": { "type": "object", "dynamic": false },
+            "daily_categories": { "type": "object", "dynamic": false },
+            "daily_sessions": { "type": "object", "dynamic": false }
+          }
+        }
+      }
+    }

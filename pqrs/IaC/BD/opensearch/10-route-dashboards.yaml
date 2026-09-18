@@ -1,0 +1,13 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: opensearch-dashboards
+spec:
+  to:
+    kind: Service
+    name: opensearch-dashboards
+  port:
+    targetPort: dashboards
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

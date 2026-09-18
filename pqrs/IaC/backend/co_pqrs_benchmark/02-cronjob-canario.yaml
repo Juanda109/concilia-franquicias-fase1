@@ -1,0 +1,145 @@
+# Canario de ruteo: el benchmark en miniatura, corriendo por horario.
+#
+# Responde "¿el agente esta bien EN ESTE MOMENTO?" de forma proactiva: cada
+# corrida conversa con el agente real usando 8 casos dorados (ejemplos
+# literales del catalogo, uno por tipologia critica). Si la precision cae o
+# la latencia sube, se ve en la corrida de hace media hora, no en un cliente.
+#
+# Se entrega SUSPENDIDO: activarlo es decision de negocio (consume tokens del
+# LLM en cada corrida). Para encenderlo:
+#   oc patch cronjob co-pqrs-benchmark-canario -p '{"spec":{"suspend":false}}'
+# o editar suspend: false y aplicar el kustomize.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: conf-pqrs-benchmark-canario-dataset
+  labels:
+    app.kubernetes.io/part-of: benchmark
+data:
+  canario_rutas_criticas.json: |
+    [
+      {
+        "question": "Me cobraron dos veces.",
+        "expect_output": "doble_cobro",
+        "nota": "canario: ejemplo literal del catalogo; si falla, el problema es el sistema, no el caso"
+      },
+      {
+        "question": "No reconozco esta compra",
+        "expect_output": "trx_no_reconocida",
+        "nota": "canario: tipologia de mayor volumen"
+      },
+      {
+        "question": "No reconozco un reporte que aparece en Datacredito",
+        "expect_output": "centrales_de_riesgo",
+        "nota": "canario: frontera clasica reporte vs transaccion"
+      },
+      {
+        "question": "Quiero ver mis ultimos movimientos",
+        "expect_output": "consulta_de_movimientos",
+        "nota": "canario: consulta simple, sin reclamo"
+      },
+      {
+        "question": "Necesito descargar el extracto de mi tarjeta del mes pasado",
+        "expect_output": "extractos_bancarios",
+        "nota": "canario: autogestion documental"
+      },
+      {
+        "question": "¿Por qué me están cobrando cuota de manejo?",
+        "expect_output": "cuota_de_manejo",
+        "nota": "canario: 'me estan cobrando' sin duplicidad"
+      },
+      {
+        "question": "No me deja hacer la transferencia porque supero el límite",
+        "expect_output": "limites_transaccionales",
+        "nota": "canario: limites operativos"
+      },
+      {
+        "question": "Me siguen descontando el pago de una afiliación a Disney Plus que ya cancelé",
+        "expect_output": "pqrs_no_ruteo",
+        "follow_ups": [
+          "Quiero reclamar por un cobro recurrente de una suscripción que ya cancelé."
+        ],
+        "nota": "canario: recurrente -> formulario (caso real de produccion ago-2026)"
+      }
+    ]
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: co-pqrs-benchmark-canario
+  labels:
+    app: co-pqrs-benchmark-canario
+    app.kubernetes.io/part-of: benchmark
+spec:
+  suspend: true
+  schedule: "*/30 7-20 * * *"   # cada 30 min en horario habil de Bogota
+  timeZone: "America/Bogota"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      ttlSecondsAfterFinished: 86400
+      template:
+        metadata:
+          labels:
+            app: co-pqrs-benchmark-canario
+        spec:
+          restartPolicy: Never
+          volumes:
+            - name: dataset
+              configMap:
+                name: conf-pqrs-benchmark-canario-dataset
+          containers:
+            - name: co-pqr-benchmark-canario
+              image: quay.apps.work.ocp.co.igrupobbva/pqr-genai/co_pqrs_benchmark:v9
+              imagePullPolicy: Always
+              command: ["python", "main.py"]
+              envFrom:
+                - configMapRef:
+                    name: conf-pqrs-benchmark-env
+              env:
+                - name: TZ
+                  value: "America/Bogota"
+                # Dataset canario desde el ConfigMap; resultados en el log del
+                # pod (queda historial de 3 corridas) y como eventos en
+                # RabbitMQ (ver mas abajo).
+                - name: MINIO_ENABLED
+                  value: "false"
+                - name: INPUT_JSON
+                  value: /data/input/canario_rutas_criticas.json
+                - name: OUTPUT_JSON
+                  value: /dev/stdout
+                - name: SUMMARY_TXT
+                  value: /tmp/summary.txt
+                # Cada corrida publica benchmark.case/benchmark.run con
+                # source=canario: la serie temporal de precision y latencia
+                # queda en pqr-benchmark-runs-* y se alerta desde Dashboards.
+                - name: RABBITMQ_ENABLED
+                  value: "true"
+                - name: BENCHMARK_SOURCE
+                  value: "canario"
+                - name: RUN_NAME
+                  value: "canario_rutas_criticas"
+                - name: RABBITMQ_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: rabbitmq-secret
+                      key: username
+                - name: RABBITMQ_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: rabbitmq-secret
+                      key: password
+              volumeMounts:
+                - name: dataset
+                  mountPath: /data/input
+                  readOnly: true
+              resources:
+                requests:
+                  cpu: 200m
+                  memory: 256Mi
+                limits:
+                  cpu: 500m
+                  memory: 512Mi

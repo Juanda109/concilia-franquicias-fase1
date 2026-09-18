@@ -1,0 +1,267 @@
+# Alerta del canario de ruteo sobre el OpenSearch de ANALITICA.
+#
+# Tres objetos, en este orden de dependencia:
+#   1. smtp_account  (Notifications plugin)  -> relay SMTP interno de BBVA, sin auth.
+#   2. email channel (Notifications plugin)  -> destinatarios; referencia al smtp_account.
+#   3. monitor       (Alerting plugin)       -> cada 30 min lee el ULTIMO benchmark.run
+#                                              con source=canario en pqr-benchmark-runs-*
+#                                              y dispara si precision_pct < umbral.
+#
+# Los tres JSON se aplican con el Job 12-job-bootstrap-alerting.yaml, que hace el
+# upsert idempotente y sustituye los marcadores __...__ (umbral, destinatarios,
+# ventana). El UMBRAL es PROVISIONAL (decision pendiente de Fabian): se cambia en
+# la env CANARIO_PRECISION_THRESHOLD del Job, no aqui.
+#
+# Los plugins alerting y notifications vienen incluidos en la imagen
+# opensearchproject/opensearch:2.13.0 (03-deployment.yaml); no hay que instalar nada.
+# SMTP: mismo relay que co_pqrs_back_report (IaC/backend/co_pqrs_back_report/00-configmap.yaml)
+# y que co_pqrs_back_data: mailB.bbva.com.co:25, sin autenticacion ni TLS -> no requiere Secret.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: opensearch-analytics-alerting
+  labels:
+    app.kubernetes.io/part-of: elk-metrics
+data:
+  # 1) Cuenta SMTP del Notifications plugin. config_id fijo para que el bootstrap
+  #    pueda comprobar existencia y actualizar en vez de duplicar.
+  notification-smtp-account.json: |
+    {
+      "config_id": "pqr-analytics-smtp",
+      "config": {
+        "name": "pqr-analytics-smtp",
+        "description": "Relay SMTP interno BBVA (mailB.bbva.com.co:25, sin auth). Mismo que co_pqrs_back_report.",
+        "config_type": "smtp_account",
+        "is_enabled": true,
+        "smtp_account": {
+          "host": "mailB.bbva.com.co",
+          "port": 25,
+          "method": "none",
+          "from_address": "agente_pqrs@bbva.com"
+        }
+      }
+    }
+
+  # 2) Canal de notificacion tipo email. __ALERT_RECIPIENTS_JSON__ lo construye el
+  #    Job a partir de la env ALERT_RECIPIENTS (lista separada por comas).
+  notification-channel-email.json: |
+    {
+      "config_id": "pqr-benchmark-canario-email",
+      "config": {
+        "name": "pqr-benchmark-canario-email",
+        "description": "Correo de alerta del canario de ruteo PQRS (precision del benchmark bajo umbral).",
+        "config_type": "email",
+        "is_enabled": true,
+        "email": {
+          "email_account_id": "pqr-analytics-smtp",
+          "recipient_list": [__ALERT_RECIPIENTS_JSON__],
+          "email_group_id_list": []
+        }
+      }
+    }
+
+  # 3) Monitor query-level del Alerting plugin.
+  #    - Corre cada 30 min (mismo ritmo que el CronJob co-pqrs-benchmark-canario).
+  #    - Consulta: el ULTIMO documento event=benchmark.run con source=canario dentro
+  #      de la ventana __ALERT_LOOKBACK__ (default 24h; evita que una corrida vieja
+  #      siga disparando dias despues de apagar el canario).
+  #    - Trigger: hay un hit y su precision_pct < __PRECISION_THRESHOLD__ (PROVISIONAL).
+  #    - Accion: email por el canal pqr-benchmark-canario-email, con throttle de
+  #      120 min para no repetir el mismo correo en cada ciclo.
+  #    Los marcadores __...__ los sustituye el Job 12 antes del PUT/POST.
+  monitor-benchmark-canario-precision.json: |
+    {
+      "type": "monitor",
+      "name": "pqr-benchmark-canario-precision",
+      "monitor_type": "query_level_monitor",
+      "enabled": true,
+      "schedule": {
+        "period": { "interval": 30, "unit": "MINUTES" }
+      },
+      "inputs": [
+        {
+          "search": {
+            "indices": ["pqr-benchmark-runs-*"],
+            "query": {
+              "size": 1,
+              "sort": [ { "@timestamp": { "order": "desc" } } ],
+              "_source": [
+                "@timestamp", "run_id", "run_name", "flow", "source", "environment",
+                "catalog_version", "llm_model", "precision_pct", "precision_workflow_pct",
+                "cases_total", "cases_ok", "cases_unresolved", "routing_p95_s", "e2e_p95_s"
+              ],
+              "query": {
+                "bool": {
+                  "filter": [
+                    { "term":  { "event":  "benchmark.run" } },
+                    { "term":  { "source": "canario" } },
+                    { "range": { "@timestamp": { "gte": "now-__ALERT_LOOKBACK__" } } }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "query_level_trigger": {
+            "name": "precision-canario-bajo-umbral",
+            "severity": "2",
+            "condition": {
+              "script": {
+                "lang": "painless",
+                "source": "def hits = ctx.results[0].hits.hits; if (hits.size() == 0) { return false; } def p = hits[0]._source.precision_pct; return p != null && p < __PRECISION_THRESHOLD__;"
+              }
+            },
+            "actions": [
+              {
+                "name": "email-canario-precision",
+                "destination_id": "pqr-benchmark-canario-email",
+                "subject_template": {
+                  "lang": "mustache",
+                  "source": "[PQRS][{{ctx.results.0.hits.hits.0._source.environment}}] Canario de ruteo bajo umbral: {{ctx.results.0.hits.hits.0._source.precision_pct}}% (umbral __PRECISION_THRESHOLD__%)"
+                },
+                "message_template": {
+                  "lang": "mustache",
+                  "source": "El ultimo canario de ruteo del agente PQRS quedo por debajo del umbral de precision.\n\nMonitor        : {{ctx.monitor.name}}\nTrigger        : {{ctx.trigger.name}} (severidad {{ctx.trigger.severity}})\nPeriodo        : {{ctx.periodStart}} -> {{ctx.periodEnd}}\n\nCorrida        : {{ctx.results.0.hits.hits.0._source.run_id}}\nFlujo          : {{ctx.results.0.hits.hits.0._source.flow}}\nAmbiente       : {{ctx.results.0.hits.hits.0._source.environment}}\nCatalogo       : {{ctx.results.0.hits.hits.0._source.catalog_version}}\nModelo LLM     : {{ctx.results.0.hits.hits.0._source.llm_model}}\n\nprecision_pct  : {{ctx.results.0.hits.hits.0._source.precision_pct}}  (umbral provisional: __PRECISION_THRESHOLD__)\nprecision_wf   : {{ctx.results.0.hits.hits.0._source.precision_workflow_pct}}\ncasos          : {{ctx.results.0.hits.hits.0._source.cases_ok}} ok / {{ctx.results.0.hits.hits.0._source.cases_total}} total / {{ctx.results.0.hits.hits.0._source.cases_unresolved}} sin resolver\nrouting p95 s  : {{ctx.results.0.hits.hits.0._source.routing_p95_s}}\ne2e p95 s      : {{ctx.results.0.hits.hits.0._source.e2e_p95_s}}\n\nRevisar el tablero 'PQRS Benchmark' en OpenSearch Dashboards (index pattern pqr-benchmark-runs-*) y los casos con acierto=false de esa run_id.\nGuia: docs/METRICAS_CAMPOS_Y_VISUALIZACIONES.md, seccion 6."
+                },
+                "throttle_enabled": true,
+                "throttle": { "value": 120, "unit": "MINUTES" }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  monitor-benchmark-canario-ruta-caida.json: |
+    {
+      "type": "monitor",
+      "name": "pqr-benchmark-canario-ruta-caida",
+      "monitor_type": "bucket_level_monitor",
+      "enabled": true,
+      "schedule": { "period": { "interval": 30, "unit": "MINUTES" } },
+      "inputs": [
+        {
+          "search": {
+            "indices": ["pqr-benchmark-runs-*"],
+            "query": {
+              "size": 0,
+              "query": {
+                "bool": {
+                  "filter": [
+                    { "term":  { "event":   "benchmark.case" } },
+                    { "term":  { "source":  "canario" } },
+                    { "term":  { "acierto": false } },
+                    { "range": { "@timestamp": { "gte": "now-__RUTA_CAIDA_LOOKBACK__" } } }
+                  ]
+                }
+              },
+              "aggregations": {
+                "por_ruta": {
+                  "composite": {
+                    "sources": [ { "ruta": { "terms": { "field": "workflow_expect" } } } ]
+                  },
+                  "aggregations": {
+                    "corridas": { "cardinality": { "field": "run_id" } }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "bucket_level_trigger": {
+            "name": "ruta-critica-caida",
+            "severity": "1",
+            "condition": {
+              "buckets_path": { "corridas": "corridas" },
+              "parent_bucket_path": "por_ruta",
+              "script": {
+                "lang": "painless",
+                "source": "params.corridas >= __RUTA_CAIDA_MIN_CORRIDAS__"
+              }
+            },
+            "actions": [
+              {
+                "name": "email-ruta-caida",
+                "destination_id": "pqr-benchmark-canario-email",
+                "action_execution_policy": { "action_execution_scope": { "per_execution": {} } },
+                "throttle_enabled": true,
+                "throttle": { "value": 60, "unit": "MINUTES" },
+                "subject_template": {
+                  "lang": "mustache",
+                  "source": "[PQRS] Ruta critica de ruteo caida: {{#ctx.newAlerts}}{{bucket_keys}} {{/ctx.newAlerts}}{{#ctx.dedupedAlerts}}{{bucket_keys}} {{/ctx.dedupedAlerts}}"
+                },
+                "message_template": {
+                  "lang": "mustache",
+                  "source": "Una o mas rutas criticas fallaron en al menos __RUTA_CAIDA_MIN_CORRIDAS__ corridas seguidas del canario (ventana now-__RUTA_CAIDA_LOOKBACK__), aunque la precision agregada siga alta.\n\nRutas nuevas caidas   : {{#ctx.newAlerts}}{{bucket_keys}} {{/ctx.newAlerts}}\nRutas que siguen caidas: {{#ctx.dedupedAlerts}}{{bucket_keys}} {{/ctx.dedupedAlerts}}\nRutas recuperadas     : {{#ctx.completedAlerts}}{{bucket_keys}} {{/ctx.completedAlerts}}\n\nMonitor : {{ctx.monitor.name}}\nPeriodo : {{ctx.periodStart}} -> {{ctx.periodEnd}}\n\nVer los casos: tablero 'PQRS - Canario de ruteo', panel 'Casos fallidos del canario', o en Discover:\n  event: benchmark.case and source: canario and acierto: false and workflow_expect: <ruta>\nClic en conversation_id para leer la conversacion completa."
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  monitor-benchmark-resumen-corrida.json: |
+    {
+      "type": "monitor",
+      "name": "pqr-benchmark-resumen-corrida",
+      "monitor_type": "query_level_monitor",
+      "enabled": true,
+      "schedule": { "period": { "interval": 10, "unit": "MINUTES" } },
+      "inputs": [
+        {
+          "search": {
+            "indices": ["pqr-benchmark-runs-*"],
+            "query": {
+              "size": 3,
+              "sort": [ { "@timestamp": { "order": "desc" } } ],
+              "_source": [
+                "@timestamp", "run_id", "run_name", "flow", "environment", "catalog_version", "llm_model",
+                "precision_pct", "precision_workflow_pct", "cases_total", "cases_ok", "cases_unresolved",
+                "routing_p95_s", "e2e_p95_s", "tokens_input_total", "duration_s"
+              ],
+              "query": {
+                "bool": {
+                  "filter": [
+                    { "term":  { "event":  "benchmark.run" } },
+                    { "term":  { "source": "benchmark" } },
+                    { "range": { "@timestamp": { "gte": "now-10m" } } }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ],
+      "triggers": [
+        {
+          "query_level_trigger": {
+            "name": "corrida-terminada",
+            "severity": "5",
+            "condition": {
+              "script": { "lang": "painless", "source": "return ctx.results[0].hits.hits.size() > 0;" }
+            },
+            "actions": [
+              {
+                "name": "email-resumen-corrida",
+                "destination_id": "pqr-benchmark-canario-email",
+                "throttle_enabled": true,
+                "throttle": { "value": 10, "unit": "MINUTES" },
+                "subject_template": {
+                  "lang": "mustache",
+                  "source": "[PQRS][{{ctx.results.0.hits.hits.0._source.environment}}] Benchmark de ruteo terminado: {{ctx.results.0.hits.hits.0._source.precision_pct}}% ({{ctx.results.0.hits.hits.0._source.run_id}})"
+                },
+                "message_template": {
+                  "lang": "mustache",
+                  "source": "Termino una corrida del benchmark completo de ruteo del agente PQRS.\n\n{{#ctx.results.0.hits.hits}}Corrida        : {{_source.run_id}}\nDataset        : {{_source.flow}}\nAmbiente       : {{_source.environment}}\nCatalogo       : {{_source.catalog_version}}\nModelo LLM     : {{_source.llm_model}}\nprecision_pct  : {{_source.precision_pct}}\nprecision flujo: {{_source.precision_workflow_pct}}\ncasos          : {{_source.cases_total}} (aciertos {{_source.cases_ok}}, sin resolver {{_source.cases_unresolved}})\nruteo p95 (s)  : {{_source.routing_p95_s}}\ne2e p95 (s)    : {{_source.e2e_p95_s}}\ntokens entrada : {{_source.tokens_input_total}}\nduracion (s)   : {{_source.duration_s}}\n---\n{{/ctx.results.0.hits.hits}}\nVer la corrida: tablero 'PQRS - Benchmark de ruteo' y en la barra de busqueda  run_id: \"<corrida>\"  (la tabla 'Ultimas corridas' enlaza a sus casos; clic en conversation_id abre la conversacion)."
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }

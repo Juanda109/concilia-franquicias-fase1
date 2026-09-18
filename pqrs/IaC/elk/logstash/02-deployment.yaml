@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logstash
+  labels:
+    app: logstash
+    app.kubernetes.io/part-of: elk-metrics
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: logstash
+  template:
+    metadata:
+      labels:
+        app: logstash
+        app.kubernetes.io/part-of: elk-metrics
+    spec:
+      serviceAccountName: elk-sa
+      # Sin contenedor de arranque como root: la plataforma ajusta el volumen al
+      # montarlo, usando el grupo que asigna la politica restringida del proyecto.
+      containers:
+      - name: logstash
+        # Imagen OSS de OpenSearch con el output plugin de OpenSearch preinstalado
+        # (incluye tambien el input de RabbitMQ). Confirmar el tag disponible.
+        image: opensearchproject/logstash-oss-with-opensearch-output-plugin:8.9.0
+        ports:
+        - containerPort: 5044
+          name: beats
+        - containerPort: 8080
+          name: http
+        - containerPort: 9600
+          name: monitor
+        env:
+        - name: LS_JAVA_OPTS
+          value: "-Xms1g -Xmx1g"
+        # Password del OpenSearch de ANALITICA (usuario admin) para el output.
+        - name: OPENSEARCH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: opensearch-analytics-secret
+              key: OPENSEARCH_INITIAL_ADMIN_PASSWORD
+        # Credenciales para consumir el stream de metricas desde RabbitMQ.
+        - name: RABBITMQ_USER
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq-secret
+              key: username
+        - name: RABBITMQ_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq-secret
+              key: password
+        resources:
+          limits:
+            cpu: "2"
+            memory: 2Gi
+          requests:
+            cpu: "500m"
+            memory: 2Gi 
+        securityContext:
+          # Sin runAsNonRoot: la imagen declara su usuario por NOMBRE (logstash), no por
+          # numero, y con esa bandera el kubelet no puede verificar que no sea root y
+          # rechaza el contenedor. La politica restringida del proyecto ya asigna un
+          # usuario numerico no privilegiado.
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+        volumeMounts:
+        - name: config-volume
+          mountPath: /usr/share/logstash/config/logstash.yml
+          subPath: logstash.yml
+        - name: pipeline-volume
+          mountPath: /usr/share/logstash/pipeline/logstash.conf
+          subPath: main.conf
+        - name: logstash-data
+          mountPath: /usr/share/logstash/data
+      volumes:
+      - name: config-volume
+        configMap:
+          name: logstash-config
+          items:
+          - key: logstash.yml
+            path: logstash.yml
+      - name: pipeline-volume
+        configMap:
+          name: logstash-config
+          items:
+          - key: main.conf
+            path: main.conf
+      - name: logstash-data
+        persistentVolumeClaim:
+          claimName: logstash-pvc

@@ -1,0 +1,14 @@
+# Workflow INTERNO (no seleccionable desde general.yml ni ruteable por el LLM).
+# Se activa por transicion programatica (goto) cuando el ruteo NO encuentra un
+# flujo para una pregunta que es del banco (no-match). Ofrece el formulario PQRS
+# como boton y, al oprimirlo, pasa a la verificacion de satisfaccion.
+version: 1
+start_step: "1"
+steps:
+  "1":
+    question: "Tu caso requiere una revisión a fondo por parte de nuestro equipo especializado. Para radicar tu solicitud, por favor completa el siguiente formulario. Así podremos analizar lo ocurrido con tu reporte y darte una respuesta oficial."
+    input_type: "choice"
+    options:
+      - key: "pqr"
+        label: "Formulario PQR"
+        next_step: "satisfaction_check"

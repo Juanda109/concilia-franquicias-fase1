@@ -1,0 +1,4 @@
+services:
+  co-pqrs-back-agent:
+    environment:
+      OPENSEARCH_ENDPOINT: https://host.containers.internal:9200

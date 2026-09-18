@@ -1,0 +1,39 @@
+{
+  "data": [
+    {
+      "customer": {
+        "fullName": "EVIDENCIA M1",
+        "firstName": "EVIDENCIA",
+        "secondName": "",
+        "lastName": "M1",
+        "contact": {
+          "phone": "",
+          "email": ""
+        }
+      },
+      "operations": [
+        {
+          "id": "000007731",
+          "descProvision": "ACEPTADA",
+          "placeOperation": "ASCR",
+          "amountOperation": {
+            "amount": "96930",
+            "currency": "COP"
+          },
+          "dateOper": "2026-04-14",
+          "hourOperation": "083740",
+          "interest": 8702.64,
+          "statementDetail": {
+            "statementId": "0102",
+            "movementId": "000009"
+          },
+          "observations": "01CRUZADA      |CONDONACION      |    |051   05|EDS COMBUS LLANOS   |10000000013|",
+          "responseOperati": "660926",
+          "eci": "0",
+          "eCard": true,
+          "dateReverse": ""
+        }
+      ]
+    }
+  ]
+}

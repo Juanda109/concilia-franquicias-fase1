@@ -1,0 +1,53 @@
+{
+  "data": {
+    "history": {
+      "obligations": [
+        {
+          "financialInstitutionInformation": {
+            "name": "BBVA COLOMBIA",
+            "branch": {
+              "name": "ALCAZARES"
+            },
+            "city": {
+              "name": "BOGOTA"
+            }
+          },
+          "number": 456684,
+          "classificationStatus": {
+            "id": "ACEMB"
+          },
+          "modality": {
+            "id": "CONS"
+          },
+          "productType": {
+            "id": "CAB",
+            "name": "CARTERA BANCARIA"
+          },
+          "openingDate": "2023-07-14T00:00:00.0-0500",
+          "expirationDate": "2029-07-14T00:00:00.0-0500",
+          "initial": {
+            "amount": 6400,
+            "currency": "ML"
+          },
+          "productBalance": {
+            "amount": 4075,
+            "currency": "ML"
+          },
+          "pending": {
+            "amount": 190,
+            "currency": "ML"
+          },
+          "installmentNumber": 32,
+          "productStatus": {
+            "id": "NORM"
+          },
+          "contractType": {
+            "id": "4330-CAB",
+            "description": "CARTERA BANCARIA",
+            "status": "VIGE"
+          }
+        }
+      ]
+    }
+  }
+}

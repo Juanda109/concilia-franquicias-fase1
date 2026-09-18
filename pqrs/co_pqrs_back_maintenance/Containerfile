@@ -1,0 +1,26 @@
+FROM python:3.14-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app/src
+ENV UV_PROJECT_ENVIRONMENT=/app/.venv
+# Put the project venv on PATH so `python` resolves to the environment that has
+# the dependencies installed (used by both the API CMD and the CronJob command
+# `python main.py`).
+ENV PATH="/app/.venv/bin:${PATH}"
+
+WORKDIR /app
+
+RUN python -m pip install --no-cache-dir uv
+
+COPY pyproject.toml README.md ./
+RUN uv sync --no-dev --no-install-project
+
+COPY src ./src
+COPY main.py api.py ./
+
+EXPOSE 8001
+
+# Default to API mode (POST /end/{id}). The maintenance sweep CronJob overrides
+# this with: command ["python", "main.py"].
+CMD ["python", "api.py"]

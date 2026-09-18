@@ -1,0 +1,62 @@
+{
+  "data": {
+    "history": {
+      "obligations": [
+        {
+          "financialInstitutionInformation": {
+            "name": "BBVA COLOMBIA",
+            "branch": {
+              "name": "ALCAZARES"
+            },
+            "city": {
+              "name": "BOGOTA"
+            }
+          },
+          "number": 1843,
+          "classificationStatus": {
+            "id": "MORA"
+          },
+          "modality": {
+            "id": "FINC"
+          },
+          "productType": {
+            "id": "TDC",
+            "name": "TARJETA DE CRÉDITO"
+          },
+          "openingDate": "2023-10-02T00:00:00.0-0500",
+          "initial": {
+            "amount": 2300,
+            "currency": "ML"
+          },
+          "productBalance": {
+            "amount": 1489,
+            "currency": "ML"
+          },
+          "monthly": {
+            "amount": 328,
+            "currency": "ML"
+          },
+          "pending": {
+            "amount": 530,
+            "currency": "ML"
+          },
+          "paymentDate": "2025-12-10T00:00:00.0-0500",
+          "productStatus": {
+            "id": "NORM"
+          },
+          "behaviorLiabilities": [
+            {
+              "behaviorType": "TWENTY_FOUR_MONTHS",
+              "description": "N N N N N N N N N N N N N N N N N N N N N N 1 2"
+            }
+          ],
+          "contractType": {
+            "id": "4340-TDC",
+            "description": "TARJETA DE CRÉDITO",
+            "status": "VIGE"
+          }
+        }
+      ]
+    }
+  }
+}

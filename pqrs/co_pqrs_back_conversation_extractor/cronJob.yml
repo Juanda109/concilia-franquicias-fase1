@@ -1,0 +1,84 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: co-pqrs-back-conversation-extractor
+  namespace: pqr-genai-dev
+  labels:
+    app.kubernetes.io/name: co-pqrs-back-conversation-extractor
+    app.kubernetes.io/part-of: jobs
+    app.openshift.io/runtime: python
+spec:
+  schedule: "*/30 * * * *"
+  timeZone: "America/Bogota"
+  concurrencyPolicy: Forbid
+  suspend: false
+  
+  # Keep history of 3 successful and 3 failed jobs
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: co-pqrs-back-conversation-extractor
+            app.kubernetes.io/part-of: jobs
+        spec:
+          restartPolicy: Never
+          
+          containers:
+          - name: conversation-extractor
+            image: quay.apps.work.ocp.co.igrupobbva/bbvaco/co_pqrs_back_conversation_extractor:v7
+            imagePullPolicy: IfNotPresent
+            
+            env:
+            - name: TZ
+              value: "America/Bogota"
+            - name: OPENSEARCH_URL
+              value: "https://opensearch.pqr-genai-dev.svc.cluster.local:9200"
+            - name: OPENSEARCH_USER
+              valueFrom:
+                secretKeyRef:
+                  name: opensearch-secret
+                  key: OPENSEARCH_USER
+            - name: OPENSEARCH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: opensearch-secret
+                  key: OPENSEARCH_INITIAL_ADMIN_PASSWORD
+            - name: OPENSEARCH_VERIFY_CERTS
+              value: "false"
+            - name: OPENSEARCH_INDEX
+              value: "pqr-metrics-*"
+            - name: OPENSEARCH_BATCH_SIZE
+              value: "500"
+            - name: OPENSEARCH_SCROLL_KEEPALIVE
+              value: "2m"
+            - name: RUTA_PROCESO
+              value: "/mnt/ada_data"
+            - name: LOOKER_FOLDER_NAME
+              value: "looker_conversation_pqrs"
+            - name: SCAN_LOOKBACK_DAYS
+              value: "0"
+            - name: LOG_LEVEL
+              value: "INFO"
+            
+            resources:
+              requests:
+                memory: "512Mi"
+                cpu: "250m"
+              limits:
+                memory: "1Gi"
+                cpu: "500m"
+            
+            volumeMounts:
+            - name: ada-data
+              mountPath: /mnt/ada_data
+              subPath: RECEPCION_HOST/XC/STG/automatizacion_pqrs
+          
+          volumes:
+          - name: ada-data
+            persistentVolumeClaim:
+              claimName: smb-pvc-tx

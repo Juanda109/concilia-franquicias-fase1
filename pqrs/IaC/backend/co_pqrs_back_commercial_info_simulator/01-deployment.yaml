@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: co-pqrs-back-commercial-info-simulator
+  labels:
+    app: co-pqrs-back-commercial-info-simulator
+    app.kubernetes.io/part-of: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: co-pqrs-back-commercial-info-simulator
+  template:
+    metadata:
+      labels:
+        app: co-pqrs-back-commercial-info-simulator
+    spec:
+      containers:
+        - name: co-pqrs-back-commercial-info-simulator
+          image: quay.apps.work.ocp.co.igrupobbva/pqr-genai/co_pqrs_back_commercial_info_simulator:v2
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8050
+              protocol: TCP
+          env:
+            - name: TZ
+              value: America/Bogota
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8050
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8050
+            initialDelaySeconds: 10
+            periodSeconds: 20
