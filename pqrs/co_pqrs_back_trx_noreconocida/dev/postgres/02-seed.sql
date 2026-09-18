@@ -1,1 +1,0 @@
--- Marcador (ver 01-schema.sql). Los seeds reales versionados son 03..09.

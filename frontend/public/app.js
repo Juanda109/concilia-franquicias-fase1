@@ -13,6 +13,10 @@ let contenidoState = { idArchivo: null, page: 0, size: 30, tipoInsumo: null };
 let toastTimer = null;
 let pendingTipoUpload = null;
 
+// Íconos minimalistas (SVG en línea, trazo simple, sin dependencias externas)
+const ICON_EYE = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
+const ICON_UPLOAD = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>';
+
 function toISO(d) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
@@ -43,17 +47,40 @@ function derivarFechasContables(fechaEjecucionISO) {
   return [b];
 }
 
-// Solo pinta las fichas y resalta la activa — nunca decide cuál es la activa.
-function renderFechasContables() {
+// Estado de progreso de una jornada (Completa/Con novedad/Pendiente/Error)
+// a partir de sus insumos — misma regla que usa el hero.
+function calcularEstadoJornada(items, totalEsperados) {
+  const recibidos = items.filter((a) => a.estadoRecepcion === 'Recibido').length;
+  const procesados = items.filter((a) => a.estadoProcesamiento === 'Procesado').length;
+  const conError = items.some((a) => a.estadoProcesamiento === 'Error');
+  if (conError) return 'Error';
+  if (procesados >= totalEsperados) return 'Completa';
+  if (recibidos > 0 && recibidos < totalEsperados) return 'Con novedad';
+  return 'Pendiente';
+}
+
+// Pinta las fichas (resaltando la activa) y luego consulta el estado de
+// progreso real de cada fecha contable para mostrarlo debajo de la fecha.
+async function renderFechasContables() {
   const host = el('fechaContablesEjecucion');
   const candidatos = derivarFechasContables(fechaInput.value).map(toISO);
   host.innerHTML = candidatos.map((iso) => `
     <button type="button" class="fechaChip${iso === fechaContableActiva ? ' active' : ''}" data-fecha="${iso}">
-      <small>Fecha contable</small><b>${fechaCorta(iso)}</b>
+      <small>Fecha contable</small><b>${fechaCorta(iso)}</b><span class="chipStatus muted">Cargando…</span>
     </button>`).join('');
   host.querySelectorAll('.fechaChip').forEach((btn) => {
     btn.addEventListener('click', () => seleccionarFechaContable(btn.dataset.fecha));
   });
+  await Promise.all(candidatos.map(async (iso) => {
+    try {
+      const r = await fetch(`${API}/archivos?fechaContable=${encodeURIComponent(iso)}`);
+      if (!r.ok) return;
+      const data = await r.json();
+      const estado = calcularEstadoJornada(data.items, data.totalEsperados);
+      const span = host.querySelector(`.fechaChip[data-fecha="${iso}"] .chipStatus`);
+      if (span) span.outerHTML = badge(estado);
+    } catch { /* deja el placeholder si falla la consulta */ }
+  }));
 }
 
 // Cambia la fecha contable activa y refresca todo lo que depende de ella.
@@ -61,7 +88,6 @@ function seleccionarFechaContable(iso) {
   fechaContableActiva = iso;
   hideNoData();
   renderFechasContables();
-  cargarFechasChips();
   buscarArchivos();
 }
 
@@ -79,8 +105,8 @@ actualizarFechaEjecucion();
 // Recepción: Recibido / No recibido — Procesamiento: Procesado / Pendiente / Procesando / Error
 // Jornada: Completa / Con novedad / Pendiente / Error
 const BADGE_CLASS = {
-  Recibido: 'ok', Procesado: 'ok', Completa: 'ok', Disponible: 'ok',
-  'No recibido': 'warn', 'Con novedad': 'warn', 'No disponible': 'warn',
+  Recibido: 'ok', Procesado: 'ok', Completa: 'ok',
+  'No recibido': 'warn', 'Con novedad': 'warn',
   Pendiente: 'info', Procesando: 'info', Esperado: 'info',
   Error: 'bad',
 };
@@ -122,13 +148,8 @@ async function checkHealth() {
 function actualizarHeroDesdeArchivos(fecha, items, totalEsperados) {
   const recibidos = items.filter((a) => a.estadoRecepcion === 'Recibido').length;
   const procesados = items.filter((a) => a.estadoProcesamiento === 'Procesado').length;
-  const conError = items.some((a) => a.estadoProcesamiento === 'Error');
+  const estado = calcularEstadoJornada(items, totalEsperados);
   el('heroTitulo').textContent = `Jornada ${fecha}`;
-  // Vocabulario de jornada tomado del mockup: Completa / Con novedad / Pendiente / Error
-  const estado = conError ? 'Error'
-    : procesados >= totalEsperados ? 'Completa'
-    : (recibidos > 0 && recibidos < totalEsperados) ? 'Con novedad'
-    : 'Pendiente';
   el('heroBadge').outerHTML = `<span id="heroBadge" class="badge ${BADGE_CLASS[estado]}">${estado}</span>`;
   const pct = totalEsperados ? (100 * procesados / totalEsperados) : 0;
   el('heroPct').textContent = `${pct.toFixed(0)}%`;
@@ -156,12 +177,12 @@ async function cargarJornadaActualBadge() {
 async function buscarArchivos() {
   const fecha = fechaContableActiva;
   if (!fecha) return;
-  tblArchivos.innerHTML = `<tr><td colspan="9" class="muted">Buscando...</td></tr>`;
+  tblArchivos.innerHTML = `<tr><td colspan="8" class="muted">Buscando...</td></tr>`;
   tblMeta.textContent = '';
   try {
     const r = await fetch(`${API}/archivos?fechaContable=${encodeURIComponent(fecha)}`);
     if (r.status === 204) {
-      tblArchivos.innerHTML = `<tr><td colspan="9" class="muted">Sin archivos para ${fecha}.</td></tr>`;
+      tblArchivos.innerHTML = `<tr><td colspan="8" class="muted">Sin archivos para ${fecha}.</td></tr>`;
       actualizarHeroDesdeArchivos(fecha, [], 12);
       showNoData();
       return;
@@ -172,11 +193,17 @@ async function buscarArchivos() {
     tblMeta.textContent = `${recibidos} de ${data.totalEsperados} insumos recibidos`;
     actualizarHeroDesdeArchivos(fecha, data.items, data.totalEsperados);
     if (!data.items.length) {
-      tblArchivos.innerHTML = `<tr><td colspan="9" class="muted">Sin insumos configurados.</td></tr>`;
+      tblArchivos.innerHTML = `<tr><td colspan="8" class="muted">Sin insumos configurados.</td></tr>`;
       return;
     }
-    tblArchivos.innerHTML = data.items.map((a) => `
-      <tr class="${a.idArchivo ? 'clickable' : ''}" data-id="${a.idArchivo ?? ''}">
+    tblArchivos.innerHTML = data.items.map((a) => {
+      const completo = a.estadoRecepcion === 'Recibido' && a.estadoProcesamiento === 'Procesado';
+      const verBtn = a.idArchivo
+        ? `<button type="button" class="iconBtn btnView" data-id="${a.idArchivo}" title="Ver detalle">${ICON_EYE}</button>` : '';
+      const cargarBtn = !completo
+        ? `<button type="button" class="iconBtn btnUpload" data-tipo="${a.tipoInsumo}" title="Cargar archivo">${ICON_UPLOAD}</button>` : '';
+      return `
+      <tr data-id="${a.idArchivo ?? ''}">
         <td>${a.idArchivo ?? '-'}</td>
         <td>${a.fuente}</td>
         <td>${a.tipoInsumo}</td>
@@ -184,15 +211,14 @@ async function buscarArchivos() {
         <td>${a.totalRegistros ?? '-'}</td>
         <td>${badge(a.estadoRecepcion)}</td>
         <td>${badge(a.estadoProcesamiento)}</td>
-        <td>${badge(a.estadoDisponibilidad)}</td>
-        <td><button type="button" class="btn primary btnUpload" data-tipo="${a.tipoInsumo}">Cargar</button></td>
-      </tr>`).join('');
-    tblArchivos.querySelectorAll('tr.clickable').forEach((row) => {
-      row.addEventListener('click', () => abrirDetalle(Number(row.dataset.id)));
+        <td class="actionCell">${verBtn}${cargarBtn}</td>
+      </tr>`;
+    }).join('');
+    tblArchivos.querySelectorAll('.btnView').forEach((btn) => {
+      btn.addEventListener('click', () => abrirDetalle(Number(btn.dataset.id)));
     });
     tblArchivos.querySelectorAll('.btnUpload').forEach((btn) => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
+      btn.addEventListener('click', () => {
         pendingTipoUpload = btn.dataset.tipo;
         const input = el('uploadFileHidden');
         input.value = '';
@@ -200,26 +226,7 @@ async function buscarArchivos() {
       });
     });
   } catch (e) {
-    tblArchivos.innerHTML = `<tr><td colspan="9" class="muted">Error consultando archivos: ${e.message}</td></tr>`;
-  }
-}
-
-async function cargarFechasChips() {
-  const host = el('fechaChips');
-  try {
-    const r = await fetch(`${API}/jornadas/fechas?limit=14`);
-    if (!r.ok) throw new Error();
-    const data = await r.json();
-    if (!data.items.length) { host.innerHTML = ''; return; }
-    host.innerHTML = data.items.map((j) => `
-      <button type="button" class="fechaChip${j.fechaContable === fechaContableActiva ? ' active' : ''}" data-fecha="${j.fechaContable}">
-        <small>Fecha contable</small><b>${fechaCorta(j.fechaContable)}</b>${badge(j.estado)}
-      </button>`).join('');
-    host.querySelectorAll('.fechaChip').forEach((btn) => {
-      btn.addEventListener('click', () => seleccionarFechaContable(btn.dataset.fecha));
-    });
-  } catch {
-    host.innerHTML = '';
+    tblArchivos.innerHTML = `<tr><td colspan="8" class="muted">Error consultando archivos: ${e.message}</td></tr>`;
   }
 }
 
@@ -239,8 +246,6 @@ async function abrirDetalle(idArchivo) {
         ${kv('Registros', d.totalRegistros)}
         ${kv('Recepción', badge(d.estadoRecepcion))}
         ${kv('Procesamiento', badge(d.estadoProcesamiento))}
-        ${kv('Disponibilidad', badge(d.estadoDisponibilidad))}
-        ${kv('Disponible', d.disponible ? 'Sí' : 'No')}
         ${kv('Correlation ID', d.correlationId)}
       </div>
       <h3>Contenido <span id="contenidoTotal" class="muted"></span></h3>
@@ -319,7 +324,6 @@ async function subirArchivo(tipoInsumo, file) {
     toast(`${tipoInsumo} cargado: ${data.registrosInsertados} registros`);
     await buscarArchivos();
     await cargarJornadaActualBadge();
-    await cargarFechasChips();
   } catch (e) {
     resultado.textContent = `Error de red: ${e.message}`;
     toast('Error de red al cargar el archivo', true);

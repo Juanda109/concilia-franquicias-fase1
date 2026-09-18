@@ -1,1 +1,0 @@
-"""Trace-event application package."""

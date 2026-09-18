@@ -17,6 +17,6 @@ class IngestionOrchestrator:
   if result.errors:
    er.save_many(id_archivo,tipo,"PROCESAMIENTO",correlation_id,result.errors);ar.update_state(id_archivo,"ESTADO_PROCESAMIENTO","Error","Errores de registro");tr.add(id_archivo,"PROCESAMIENTO","Procesando","Error","ERROR_PROCESAMIENTO",correlation_id);return result
   inserted=rr.insert_records(tipo,id_archivo,result.records)
-  ar.update_state(id_archivo,"ESTADO_PROCESAMIENTO","Procesado");ar.set_available(id_archivo,True)
+  ar.update_state(id_archivo,"ESTADO_PROCESAMIENTO","Procesado")
   tr.add(id_archivo,"PROCESAMIENTO","Procesando","Procesado","FIN_PROCESAMIENTO",correlation_id,{"registros":inserted})
   return result

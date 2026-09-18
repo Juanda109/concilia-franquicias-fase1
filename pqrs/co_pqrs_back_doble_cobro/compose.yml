@@ -1,9 +1,0 @@
-services:
-  doble-cobro:
-    build:
-      context: .
-      dockerfile: Containerfile
-    ports:
-      - "8006:8006"
-    environment:
-      DOBLE_COBRO_LOG_LEVEL: INFO

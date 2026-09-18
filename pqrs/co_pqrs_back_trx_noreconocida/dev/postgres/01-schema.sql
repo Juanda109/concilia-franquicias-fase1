@@ -1,5 +1,0 @@
--- Marcador: el esquema original nunca se versiono (vive en el volumen del
--- contenedor de desarrollo). Docker convirtio este path en un directorio al
--- faltar el fichero, y eso impedia ARRANCAR el contenedor. Los scripts de
--- docker-entrypoint-initdb.d solo corren en la primera inicializacion, asi que
--- un fichero vacio basta para que el montaje case sin tocar los datos.

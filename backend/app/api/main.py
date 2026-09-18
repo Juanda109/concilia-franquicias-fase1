@@ -31,14 +31,13 @@ def jornada_actual():
 def archivos(fechaContable:str=Query(...)):
  with connection() as c:
   rows=c.execute("""SELECT a.ID_ARCHIVO,i.FUENTE,i.TIPO_INSUMO,a.NOMBRE_ARCHIVO,a.TOTAL_REGISTROS,
- COALESCE(a.ESTADO_RECEPCION,'No recibido'),COALESCE(a.ESTADO_PROCESAMIENTO,'Pendiente'),
- COALESCE(a.ESTADO_DISPONIBILIDAD,'No disponible'),COALESCE(a.DISPONIBLE,FALSE)
+ COALESCE(a.ESTADO_RECEPCION,'No recibido'),COALESCE(a.ESTADO_PROCESAMIENTO,'Pendiente')
  FROM CON_INSUMO_ESPERADO i
  LEFT JOIN CON_JORNADA j ON j.FECHA_CONTABLE=%s
  LEFT JOIN CON_ARCHIVO_CARGA a ON a.ID_INSUMO=i.ID_INSUMO AND a.ID_JORNADA=j.ID_JORNADA
  WHERE i.ACTIVO ORDER BY i.ORDEN_VISUAL""",(fechaContable,)).fetchall()
   if not rows: raise HTTPException(204)
-  keys=["idArchivo","fuente","tipoInsumo","nombreArchivo","totalRegistros","estadoRecepcion","estadoProcesamiento","estadoDisponibilidad","disponible"]
+  keys=["idArchivo","fuente","tipoInsumo","nombreArchivo","totalRegistros","estadoRecepcion","estadoProcesamiento"]
   return {"fechaContable":fechaContable,"totalEsperados":len(rows),"items":[dict(zip(keys,x)) for x in rows]}
 
 @app.get("/api/v1/jornadas/fechas")
@@ -50,9 +49,9 @@ def jornadas_fechas(limit:int=20):
 @app.get("/api/v1/archivos/{id_archivo}")
 def archivo(id_archivo:int):
  with connection() as c:
-  row=c.execute("SELECT ID_ARCHIVO,NOMBRE_ARCHIVO,TOTAL_REGISTROS,ESTADO_RECEPCION,ESTADO_PROCESAMIENTO,ESTADO_DISPONIBILIDAD,DISPONIBLE,CORRELATION_ID FROM CON_ARCHIVO_CARGA WHERE ID_ARCHIVO=%s",(id_archivo,)).fetchone()
+  row=c.execute("SELECT ID_ARCHIVO,NOMBRE_ARCHIVO,TOTAL_REGISTROS,ESTADO_RECEPCION,ESTADO_PROCESAMIENTO,CORRELATION_ID FROM CON_ARCHIVO_CARGA WHERE ID_ARCHIVO=%s",(id_archivo,)).fetchone()
   if not row: raise HTTPException(404,"ARCHIVO_NO_ENCONTRADO")
-  return dict(zip(["idArchivo","nombreArchivo","totalRegistros","estadoRecepcion","estadoProcesamiento","estadoDisponibilidad","disponible","correlationId"],row))
+  return dict(zip(["idArchivo","nombreArchivo","totalRegistros","estadoRecepcion","estadoProcesamiento","correlationId"],row))
 
 @app.get('/health')
 def health():
@@ -64,9 +63,9 @@ def contenido(id_archivo:int,page:int=0,size:int=30):
         raise HTTPException(400,'PAGINACION_INVALIDA')
     from app.repositories.content import ContentRepository
     with connection() as c:
-        row=c.execute('''SELECT a.DISPONIBLE,i.TIPO_INSUMO FROM CON_ARCHIVO_CARGA a JOIN CON_INSUMO_ESPERADO i ON i.ID_INSUMO=a.ID_INSUMO WHERE a.ID_ARCHIVO=%s''',(id_archivo,)).fetchone()
+        row=c.execute('''SELECT a.ESTADO_PROCESAMIENTO,i.TIPO_INSUMO FROM CON_ARCHIVO_CARGA a JOIN CON_INSUMO_ESPERADO i ON i.ID_INSUMO=a.ID_INSUMO WHERE a.ID_ARCHIVO=%s''',(id_archivo,)).fetchone()
         if not row: raise HTTPException(404,'ARCHIVO_NO_ENCONTRADO')
-        if not row[0]: raise HTTPException(409,'ARCHIVO_NO_DISPONIBLE')
+        if row[0]!='Procesado': raise HTTPException(409,'ARCHIVO_NO_DISPONIBLE')
         items,total=ContentRepository(c).page(row[1],id_archivo,page,size)
         return {'idArchivo':id_archivo,'tipoInsumo':row[1],'page':page,'size':size,'total':total,'items':items}
 
@@ -99,10 +98,10 @@ def cargar_archivo(fechaContable:str=Form(...),tipoInsumo:str=Form(...),file:Upl
             tmp_path.unlink(missing_ok=True)
 
         row=c.execute("""SELECT ID_ARCHIVO,NOMBRE_ARCHIVO,TOTAL_REGISTROS,ESTADO_RECEPCION,
- ESTADO_PROCESAMIENTO,ESTADO_DISPONIBILIDAD,DISPONIBLE,CORRELATION_ID
+ ESTADO_PROCESAMIENTO,CORRELATION_ID
  FROM CON_ARCHIVO_CARGA WHERE ID_ARCHIVO=%s""",(id_archivo,)).fetchone()
         keys=["idArchivo","nombreArchivo","totalRegistros","estadoRecepcion",
-              "estadoProcesamiento","estadoDisponibilidad","disponible","correlationId"]
+              "estadoProcesamiento","correlationId"]
         return {**dict(zip(keys,row)),
                 "registrosInsertados":len(result.records) if not result.errors else 0,
                 "errores":[asdict(e) for e in result.errors],

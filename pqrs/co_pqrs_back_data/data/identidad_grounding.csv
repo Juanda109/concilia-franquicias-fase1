@@ -1,6 +1,0 @@
-customer_id,personal_id,personal_type,customer_name,key_id,product_desc,default_flag,seizure_flag,written_off_flag,restructured_flag,off_loaded_portfolio_flag,created_at,buyer_name,default_date,written_off_date,default_months_number,first_last_name,second_last_name
-56780000,000001069759414,01,PABLO EDUARDO MOSQUERA,80301,4310-AHO,f,f,f,f,f,2026-05-11 16:24:11.644658,,,0,,MOSQUERA,
-56780001,000001069759415,01,MARIA DEL CARMEN GONZALEZ HOYOS,80301,4310-AHO,f,f,f,f,f,2026-05-11 16:24:11.644658,,,0,,GONZALEZ,HOYOS
-56780002,000009001234567,02,INVERSIONES EL ROBLE SAS,80301,4310-AHO,f,f,f,f,f,2026-05-11 16:24:11.644658,,,0,,,
-56780003,000001069759416,01,,80301,4310-AHO,f,f,f,f,f,2026-05-11 16:24:11.644658,,,0,,,
-56780004,000001069759417,01,NELSON DE JESUS GONZALEZ HOYOS,80301,4310-AHO,f,f,f,f,f,2026-05-11 16:24:11.644658,,,0,,GONZALEZ,HOYOS

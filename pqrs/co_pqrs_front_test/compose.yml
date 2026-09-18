@@ -1,9 +1,0 @@
-services:
-  co_pqrs_front_test:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: pqrs-front-test:latest
-    ports:
-      - "8501:8501"
-    restart: unless-stopped

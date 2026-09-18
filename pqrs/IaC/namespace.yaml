@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: pqr-genai-dev
-  annotations:
-    openshift.io/display-name: "CASA"
-    openshift.io/description: "Proyecto GENAI agente PQR"
