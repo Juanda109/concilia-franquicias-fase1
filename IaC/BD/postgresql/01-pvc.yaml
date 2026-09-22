@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: concilia-postgres-data
+  labels:
+    app: concilia-postgres
+    app.kubernetes.io/name: concilia-postgres
+    app.kubernetes.io/part-of: database
+    app.kubernetes.io/component: database-postgresql
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 5Gi
+  # storageClassName: "${STORAGE_CLASS}"   # descomentar si el clúster exige una StorageClass explícita

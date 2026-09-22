@@ -1,13 +1,12 @@
-import re,tempfile,uuid
-from dataclasses import asdict
-from pathlib import Path
+import re,uuid
 from fastapi import FastAPI,HTTPException,Query,Header,UploadFile,File,Form
 from app.repositories.database import connection
 from app.repositories.insumo import InsumoRepository
 from app.repositories.jornada import JornadaRepository
 from app.repositories.archivo import ArchivoRepository as ArchivoRepo
-from app.ingestion.orchestrator import IngestionOrchestrator
-app=FastAPI(title="Concilia Franquicias Fase 1",version="1.0.0")
+from app.clients import minio_client
+from app.clients.parseo_client import parsear
+app=FastAPI(title="Concilia Franquicias Fase 1 - Back",version="1.0.0")
 
 FECHA_EN_NOMBRE=re.compile(r"_F(\d{2})(\d{2})(\d{2})(?:\D|$)",re.IGNORECASE)
 
@@ -72,7 +71,8 @@ def contenido(id_archivo:int,page:int=0,size:int=30):
 @app.post('/api/v1/archivos')
 def cargar_archivo(fechaContable:str=Form(...),tipoInsumo:str=Form(...),file:UploadFile=File(...),
                     x_correlation_id:str|None=Header(None,alias='X-Correlation-Id')):
-    """Recibe el archivo por HTTP (multipart) y en la misma llamada lo valida, parsea y carga."""
+    """Recibe el archivo, lo guarda en MinIO (respaldo/trazabilidad) y delega el
+    parseo + carga a la API de parseo (servicio independiente)."""
     correlation_id=x_correlation_id or str(uuid.uuid4())
     with connection() as c:
         insumo=InsumoRepository(c).get_by_tipo(tipoInsumo)
@@ -85,24 +85,15 @@ def cargar_archivo(fechaContable:str=Form(...),tipoInsumo:str=Form(...),file:Upl
         id_jornada=JornadaRepository(c).get_or_create(fechaContable)
         id_archivo=ArchivoRepo(c).get_or_create(id_jornada,insumo['id_insumo'],nombre_archivo,correlation_id)
 
-        suffix=Path(nombre_archivo).suffix
-        with tempfile.NamedTemporaryFile(suffix=suffix,delete=False) as tmp:
-            tmp.write(file.file.read())
-            tmp_path=Path(tmp.name)
-        try:
-            try:
-                result=IngestionOrchestrator(c).execute(id_archivo,tipoInsumo,tmp_path,correlation_id)
-            except KeyError:
-                raise HTTPException(400,'PARSER_NO_IMPLEMENTADO')
-        finally:
-            tmp_path.unlink(missing_ok=True)
+    minio_key=f"{fechaContable}/{tipoInsumo}/{id_archivo}_{nombre_archivo}"
+    minio_client.subir(minio_key,file.file.read())
 
+    resultado=parsear(id_archivo,tipoInsumo,minio_key,correlation_id)
+
+    with connection() as c:
         row=c.execute("""SELECT ID_ARCHIVO,NOMBRE_ARCHIVO,TOTAL_REGISTROS,ESTADO_RECEPCION,
  ESTADO_PROCESAMIENTO,CORRELATION_ID
  FROM CON_ARCHIVO_CARGA WHERE ID_ARCHIVO=%s""",(id_archivo,)).fetchone()
-        keys=["idArchivo","nombreArchivo","totalRegistros","estadoRecepcion",
-              "estadoProcesamiento","correlationId"]
-        return {**dict(zip(keys,row)),
-                "registrosInsertados":len(result.records) if not result.errors else 0,
-                "errores":[asdict(e) for e in result.errors],
-                "controles":result.controls}
+    keys=["idArchivo","nombreArchivo","totalRegistros","estadoRecepcion",
+          "estadoProcesamiento","correlationId"]
+    return {**dict(zip(keys,row)),**resultado}

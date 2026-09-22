@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: concilia-minio-data
+  labels:
+    app: concilia-minio
+    app.kubernetes.io/name: concilia-minio
+    app.kubernetes.io/part-of: bucket
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 10Gi
+  # storageClassName: "${STORAGE_CLASS}"   # descomentar si el clúster exige una StorageClass explícita

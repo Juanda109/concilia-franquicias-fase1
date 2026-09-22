@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: concilia-minio
+  labels:
+    app: concilia-minio
+    app.kubernetes.io/name: concilia-minio
+    app.kubernetes.io/part-of: bucket
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate   # evita dos pods montando a la vez el mismo PVC (RWO)
+  selector:
+    matchLabels:
+      app: concilia-minio
+  template:
+    metadata:
+      labels:
+        app: concilia-minio
+        app.kubernetes.io/name: concilia-minio
+        app.kubernetes.io/part-of: bucket
+    spec:
+      # SCC restringida de OKD: no fijamos runAsUser (lo asigna el clúster).
+      # Confirmado compatible: el proyecto pqrs corre MinIO bajo esta misma
+      # SCC en OKD con runAsNonRoot + sin UID fijo (ver IaC/bucket en ese repo).
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: minio
+          image: quay.io/minio/minio:latest
+          args: ["server", "/data", "--console-address", ":9001"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          ports:
+            - name: api
+              containerPort: 9000
+            - name: console
+              containerPort: 9001
+          envFrom:
+            - secretRef:
+                name: concilia-minio-secret
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+          readinessProbe:
+            httpGet:
+              path: /minio/health/ready
+              port: api
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /minio/health/live
+              port: api
+            initialDelaySeconds: 20
+            periodSeconds: 20
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: concilia-minio-data

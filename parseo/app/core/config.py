@@ -9,8 +9,5 @@ class Settings:
     minio_access_key: str = os.getenv("MINIO_ACCESS_KEY","concilia")
     minio_secret_key: str = os.getenv("MINIO_SECRET_KEY","concilia123")
     minio_secure: bool = os.getenv("MINIO_SECURE","false").lower()=="true"
-    parseo_api_url: str = os.getenv("PARSEO_API_URL","http://parseo:8081")
-    page_size: int = int(os.getenv("PAGE_SIZE","30"))
-    max_page_size: int = int(os.getenv("MAX_PAGE_SIZE","100"))
 
 settings=Settings()

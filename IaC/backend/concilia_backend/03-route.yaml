@@ -4,6 +4,7 @@ metadata:
   name: concilia-backend
   labels:
     app.kubernetes.io/part-of: backend
+    app.kubernetes.io/component: backend-api
 spec:
   # Host lo asigna la plataforma al crear el proyecto OKD. Mientras no se
   # confirme, se deja parametrizado siguiendo el mismo dominio de apps que

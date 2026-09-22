@@ -17,6 +17,41 @@ services:
       timeout: 5s
       retries: 10
 
+  minio:
+    image: quay.io/minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: concilia
+      MINIO_ROOT_PASSWORD: concilia123
+    volumes:
+      - concilia_miniodata:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  parseo:
+    build:
+      context: ./parseo
+    ports:
+      - "8081:8081"
+    environment:
+      DATABASE_URL: postgresql://concilia:concilia@postgres:5432/concilia
+      MINIO_ENDPOINT: minio:9000
+      MINIO_BUCKET: concilia-fase1
+      MINIO_ACCESS_KEY: concilia
+      MINIO_SECRET_KEY: concilia123
+      MINIO_SECURE: "false"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+
   backend:
     build:
       context: ./backend
@@ -26,14 +61,19 @@ services:
       DATABASE_URL: postgresql://concilia:concilia@postgres:5432/concilia
       MINIO_ENDPOINT: minio:9000
       MINIO_BUCKET: concilia-fase1
+      MINIO_ACCESS_KEY: concilia
+      MINIO_SECRET_KEY: concilia123
+      MINIO_SECURE: "false"
+      PARSEO_API_URL: http://parseo:8081
       PAGE_SIZE: "30"
       MAX_PAGE_SIZE: "100"
-      INCOMING_DIR: /app/data/incoming
-    volumes:
-      - ./backend/data/incoming:/app/data/incoming:ro
     depends_on:
       postgres:
         condition: service_healthy
+      minio:
+        condition: service_healthy
+      parseo:
+        condition: service_started
 
   frontend:
     image: nginx:alpine
@@ -47,3 +87,4 @@ services:
 
 volumes:
   concilia_pgdata:
+  concilia_miniodata:

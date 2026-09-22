@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: concilia-postgres
+  labels:
+    app: concilia-postgres
+    app.kubernetes.io/name: concilia-postgres
+    app.kubernetes.io/part-of: database
+    app.kubernetes.io/component: database-postgresql
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate   # evita dos pods montando a la vez el mismo PVC (RWO)
+  selector:
+    matchLabels:
+      app: concilia-postgres
+  template:
+    metadata:
+      labels:
+        app: concilia-postgres
+        app.kubernetes.io/name: concilia-postgres
+        app.kubernetes.io/part-of: database
+        app.kubernetes.io/component: database-postgresql
+    spec:
+      # SCC restringida de OKD: no fijamos runAsUser (lo asigna el clúster).
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: postgres
+          # ImageStream que OKD trae integrado en el namespace "openshift" —
+          # ya preparado para correr con UID arbitrario bajo la SCC "restricted".
+          # Verifica el tag disponible en tu clúster: oc get is postgresql -n openshift
+          image: image-registry.openshift-image-registry.svc:5000/openshift/postgresql:16-el8
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          ports:
+            - name: postgres
+              containerPort: 5432
+          envFrom:
+            - secretRef:
+                name: concilia-postgres-secret
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/pgsql/data
+            - name: initdb
+              mountPath: /opt/app-root/src/postgresql-init
+              readOnly: true
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          readinessProbe:
+            tcpSocket:
+              port: postgres
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: postgres
+            initialDelaySeconds: 20
+            periodSeconds: 20
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: concilia-postgres-data
+        - name: initdb
+          configMap:
+            name: concilia-postgres-initdb

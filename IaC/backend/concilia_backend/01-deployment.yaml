@@ -4,7 +4,10 @@ metadata:
   name: concilia-backend
   labels:
     app: concilia-backend
+    app.kubernetes.io/name: concilia-backend
     app.kubernetes.io/part-of: backend
+    app.kubernetes.io/component: backend-api
+    app.openshift.io/runtime: python
 spec:
   replicas: 1
   selector:
@@ -14,10 +17,23 @@ spec:
     metadata:
       labels:
         app: concilia-backend
+        app.kubernetes.io/name: concilia-backend
+        app.kubernetes.io/part-of: backend
+        app.kubernetes.io/component: backend-api
     spec:
+      # SCC restringida de OKD: no fijamos runAsUser (lo asigna el clúster).
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: backend
           image: ${IMAGE_CONCILIA_BACKEND}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           ports:
             - name: http
               containerPort: 8080
@@ -41,18 +57,3 @@ spec:
             httpGet:
               path: /health
               port: http
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: concilia-backend
-  labels:
-    app: concilia-backend
-    app.kubernetes.io/part-of: backend
-spec:
-  selector:
-    app: concilia-backend
-  ports:
-    - name: http
-      port: 8080
-      targetPort: http

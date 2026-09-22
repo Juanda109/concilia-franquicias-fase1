@@ -1,0 +1,9 @@
+# Namespace real pendiente de la plataforma OKD (ver kustomization.yaml de
+# esta carpeta: se aplica vía `namespace: ${OKD_NAMESPACE}` + envsubst).
+# Este archivo queda como referencia documental; no se incluye en
+# kustomization.yaml porque la plataforma crea el proyecto OKD directamente.
+#
+# apiVersion: v1
+# kind: Namespace
+# metadata:
+#   name: ${OKD_NAMESPACE}

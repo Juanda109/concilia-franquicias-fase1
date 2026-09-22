@@ -11,13 +11,14 @@ Este repositorio consolida los componentes vigentes de Fase 1 en una sola raíz 
 - Orquestación funcional: Control-M Local Colombia -> Hub Linux -> SFTP puerto 22 -> MinIO/OKD.
 
 ## Componentes incluidos
-- `backend/`: FastAPI, ingesta, parsers, repositories, estados, errores y pruebas.
+- `backend/`: FastAPI (control-plane), jornadas/archivos/estados, orquesta la subida a MinIO y la llamada a `parseo/`.
+- `parseo/`: FastAPI (data-plane), descarga de MinIO, parsers, repositories de resultados y escritura directa a Postgres.
 - `database/`: DDL consolidado de 21 tablas, DDL individuales, migración y seed de los 12 insumos.
 - `config/`: JSON y YAML de baseline, inventario, mappings, reglas, API, frontend e infraestructura.
 - `openapi/`: especificación OpenAPI vigente.
 - `components/python/`: componentes y paquetes de mapping generados/validados.
 - `docs/mappings/`: matrices técnicas y equivalencias Excel/Python.
-- `deploy/okd/`: Deployment, Service, ConfigMap y plantilla Secret.
+- `IaC/`: manifiestos OKD (kustomize) por componente — front, back, api de parseo, postgres, minio. Ver `IaC/README.md`.
 - `deploy/control-m/`: definición de responsabilidades de Control-M Local Colombia.
 - `frontend/`: tipos/interfaz TypeScript base.
 - `demo/`: demo v59, con pendientes de infraestructura e integración únicamente en API/Swagger.

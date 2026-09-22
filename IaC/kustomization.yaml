@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Namespace real pendiente de la plataforma OKD. Se resuelve junto con el
+# resto de variables ${...} vía envsubst antes de aplicar (ver README.md
+# de esta carpeta).
+namespace: ${OKD_NAMESPACE}
+
+resources:
+  - BD
+  - bucket
+  - backend
+  # - frontend   # pendiente: el front aún se sirve como archivos estáticos,
+  #              # falta imagen de contenedor (nginx) — ver README.md
+
+# concilia-postgres-initdb (el ConfigMap con el DDL/seed que monta
+# BD/postgresql/02-deployment.yaml) NO se genera aquí: kustomize bloquea por
+# seguridad referenciar archivos fuera de esta carpeta (../database/*.sql).
+# Se crea aparte, antes de aplicar este kustomization (ver README.md, paso 0).

@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  # Config/secret compartidos por concilia_backend y concilia_parseo (mismo
+  # DATABASE_URL, MINIO_* y PARSEO_API_URL) — se quedan a este nivel en vez
+  # de duplicarse en cada subcarpeta de servicio.
+  - 00-configmap.yaml
+  - 00-secret-template.yaml
+  - concilia_backend/01-deployment.yaml
+  - concilia_backend/02-service.yaml
+  - concilia_backend/03-route.yaml
+  - concilia_parseo/01-deployment.yaml
+  - concilia_parseo/02-service.yaml
