@@ -10,8 +10,7 @@ resources:
   - BD
   - bucket
   - backend
-  # - frontend   # pendiente: el front aún se sirve como archivos estáticos,
-  #              # falta imagen de contenedor (nginx) — ver README.md
+  - frontend
 
 # concilia-postgres-initdb (el ConfigMap con el DDL/seed que monta
 # BD/postgresql/02-deployment.yaml) NO se genera aquí: kustomize bloquea por

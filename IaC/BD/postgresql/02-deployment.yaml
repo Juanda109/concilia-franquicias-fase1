@@ -29,10 +29,15 @@ spec:
           type: RuntimeDefault
       containers:
         - name: postgres
-          # ImageStream que OKD trae integrado en el namespace "openshift" —
-          # ya preparado para correr con UID arbitrario bajo la SCC "restricted".
-          # Verifica el tag disponible en tu clúster: oc get is postgresql -n openshift
-          image: image-registry.openshift-image-registry.svc:5000/openshift/postgresql:16-el8
+          # El ImageStream interno (image-registry.openshift-image-registry.svc:5000/openshift/postgresql)
+          # no resuelve en este clúster (DNS interno del registry inalcanzable desde el pod:
+          # visto en `oc describe pod` -> "lookup image-registry.openshift-image-registry.svc ... i/o timeout").
+          # Se usa en su lugar la misma imagen que corre en producción en pqrs, en el mismo
+          # dominio OKD (work.ocp.co.igrupobbva): registry externo, sin depender del registry
+          # interno. Mismas variables POSTGRESQL_USER/PASSWORD/DATABASE y mismo mecanismo de
+          # auto-ejecutar .sql desde /opt/app-root/src/postgresql-init (misma familia de imagen).
+          image: registry.redhat.io/rhel9/postgresql-15:latest
+          imagePullPolicy: Always
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:

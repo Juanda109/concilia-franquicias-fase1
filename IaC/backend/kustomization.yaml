@@ -9,6 +9,7 @@ resources:
   - 00-secret-template.yaml
   - concilia_backend/01-deployment.yaml
   - concilia_backend/02-service.yaml
-  - concilia_backend/03-route.yaml
+  # Sin Route pública: el front (IaC/frontend) es el único punto de entrada
+  # externo, y le habla a este Service por DNS interno vía su nginx (/api/).
   - concilia_parseo/01-deployment.yaml
   - concilia_parseo/02-service.yaml

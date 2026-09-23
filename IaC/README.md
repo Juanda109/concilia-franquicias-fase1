@@ -18,8 +18,8 @@ llaman entre sí por el nombre del Service (DNS interno del clúster):
 
 | Componente | Carpeta | Expone | Lo llaman |
 |---|---|---|---|
-| **front** | *(pendiente: solo existe como archivos estáticos hoy)* | 80 | Usuario final (vía Route) |
-| **back** | `backend/concilia_backend/` | `concilia-backend:8080` | front |
+| **front** | `frontend/concilia_frontend/` | `concilia-frontend:8080` (Route pública) | Usuario final |
+| **back** | `backend/concilia_backend/` | `concilia-backend:8080` (solo interno, sin Route) | front (vía nginx `/api/`, `/health`) |
 | **api de parseo** | `backend/concilia_parseo/` | `concilia-parseo:8081` | back |
 | **postgres** | `BD/postgresql/` | `concilia-postgres:5432` | back (lectura/jornadas) y parseo (escritura de resultados) |
 | **minio** | `bucket/` | `concilia-minio:9000` (API) / `:9001` (consola) | back (sube el archivo original) y parseo (lo descarga para parsear) |
@@ -70,9 +70,10 @@ y reiniciar el pod de postgres para que un volumen ya inicializado no lo ignore.
 | Variable | Dónde se usa | Valor hoy |
 |---|---|---|
 | `OKD_NAMESPACE` | `kustomization.yaml` (namespace de todos los recursos) | Pendiente — lo asigna la plataforma |
-| `OKD_ROUTE_HOST` | `backend/concilia_backend/03-route.yaml` | Pendiente — depende del dominio de apps del clúster |
-| `IMAGE_CONCILIA_BACKEND` | `backend/concilia_backend/01-deployment.yaml` | Pendiente — depende del registry (Quay/Artifactory interno) |
+| `OKD_ROUTE_HOST` | `frontend/concilia_frontend/03-route.yaml` | Pendiente — depende del dominio de apps del clúster |
+| `IMAGE_CONCILIA_BACKEND` | `backend/concilia_backend/01-deployment.yaml` | Pendiente — registry Quay corporativo (`quay.apps.work.ocp.co.igrupobbva/<organización>`) |
 | `IMAGE_CONCILIA_PARSEO` | `backend/concilia_parseo/01-deployment.yaml` | Pendiente — mismo registry que el backend |
+| `IMAGE_CONCILIA_FRONTEND` | `frontend/concilia_frontend/01-deployment.yaml` | Pendiente — mismo registry que el backend |
 | `DATABASE_URL` | `backend/00-secret-template.yaml` | Se construye con las credenciales de abajo: `postgresql://<POSTGRES_USER>:<POSTGRES_PASSWORD>@concilia-postgres:5432/<POSTGRES_DB>` |
 | `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` | `BD/postgresql/00-secret-template.yaml` | Pendiente — definir credenciales del ambiente |
 | `MINIO_ENDPOINT` | `backend/00-configmap.yaml` | `concilia-minio:9000` si se usa el MinIO de este repo (`bucket/`); endpoint real si es un MinIO corporativo externo |
@@ -89,6 +90,7 @@ export OKD_NAMESPACE=...
 export OKD_ROUTE_HOST=...
 export IMAGE_CONCILIA_BACKEND=...
 export IMAGE_CONCILIA_PARSEO=...
+export IMAGE_CONCILIA_FRONTEND=...
 export POSTGRES_USER=concilia
 export POSTGRES_PASSWORD=...
 export POSTGRES_DB=concilia
