@@ -5,11 +5,11 @@ metadata:
   labels:
     app.kubernetes.io/part-of: frontend
 spec:
-  # Host lo asigna la plataforma. Este es el punto de entrada real de los
-  # usuarios finales — el back ya no necesita su propia Route pública si el
-  # front es el único que la gente visita (el front le habla al back por
-  # DNS interno vía /api/, ver frontend/nginx.container.conf).
-  host: ${OKD_ROUTE_HOST}
+  # Sin "host" fijo a propósito: en este namespace el usuario no tiene el
+  # permiso "routes/custom-host" (confirmado en el clúster real — error
+  # "Forbidden: you do not have permission to set the host field of the
+  # route"), así que se omite y OKD asigna automáticamente un host bajo su
+  # dominio de apps (<name>-<namespace>.apps.<dominio-cluster>).
   to:
     kind: Service
     name: concilia-frontend

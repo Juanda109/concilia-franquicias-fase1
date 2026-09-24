@@ -1,6 +1,12 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
+# Fijado aquí también (no solo en el kustomization.yaml raíz) para que
+# aplicar esta carpeta sola (kubectl kustomize IaC/BD) no dependa de cuál
+# sea tu "oc project" activo en ese momento — si no, oc apply cae en el
+# proyecto que tengas seleccionado, que puede no ser el correcto.
+namespace: ${OKD_NAMESPACE}
+
 resources:
   - postgresql/00-secret-template.yaml
   - postgresql/01-pvc.yaml

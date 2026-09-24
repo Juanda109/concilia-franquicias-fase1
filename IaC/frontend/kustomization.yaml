@@ -1,6 +1,11 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
+# Fijado aquí también (no solo en el kustomization.yaml raíz) para que
+# aplicar esta carpeta sola (kubectl kustomize IaC/frontend) no dependa de
+# cuál sea tu "oc project" activo en ese momento.
+namespace: ${OKD_NAMESPACE}
+
 resources:
   - concilia_frontend/01-deployment.yaml
   - concilia_frontend/02-service.yaml

@@ -9,7 +9,12 @@ data:
   # (DNS interno del Service); si se usa un MinIO corporativo externo, va su endpoint real.
   MINIO_ENDPOINT: "${MINIO_ENDPOINT}"
   MINIO_BUCKET: "${MINIO_BUCKET}"
-  MINIO_SECURE: "${MINIO_SECURE}"
+  # Fijo en vez de "${MINIO_SECURE}": kustomize serializa ese placeholder sin
+  # comillas, y al sustituirlo por el texto "false"/"true" sin comillas YAML
+  # lo interpreta como booleano en vez de string, y ConfigMap.data exige
+  # string ("cannot unmarshal bool ... of type string"). Cambiar a "true"
+  # solo si el Service de MinIO llega a exigir TLS.
+  MINIO_SECURE: "false"
   # DNS interno del Service de parseo (IaC/backend/concilia_parseo) — no es secreto.
   PARSEO_API_URL: "http://concilia-parseo:8081"
   PAGE_SIZE: "30"
