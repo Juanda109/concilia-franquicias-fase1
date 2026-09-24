@@ -65,6 +65,35 @@ oc create configmap concilia-postgres-initdb \
 Si cambia el DDL, hay que recrear este ConfigMap (`oc create ... --dry-run=client -o yaml | oc apply -f -`)
 y reiniciar el pod de postgres para que un volumen ya inicializado no lo ignore.
 
+## Paso 0.5 — Ejecutar el DDL/seed a mano (verificado en clúster real)
+
+El ConfigMap se monta en `/opt/app-root/src/postgresql-init` dentro del pod,
+pero **la imagen `registry.redhat.io/rhel9/postgresql-15` no tiene ningún
+hook que auto-ejecute ese contenido** al arrancar (a diferencia de la
+imagen S2I `openshift/postgresql` que se intentó usar originalmente, pero
+que no resulta alcanzable en este clúster — ver el comentario en
+`BD/postgresql/02-deployment.yaml`). Confirmado en clúster: los `.sql`
+llegan montados, pero la base de datos queda vacía tras el primer arranque.
+
+Hay que correrlo a mano, **una vez**, después de que el pod de postgres
+esté `Ready` (usa los archivos que ya están montados dentro del propio pod,
+no hace falta copiar nada):
+
+```bash
+oc exec deploy/concilia-postgres -o jsonpath='{.metadata.namespace}' # confirma tu namespace si tienes dudas
+
+oc exec deploy/concilia-postgres -- bash -c \
+  'psql -U "$POSTGRESQL_USER" -d "$POSTGRESQL_DATABASE" -f /opt/app-root/src/postgresql-init/00_concilia_fase1_ddl_21_tablas.sql'
+oc exec deploy/concilia-postgres -- bash -c \
+  'psql -U "$POSTGRESQL_USER" -d "$POSTGRESQL_DATABASE" -f /opt/app-root/src/postgresql-init/22_seed_insumos_esperados.sql'
+
+# Verificar (debe listar 21 tablas):
+oc exec deploy/concilia-postgres -- bash -c 'psql -U "$POSTGRESQL_USER" -d "$POSTGRESQL_DATABASE" -c "\dt"'
+```
+
+Hay que repetir este paso cada vez que el PVC de postgres se borre/recree
+desde cero (por ejemplo, si se reinicializa el ambiente).
+
 ## Variables pendientes de resolver
 
 | Variable | Dónde se usa | Valor hoy |
