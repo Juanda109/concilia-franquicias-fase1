@@ -8,17 +8,18 @@ unit-tests:
   stage: test
   image: python:3.12-slim
   script:
-    - pip install -r co-api-parseo/requirements.txt
-    - PYTHONPATH=co-api-parseo python co-api-parseo/tests/test_real_samples.py
+    - pip install --no-cache-dir uv
+    - cd co-api-parseo && uv sync --no-dev --no-install-project
+    - PYTHONPATH=. .venv/bin/python tests/test_real_samples.py
 backend-image:
   stage: build
   image: docker:27
   services: [docker:27-dind]
   script:
-    # Dockerfile.okd (no Dockerfile): usa la imagen base del Artifactory corporativo,
-    # no la pública que usa docker-compose para desarrollo local.
+    # Containerfile: usa la imagen base del Artifactory corporativo + uv/pyproject.toml
+    # (es el único Dockerfile/Containerfile que queda; ya no hay uno separado para local).
     # ARTIFACTORY_USER/ARTIFACTORY_PASSWORD deben quedar como variables CI/CD protegidas.
-    - docker build -f co-backend-concilia/Dockerfile.okd
+    - docker build -f co-backend-concilia/Containerfile
         --build-arg ARTIFACTORY_USER=$ARTIFACTORY_USER
         --build-arg ARTIFACTORY_PASSWORD=$ARTIFACTORY_PASSWORD
         -t concilia-backend:$CI_COMMIT_SHA co-backend-concilia

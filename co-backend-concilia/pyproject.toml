@@ -1,0 +1,15 @@
+[project]
+name = "co-backend-concilia"
+version = "0.1.0"
+description = "Concilia Franquicias Fase 1 - Back (control-plane)"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115,<1",
+    "uvicorn[standard]>=0.30,<1",
+    "psycopg[binary]>=3.2,<4",
+    "pydantic>=2.9,<3",
+    "python-multipart>=0.0.9,<1",
+    "minio>=7.2,<8",
+    "httpx>=0.27,<1",
+]

@@ -1,0 +1,14 @@
+[project]
+name = "co-api-parseo"
+version = "0.1.0"
+description = "Concilia Franquicias Fase 1 - API de Parseo (data-plane)"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115,<1",
+    "uvicorn[standard]>=0.30,<1",
+    "psycopg[binary]>=3.2,<4",
+    "openpyxl>=3.1,<4",
+    "pydantic>=2.9,<3",
+    "minio>=7.2,<8",
+]

@@ -1,0 +1,29 @@
+FROM artifactory.globaldevtools.bbva.com:443/public.ecr.aws-remote/docker/library/python:3.12-slim
+ARG ARTIFACTORY_USER
+ARG ARTIFACTORY_PASSWORD
+
+# Variables de entorno
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app \
+    UV_PROJECT_ENVIRONMENT=/app/.venv \
+    UV_INDEX_URL="https://${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD}@artifactory.globaldevtools.bbva.com/artifactory/<COMPLETAR_RUTA_PYPI>/simple"
+    # TODO: la ruta del índice PyPI de Artifactory se cortó en el ejemplo que
+    # nos dieron (terminaba en "...artifactory…") — completar con la ruta real
+    # antes de construir con estas credenciales. La plataforma no permite
+    # instalar vía pip/requirements.txt, solo uv + pyproject.toml.
+
+WORKDIR /app
+RUN python -m pip install --no-cache-dir uv
+
+COPY pyproject.toml README.md ./
+RUN uv sync --no-dev --no-install-project
+RUN rm -rf /root/.cache/*
+
+COPY app ./app
+
+RUN chown -R www-data:www-data /app && chmod -R 755 /app
+USER www-data
+
+EXPOSE 8080
+CMD ["/app/.venv/bin/python", "-m", "uvicorn", "app.api.main:app", "--host", "0.0.0.0", "--port", "8080"]

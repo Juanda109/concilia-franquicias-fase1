@@ -112,20 +112,20 @@ desde cero (por ejemplo, si se reinicializa el ambiente).
 
 ## Construir y publicar las imágenes
 
-`co-backend-concilia/` y `co-api-parseo/` (carpetas de código fuente, en la raíz del repo) tienen **dos** Dockerfile:
-- `Dockerfile`: el que usa `docker-compose.yml` para desarrollo local (imagen pública `python:3.12-slim`, sin credenciales).
-- `Dockerfile.okd`: el que hay que usar para construir la imagen que se despliega en OKD (imagen base del Artifactory corporativo, usuario no root `www-data`). Requiere `ARTIFACTORY_USER`/`ARTIFACTORY_PASSWORD` — pendiente completar además la ruta exacta del índice PyPI interno (queda marcada con `<COMPLETAR_RUTA_PYPI>` en el Dockerfile).
+`co-backend-concilia/` y `co-api-parseo/` tienen un único **`Containerfile`** (no `Dockerfile`): imagen base del Artifactory corporativo, usuario no root `www-data`, instala con **`uv` + `pyproject.toml`** (la plataforma no permite instalar vía `pip`/`requirements.txt`). `docker-compose.yml` también construye con este mismo `Containerfile` — ya no hay un `Dockerfile` separado para desarrollo local, así que **sin `ARTIFACTORY_USER`/`ARTIFACTORY_PASSWORD` reales ni la ruta del índice PyPI completada, `docker compose build` va a fallar tanto en local como en CI**. Mientras no se consigan esas credenciales, solo se puede seguir usando las imágenes que ya estaban construidas antes de este cambio (`docker compose up` sin `--build`).
+
+Requiere `ARTIFACTORY_USER`/`ARTIFACTORY_PASSWORD` — pendiente completar además la ruta exacta del índice PyPI interno (queda marcada con `<COMPLETAR_RUTA_PYPI>` en el `Containerfile`).
 
 ```bash
 podman login quay.apps.work.ocp.co.igrupobbva
-podman build -f co-backend-concilia/Dockerfile.okd \
+podman build -f co-backend-concilia/Containerfile \
   --build-arg ARTIFACTORY_USER=... --build-arg ARTIFACTORY_PASSWORD=... \
   -t quay.apps.work.ocp.co.igrupobbva/concilia-genai/concilia-backend:v2 co-backend-concilia/
 podman push quay.apps.work.ocp.co.igrupobbva/concilia-genai/concilia-backend:v2
-# repetir con co-api-parseo/Dockerfile.okd para concilia-parseo
+# repetir con co-api-parseo/Containerfile para concilia-parseo
 ```
 
-`co-frontend-concilia/` no tiene variante `.okd`: es nginx + estáticos, no depende de paquetes Python ni de Artifactory, así que su único `Dockerfile` sirve tanto para local como para OKD.
+`co-frontend-concilia/` sigue con `Dockerfile` (no `Containerfile`): es nginx + estáticos, no depende de paquetes Python ni de Artifactory, y en `pqrs` su equivalente (`co_pqrs_front_test`) también usa `Dockerfile` normal.
 
 ## Cómo se aplica (cuando haya namespace/registry)
 
