@@ -5,7 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/part-of: backend
 data:
-  # Con MinIO desplegado vía IaC/bucket, el valor es "concilia-minio:9000"
+  # Con MinIO desplegado vía IaC/bucket, el valor es "co-bucket-concilia:9000"
   # (DNS interno del Service); si se usa un MinIO corporativo externo, va su endpoint real.
   MINIO_ENDPOINT: "${MINIO_ENDPOINT}"
   MINIO_BUCKET: "${MINIO_BUCKET}"
@@ -15,7 +15,7 @@ data:
   # string ("cannot unmarshal bool ... of type string"). Cambiar a "true"
   # solo si el Service de MinIO llega a exigir TLS.
   MINIO_SECURE: "false"
-  # DNS interno del Service de parseo (IaC/backend/concilia_parseo) — no es secreto.
-  PARSEO_API_URL: "http://concilia-parseo:8081"
+  # DNS interno del Service de parseo (IaC/backend/co-api-parseo) — no es secreto.
+  PARSEO_API_URL: "http://co-api-parseo:8081"
   PAGE_SIZE: "30"
   MAX_PAGE_SIZE: "100"

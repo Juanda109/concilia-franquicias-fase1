@@ -11,17 +11,12 @@ Este repositorio consolida los componentes vigentes de Fase 1 en una sola raíz 
 - Orquestación funcional: Control-M Local Colombia -> Hub Linux -> SFTP puerto 22 -> MinIO/OKD.
 
 ## Componentes incluidos
-- `backend/`: FastAPI (control-plane), jornadas/archivos/estados, orquesta la subida a MinIO y la llamada a `parseo/`.
-- `parseo/`: FastAPI (data-plane), descarga de MinIO, parsers, repositories de resultados y escritura directa a Postgres.
-- `database/`: DDL consolidado de 21 tablas, DDL individuales, migración y seed de los 12 insumos.
-- `config/`: JSON y YAML de baseline, inventario, mappings, reglas, API, frontend e infraestructura.
-- `openapi/`: especificación OpenAPI vigente.
-- `components/python/`: componentes y paquetes de mapping generados/validados.
-- `docs/mappings/`: matrices técnicas y equivalencias Excel/Python.
+Solo quedan en el repo las carpetas de los pods que se despliegan en OKD (documentación, specs y referencias de diseño se sacaron aparte):
+- `co-backend-concilia/`: FastAPI (control-plane), jornadas/archivos/estados, orquesta la subida a MinIO y la llamada a `co-api-parseo/`.
+- `co-api-parseo/`: FastAPI (data-plane), descarga de MinIO, parsers, repositories de resultados y escritura directa a Postgres.
+- `co-frontend-concilia/`: nginx + JS, UI de carga/seguimiento; construye la imagen que corre en OKD.
+- `database/`: DDL consolidado de 21 tablas, DDL individuales, migración y seed de los 12 insumos (no se despliega como pod; se usa para el paso manual de inicialización de Postgres — ver `IaC/README.md`).
 - `IaC/`: manifiestos OKD (kustomize) por componente — front, back, api de parseo, postgres, minio. Ver `IaC/README.md`.
-- `deploy/control-m/`: definición de responsabilidades de Control-M Local Colombia.
-- `frontend/`: tipos/interfaz TypeScript base.
-- `demo/`: demo v59, con pendientes de infraestructura e integración únicamente en API/Swagger.
 
 ## CronJobs
 Control-M Local Colombia es el orquestador funcional. No se deben crear CronJobs OKD que dupliquen calendarización, disparadores, dependencias o reintentos. Un CronJob OKD solo aplica a una tarea técnica interna explícitamente justificada.

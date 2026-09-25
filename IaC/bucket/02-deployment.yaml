@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: concilia-minio
+  name: co-bucket-concilia
   labels:
-    app: concilia-minio
-    app.kubernetes.io/name: concilia-minio
+    app: co-bucket-concilia
+    app.kubernetes.io/name: co-bucket-concilia
     app.kubernetes.io/part-of: bucket
 spec:
   replicas: 1
@@ -12,12 +12,12 @@ spec:
     type: Recreate   # evita dos pods montando a la vez el mismo PVC (RWO)
   selector:
     matchLabels:
-      app: concilia-minio
+      app: co-bucket-concilia
   template:
     metadata:
       labels:
-        app: concilia-minio
-        app.kubernetes.io/name: concilia-minio
+        app: co-bucket-concilia
+        app.kubernetes.io/name: co-bucket-concilia
         app.kubernetes.io/part-of: bucket
     spec:
       # SCC restringida de OKD: no fijamos runAsUser (lo asigna el clúster).

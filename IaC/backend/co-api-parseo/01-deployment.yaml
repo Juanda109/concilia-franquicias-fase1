@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: co-api-parseo
+  labels:
+    app: co-api-parseo
+    app.kubernetes.io/name: co-api-parseo
+    app.kubernetes.io/part-of: backend
+    app.kubernetes.io/component: backend-parseo
+    app.openshift.io/runtime: python
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: co-api-parseo
+  template:
+    metadata:
+      labels:
+        app: co-api-parseo
+        app.kubernetes.io/name: co-api-parseo
+        app.kubernetes.io/part-of: backend
+        app.kubernetes.io/component: backend-parseo
+    spec:
+      # SCC restringida de OKD: no fijamos runAsUser (lo asigna el clúster).
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: parseo
+          image: ${IMAGE_CONCILIA_PARSEO}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          ports:
+            - name: http
+              containerPort: 8081
+          envFrom:
+            - configMapRef:
+                name: concilia-config
+            - secretRef:
+                name: concilia-secrets
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http

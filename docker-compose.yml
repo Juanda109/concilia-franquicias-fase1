@@ -36,7 +36,7 @@ services:
 
   parseo:
     build:
-      context: ./parseo
+      context: ./co-api-parseo
     ports:
       - "8081:8081"
     environment:
@@ -54,7 +54,7 @@ services:
 
   backend:
     build:
-      context: ./backend
+      context: ./co-backend-concilia
     ports:
       - "8080:8080"
     environment:
@@ -78,8 +78,8 @@ services:
   frontend:
     image: nginx:alpine
     volumes:
-      - ./frontend/public:/usr/share/nginx/html:ro
-      - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./co-frontend-concilia/public:/usr/share/nginx/html:ro
+      - ./co-frontend-concilia/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     ports:
       - "5173:80"
     depends_on:

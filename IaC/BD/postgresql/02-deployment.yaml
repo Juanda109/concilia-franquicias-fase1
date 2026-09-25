@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: concilia-postgres
+  name: co-db-concilia
   labels:
-    app: concilia-postgres
-    app.kubernetes.io/name: concilia-postgres
+    app: co-db-concilia
+    app.kubernetes.io/name: co-db-concilia
     app.kubernetes.io/part-of: database
     app.kubernetes.io/component: database-postgresql
 spec:
@@ -13,12 +13,12 @@ spec:
     type: Recreate   # evita dos pods montando a la vez el mismo PVC (RWO)
   selector:
     matchLabels:
-      app: concilia-postgres
+      app: co-db-concilia
   template:
     metadata:
       labels:
-        app: concilia-postgres
-        app.kubernetes.io/name: concilia-postgres
+        app: co-db-concilia
+        app.kubernetes.io/name: co-db-concilia
         app.kubernetes.io/part-of: database
         app.kubernetes.io/component: database-postgresql
     spec:

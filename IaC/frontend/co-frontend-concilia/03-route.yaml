@@ -1,0 +1,20 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: co-frontend-concilia
+  labels:
+    app.kubernetes.io/part-of: frontend
+spec:
+  # Sin "host" fijo a propósito: en este namespace el usuario no tiene el
+  # permiso "routes/custom-host" (confirmado en el clúster real — error
+  # "Forbidden: you do not have permission to set the host field of the
+  # route"), así que se omite y OKD asigna automáticamente un host bajo su
+  # dominio de apps (<name>-<namespace>.apps.<dominio-cluster>).
+  to:
+    kind: Service
+    name: co-frontend-concilia
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

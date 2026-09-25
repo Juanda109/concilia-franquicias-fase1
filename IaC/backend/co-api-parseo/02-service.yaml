@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: co-api-parseo
+  labels:
+    app: co-api-parseo
+    app.kubernetes.io/name: co-api-parseo
+    app.kubernetes.io/part-of: backend
+    app.kubernetes.io/component: backend-parseo
+spec:
+  selector:
+    app: co-api-parseo
+  ports:
+    - name: http
+      port: 8081
+      targetPort: http

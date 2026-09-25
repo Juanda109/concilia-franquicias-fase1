@@ -8,14 +8,14 @@ kind: Kustomization
 namespace: ${OKD_NAMESPACE}
 
 resources:
-  # Config/secret compartidos por concilia_backend y concilia_parseo (mismo
+  # Config/secret compartidos por co-backend-concilia y co-api-parseo (mismo
   # DATABASE_URL, MINIO_* y PARSEO_API_URL) — se quedan a este nivel en vez
   # de duplicarse en cada subcarpeta de servicio.
   - 00-configmap.yaml
   - 00-secret-template.yaml
-  - concilia_backend/01-deployment.yaml
-  - concilia_backend/02-service.yaml
+  - co-backend-concilia/01-deployment.yaml
+  - co-backend-concilia/02-service.yaml
   # Sin Route pública: el front (IaC/frontend) es el único punto de entrada
   # externo, y le habla a este Service por DNS interno vía su nginx (/api/).
-  - concilia_parseo/01-deployment.yaml
-  - concilia_parseo/02-service.yaml
+  - co-api-parseo/01-deployment.yaml
+  - co-api-parseo/02-service.yaml

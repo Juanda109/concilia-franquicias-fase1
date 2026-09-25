@@ -1,0 +1,24 @@
+FROM artifactory.globaldevtools.bbva.com:443/public.ecr.aws-remote/docker/library/python:3.12-slim
+ARG ARTIFACTORY_USER
+ARG ARTIFACTORY_PASSWORD
+
+# Variables de entorno
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app \
+    PIP_INDEX_URL="https://${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD}@artifactory.globaldevtools.bbva.com/artifactory/<COMPLETAR_RUTA_PYPI>/simple"
+    # TODO: la ruta del índice PyPI de Artifactory se cortó en el ejemplo que
+    # nos dieron (terminaba en "...artifactory…") — completar con la ruta real
+    # antes de construir con estas credenciales.
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+RUN rm -rf /root/.cache/*
+COPY app ./app
+
+RUN chown -R www-data:www-data /app && chmod -R 755 /app
+USER www-data
+
+EXPOSE 8081
+CMD ["uvicorn","app.api.main:app","--host","0.0.0.0","--port","8081"]

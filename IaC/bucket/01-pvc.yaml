@@ -3,8 +3,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: concilia-minio-data
   labels:
-    app: concilia-minio
-    app.kubernetes.io/name: concilia-minio
+    app: co-bucket-concilia
+    app.kubernetes.io/name: co-bucket-concilia
     app.kubernetes.io/part-of: bucket
 spec:
   accessModes: ["ReadWriteOnce"]

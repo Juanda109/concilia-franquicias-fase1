@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: concilia-minio
+  name: co-bucket-concilia
   labels:
-    app: concilia-minio
-    app.kubernetes.io/name: concilia-minio
+    app: co-bucket-concilia
+    app.kubernetes.io/name: co-bucket-concilia
     app.kubernetes.io/part-of: bucket
 spec:
   selector:
-    app: concilia-minio
+    app: co-bucket-concilia
   ports:
     - name: api
       port: 9000
