@@ -112,17 +112,20 @@ desde cero (por ejemplo, si se reinicializa el ambiente).
 
 ## Construir y publicar las imágenes
 
-`co-backend-concilia/` y `co-api-parseo/` tienen un único **`Containerfile`** (no `Dockerfile`): imagen base del Artifactory corporativo, usuario no root `www-data`, instala con **`uv` + `pyproject.toml`** (la plataforma no permite instalar vía `pip`/`requirements.txt`). `docker-compose.yml` también construye con este mismo `Containerfile` — ya no hay un `Dockerfile` separado para desarrollo local, así que **sin `ARTIFACTORY_USER`/`ARTIFACTORY_PASSWORD` reales ni la ruta del índice PyPI completada, `docker compose build` va a fallar tanto en local como en CI**. Mientras no se consigan esas credenciales, solo se puede seguir usando las imágenes que ya estaban construidas antes de este cambio (`docker compose up` sin `--build`).
+`co-backend-concilia/` y `co-api-parseo/` tienen un único **`Containerfile`** (no `Dockerfile`), multi-stage (`builder` + `runtime`): imagen base del Artifactory corporativo, usuario no root de UID fijo (`appuser`, 10001), instala con **`uv` + `pyproject.toml`/`uv.lock`** (la plataforma no permite instalar vía `pip`/`requirements.txt`). El código de cada servicio vive bajo `src/` (`src/app/...`), no en la raíz.
 
-Requiere `ARTIFACTORY_USER`/`ARTIFACTORY_PASSWORD` — pendiente completar además la ruta exacta del índice PyPI interno (queda marcada con `<COMPLETAR_RUTA_PYPI>` en el `Containerfile`).
+**Autenticación contra Artifactory**: el `Containerfile` **no recibe credenciales por build-arg**. `uv sync --frozen` espera que exista un `~/.netrc` con las credenciales de Artifactory — en el pipeline real (Kaniko, vía GitHub Actions + `platform/reusable-workflows`, como en `co-concilia-iac`) ese archivo se monta automáticamente. Esto significa que **`podman build`/`docker build` manual, por fuera del pipeline, no puede autenticar** salvo que generes tú mismo un `~/.netrc` y lo montes al build (`podman build -v ~/.netrc:/root/.netrc ...`, o el mecanismo de secret mount equivalente). Por eso, mientras no tengas eso resuelto, la vía real para construir estas imágenes es el pipeline, no tu terminal.
+
+`uv.lock` **sí se versiona** en git en ambas carpetas (a diferencia de `pqrs`, que lo ignora) — lo exige `uv sync --frozen`: falla si el lock no existe o no coincide con `pyproject.toml`. Si agregas/cambias una dependencia, hay que correr `uv lock` de nuevo y commitear el archivo actualizado.
 
 ```bash
+# Con ~/.netrc ya armado con las credenciales de Artifactory:
 podman login quay.apps.work.ocp.co.igrupobbva
 podman build -f co-backend-concilia/Containerfile \
-  --build-arg ARTIFACTORY_USER=... --build-arg ARTIFACTORY_PASSWORD=... \
-  -t quay.apps.work.ocp.co.igrupobbva/concilia-genai/concilia-backend:v2 co-backend-concilia/
-podman push quay.apps.work.ocp.co.igrupobbva/concilia-genai/concilia-backend:v2
-# repetir con co-api-parseo/Containerfile para concilia-parseo
+  -v ~/.netrc:/root/.netrc:ro \
+  -t quay.apps.work.ocp.co.igrupobbva/ccrcs-genai/co-backend-concilia:v2 co-backend-concilia/
+podman push quay.apps.work.ocp.co.igrupobbva/ccrcs-genai/co-backend-concilia:v2
+# repetir con co-api-parseo/Containerfile para co-api-parseo
 ```
 
 `co-frontend-concilia/` sigue con `Dockerfile` (no `Containerfile`): es nginx + estáticos, no depende de paquetes Python ni de Artifactory, y en `pqrs` su equivalente (`co_pqrs_front_test`) también usa `Dockerfile` normal.

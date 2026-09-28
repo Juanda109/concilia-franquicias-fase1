@@ -1,29 +1,54 @@
-FROM artifactory.globaldevtools.bbva.com:443/public.ecr.aws-remote/docker/library/python:3.12-slim
-ARG ARTIFACTORY_USER
-ARG ARTIFACTORY_PASSWORD
+# =========================================================
+# Stage 1: Builder
+# =========================================================
+FROM artifactory.globaldevtools.bbva.com:443/public.ecr.aws-remote/docker/library/python:3.14-slim AS builder
 
-# Variables de entorno
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PYTHONPATH=/app \
-    UV_PROJECT_ENVIRONMENT=/app/.venv \
-    UV_INDEX_URL="https://${ARTIFACTORY_USER}:${ARTIFACTORY_PASSWORD}@artifactory.globaldevtools.bbva.com/artifactory/<COMPLETAR_RUTA_PYPI>/simple"
-    # TODO: la ruta del índice PyPI de Artifactory se cortó en el ejemplo que
-    # nos dieron (terminaba en "...artifactory…") — completar con la ruta real
-    # antes de construir con estas credenciales. La plataforma no permite
-    # instalar vía pip/requirements.txt, solo uv + pyproject.toml.
+    UV_PROJECT_ENVIRONMENT=/app/.venv
 
 WORKDIR /app
+
 RUN python -m pip install --no-cache-dir uv
 
-COPY pyproject.toml README.md ./
-RUN uv sync --no-dev --no-install-project
-RUN rm -rf /root/.cache/*
+COPY pyproject.toml uv.lock README.md ./
 
-COPY app ./app
+# uv detecta automáticamente el archivo ~/.netrc montado en el contexto de Kaniko
+# (pipeline real de build) — no se pasan credenciales de Artifactory por build-arg.
+RUN uv sync --frozen --no-dev --no-install-project
 
-RUN chown -R www-data:www-data /app && chmod -R 755 /app
-USER www-data
+# =========================================================
+# Stage 2: Runtime
+# =========================================================
+FROM artifactory.globaldevtools.bbva.com:443/public.ecr.aws-remote/docker/library/python:3.14-slim AS runtime
+
+ARG GENAI_ENVIRONMENT=production
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app/src \
+    GENAI_ENVIRONMENT=${GENAI_ENVIRONMENT} \
+    PATH="/app/.venv/bin:$PATH"
+
+# Crear usuario sin privilegios
+RUN groupadd -g 10001 appgroup && \
+    useradd -u 10001 -g appgroup -s /sbin/nologin -d /app appuser
+
+WORKDIR /app
+
+# Copiar artefactos compilados desde la etapa de build
+COPY --from=builder --chown=appuser:appgroup /app/.venv /app/.venv
+COPY --chown=appuser:appgroup src ./src
+
+# Reducir permisos
+RUN chmod -R 555 /app
+
+USER appuser
 
 EXPOSE 8081
-CMD ["/app/.venv/bin/python", "-m", "uvicorn", "app.api.main:app", "--host", "0.0.0.0", "--port", "8081"]
+
+CMD ["uvicorn", "--app-dir", "src", "app.api.main:app", \
+     "--host", "0.0.0.0", \
+     "--port", "8081", \
+     "--no-server-header", \
+     "--proxy-headers"]

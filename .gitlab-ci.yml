@@ -3,23 +3,26 @@ python-compile:
   stage: validate
   image: python:3.12-slim
   script:
-    - python -m compileall -q co-backend-concilia/app
+    - python -m compileall -q co-backend-concilia/src/app
 unit-tests:
   stage: test
   image: python:3.12-slim
   script:
     - pip install --no-cache-dir uv
     - cd co-api-parseo && uv sync --no-dev --no-install-project
-    - PYTHONPATH=. .venv/bin/python tests/test_real_samples.py
+    - PYTHONPATH=src .venv/bin/python tests/test_real_samples.py
 backend-image:
   stage: build
   image: docker:27
   services: [docker:27-dind]
   script:
-    # Containerfile: usa la imagen base del Artifactory corporativo + uv/pyproject.toml
-    # (es el único Dockerfile/Containerfile que queda; ya no hay uno separado para local).
-    # ARTIFACTORY_USER/ARTIFACTORY_PASSWORD deben quedar como variables CI/CD protegidas.
+    # OJO: este job puede estar obsoleto. El Containerfile ya no acepta
+    # ARTIFACTORY_USER/ARTIFACTORY_PASSWORD como build-arg — espera un
+    # ~/.netrc montado automáticamente por Kaniko, que es como realmente
+    # construye imágenes la plataforma (ver .github/workflows/ci-app.yml de
+    # co-concilia-iac, que delega todo a platform/reusable-workflows).
+    # Si el pipeline real de este repo es ese (GitHub Actions + Kaniko) y no
+    # GitLab CI, este job entero no aplica — confirmarlo con la plataforma
+    # antes de depender de él.
     - docker build -f co-backend-concilia/Containerfile
-        --build-arg ARTIFACTORY_USER=$ARTIFACTORY_USER
-        --build-arg ARTIFACTORY_PASSWORD=$ARTIFACTORY_PASSWORD
         -t concilia-backend:$CI_COMMIT_SHA co-backend-concilia
