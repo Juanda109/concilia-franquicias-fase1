@@ -1,14 +1,15 @@
+minio-bucket:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: concilia-minio-data
+  name: minio-pvc
+  namespace: pqr-genai-dev
   labels:
-    app: co-bucket-concilia
-    app.kubernetes.io/name: co-bucket-concilia
-    app.kubernetes.io/part-of: bucket
+    app.kubernetes.io/part-of: elk-metrics
 spec:
-  accessModes: ["ReadWriteOnce"]
+  storageClassName: ceph-rbd
+  accessModes:
+ReadWriteOnce
   resources:
     requests:
-      storage: 10Gi
-  # storageClassName: "${STORAGE_CLASS}"   # descomentar si el clúster exige una StorageClass explícita
+      storage: 50Gi

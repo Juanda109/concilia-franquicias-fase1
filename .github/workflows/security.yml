@@ -1,0 +1,28 @@
+name: Security
+
+run-name: >
+  ${{ github.event_name == 'push' && startsWith(github.ref_name, 'release/') && 'Analyze release' ||
+      format('Analyze snapshot `{0}`', github.sha) }}
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - release/*
+  pull_request:
+    types:
+      - opened
+      - synchronize
+  repository_dispatch:
+    types:
+      - security
+  workflow_dispatch:
+
+permissions: write-all
+
+jobs:
+  security:
+    name: Security
+    uses: platform/reusable-workflows/.github/workflows/security.yml@main
+    secrets: inherit

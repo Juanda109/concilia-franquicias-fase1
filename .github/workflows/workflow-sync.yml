@@ -1,0 +1,23 @@
+name: Workflows sync
+
+run-name: Sync workflows from main to ${{ inputs.target_branch }} - Executed by ${{ github.actor }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_branch:
+        description: 'Nombre de la rama destino'
+        required: true
+        type: string
+
+        
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    name: workflow sync
+    uses: platform/reusable-workflows/.github/workflows/workflows-sync.yml@main
+    with:
+      target_branch: ${{ inputs.target_branch }}
+    secrets: inherit

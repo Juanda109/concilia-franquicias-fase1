@@ -1,0 +1,19 @@
+name: Create release
+
+run-name: Create release
+
+on:
+  pull_request:
+    branches:
+      - "main"
+    types:
+      - closed
+  workflow_dispatch:
+
+permissions: write-all
+
+jobs:
+  release:
+    name: Create release
+    uses: platform/reusable-workflows/.github/workflows/code-generate-release.yml@main
+    secrets: inherit

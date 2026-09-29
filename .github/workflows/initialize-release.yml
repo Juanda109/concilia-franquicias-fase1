@@ -1,0 +1,12 @@
+name: Initialize release
+
+on:
+  workflow_dispatch:
+
+permissions: write-all
+
+jobs:
+  release:
+    name: Initialize release
+    uses: platform/reusable-workflows/.github/workflows/code-initialize-release.yml@main
+    secrets: inherit

@@ -1,0 +1,19 @@
+name: Cascading Auto Merge
+
+run-name: Cascading Auto Merge
+
+on:
+  pull_request:
+    branches:
+      - "release/**"
+    types:
+      - closed
+  workflow_dispatch:
+
+permissions: write-all
+
+jobs:
+  merge:
+    name: Cascading Auto Merge
+    uses: platform/reusable-workflows/.github/workflows/code-cascading-auto-merge.yml@main
+    secrets: inherit
