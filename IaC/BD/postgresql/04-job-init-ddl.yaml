@@ -1,0 +1,60 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: concilia-postgres-init
+  labels:
+    app.kubernetes.io/part-of: database
+spec:
+  backoffLimit: 6
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/part-of: database
+    spec:
+      restartPolicy: OnFailure
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: init-db
+          # Misma imagen que ya usamos para correr el DDL a mano — trae psql.
+          image: registry.redhat.io/rhel9/postgresql-15:latest
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          env:
+            # Apunta al Postgres real confirmado en el clúster (Service
+            # "postgresql", secret "postgresql-secret") — NO al Deployment
+            # "co-db-concilia" de este mismo folder. Si en algún momento se
+            # confirma que sí se usa el nuestro, cambiar host y secretKeyRef
+            # a "co-db-concilia" / "concilia-postgres-secret".
+            - name: POSTGRESQL_USER
+              valueFrom: {secretKeyRef: {name: postgresql-secret, key: POSTGRESQL_USER}}
+            - name: POSTGRESQL_PASSWORD
+              valueFrom: {secretKeyRef: {name: postgresql-secret, key: POSTGRESQL_PASSWORD}}
+            - name: POSTGRESQL_DATABASE
+              valueFrom: {secretKeyRef: {name: postgresql-secret, key: POSTGRESQL_DATABASE}}
+          command: ["bash", "-c"]
+          args:
+            - |
+              set -e
+              echo "Esperando a que postgresql:5432 acepte conexiones..."
+              until PGPASSWORD="$POSTGRESQL_PASSWORD" psql -h postgresql -U "$POSTGRESQL_USER" -d "$POSTGRESQL_DATABASE" -c 'SELECT 1' >/dev/null 2>&1; do
+                echo "  todavía no... reintentando en 3s"
+                sleep 3
+              done
+              echo "Conectado. Aplicando DDL (21 tablas, idempotente)..."
+              PGPASSWORD="$POSTGRESQL_PASSWORD" psql -h postgresql -U "$POSTGRESQL_USER" -d "$POSTGRESQL_DATABASE" -f /sql/00_concilia_fase1_ddl_21_tablas.sql
+              echo "Aplicando seed (12 insumos esperados, idempotente)..."
+              PGPASSWORD="$POSTGRESQL_PASSWORD" psql -h postgresql -U "$POSTGRESQL_USER" -d "$POSTGRESQL_DATABASE" -f /sql/22_seed_insumos_esperados.sql
+              echo "Listo."
+          volumeMounts:
+            - name: sql
+              mountPath: /sql
+              readOnly: true
+      volumes:
+        - name: sql
+          configMap:
+            name: concilia-postgres-initdb

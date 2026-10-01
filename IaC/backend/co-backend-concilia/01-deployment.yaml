@@ -31,6 +31,17 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+          # envFrom ANTES de env: así, si concilia-secrets todavía trae un
+          # DATABASE_URL viejo (apuntando a nuestro propio Postgres, no al de
+          # la plataforma), el DATABASE_URL explícito de abajo —el correcto—
+          # siempre gana (Kubernetes resuelve por orden de aparición; lo que
+          # está más abajo en el pod sobrescribe lo de más arriba).
+          envFrom:
+            - configMapRef:
+                name: concilia-config
+            - secretRef:
+                name: concilia-secrets
+
           env:
             - name: TZ
               value: America/Bogota
@@ -53,11 +64,13 @@ spec:
                   name: postgresql-secret
                   key: POSTGRESQL_DATABASE
 
-          envFrom:
-            - configMapRef:
-                name: concilia-config
-            - secretRef:
-                name: concilia-secrets
+            # $(VAR) -no ${VAR}- es la sintaxis real de Kubernetes para
+            # referenciar otra env var YA definida arriba en este mismo pod.
+            # TODO: confirmar que el Service de Postgres real se llama
+            # "postgresql" (lo inferimos de POSTGRESQL_SERVICE_HOST en el pod
+            # postgresql-0, pero no lo vimos confirmado con "oc get svc").
+            - name: DATABASE_URL
+              value: postgresql://$(POSTGRESQL_USER):$(POSTGRESQL_PASSWORD)@postgresql:5432/$(POSTGRESQL_DATABASE)
           resources:
             requests:
               cpu: 100m

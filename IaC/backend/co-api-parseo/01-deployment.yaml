@@ -37,11 +37,32 @@ spec:
           ports:
             - name: http
               containerPort: 8081
+          # Mismo patrón que co-backend-concilia: envFrom antes de env para
+          # que el DATABASE_URL explícito de abajo gane sobre cualquier valor
+          # viejo que pueda quedar en concilia-secrets.
           envFrom:
             - configMapRef:
                 name: concilia-config
             - secretRef:
                 name: concilia-secrets
+          env:
+            - name: POSTGRESQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-secret
+                  key: POSTGRESQL_USER
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-secret
+                  key: POSTGRESQL_PASSWORD
+            - name: POSTGRESQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-secret
+                  key: POSTGRESQL_DATABASE
+            - name: DATABASE_URL
+              value: postgresql://$(POSTGRESQL_USER):$(POSTGRESQL_PASSWORD)@postgresql:5432/$(POSTGRESQL_DATABASE)
           resources:
             requests:
               cpu: 100m

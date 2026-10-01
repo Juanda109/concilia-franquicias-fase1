@@ -5,7 +5,10 @@ metadata:
   labels:
     app.kubernetes.io/part-of: backend
 data:
-  DATABASE_URL: postgresql://POSTGRESQL_USER:POSTGRESQL_PASSWORD@postgres:5432/POSTGRESQL_DATABASE
+  # DATABASE_URL NO va aquí: un ConfigMap es texto plano, Kubernetes no sustituye
+  # nombres de variable dentro de "data:". Se construye como "env:" directo en el
+  # Deployment (ver co-backend-concilia/01-deployment.yaml), con la sintaxis real
+  # de Kubernetes para referenciar otra env var del mismo pod: $(VAR), no ${VAR}.
   MINIO_ENDPOINT: "${MINIO_ENDPOINT}"
   MINIO_BUCKET: "${MINIO_BUCKET}"
   MINIO_SECURE: "false"
