@@ -1,16 +1,35 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: co-db-concilia
+  name: postgresql-headless
   labels:
-    app: co-db-concilia
-    app.kubernetes.io/name: co-db-concilia
+    app: postgresql
+    app.kubernetes.io/name: postgresql
     app.kubernetes.io/part-of: database
-    app.kubernetes.io/component: database-postgresql
 spec:
+  clusterIP: None
   selector:
-    app: co-db-concilia
+    app: postgresql
   ports:
-    - name: postgres
+    - name: postgresql
       port: 5432
-      targetPort: postgres
+      targetPort: postgresql
+      protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgresql
+  labels:
+    app: postgresql
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/part-of: database
+spec:
+  type: ClusterIP
+  selector:
+    app: postgresql
+  ports:
+    - name: postgresql
+      port: 5432
+      targetPort: postgresql
+      protocol: TCP

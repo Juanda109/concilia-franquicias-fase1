@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/component: backend-api
     app.openshift.io/runtime: python
 spec:
-  replicas: 1
+  replicas: 2 
   selector:
     matchLabels:
       app: co-backend-concilia
@@ -21,22 +21,38 @@ spec:
         app.kubernetes.io/part-of: backend
         app.kubernetes.io/component: backend-api
     spec:
-      # SCC restringida de OKD: no fijamos runAsUser (lo asigna el clúster).
-      securityContext:
-        runAsNonRoot: true
-        seccompProfile:
-          type: RuntimeDefault
+      
       containers:
         - name: backend
-          image: ${IMAGE_CONCILIA_BACKEND}
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
+          image: artifactory.globaldevtools.bbva.com:443/co-genai-public-cloud-docker-local/ccrcs-genai/co-backend-concilia:v1
+          imagePullPolicy: Always
+      
           ports:
             - name: http
               containerPort: 8080
+              protocol: TCP
+          env:
+            - name: TZ
+              value: America/Bogota
+
+            - name: POSTGRESQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-secret
+                  key: POSTGRESQL_USER
+
+            - name: POSTGRESQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-secret
+                  key: POSTGRESQL_PASSWORD
+
+            - name: POSTGRESQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-secret
+                  key: POSTGRESQL_DATABASE
+
           envFrom:
             - configMapRef:
                 name: concilia-config
@@ -49,11 +65,32 @@ spec:
             limits:
               cpu: 500m
               memory: 512Mi
+
+          # Protects initial startup phase
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 10
+
+          # Determines if traffic should be routed to this pod
           readinessProbe:
             httpGet:
               path: /health
               port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          # Determines if the pod must be restarted
           livenessProbe:
             httpGet:
               path: /health
               port: http
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3

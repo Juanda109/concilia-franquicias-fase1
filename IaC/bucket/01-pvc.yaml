@@ -1,15 +1,14 @@
-minio-bucket:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: minio-pvc
-  namespace: pqr-genai-dev
   labels:
-    app.kubernetes.io/part-of: elk-metrics
+    app: minio
+    app.kubernetes.io/part-of: date
 spec:
   storageClassName: ceph-rbd
   accessModes:
-ReadWriteOnce
+    - ReadWriteOnce
   resources:
     requests:
-      storage: 50Gi
+      storage: 10Gi

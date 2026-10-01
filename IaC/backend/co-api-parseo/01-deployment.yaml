@@ -28,7 +28,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: parseo
-          image: ${IMAGE_CONCILIA_PARSEO}
+          image: artifactory.globaldevtools.bbva.com:443/co-genai-public-cloud-docker-local/ccrcs-genai/co-ccrcs-genai-api-parseo:v2
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:

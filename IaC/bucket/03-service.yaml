@@ -3,14 +3,19 @@ kind: Service
 metadata:
   name: minio
   labels:
-    app.kubernetes.io/part-of: elk-metrics
+    app: minio
+    app.kubernetes.io/name: minio
+    app.kubernetes.io/part-of: date
 spec:
+  type: ClusterIP
   selector:
     app: minio
   ports:
-name: api
+    - name: api
       port: 9000
       targetPort: api
-name: console
+      protocol: TCP
+    - name: console
       port: 9001
       targetPort: console
+      protocol: TCP

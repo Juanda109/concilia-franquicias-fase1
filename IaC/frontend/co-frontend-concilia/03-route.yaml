@@ -1,20 +1,25 @@
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  name: co-frontend-concilia
+  name: co-ccrcs-frontend-concilia
+  namespace: ccrcs-genai-dev
   labels:
+    app: co-ccrcs-frontend-concilia
+    app.kubernetes.io/component: co-ccrcs-frontend-concilia
+    app.kubernetes.io/instance: co-ccrcs-frontend-concilia
+    app.kubernetes.io/name: co-ccrcs-frontend-concilia
     app.kubernetes.io/part-of: frontend
+    app.openshift.io/runtime-version: v2
+  annotations:
+    openshift.io/generated-by: OpenShiftWebConsole
 spec:
-  # Sin "host" fijo a propósito: en este namespace el usuario no tiene el
-  # permiso "routes/custom-host" (confirmado en el clúster real — error
-  # "Forbidden: you do not have permission to set the host field of the
-  # route"), así que se omite y OKD asigna automáticamente un host bajo su
-  # dominio de apps (<name>-<namespace>.apps.<dominio-cluster>).
   to:
     kind: Service
-    name: co-frontend-concilia
+    name: co-ccrcs-frontend-concilia
+    weight: 100
   port:
-    targetPort: http
+    targetPort: 8080-tcp
   tls:
     termination: edge
     insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None

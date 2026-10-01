@@ -1,15 +1,15 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: concilia-postgres-data
+  name: postgresql-data
   labels:
-    app: co-db-concilia
-    app.kubernetes.io/name: co-db-concilia
-    app.kubernetes.io/part-of: database
-    app.kubernetes.io/component: database-postgresql
+    app: postgresql
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/part-of: bd-postgres
 spec:
-  accessModes: ["ReadWriteOnce"]
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: ceph-rbd
   resources:
     requests:
-      storage: 5Gi
-  # storageClassName: "${STORAGE_CLASS}"   # descomentar si el clúster exige una StorageClass explícita
+      storage: 10Gi

@@ -3,7 +3,8 @@ kind: Route
 metadata:
   name: minio
   labels:
-    app.kubernetes.io/part-of: elk-metrics
+    app: minio
+    app.kubernetes.io/part-of: date
 spec:
   to:
     kind: Service
@@ -13,13 +14,14 @@ spec:
   tls:
     termination: edge
     insecureEdgeTerminationPolicy: Redirect
-
+---
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: minio-console
   labels:
-    app.kubernetes.io/part-of: elk-metrics
+    app: minio
+    app.kubernetes.io/part-of: date
 spec:
   to:
     kind: Service
