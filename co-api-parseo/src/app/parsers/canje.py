@@ -7,6 +7,17 @@ def cut(line,start,length): return line[start-1:start-1+length]
 # cuando el movimiento no aplica ese valor -> "" tras el strip(), Postgres no
 # lo castea a NUMERIC (mismo problema ya resuelto en DEPO).
 NUMERIC_FIELDS=["VL_TOTAL","VL_INTERC"]
+def _tx_normalizado(tx):
+ """Regla 3.1/3.2: TX impar -> "Totales" (línea de totales, no transacción
+ real); TX par -> se deja el código tal cual."""
+ if tx.isdigit() and int(tx)%2==1: return "Totales"
+ return tx
+def _comision_op_exitosas(tx,bin_dest):
+ """Regla 3.7: TX='02' y BIN_DEST<>'439467' -> comisión fija de operación
+ exitosa. OJO: se evalúa contra el TX ya normalizado — no cambia el
+ resultado para '02' (es par, _tx_normalizado no lo toca), pero hay que
+ tenerlo presente si se agregan más códigos pares a esta regla más adelante."""
+ return 7450 if tx=="02" and bin_dest!="439467" else None
 class CanjeParser(Parser):
  def __init__(self,tipo_insumo):
   if tipo_insumo not in ("CAET","CANT"): raise ValueError(tipo_insumo)
@@ -18,6 +29,8 @@ class CanjeParser(Parser):
    if len(line)<267:r.errors.append(RecordError(n,None,"LONGITUD_INVALIDA",f"Longitud {len(line)}")); continue
    row={name:cut(line,st,ln).strip() for name,st,ln in FIELDS}; row["numero_linea"]=n
    raw=row["XX"]; row["ESPACIOS"]="MANUAL" if raw.strip()=="" else ("CNB" if raw in ("10","11","12") else "ELECTRONICO")
+   row["TX"]=_tx_normalizado(row["TX"])
+   row["COMISION_OP_EXITOSAS"]=_comision_op_exitosas(row["TX"],row["BIN_DEST"])
    # VL_INTERC_RAW -> VL_INTERC: la columna real de CON_CANJE_RESULTADO no
    # lleva el sufijo "_RAW" (por eso fallaba el INSERT). Pendiente: la regla
    # de negocio invierte el signo cuando TX='22' y TIPO='EFIPAGO' (matriz de
