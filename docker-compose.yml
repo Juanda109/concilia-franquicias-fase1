@@ -18,7 +18,10 @@ services:
       retries: 10
 
   minio:
-    image: quay.io/minio/minio:latest
+    # Tag fijo, no ":latest": quay.io viene exigiendo auth para ":latest" de
+    # minio/minio en algunos pulls (401 Unauthorized) — este tag puntual sí
+    # se confirmó descargable (mismo que se usa en IaC/bucket para OKD).
+    image: quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: concilia
