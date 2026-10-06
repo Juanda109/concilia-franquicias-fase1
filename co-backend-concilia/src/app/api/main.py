@@ -76,11 +76,18 @@ def _procesar_en_segundo_plano(id_archivo:int,tipo_insumo:str,minio_key:str,corr
     registro); parseo va marcando ESTADO_PROCESAMIENTO/REGISTROS_PROCESADOS por
     su cuenta a medida que avanza (ver ParseoOrchestrator), y el front hace
     polling de GET /api/v1/archivos/{id} en vez de esperar esta llamada.
-    Solo hay que cubrir aquí el caso en que parseo ni siquiera llega a tocar la
-    fila (no alcanzable, o tipo de insumo no soportado) — ahí queda "Pendiente"
-    para siempre si no se marca error desde este lado."""
+    Hay que cubrir dos casos en que parseo no deja la fila en un estado final:
+    (1) ni siquiera llega a tocarla (no alcanzable, tipo no soportado) -> acá
+    llega como HTTPException; (2) responde 200 pero con un error interno que
+    ocurrió DESPUÉS de marcar "Procesando" y ANTES de la actualización final
+    (ver orchestrator.py) -> el cuerpo trae estadoProcesamiento="Error" pero
+    la fila se queda en "Procesando" si no se revisa esto explícitamente."""
     try:
-        parsear(id_archivo,tipo_insumo,minio_key,correlation_id)
+        resultado=parsear(id_archivo,tipo_insumo,minio_key,correlation_id)
+        if resultado.get('estadoProcesamiento')=='Error':
+            motivo='; '.join(e.get('mensaje','') for e in resultado.get('errores',[])) or 'Error de procesamiento'
+            with connection() as c:
+                ArchivoRepo(c).update_state(id_archivo,'ESTADO_PROCESAMIENTO','Error',motivo)
     except HTTPException as exc:
         with connection() as c:
             ArchivoRepo(c).update_state(id_archivo,'ESTADO_PROCESAMIENTO','Error',str(exc.detail))
