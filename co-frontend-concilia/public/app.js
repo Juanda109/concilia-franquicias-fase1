@@ -354,12 +354,18 @@ async function subirArchivo(tipoInsumo, file) {
     // archivos grandes) — responde apenas el archivo queda en MinIO, y el
     // avance real se sigue con polling en iniciarPolling().
     const r = await fetch(`${API}/archivos`, { method: 'POST', body: form });
-    const data = await r.json();
     if (!r.ok) {
-      resultado.textContent = `Error: ${data.detail ?? r.status}`;
-      toast(`Error al cargar ${tipoInsumo}: ${data.detail ?? r.status}`, true);
+      // El cuerpo del error no siempre es JSON (ej. nginx devuelve HTML en un
+      // 413 "archivo muy grande") — probar JSON primero, caer a texto plano
+      // si falla, para no confundir esto con un error de red real.
+      let detalle = `HTTP ${r.status}`;
+      try { detalle = (await r.json()).detail ?? detalle; } catch { /* cuerpo no es JSON */ }
+      if (r.status === 413) detalle = 'El archivo es demasiado grande para el límite configurado.';
+      resultado.textContent = `Error: ${detalle}`;
+      toast(`Error al cargar ${tipoInsumo}: ${detalle}`, true);
       return;
     }
+    const data = await r.json();
     await buscarArchivos();
     iniciarPolling(data.idArchivo, tipoInsumo);
   } catch (e) {
