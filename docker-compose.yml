@@ -17,25 +17,13 @@ services:
       timeout: 5s
       retries: 10
 
-  minio:
-    # Tag fijo, no ":latest": quay.io viene exigiendo auth para ":latest" de
-    # minio/minio en algunos pulls (401 Unauthorized) — este tag puntual sí
-    # se confirmó descargable (mismo que se usa en IaC/bucket para OKD).
-    image: quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z
-    command: server /data --console-address ":9001"
-    environment:
-      MINIO_ROOT_USER: concilia
-      MINIO_ROOT_PASSWORD: concilia123
-    volumes:
-      - concilia_miniodata:/data
-    ports:
-      - "9000:9000"
-      - "9001:9001"
-    healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+  # MinIO se quitó de aquí: quay.io está devolviendo "unauthorized" al bajar
+  # la imagen desde esta red (política de distribución de MinIO, no es un tag
+  # puntual). backend/parseo usan STORAGE_BACKEND=local en vez de MinIO real
+  # — guardan/leen los archivos directo en el volumen "concilia_storage".
+  # Para volver a MinIO real cuando puedas: restaura el servicio "minio" con
+  # la imagen quay.io/minio/minio:RELEASE.2025-04-22T22-12-26Z, y cambia
+  # STORAGE_BACKEND a "minio" (o quítalo, es el default) en backend/parseo.
 
   parseo:
     build:
@@ -45,15 +33,12 @@ services:
       - "8081:8081"
     environment:
       DATABASE_URL: postgresql://concilia:concilia@postgres:5432/concilia
-      MINIO_ENDPOINT: minio:9000
-      MINIO_BUCKET: concilia-fase1
-      MINIO_ACCESS_KEY: concilia
-      MINIO_SECRET_KEY: concilia123
-      MINIO_SECURE: "false"
+      STORAGE_BACKEND: local
+      STORAGE_PATH: /data/storage
+    volumes:
+      - concilia_storage:/data/storage
     depends_on:
       postgres:
-        condition: service_healthy
-      minio:
         condition: service_healthy
 
   backend:
@@ -64,18 +49,15 @@ services:
       - "8080:8080"
     environment:
       DATABASE_URL: postgresql://concilia:concilia@postgres:5432/concilia
-      MINIO_ENDPOINT: minio:9000
-      MINIO_BUCKET: concilia-fase1
-      MINIO_ACCESS_KEY: concilia
-      MINIO_SECRET_KEY: concilia123
-      MINIO_SECURE: "false"
+      STORAGE_BACKEND: local
+      STORAGE_PATH: /data/storage
       PARSEO_API_URL: http://parseo:8081
       PAGE_SIZE: "30"
       MAX_PAGE_SIZE: "100"
+    volumes:
+      - concilia_storage:/data/storage
     depends_on:
       postgres:
-        condition: service_healthy
-      minio:
         condition: service_healthy
       parseo:
         condition: service_started
@@ -92,4 +74,4 @@ services:
 
 volumes:
   concilia_pgdata:
-  concilia_miniodata:
+  concilia_storage:

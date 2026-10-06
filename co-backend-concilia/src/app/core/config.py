@@ -9,6 +9,11 @@ class Settings:
     minio_access_key: str = os.getenv("MINIO_ACCESS_KEY","concilia")
     minio_secret_key: str = os.getenv("MINIO_SECRET_KEY","concilia123")
     minio_secure: bool = os.getenv("MINIO_SECURE","false").lower()=="true"
+    # "minio" (default, S3 real - lo que usa OKD) o "local" (sistema de
+    # archivos en STORAGE_PATH - para desarrollo local sin poder bajar la
+    # imagen de MinIO).
+    storage_backend: str = os.getenv("STORAGE_BACKEND","minio")
+    storage_path: str = os.getenv("STORAGE_PATH","/data/storage")
     parseo_api_url: str = os.getenv("PARSEO_API_URL","http://parseo:8081")
     page_size: int = int(os.getenv("PAGE_SIZE","30"))
     max_page_size: int = int(os.getenv("MAX_PAGE_SIZE","100"))
