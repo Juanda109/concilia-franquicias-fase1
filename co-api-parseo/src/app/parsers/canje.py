@@ -113,12 +113,23 @@ def _cuenta_880(bin_dest,tipo,canal,tx):
   return "017-CANJE RECIBIDO TARJETA DEBITO REGALO"
  return ""
 
+def _persiste(cod_error,cuenta,cuenta_880,cuenta_comision):
+ """Filtro de persistencia CAET/CANT — reglas ordenadas, la primera que
+ aplique gana. Devuelve (persistir:bool, motivo_codigo:str)."""
+ if cod_error=="00" and cuenta!="": return True,"CLASIFICACION_CUENTA"
+ if cuenta_880!="": return True,"CLASIFICACION_CUENTA_880"
+ if cuenta_comision!="": return True,"CLASIFICACION_COMISION"
+ if cod_error!="00" and cuenta_880=="" and cuenta_comision=="": return False,"COD_ERROR_NO_APLICABLE"
+ if cuenta=="" and cuenta_880=="" and cuenta_comision=="": return False,"SIN_CLASIFICACION_FUNCIONAL"
+ return False,"SIN_REGLA_FUNCIONAL_CAET_CANT"
+
 class CanjeParser(Parser):
  def __init__(self,tipo_insumo):
   if tipo_insumo not in ("CAET","CANT"): raise ValueError(tipo_insumo)
   self.tipo_insumo=tipo_insumo
  def parse(self,source:Path):
   r=IngestionResult(self.tipo_insumo)
+  descartes={}
   for n,line in enumerate(source.read_text(encoding="utf-8",errors="replace").splitlines(),start=1):
    if not line: continue
    if len(line)<267:r.errors.append(RecordError(n,None,"LONGITUD_INVALIDA",f"Longitud {len(line)}")); continue
@@ -136,5 +147,14 @@ class CanjeParser(Parser):
 
    for f in NUMERIC_FIELDS:
     if row[f]=="":row[f]=None
-   r.records.append(row)
-  r.controls.append({"codigo":"TOTAL_REGISTROS","obtenido":len(r.records)}); return r
+
+   persistir,motivo=_persiste(row["COD_ERROR"],row["CUENTA"],row["CUENTA_880"],row["CUENTAS_COMISIONES"])
+   if persistir:
+    r.records.append(row)
+   else:
+    descartes[motivo]=descartes.get(motivo,0)+1
+
+  r.controls.append({"codigo":"TOTAL_REGISTROS","obtenido":len(r.records)})
+  for motivo,cantidad in descartes.items():
+   r.controls.append({"codigo":f"DESCARTADOS_{motivo}","obtenido":cantidad})
+  return r
