@@ -1,6 +1,7 @@
 from pathlib import Path
 from app.parsers.base import Parser
 from app.ingestion.result import IngestionResult,RecordError
+from app.repositories.database import connection
 
 FIELDS=[('TX', 1, 2), ('BIN_DEST', 9, 6), ('FECHA_CANJE', 15, 6), ('TARJETA', 56, 19), ('VL_TOTAL', 123, 9), ('VL_INTERC_RAW', 141, 9), ('PLAZ', 150, 2), ('MOT_COB', 152, 2), ('COD_ERROR', 198, 2), ('MO_TO', 264, 1), ('IND_CASH', 265, 1), ('XX', 266, 2)]
 def cut(line,start,length): return line[start-1:start-1+length]
@@ -10,20 +11,21 @@ def cut(line,start,length): return line[start-1:start-1+length]
 # lo castea a NUMERIC (mismo problema ya resuelto en DEPO).
 NUMERIC_FIELDS=["VL_TOTAL","VL_INTERC","COMISION_OP_EXITOSAS","TII_RECIBIDA_EMISOR_VISA_OP_REVER_VENTAS"]
 
-# Catálogo BIN -> TIPO, extraído de la hoja "BINES" (columnas D:E) del Excel
-# real "ESTRUCTURA CANJE ELECTRONICO Y MANUAL CORTO_OK.xlsx". La fórmula
-# original es VLOOKUP(VALUE(MID(TARJETA,4,6)), BINES!D3:E45, 2, 0).
-BINES_TIPO={
- 404279:"DEBITO",404280:"CREDITO",410164:"CREDITO",421892:"CREDITO",439467:"EFIPAGO",
- 450407:"CREDITO",450408:"CREDITO",450418:"CREDITO",454100:"CREDITO",454759:"CREDITO",
- 455100:"CREDITO",457316:"DEBITO",483080:"CREDITO",451309:"CREDITO",456783:"CREDITO",
- 462550:"DEBITO",485995:"CREDITO",491268:"DEBITO",492468:"DEBITO",492488:"CREDITO",
- 492489:"CREDITO",518761:"CREDITO",518841:"CREDITO",527564:"CREDITO",540699:"CREDITO",
- 542650:"CREDITO",547457:"CREDITO",548115:"CREDITO",553643:"CREDITO",589515:"DEBITO",
- 813001:"CREDITO",459418:"CREDITO",459419:"CREDITO",441015:"VISA VALE",441016:"VISA VALE",
- 432346:"DEBITO",459317:"DEBITO",418253:"DEBITO",457021:"CREDITO",432345:"CREDITO",
- 487507:"CREDITO",417704:"DEBITO",
-}
+# Catálogo BIN -> TIPO_TARJETA: vive en CON_PARAMETRO_BIN_RED (seed en
+# database/23_seed_bines_canje.sql), no hardcodeado — así se puede actualizar
+# con SQL sin tocar código. Se carga una sola vez por proceso (parámetro de
+# catálogo, cambia con poca frecuencia) y se cachea en memoria; si se edita
+# la tabla en caliente, hay que reiniciar el pod de parseo para que lo recargue.
+_bines_cache=None
+def _cargar_bines():
+ global _bines_cache
+ if _bines_cache is None:
+  with connection() as c:
+   filas=c.execute(
+    "SELECT BIN_DESDE,TIPO_TARJETA FROM CON_PARAMETRO_BIN_RED WHERE TIPO_CATALOGO='BINES_CANJE' AND ACTIVO"
+   ).fetchall()
+  _bines_cache={int(bin_):tipo for bin_,tipo in filas}
+ return _bines_cache
 
 def _tx_normalizado(tx):
  """TX impar -> "Totales" (línea de totales, no transacción real); TX par ->
@@ -45,7 +47,7 @@ def _tipo(tarjeta):
  MID(TARJETA,4,6) en Excel (1-based) = TARJETA[3:9] en Python (0-based)."""
  bin_str=tarjeta[3:9]
  if not bin_str.isdigit(): return ""
- return BINES_TIPO.get(int(bin_str),"")
+ return _cargar_bines().get(int(bin_str),"")
 
 def _vl_interc(tx,tipo,vl_interc_raw):
  """=IF(AND(TX="22",TIPO="EFIPAGO"),RAW*-1,RAW*1)"""
