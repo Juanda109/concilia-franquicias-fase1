@@ -6,16 +6,17 @@ from app.repositories.database import connection
 FIELDS=[('TX', 1, 2), ('BIN_DEST', 9, 6), ('FECHA_CANJE', 15, 6), ('TARJETA', 56, 19), ('VL_TOTAL', 123, 9), ('VL_INTERC_RAW', 141, 9), ('PLAZ', 150, 2), ('MOT_COB', 152, 2), ('COD_ERROR', 198, 2), ('MO_TO', 264, 1), ('IND_CASH', 265, 1), ('XX', 266, 2)]
 def cut(line,start,length): return line[start-1:start-1+length]
 
-# Columnas NUMERIC(24,4) en el DDL (12_con_canje_resultado.sql): en blanco
+# Columnas NUMERIC(24,4) en el DDL (22_con_cant_resultado.sql): en blanco
 # cuando el movimiento no aplica ese valor -> "" tras el strip(), Postgres no
-# lo castea a NUMERIC (mismo problema ya resuelto en DEPO).
+# lo castea a NUMERIC (mismo problema ya resuelto en DEPO/CAET).
 NUMERIC_FIELDS=["VL_TOTAL","VL_INTERC","COMISION_OP_EXITOSAS","TII_RECIBIDA_EMISOR_VISA_OP_REVER_VENTAS"]
 
 # Catálogo BIN -> TIPO_TARJETA: vive en CON_PARAMETRO_BIN_RED (seed en
-# database/23_seed_bines_canje.sql), no hardcodeado — así se puede actualizar
-# con SQL sin tocar código. Se carga una sola vez por proceso (parámetro de
-# catálogo, cambia con poca frecuencia) y se cachea en memoria; si se edita
-# la tabla en caliente, hay que reiniciar el pod de parseo para que lo recargue.
+# database/23_seed_bines_canje.sql) — es el mismo catálogo de bines que usa
+# CAET (es el mismo negocio/red de tarjetas, no uno distinto por insumo), no
+# hardcodeado, así se puede actualizar con SQL sin tocar código. Se carga una
+# sola vez por proceso y se cachea en memoria; si se edita la tabla en
+# caliente, hay que reiniciar el pod de parseo para que lo recargue.
 _bines_cache=None
 def _cargar_bines():
  global _bines_cache
@@ -116,19 +117,17 @@ def _cuenta_880(bin_dest,tipo,canal,tx):
  return ""
 
 def _persiste(cod_error,cuenta,cuenta_880,cuenta_comision):
- """Filtro de persistencia CAET/CANT — reglas ordenadas, la primera que
- aplique gana. Devuelve (persistir:bool, motivo_codigo:str)."""
+ """Filtro de persistencia CANT — reglas ordenadas, la primera que aplique
+ gana. Devuelve (persistir:bool, motivo_codigo:str)."""
  if cod_error=="00" and cuenta!="": return True,"CLASIFICACION_CUENTA"
  if cuenta_880!="": return True,"CLASIFICACION_CUENTA_880"
  if cuenta_comision!="": return True,"CLASIFICACION_COMISION"
  if cod_error!="00" and cuenta_880=="" and cuenta_comision=="": return False,"COD_ERROR_NO_APLICABLE"
  if cuenta=="" and cuenta_880=="" and cuenta_comision=="": return False,"SIN_CLASIFICACION_FUNCIONAL"
- return False,"SIN_REGLA_FUNCIONAL_CAET_CANT"
+ return False,"SIN_REGLA_FUNCIONAL_CANT"
 
-class CanjeParser(Parser):
- def __init__(self,tipo_insumo):
-  if tipo_insumo not in ("CAET","CANT"): raise ValueError(tipo_insumo)
-  self.tipo_insumo=tipo_insumo
+class CANTParser(Parser):
+ tipo_insumo="CANT"
  def parse(self,source:Path):
   r=IngestionResult(self.tipo_insumo)
   descartes={}
