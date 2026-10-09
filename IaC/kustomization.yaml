@@ -5,3 +5,4 @@ resources:
  - BD
  - bucket
  - backend
+ - frontend
