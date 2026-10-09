@@ -5,3 +5,5 @@ class JornadaRepository:
   if row: return row[0]
   row=self.conn.execute("INSERT INTO CON_JORNADA(FECHA_CONTABLE,ESTADO,FECHA_INICIO) VALUES (%s,'Pendiente',CURRENT_TIMESTAMP) RETURNING ID_JORNADA",(fecha_contable,)).fetchone()
   return row[0]
+ def resumen(self,id_jornada):
+  return self.conn.execute("SELECT ID_JORNADA,FECHA_CONTABLE FROM CON_JORNADA WHERE ID_JORNADA=%s",(id_jornada,)).fetchone()

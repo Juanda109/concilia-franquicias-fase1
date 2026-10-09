@@ -4,12 +4,12 @@ from app.parsers.ha32 import HA32Parser
 from app.parsers.caet import CAETParser
 from app.parsers.cant import CANTParser
 from app.parsers.depo import DEPOParser
-from app.parsers.carta_cei240a import CartaCEI240AParser
+from app.parsers.carta_compensacion import CartaCompensacionParser
 from app.parsers.pmd import PMDParser
 from app.parsers.mep import MEPParser
 from app.parsers.vss import VSSParser
 PARSERS={"HA22":HA22Parser(),"HA26":HA26Parser(),"HA32":HA32Parser(),"CAET":CAETParser(),"CANT":CANTParser(),
-"DEPO":DEPOParser(),"CARTA_COMPENSACION":CartaCEI240AParser(),"PMD":PMDParser(),"MEP":MEPParser(),"VSS":VSSParser()}
+"DEPO":DEPOParser(),"CARTA_COMPENSACION":CartaCompensacionParser(),"PMD":PMDParser(),"MEP":MEPParser(),"VSS":VSSParser()}
 def get_parser(tipo):
     if tipo not in PARSERS: raise KeyError(f"Parser no implementado todavía: {tipo}")
     return PARSERS[tipo]
