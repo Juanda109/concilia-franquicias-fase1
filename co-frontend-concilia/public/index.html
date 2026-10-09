@@ -23,7 +23,7 @@
   <main>
     <div class="top">
       <b><span class="bbva">BBVA</span>&nbsp;&nbsp;|&nbsp;&nbsp; Concilia</b>
-      <div class="topR"><span id="apiStatus" class="badge info">API…</span><span id="jornadaActualBadge" class="badge info" title="Jornada más reciente registrada en CON_JORNADA">Jornada actual: …</span></div>
+      <div class="topR"><span id="apiStatus" class="badge info">API…</span></div>
     </div>
 
     <div class="wrap">
@@ -75,6 +75,13 @@
         <div id="cargaResultado" class="muted section"></div>
       </div>
       <input id="uploadFileHidden" type="file" style="display:none">
+    </section>
+
+    <section id="detalleInsumo" class="panel">
+      <button type="button" class="backLink" id="btnVolverInsumos">← Volver a Insumos</button>
+      <div id="detalleInsumoContent">
+        <div class="emptyDetail">Selecciona un archivo desde la vista de Insumos.</div>
+      </div>
     </section>
 
     <section id="conciliacion" class="panel">

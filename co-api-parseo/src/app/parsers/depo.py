@@ -16,10 +16,29 @@ def _fecha_comprobante(v):
  if not v or len(v)!=6 or not v.isdigit(): return None
  try: return date(2000+int(v[0:2]),int(v[2:4]),int(v[4:6])).isoformat()
  except ValueError: return None
+def _num(v):
+ if not v: return 0
+ try: return int(v)
+ except ValueError: return 0
+def _tasa_intercambio(row):
+ """DEPO-F1-001 regla 5 / columna derivada TASA_DE_INTERCAMBIO (matriz de
+ mapeo): TIPO_MOVIMIENTO='26' invierte el signo, el resto no."""
+ diff=_num(row["VALOR_TOTAL"])-_num(row["VALOR_INTERCAMBIO_2"])
+ return -diff if row["TIPO_MOVIMIENTO"]=="26" else diff
+def _persiste(row):
+ """DEPO-F1-001 — filtro de persistencia. Solo se implementan las reglas
+ 1, 2 y 5 (confirmadas); las reglas 3 (INDICADOR_CNB) y 4 (CLASIFICACION_AMEX)
+ quedan PENDIENTES por falta de definición/catálogo — un registro que solo
+ calificara por esas dos reglas no se persiste todavía con esta versión."""
+ if row["TIPO_MOVIMIENTO"]=="05": return False                       # regla 1
+ if row["TIPO_MOVIMIENTO"] in ("02","06","26","42"): return True      # regla 2
+ if row["TASA_DE_INTERCAMBIO"]!=0: return True                        # regla 5
+ return False
 class DEPOParser(Parser):
  tipo_insumo="DEPO"
  def parse(self,source:Path):
   r=IngestionResult(self.tipo_insumo)
+  descartados=0
   for n,line in enumerate(source.read_text(encoding="utf-8",errors="replace").splitlines(),start=1):
    if not line:continue
    padded=line.ljust(282)
@@ -27,5 +46,11 @@ class DEPOParser(Parser):
    row["FECHA_COMPROBANTE"]=_fecha_comprobante(row["FECHA_COMPROBANTE"])
    for f in NUMERIC_FIELDS:
     if row[f]=="":row[f]=None
-   r.records.append(row)
-  r.controls.append({"codigo":"TOTAL_REGISTROS","obtenido":len(r.records)});return r
+   row["TASA_DE_INTERCAMBIO"]=_tasa_intercambio(row)
+   if _persiste(row):
+    r.records.append(row)
+   else:
+    descartados+=1
+  r.controls.append({"codigo":"TOTAL_REGISTROS","obtenido":len(r.records)})
+  r.controls.append({"codigo":"DESCARTADOS_FILTRO_PERSISTENCIA","obtenido":descartados})
+  return r
