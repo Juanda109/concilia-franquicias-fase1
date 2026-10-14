@@ -1,7 +1,8 @@
-import math,re,uuid
+import math,uuid
 from datetime import date
 from fastapi import FastAPI,HTTPException,Header,UploadFile,File,Form,BackgroundTasks
 from app.core.fechas import derivar_fechas_contables
+from app.core.nombres_archivo import validar_nombre
 from app.repositories.database import connection
 from app.repositories.jornada import JornadaRepository
 from app.repositories.archivo import ArchivoRepository as ArchivoRepo
@@ -9,16 +10,6 @@ from app.repositories.content import ContentRepository
 from app.clients import minio_client
 from app.clients.parseo_client import parsear
 app=FastAPI(title="Concilia Franquicias Fase 1 - Back",version="2.4.0")
-
-FECHA_EN_NOMBRE=re.compile(r"_F(\d{2})(\d{2})(\d{2})(?:\D|$)",re.IGNORECASE)
-
-def _fecha_en_nombre(nombre_archivo:str)->str|None:
-    """Extrae la fecha contable embebida en archivos Host con convención _F<AAMMDD>
-    (p.ej. DESCARHA22_F260914.TXT -> 2026-09-14). Devuelve None si el nombre no la trae."""
-    m=FECHA_EN_NOMBRE.search(nombre_archivo)
-    if not m: return None
-    aa,mm,dd=m.groups()
-    return f"20{aa}-{mm}-{dd}"
 
 ESTADO_RECEPCION_MAP={"Recibido":"RECIBIDO","No recibido":"NO_RECIBIDO","Rechazado":"RECHAZADO"}
 ESTADO_PROCESAMIENTO_MAP={"Pendiente":"PENDIENTE","Procesando":"PROCESANDO","Procesado":"PROCESADO","Error":"ERROR"}
@@ -131,7 +122,9 @@ def cargar_archivo_original(id_jornada:int,background_tasks:BackgroundTasks,idAr
         if error=='CARGA_NO_PERMITIDA': raise HTTPException(409,error)
 
         nombre_archivo=archivo.filename or f'{tipo_insumo}.dat'
-        fecha_archivo=_fecha_en_nombre(nombre_archivo)
+        tiene_regla,coincide,fecha_archivo=validar_nombre(tipo_insumo,nombre_archivo)
+        if tiene_regla and not coincide:
+            raise HTTPException(400,f'NOMBRE_ARCHIVO_INVALIDO: el archivo {nombre_archivo} no cumple la estructura esperada para {tipo_insumo}')
         fecha_contable_iso=fecha_contable.isoformat()
         if fecha_archivo and fecha_archivo!=fecha_contable_iso:
             raise HTTPException(409,f'FECHA_NO_COINCIDE_CON_ARCHIVO: el archivo {nombre_archivo} corresponde a {fecha_archivo}, no a {fecha_contable_iso}')

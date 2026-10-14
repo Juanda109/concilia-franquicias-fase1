@@ -291,15 +291,7 @@ function renderDetallePagina(d) {
         <div class="detailCount">${totalItems} registros · ${d.tipoInsumo}</div>
       </div>
       ${contenidoHtml}
-    </div>
-
-    <details class="techDetails">
-      <summary>Información técnica</summary>
-      <div class="techGrid">
-        <b>ID de archivo</b><span>${d.idArchivo}</span>
-        <b>Correlation ID</b><span>${d.correlationId ?? '-'}</span>
-      </div>
-    </details>`;
+    </div>`;
 
   el('btnDetalleAnterior')?.addEventListener('click', () => cambiarPaginaDetalle(-1));
   el('btnDetalleSiguiente')?.addEventListener('click', () => cambiarPaginaDetalle(1));
@@ -312,6 +304,52 @@ function cambiarPaginaDetalle(delta) {
 }
 
 // ---- Carga manual del archivo original ----
+
+// Traduce los códigos de error que devuelve el backend (ej.
+// "FECHA_NO_COINCIDE_CON_ARCHIVO: el archivo X corresponde a Y, no a Z") a un
+// mensaje legible para la analista, sin el código técnico ni el formato
+// crudo. Si el código no se reconoce, se muestra el detalle tal cual llegó
+// (mejor mostrar algo que ocultar información).
+function fechaDDMMAAAA(iso) {
+  const [y, m, d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+function mensajeErrorCarga(detalle) {
+  // El backend a veces manda solo el código ("CARGA_NO_PERMITIDA") y a veces
+  // "CODIGO: resto del mensaje" (ej. FECHA_NO_COINCIDE_CON_ARCHIVO) — hay que
+  // detectar ambas formas antes de intentar traducir.
+  const m = /^([A-Z_]+):\s*(.*)$/.exec(detalle || '');
+  const codigo = m ? m[1] : (detalle || '').trim();
+  const resto = m ? m[2] : detalle;
+  if (codigo === 'FECHA_NO_COINCIDE_CON_ARCHIVO') {
+    const mm = /el archivo (.+) corresponde a (\d{4}-\d{2}-\d{2}), no a (\d{4}-\d{2}-\d{2})/.exec(resto);
+    if (mm) return `El archivo «${mm[1]}» corresponde al ${fechaDDMMAAAA(mm[2])}, pero esta jornada es del ${fechaDDMMAAAA(mm[3])}.`;
+  }
+  if (codigo === 'NOMBRE_ARCHIVO_INVALIDO') {
+    const mm = /el archivo (.+) no cumple la estructura esperada para (.+)/.exec(resto);
+    if (mm) return `El nombre «${mm[1]}» no tiene la estructura que se espera para ${mm[2]}.`;
+  }
+  if (codigo === 'CARGA_NO_PERMITIDA') return 'Este insumo ya no admite carga manual en este momento.';
+  if (['ARCHIVO_NO_PERTENECE_A_JORNADA', 'ARCHIVO_NO_ENCONTRADO', 'JORNADA_NO_ENCONTRADA'].includes(codigo)) {
+    return 'No se pudo identificar el archivo para esta jornada. Actualiza la página e intenta de nuevo.';
+  }
+  return resto || detalle;
+}
+
+// Caja de error persistente junto a la tabla (reemplaza el toast flotante que
+// se autocerraba): se queda visible hasta que la analista la cierra o
+// intenta cargar de nuevo, para que le dé tiempo a leerla con calma.
+function mostrarErrorCarga(mensaje) {
+  const resultado = el('cargaResultado');
+  resultado.innerHTML = `
+    <div class="uploadError">
+      <button type="button" class="uploadErrorClose" aria-label="Cerrar">&times;</button>
+      <b>No se pudo cargar el archivo</b>
+      <p>${mensaje}</p>
+    </div>`;
+  resultado.querySelector('.uploadErrorClose').addEventListener('click', () => { resultado.innerHTML = ''; });
+}
+
 async function subirArchivo(idArchivo, file) {
   const resultado = el('cargaResultado');
   if (!idJornadaActiva) { toast('Selecciona una fecha contable.', true); return; }
@@ -331,16 +369,14 @@ async function subirArchivo(idArchivo, file) {
       let detalle = `HTTP ${r.status}`;
       try { detalle = (await r.json()).detail ?? detalle; } catch { /* cuerpo no es JSON */ }
       if (r.status === 413) detalle = 'El archivo es demasiado grande para el límite configurado.';
-      resultado.textContent = `Error: ${detalle}`;
-      toast(`Error al cargar el archivo: ${detalle}`, true);
+      mostrarErrorCarga(mensajeErrorCarga(detalle));
       return;
     }
     await r.json();
     await cargarJornada();
     iniciarPolling(idArchivo);
   } catch (e) {
-    resultado.textContent = `Error de red: ${e.message}`;
-    toast('Error de red al cargar el archivo', true);
+    mostrarErrorCarga('Error de red al cargar el archivo. Verifica tu conexión e intenta de nuevo.');
   }
 }
 
