@@ -33,8 +33,8 @@ spec:
       schedulerName: default-scheduler
       containers:
         - name: co-ccrcs-frontend-concilia
-          image: 'artifactory.globaldevtools.bbva.com:443/co-genai-public-cloud-docker-local/ccrcs-genai/co-ccrcs-frontend-concilia@sha256:bc2a4a8ffd20871871e1a92eda39765124c90161d88c21235d88adf4a0f0893c'
-          imagePullPolicy: IfNotPresent
+          image: 'artifactory.globaldevtools.bbva.com:443/co-genai-public-cloud-docker-local/ccrcs-genai/co-ccrcs-frontend-concilia:v1'
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
               protocol: TCP
