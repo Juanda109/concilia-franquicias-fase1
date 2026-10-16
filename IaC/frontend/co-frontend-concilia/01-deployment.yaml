@@ -1,13 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: co-ccrcs-frontend-concilia
-  namespace: ccrcs-genai-dev
+  name: co-frontend-concilia
   labels:
-    app: co-ccrcs-frontend-concilia
-    app.kubernetes.io/component: co-ccrcs-frontend-concilia
-    app.kubernetes.io/instance: co-ccrcs-frontend-concilia
-    app.kubernetes.io/name: co-ccrcs-frontend-concilia
+    app: co-frontend-concilia
+    app.kubernetes.io/component: co-frontend-concilia
+    app.kubernetes.io/instance: co-frontend-concilia
+    app.kubernetes.io/name: co-frontend-concilia
     app.kubernetes.io/part-of: frontend
 spec:
   replicas: 1
@@ -15,7 +14,7 @@ spec:
   progressDeadlineSeconds: 600
   selector:
     matchLabels:
-      app: co-ccrcs-frontend-concilia
+      app: co-frontend-concilia
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -24,19 +23,20 @@ spec:
   template:
     metadata:
       labels:
-        app: co-ccrcs-frontend-concilia
-        deployment: co-ccrcs-frontend-concilia
+        app: co-frontend-concilia
+        deployment: co-frontend-concilia
     spec:
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       dnsPolicy: ClusterFirst
       schedulerName: default-scheduler
       containers:
-        - name: co-ccrcs-frontend-concilia
+        - name: co-frontend-concilia
           image: 'artifactory.globaldevtools.bbva.com:443/co-genai-public-cloud-docker-local/ccrcs-genai/co-ccrcs-frontend-concilia:v1'
           imagePullPolicy: Always
           ports:
-            - containerPort: 8080
+            - name: http
+              containerPort: 8080
               protocol: TCP
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
@@ -57,27 +57,3 @@ spec:
           emptyDir: {}
         - name: tmp-log
           emptyDir: {}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: co-ccrcs-frontend-concilia
-  namespace: ccrcs-genai-dev
-  labels:
-    app: co-ccrcs-frontend-concilia
-    app.kubernetes.io/component: co-ccrcs-frontend-concilia
-    app.kubernetes.io/instance: co-ccrcs-frontend-concilia
-    app.kubernetes.io/name: co-ccrcs-frontend-concilia
-    app.kubernetes.io/part-of: frontend
-spec:
-  type: ClusterIP
-  internalTrafficPolicy: Cluster
-  sessionAffinity: None
-  selector:
-    app: co-ccrcs-frontend-concilia
-    deployment: co-ccrcs-frontend-concilia
-  ports:
-    - name: 8080-tcp
-      port: 8080
-      targetPort: 8080
-      protocol: TCP
