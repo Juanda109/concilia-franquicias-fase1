@@ -3,7 +3,11 @@ import uuid
 def _acciones_permitidas(estado_recepcion,estado_procesamiento):
  acciones=[]
  if estado_procesamiento in ('Procesando','Procesado'): acciones.append('VER_CONTENIDO')
- if estado_recepcion=='No recibido' and estado_procesamiento!='Procesando': acciones.append('CARGAR_ARCHIVO_ORIGINAL')
+ # Permite cargar de nuevo tanto si nunca llegó como si llegó pero el
+ # procesamiento terminó en error (reintento) - nunca mientras está
+ # procesando, para no pisar un parseo en curso.
+ if estado_procesamiento!='Procesando' and (estado_recepcion=='No recibido' or estado_procesamiento=='Error'):
+  acciones.append('CARGAR_ARCHIVO_ORIGINAL')
  return acciones
 
 class ArchivoRepository:
@@ -54,5 +58,9 @@ class ArchivoRepository:
    return None,None,'CARGA_NO_PERMITIDA'
   return tipo_insumo,correlation_id,None
  def marcar_recibido(self,id_archivo,nombre_archivo,correlation_id):
+  # Limpia totales/motivo de un intento anterior (reintento tras error): sin
+  # esto, la barra de progreso arrancaria mostrando los numeros del intento
+  # viejo hasta que parseo vuelva a llamar set_total/set_progreso.
   self.conn.execute("""UPDATE CON_ARCHIVO_CARGA SET NOMBRE_ARCHIVO=%s,ESTADO_RECEPCION='Recibido',
+ TOTAL_REGISTROS=NULL,REGISTROS_PROCESADOS=0,MOTIVO_ESTADO=NULL,
  CORRELATION_ID=%s,FECHA_CAMBIO_ESTADO=CURRENT_TIMESTAMP WHERE ID_ARCHIVO=%s""",(nombre_archivo,correlation_id,id_archivo))
