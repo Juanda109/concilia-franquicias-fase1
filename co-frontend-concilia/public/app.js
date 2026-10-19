@@ -419,8 +419,21 @@ el('uploadFileHidden').addEventListener('change', (e) => {
   pendingIdArchivoUpload = null;
 });
 
-fechaInput.value = toISO(new Date());
-fechaInput.addEventListener('change', actualizarFechaConciliacion);
+// La fecha de conciliación solo puede ser la de hoy: min=max bloquea el
+// selector nativo del navegador a un único día, y el handler de 'change'
+// revierte igual si alguien logra escribir/pegar otra fecha a mano.
+const HOY_ISO = toISO(new Date());
+fechaInput.value = HOY_ISO;
+fechaInput.min = HOY_ISO;
+fechaInput.max = HOY_ISO;
+fechaInput.addEventListener('change', () => {
+  if (fechaInput.value !== HOY_ISO) {
+    fechaInput.value = HOY_ISO;
+    toast('Solo se puede cargar la fecha de hoy.', true);
+    return;
+  }
+  actualizarFechaConciliacion();
+});
 
 // ---- Navegación de pestañas (Insumos / Conciliación / Agente IA) ----
 function go(id, btn) {
