@@ -180,7 +180,9 @@ function renderTablaInsumos(insumos) {
     const acciones = a.accionesPermitidas ?? [];
     const verBtn = acciones.includes('VER_CONTENIDO')
       ? `<button type="button" class="iconBtn btnView" data-id="${a.idArchivo}" title="Ver detalle">${ICON_EYE}</button>` : '';
-    const cargarBtn = acciones.includes('CARGAR_ARCHIVO_ORIGINAL')
+    // La carga manual solo se habilita viendo el día de hoy - se puede
+    // CONSULTAR cualquier fecha anterior, pero no subir archivos para ella.
+    const cargarBtn = acciones.includes('CARGAR_ARCHIVO_ORIGINAL') && fechaInput.value === HOY_ISO
       ? `<button type="button" class="iconBtn btnUpload" data-id="${a.idArchivo}" title="Cargar archivo original">${ICON_UPLOAD}</button>` : '';
     return `
     <tr data-id="${a.idArchivo}">
@@ -419,21 +421,13 @@ el('uploadFileHidden').addEventListener('change', (e) => {
   pendingIdArchivoUpload = null;
 });
 
-// La fecha de conciliación solo puede ser la de hoy: min=max bloquea el
-// selector nativo del navegador a un único día, y el handler de 'change'
-// revierte igual si alguien logra escribir/pegar otra fecha a mano.
+// Se puede elegir cualquier fecha de conciliación para CONSULTAR (días
+// anteriores incluidos) - lo que se restringe es la CARGA de archivos,
+// que solo se permite cuando se está viendo el día de hoy (ver
+// renderTablaInsumos, que oculta el ícono de carga si no es HOY_ISO).
 const HOY_ISO = toISO(new Date());
 fechaInput.value = HOY_ISO;
-fechaInput.min = HOY_ISO;
-fechaInput.max = HOY_ISO;
-fechaInput.addEventListener('change', () => {
-  if (fechaInput.value !== HOY_ISO) {
-    fechaInput.value = HOY_ISO;
-    toast('Solo se puede cargar la fecha de hoy.', true);
-    return;
-  }
-  actualizarFechaConciliacion();
-});
+fechaInput.addEventListener('change', actualizarFechaConciliacion);
 
 // ---- Navegación de pestañas (Insumos / Conciliación / Agente IA) ----
 function go(id, btn) {
