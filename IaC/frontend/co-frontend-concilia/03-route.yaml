@@ -9,6 +9,7 @@ metadata:
     app.kubernetes.io/name: co-frontend-concilia
     app.kubernetes.io/part-of: frontend
 spec:
+  host: co-ccrcs-frontend-concilia-ccrcs-genai-dev.apps.work.ocp.co.igrupobbva
   to:
     kind: Service
     name: co-frontend-concilia
