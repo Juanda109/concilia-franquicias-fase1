@@ -46,6 +46,12 @@ spec:
             - name: TZ
               value: America/Bogota
 
+            # El ConfigMap real (feature/reestructuracion) no trae esta
+            # clave; sin ella el codigo caia en un default viejo
+            # (http://parseo:8081) que no resuelve al Service real.
+            - name: PARSEO_API_URL
+              value: http://co-api-parseo:8081
+
             - name: POSTGRESQL_USER
               valueFrom:
                 secretKeyRef:
