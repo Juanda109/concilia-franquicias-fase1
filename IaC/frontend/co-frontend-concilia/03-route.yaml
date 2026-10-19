@@ -1,12 +1,15 @@
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  name: co-frontend-concilia
+  # El cluster arma la URL final como <name>-<namespace>.<dominio>, por eso
+  # el nombre de esta Route queda fijo asi para que la URL resultante sea
+  # https://co-ccrcs-frontend-concilia-ccrcs-genai-dev.apps.work.ocp.co.igrupobbva/
+  name: co-ccrcs-frontend-concilia
   labels:
-    app: co-frontend-concilia
-    app.kubernetes.io/component: co-frontend-concilia
-    app.kubernetes.io/instance: co-frontend-concilia
-    app.kubernetes.io/name: co-frontend-concilia
+    app: co-ccrcs-frontend-concilia
+    app.kubernetes.io/component: co-ccrcs-frontend-concilia
+    app.kubernetes.io/instance: co-ccrcs-frontend-concilia
+    app.kubernetes.io/name: co-ccrcs-frontend-concilia
     app.kubernetes.io/part-of: frontend
 spec:
   to:
