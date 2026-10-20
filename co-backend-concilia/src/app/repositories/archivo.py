@@ -6,7 +6,8 @@ def _acciones_permitidas(estado_recepcion,estado_procesamiento):
  # Permite cargar de nuevo tanto si nunca llegó como si llegó pero el
  # procesamiento terminó en error (reintento) - nunca mientras está
  # procesando, para no pisar un parseo en curso.
- if estado_procesamiento!='Procesando' and (estado_recepcion=='No recibido' or estado_procesamiento=='Error'):
+ if estado_procesamiento!='Procesando' and (
+  estado_recepcion=='No recibido' or estado_procesamiento=='Error'):
   acciones.append('CARGAR_ARCHIVO_ORIGINAL')
  return acciones
 
