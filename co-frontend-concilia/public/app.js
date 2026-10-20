@@ -427,7 +427,15 @@ el('uploadFileHidden').addEventListener('change', (e) => {
 // renderTablaInsumos, que oculta el ícono de carga si no es HOY_ISO).
 const HOY_ISO = toISO(new Date());
 fechaInput.value = HOY_ISO;
-fechaInput.addEventListener('change', actualizarFechaConciliacion);
+fechaInput.max = HOY_ISO; // bloquea fechas futuras en el selector nativo; sin min, los días anteriores siguen disponibles
+fechaInput.addEventListener('change', () => {
+  if (fechaInput.value > HOY_ISO) {
+    fechaInput.value = HOY_ISO;
+    toast('No se pueden consultar fechas futuras.', true);
+    return;
+  }
+  actualizarFechaConciliacion();
+});
 
 // ---- Navegación de pestañas (Insumos / Conciliación / Agente IA) ----
 function go(id, btn) {
