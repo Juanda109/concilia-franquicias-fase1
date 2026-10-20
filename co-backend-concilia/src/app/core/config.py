@@ -14,7 +14,8 @@ class Settings:
     # imagen de MinIO).
     storage_backend: str = os.getenv("STORAGE_BACKEND", "minio")
     storage_path: str = os.getenv("STORAGE_PATH", "/data/storage")
-    # El Service real en OKD se llama co-api-parseo (ver IaC/backend/co-api-parseo/02-service.yaml)
+    # El Service real en OKD se llama co-api-parseo (ver
+    # IaC/backend/co-api-parseo/02-service.yaml)
     parseo_api_url: str = os.getenv("PARSEO_API_URL","http://co-api-parseo:8081")
     page_size: int = int(os.getenv("PAGE_SIZE","30"))
     max_page_size: int = int(os.getenv("MAX_PAGE_SIZE","100"))
