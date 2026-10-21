@@ -9,5 +9,7 @@ class Settings:
     minio_access_key: str = os.getenv("MINIO_ACCESS_KEY","concilia")
     minio_secret_key: str = os.getenv("MINIO_SECRET_KEY","concilia123")
     minio_secure: bool = os.getenv("MINIO_SECURE","false").lower()=="true"
+    storage_backend: str = os.getenv("STORAGE_BACKEND", "minio")
+    storage_path: str = os.getenv("STORAGE_PATH", "/data/storage")
 
 settings=Settings()
