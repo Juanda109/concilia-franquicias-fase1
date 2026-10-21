@@ -41,7 +41,9 @@ services:
       - "8080:8080"
     environment:
       APP_ENV: local
-      AUTH_ENABLED: "false"
+      AUTH_ENABLED: "true"
+      OIDC_CLIENT_SECRET: "dummy-solo-para-probar-redirect-local"
+      SESSION_SIGN_KEY: "0123456789abcdef0123456789abcdef"
       DATABASE_URL: postgresql://concilia:concilia@postgres:5432/concilia
       STORAGE_BACKEND: local
       STORAGE_PATH: /data/storage
@@ -60,7 +62,7 @@ services:
     image: nginx:alpine
     volumes:
       - ./co-frontend-concilia/public:/usr/share/nginx/html:ro
-      - ./co-frontend-concilia/config.local.js:/usr/share/nginx/html/config.js:ro
+      - ./co-frontend-concilia/public/config.js:/usr/share/nginx/html/config.js:ro
       - ./co-frontend-concilia/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     ports:
       - "5173:80"
