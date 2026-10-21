@@ -1,5 +1,37 @@
 # Despliegue en OKD
 
+## Requisito OIDC para desarrollo
+
+El frontend usa PreIDP y la URI de retorno registrada
+`https://co-ccrcs-frontend-concilia-ccrcs-genai-dev.apps.work.ocp.co.igrupobbva/`.
+Antes de desplegar el backend, crear en el namespace un Secret
+`concilia-oidc` con las claves `OIDC_CLIENT_SECRET` y `SESSION_SIGN_KEY`.
+La segunda debe ser aleatoria y tener al menos 32 bytes; las dos réplicas
+deben recibir el mismo valor. No añadir esos valores al repositorio ni al
+Secret compartido `concilia-secrets`, que también consume el pod de parseo.
+
+`IaC/frontend/00-configmap.yaml` contiene la configuración pública del
+navegador; el Deployment la monta como `config.js`. En otro entorno hay que
+actualizar en ese ConfigMap el endpoint de autorización y la URI de retorno,
+y en el Deployment del backend la URL Discovery, la URI de retorno y el origen
+del frontend. El `client_id` debe coincidir en ambos. Después de modificar el
+ConfigMap del frontend, reiniciar su Deployment porque el montaje usa `subPath`.
+
+El Discovery de PreIDP confirma `issuer` como
+`https://preidp.work.global.platform.bbva.com/oidc/`, JWKS en `/oidc/jwk`,
+intercambio `client_secret_basic` y PKCE S256. La primera prueba con un usuario
+debe identificar el claim que contiene los roles GIAM. Si cambia el claim,
+ajustar `OIDC_ROLE_CLAIM_PATHS`
+en el backend. Hasta encontrar uno de los roles permitidos, el backend
+responderá `403`. `OIDC_ROLE_DIAGNOSTICS` está activado para esta prueba y
+debe desactivarse tras confirmar el mapeo. Revisar también que los registros
+del router de OKD no conserven los parámetros de la URL de retorno; Nginx ya
+omite la query y el Referer de sus registros.
+
+Publicar nuevas imágenes de frontend y backend y definir
+`IMAGE_CONCILIA_FRONTEND` e `IMAGE_CONCILIA_BACKEND` con sus referencias antes
+de aplicar Kustomize; los manifiestos ya no apuntan a imágenes antiguas.
+
 Esta carpeta es exclusiva para el clúster OKD (dev/QA/prod). Para pruebas
 locales se sigue usando `docker-compose.yml` en la raíz del repo — no tiene
 relación con lo de aquí.

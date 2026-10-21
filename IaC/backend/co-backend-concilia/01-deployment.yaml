@@ -24,7 +24,7 @@ spec:
       
       containers:
         - name: backend
-          image: artifactory.globaldevtools.bbva.com:443/co-genai-public-cloud-docker-local/ccrcs-genai/co-backend-concilia:v1.5
+          image: ${IMAGE_CONCILIA_BACKEND}
           imagePullPolicy: Always
       
           ports:
@@ -46,11 +46,34 @@ spec:
             - name: TZ
               value: America/Bogota
 
-            # El ConfigMap real (feature/reestructuracion) no trae esta
-            # clave; sin ella el codigo caia en un default viejo
-            # (http://parseo:8081) que no resuelve al Service real.
-            - name: PARSEO_API_URL
-              value: http://co-api-parseo:8081
+            - name: APP_ENV
+              value: okd
+            - name: AUTH_ENABLED
+              value: "true"
+            - name: OIDC_CLIENT_ID
+              value: 1c29829d-3ddd-4110-8d7f-2eb8466645fd
+            - name: OIDC_DISCOVERY_URL
+              value: https://preidp.work.global.platform.bbva.com/oidc/.well-known/openid-configuration
+            - name: OIDC_ISSUER
+              value: https://preidp.work.global.platform.bbva.com/oidc/
+            - name: OIDC_REDIRECT_URI
+              value: https://co-ccrcs-frontend-concilia-ccrcs-genai-dev.apps.work.ocp.co.igrupobbva/
+            - name: FRONTEND_ORIGIN
+              value: https://co-ccrcs-frontend-concilia-ccrcs-genai-dev.apps.work.ocp.co.igrupobbva
+            - name: OIDC_ALLOWED_ROLES
+              value: conciliacion_adquirencias_Administrador_Plataforma,conciliacion_adquirencias_Analista
+            - name: OIDC_ROLE_DIAGNOSTICS
+              value: "true"
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: concilia-oidc
+                  key: OIDC_CLIENT_SECRET
+            - name: SESSION_SIGN_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: concilia-oidc
+                  key: SESSION_SIGN_KEY
 
             - name: POSTGRESQL_USER
               valueFrom:

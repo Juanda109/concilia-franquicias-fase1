@@ -1,12 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: co-frontend-concilia
+  name: co-ccrcs-frontend-concilia
+  namespace: ccrcs-genai-dev
   labels:
-    app: co-frontend-concilia
-    app.kubernetes.io/component: co-frontend-concilia
-    app.kubernetes.io/instance: co-frontend-concilia
-    app.kubernetes.io/name: co-frontend-concilia
+    app: co-ccrcs-frontend-concilia
+    app.kubernetes.io/component: co-ccrcs-frontend-concilia
+    app.kubernetes.io/instance: co-ccrcs-frontend-concilia
+    app.kubernetes.io/name: co-ccrcs-frontend-concilia
     app.kubernetes.io/part-of: frontend
 spec:
   replicas: 1
@@ -14,7 +15,7 @@ spec:
   progressDeadlineSeconds: 600
   selector:
     matchLabels:
-      app: co-frontend-concilia
+      app: co-ccrcs-frontend-concilia
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -23,26 +24,29 @@ spec:
   template:
     metadata:
       labels:
-        app: co-frontend-concilia
-        deployment: co-frontend-concilia
+        app: co-ccrcs-frontend-concilia
+        deployment: co-ccrcs-frontend-concilia
     spec:
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       dnsPolicy: ClusterFirst
       schedulerName: default-scheduler
       containers:
-        - name: co-frontend-concilia
-          image: 'artifactory.globaldevtools.bbva.com:443/co-genai-public-cloud-docker-local/ccrcs-genai/co-frontend-concilia:v1.5'
-          imagePullPolicy: Always
+        - name: co-ccrcs-frontend-concilia
+          image: ${IMAGE_CONCILIA_FRONTEND}
+          imagePullPolicy: IfNotPresent
           ports:
-            - name: http
-              containerPort: 8080
+            - containerPort: 8080
               protocol: TCP
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           resources: {}
           # Montamos carpetas temporales para que Nginx no lance "Permission denied"
           volumeMounts:
+            - name: frontend-config
+              mountPath: /usr/share/nginx/html/config.js
+              subPath: config.js
+              readOnly: true
             - name: tmp-run
               mountPath: /run
             - name: tmp-cache
@@ -51,9 +55,36 @@ spec:
               mountPath: /var/log/nginx
       # Volúmenes en memoria efímeros con permisos de escritura
       volumes:
+        - name: frontend-config
+          configMap:
+            name: concilia-frontend-config
         - name: tmp-run
           emptyDir: {}
         - name: tmp-cache
           emptyDir: {}
         - name: tmp-log
           emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: co-ccrcs-frontend-concilia
+  namespace: ccrcs-genai-dev
+  labels:
+    app: co-ccrcs-frontend-concilia
+    app.kubernetes.io/component: co-ccrcs-frontend-concilia
+    app.kubernetes.io/instance: co-ccrcs-frontend-concilia
+    app.kubernetes.io/name: co-ccrcs-frontend-concilia
+    app.kubernetes.io/part-of: frontend
+spec:
+  type: ClusterIP
+  internalTrafficPolicy: Cluster
+  sessionAffinity: None
+  selector:
+    app: co-ccrcs-frontend-concilia
+    deployment: co-ccrcs-frontend-concilia
+  ports:
+    - name: 8080-tcp
+      port: 8080
+      targetPort: 8080
+      protocol: TCP

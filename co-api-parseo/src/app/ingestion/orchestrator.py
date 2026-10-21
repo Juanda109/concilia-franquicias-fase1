@@ -22,10 +22,6 @@ class ParseoOrchestrator:
     ar.update_procesamiento(id_archivo,"Error",str(exc));tr.add(id_archivo,"PROCESAMIENTO","Procesando","Error","ERROR_PROCESAMIENTO",correlation_id);self.conn.commit();raise
    if result.errors:
     er.save_many(id_archivo,tipo,"PROCESAMIENTO",correlation_id,result.errors);ar.update_procesamiento(id_archivo,"Error","Errores de registro");tr.add(id_archivo,"PROCESAMIENTO","Procesando","Error","ERROR_PROCESAMIENTO",correlation_id);self.conn.commit();return result
-   if result.diagnosticos:
-    # No fatal: se registran para trazabilidad pero el archivo sigue su
-    # curso normal (insert_records de abajo igual persiste todas las filas).
-    er.save_many(id_archivo,tipo,"DIAGNOSTICO",correlation_id,result.diagnosticos);self.conn.commit()
    def _progreso(n):
     ar.set_progreso(id_archivo,n);self.conn.commit()
    inserted=rr.insert_records(tipo,id_archivo,result.records,on_progress=_progreso)
