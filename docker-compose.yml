@@ -16,7 +16,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
-
+ 
   parseo:
     build:
       context: ./co-api-parseo
@@ -32,7 +32,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-
+ 
   backend:
     build:
       context: ./co-backend-concilia
@@ -57,7 +57,7 @@ services:
         condition: service_healthy
       parseo:
         condition: service_started
-
+ 
   frontend:
     image: nginx:alpine
     volumes:
@@ -68,7 +68,8 @@ services:
       - "5173:80"
     depends_on:
       - backend
-
+ 
 volumes:
   concilia_pgdata:
   concilia_storage:
+ 
