@@ -1,6 +1,169 @@
 const API = '/api/v1';
 const el = (id) => document.getElementById(id);
 
+// ---- Autenticación Nauthilus (OIDC) ----
+// window.AppConfig lo define config.js (real, con endpoint/clientId de
+// Nauthilus) o config.local.js (USE_NAUTILUS_AUTH:false, para desarrollo
+// local sin depender del IdP corporativo).
+const authConfig = window.AppConfig || {};
+const authEnabled = authConfig.USE_NAUTILUS_AUTH ?? true;
+let authRedirectStarted = false;
+let appStarted = false;
+
+function showAuthMessage(message, retry = true) {
+  el('appRoot').hidden = true;
+  el('authGate').hidden = false;
+  el('authMessage').textContent = message;
+  el('authRetry').hidden = !retry;
+}
+
+function clearOidcReturn() {
+  window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
+}
+
+function base64Url(bytes) {
+  return btoa(String.fromCharCode(...bytes))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+async function redirectToLogin() {
+  if (authRedirectStarted) return;
+  authRedirectStarted = true;
+  if (!authConfig.clientId || !authConfig.authEndpoint || !authConfig.redirectUri) {
+    showAuthMessage('La configuración de autenticación está incompleta.');
+    authRedirectStarted = false;
+    return;
+  }
+  try {
+    const state = crypto.randomUUID();
+    sessionStorage.setItem('oidc_state', state);
+    const query = new URLSearchParams({
+      response_type: 'code',
+      client_id: authConfig.clientId,
+      redirect_uri: authConfig.redirectUri,
+      scope: 'openid profile email',
+      state,
+    });
+    if (authConfig.USE_PKCE) {
+      const verifier = base64Url(crypto.getRandomValues(new Uint8Array(32)));
+      const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier));
+      sessionStorage.setItem('oidc_code_verifier', verifier);
+      query.set('code_challenge', base64Url(new Uint8Array(digest)));
+      query.set('code_challenge_method', 'S256');
+    }
+    window.location.assign(`${authConfig.authEndpoint}?${query}`);
+  } catch {
+    authRedirectStarted = false;
+    showAuthMessage('No fue posible iniciar la autenticación.');
+  }
+}
+
+// Envoltura de fetch para las llamadas al API propio: manda la cookie de
+// sesión y, si venció (401), redirige a Nauthilus en vez de dejar la
+// pantalla rota a medio cargar.
+async function apiFetch(url, options = {}) {
+  const response = await fetch(url, { ...options, credentials: 'include' });
+  if (authEnabled && response.status === 401 && url.startsWith(API)) {
+    showAuthMessage('La sesión venció. Redirigiendo a Nauthilus…', false);
+    for (const timer of pollers.values()) clearInterval(timer);
+    pollers.clear();
+    void redirectToLogin();
+  }
+  return response;
+}
+
+async function bootstrapAuth() {
+  if (!authEnabled) { showApplication(null); return; }
+  const params = new URLSearchParams(window.location.search);
+  if (params.has('error')) {
+    sessionStorage.removeItem('oidc_state');
+    sessionStorage.removeItem('oidc_code_verifier');
+    clearOidcReturn();
+    showAuthMessage('Nauthilus no completó el inicio de sesión.');
+    return;
+  }
+  const code = params.get('code');
+  if (code) {
+    const expectedState = sessionStorage.getItem('oidc_state');
+    const verifier = sessionStorage.getItem('oidc_code_verifier');
+    sessionStorage.removeItem('oidc_state');
+    sessionStorage.removeItem('oidc_code_verifier');
+    const validState = expectedState && params.get('state') === expectedState;
+    clearOidcReturn();
+    if (!validState || (authConfig.USE_PKCE && !verifier)) {
+      showAuthMessage('No se pudo validar el retorno de Nauthilus.');
+      return;
+    }
+    try {
+      const response = await fetch('/api/v0/auth/oidc/exchange', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          code,
+          redirect_uri: authConfig.redirectUri,
+          code_verifier: verifier || null,
+        }),
+      });
+      if (!response.ok) {
+        const message = response.status === 403
+          ? 'Tu usuario no tiene un rol GIAM autorizado para Concilia.'
+          : response.status === 401
+            ? 'El código de acceso venció o no pudo validarse.'
+            : 'No fue posible establecer la sesión. Inténtalo más tarde.';
+        showAuthMessage(message);
+        return;
+      }
+    } catch {
+      showAuthMessage('No fue posible conectar con el backend.');
+      return;
+    }
+  }
+  try {
+    const response = await fetch('/api/v0/me', { credentials: 'include', cache: 'no-store' });
+    if (response.status === 401) {
+      if (code) showAuthMessage('La sesión no pudo establecerse.');
+      else void redirectToLogin();
+      return;
+    }
+    if (!response.ok) {
+      showAuthMessage('No fue posible verificar la sesión.');
+      return;
+    }
+    showApplication(await response.json());
+  } catch {
+    showAuthMessage('No fue posible conectar con el backend.');
+  }
+}
+
+function showApplication(user) {
+  if (user) el('currentUser').textContent = user.name || user.email || user.sub || '';
+  el('logoutButton').hidden = !authEnabled;
+  el('authGate').hidden = true;
+  el('appRoot').hidden = false;
+  if (appStarted) return;
+  appStarted = true;
+  checkHealth();
+  actualizarFechaConciliacion();
+}
+
+el('authRetry').addEventListener('click', () => { void redirectToLogin(); });
+el('logoutButton').addEventListener('click', async () => {
+  try {
+    const response = await fetch('/api/v0/auth/logout', { method: 'POST', credentials: 'include' });
+    if (!response.ok) throw new Error();
+    sessionStorage.removeItem('oidc_state');
+    sessionStorage.removeItem('oidc_code_verifier');
+    for (const timer of pollers.values()) clearInterval(timer);
+    pollers.clear();
+    appStarted = false;
+    authRedirectStarted = false;
+    void redirectToLogin();
+  } catch {
+    toast('No se pudo cerrar la sesión. Intenta de nuevo.', true);
+  }
+});
+
 const fechaInput = el('fecha');
 const tblArchivos = el('tblArchivos');
 const tblMeta = el('tblMeta');
@@ -99,7 +262,7 @@ async function actualizarFechaConciliacion() {
   const host = el('fechaContablesEjecucion');
   host.innerHTML = '<span class="muted">Consultando…</span>';
   try {
-    const r = await fetch(`${API}/jornadas?fechaConciliacion=${encodeURIComponent(fechaInput.value)}`);
+    const r = await apiFetch(`${API}/jornadas?fechaConciliacion=${encodeURIComponent(fechaInput.value)}`);
     if (r.status === 204) {
       jornadasEjecucion = [];
       host.innerHTML = '';
@@ -159,7 +322,7 @@ function actualizarHero(d) {
 async function cargarJornada() {
   if (!idJornadaActiva) return;
   try {
-    const r = await fetch(`${API}/jornadas/${idJornadaActiva}`);
+    const r = await apiFetch(`${API}/jornadas/${idJornadaActiva}`);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const d = await r.json();
     tblMeta.textContent = `${d.archivosRecibidos} de ${d.archivosEsperados} insumos recibidos`;
@@ -235,7 +398,7 @@ el('btnVolverInsumos').addEventListener('click', volverAInsumos);
 async function cargarContenidoDetalle() {
   const idArchivo = detalleIdArchivo;
   try {
-    const r = await fetch(`${API}/archivos/${idArchivo}/contenido?page=${detallePagina}&pageSize=${DETALLE_PAGE_SIZE}`);
+    const r = await apiFetch(`${API}/archivos/${idArchivo}/contenido?page=${detallePagina}&pageSize=${DETALLE_PAGE_SIZE}`);
     if (r.status === 409) {
       detalleInsumoContent.innerHTML = '<div class="card emptyDetail">El archivo aún se encuentra en procesamiento y no tiene contenido consultable.</div>';
       return;
@@ -363,7 +526,7 @@ async function subirArchivo(idArchivo, file) {
     // La subida ya no espera a que termine el parseo (puede tardar minutos en
     // archivos grandes) — responde apenas el archivo queda en storage, y el
     // avance real se sigue con polling en iniciarPolling().
-    const r = await fetch(`${API}/jornadas/${idJornadaActiva}/archivos`, { method: 'POST', body: form });
+    const r = await apiFetch(`${API}/jornadas/${idJornadaActiva}/archivos`, { method: 'POST', body: form });
     if (!r.ok) {
       // El cuerpo del error no siempre es JSON (ej. nginx devuelve HTML en un
       // 413 "archivo muy grande") — probar JSON primero, caer a texto plano
@@ -582,5 +745,4 @@ function openEmailDraft() {
   openDrawer();
 }
 
-checkHealth();
-actualizarFechaConciliacion();
+bootstrapAuth();

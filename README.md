@@ -15,6 +15,7 @@ Solo quedan en el repo las carpetas de los pods que se despliegan en OKD (docume
 - `co-backend-concilia/`: FastAPI (control-plane), jornadas/archivos/estados, orquesta la subida a MinIO y la llamada a `co-api-parseo/`.
 - `co-api-parseo/`: FastAPI (data-plane), descarga de MinIO, parsers, repositories de resultados y escritura directa a Postgres.
 - `co-frontend-concilia/`: nginx + JS, UI de carga/seguimiento; construye la imagen que corre en OKD.
+- Autenticación Nauthilus OIDC: el backend valida identidad y roles GIAM, crea una cookie de sesión firmada y protege `/api/v1`; el frontend inicia el login antes de consultar datos. La configuración de OKD está en `IaC/README.md`.
 - `database/`: DDL consolidado de 21 tablas, DDL individuales, migración y seed de los 12 insumos (no se despliega como pod; se usa para el paso manual de inicialización de Postgres — ver `IaC/README.md`).
 - `IaC/`: manifiestos OKD (kustomize) por componente — front, back, api de parseo, postgres, minio. Ver `IaC/README.md`.
 
