@@ -1,0 +1,7 @@
+window.AppConfig = {
+  USE_NAUTILUS_AUTH: true,
+  USE_PKCE: true,
+  clientId: '1c29829d-3ddd-4110-8d7f-2eb8466645fd',
+  authEndpoint: 'https://preidp.work.global.platform.bbva.com/oidc/authorize',
+  redirectUri: 'https://co-ccrcs-frontend-concilia-ccrcs-genai-dev.apps.work.ocp.co.igrupobbva/',
+};

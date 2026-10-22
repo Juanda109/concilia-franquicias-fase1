@@ -9,7 +9,15 @@
 <body>
 <div class="topbar"><b>Baseline Fase 1:</b> 12 archivos esperados · 21 tablas activas · orquestación Control-M &rarr; Hub Linux &rarr; SFTP &rarr; MinIO/OKD.</div>
 
-<div class="app">
+<div id="authGate" class="authGate" role="status">
+  <div class="authCard">
+    <h1>Concilia Franquicias</h1>
+    <p id="authMessage">Verificando la sesión…</p>
+    <button id="authRetry" class="btn primary" type="button" hidden>Volver a entrar</button>
+  </div>
+</div>
+
+<div class="app" id="appRoot" hidden>
   <aside class="side">
     <div class="brand">CON<span>CILIA</span><small>FRANQUICIAS · FASE 1</small></div>
     <div class="lbl">Operación</div>
@@ -23,7 +31,7 @@
   <main>
     <div class="top">
       <b><span class="bbva">BBVA</span>&nbsp;&nbsp;|&nbsp;&nbsp; Concilia</b>
-      <div class="topR"><span id="apiStatus" class="badge info">API…</span></div>
+      <div class="topR"><span id="apiStatus" class="badge info">API…</span><span id="currentUser"></span><button id="logoutButton" class="btn" type="button" hidden>Cerrar sesión</button></div>
     </div>
 
     <div class="wrap">
@@ -215,6 +223,7 @@
   </div>
 </div>
 
+<script src="config.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

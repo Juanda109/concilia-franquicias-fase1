@@ -1,6 +1,11 @@
 import math,uuid
 from datetime import date
-from fastapi import FastAPI,HTTPException,Header,UploadFile,File,Form,BackgroundTasks
+from fastapi import FastAPI,HTTPException,Header,UploadFile,File,Form,BackgroundTasks,Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from app.api.auth_router import router as auth_router
+from app.auth.session import COOKIE_NAME, read_session
+from app.core.auth_config import auth_settings
 from app.core.fechas import derivar_fechas_contables
 from app.core.nombres_archivo import validar_nombre
 from app.repositories.database import connection
@@ -10,6 +15,24 @@ from app.repositories.content import ContentRepository
 from app.clients import minio_client
 from app.clients.parseo_client import parsear
 app=FastAPI(title="Concilia Franquicias Fase 1 - Back",version="2.4.0")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[auth_settings.frontend_origin],
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type", "X-Correlation-Id"],
+)
+app.include_router(auth_router)
+
+@app.middleware("http")
+async def protect_api(request: Request, call_next):
+    path = request.url.path
+    if request.method != "OPTIONS" and auth_settings.auth_enabled and (path == "/api/v1" or path.startswith("/api/v1/")):
+        try:
+            read_session(request.cookies.get(COOKIE_NAME))
+        except HTTPException as exc:
+            return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+    return await call_next(request)
 
 ESTADO_RECEPCION_MAP={"Recibido":"RECIBIDO","No recibido":"NO_RECIBIDO","Rechazado":"RECHAZADO"}
 ESTADO_PROCESAMIENTO_MAP={"Pendiente":"PENDIENTE","Procesando":"PROCESANDO","Procesado":"PROCESADO","Error":"ERROR"}
