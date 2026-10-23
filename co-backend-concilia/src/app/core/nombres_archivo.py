@@ -3,7 +3,8 @@ import re
 # Estructura fija por tipo de insumo; lo único que cambia día a día es la
 # fecha embebida en el nombre. "formato" indica cómo leer los dígitos de
 # fecha capturados por el grupo del regex: 'AAMMDD'/'DDMMAA' (6 dígitos,
-# año de 2 cifras) o 'AAAAMMDD' (8 dígitos, año ya completo).
+# año de 2 cifras), 'AAAAMMDD' (8 dígitos, año ya completo) o 'ISO' (el
+# grupo ya viene como AAAA-MM-DD, con guiones, no hace falta reordenar).
 # Tipos sin regla aquí (MEP, VSS, PMPD1322, PMRD8000) no tienen estructura
 # de nombre confirmada todavía: no se valida nada para ellos.
 PATRONES={
@@ -15,9 +16,11 @@ PATRONES={
  "DEPO":(re.compile(r'^GOF\.E0007\.GRMRV05\.F(\d{6})\.RD001\.DEPO\.TXT$',re.I),'AAMMDD'),
  "CARTA_COMPENSACION":(re.compile(r'^(\d{6})\.xlsx$',re.I),'DDMMAA'),
  "PMD":(re.compile(r'^PMDGeneralEntidad(\d{8})\.xls$',re.I),'AAAAMMDD'),
+ "ISS":(re.compile(r'^International  SS_Data_(\d{4}-\d{2}-\d{2})\.pdf$',re.I),'ISO'),
 }
 
 def _fecha_desde_digitos(digitos:str,formato:str)->str:
+ if formato=='ISO': return digitos
  if formato=='AAAAMMDD':
   aaaa,mm,dd=digitos[0:4],digitos[4:6],digitos[6:8]
   return f"{aaaa}-{mm}-{dd}"

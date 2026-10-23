@@ -5,6 +5,7 @@ from app.parsers.ha32 import HA32Parser
 from app.parsers.pmd import PMDParser
 from app.parsers.mep import MEPParser
 from app.parsers.vss import VSSParser
+from app.parsers.iss import ISSParser
 from app.parsers.carta_compensacion import CartaCompensacionParser
 
 def run():
@@ -15,6 +16,7 @@ def run():
   (PMDParser(),Path("/mnt/data/PMDDetalleTransacciones20260702(1).xlsx"),5),
   (MEPParser(),Path("/mnt/data/MEP(1).xlsx"),2),
   (VSSParser(),Path("/mnt/data/VSS BBVA 02 JULIO.txt"),13),
+  (ISSParser(),Path("/mnt/data/International  SS_Data_2026-07-03.pdf"),3),
   (CartaCompensacionParser(),Path("/mnt/data/090926(3).xlsx"),50),
  ]
  for parser,path,expected in cases:
