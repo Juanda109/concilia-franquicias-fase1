@@ -1,7 +1,0 @@
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-resources:
-  - postgresql/01-pvc.yaml
-  - postgresql/02-deployment.yaml
-  - postgresql/03-service.yaml
-  - postgresql/04-job-init-ddl.yaml

@@ -1,7 +1,0 @@
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-
-resources:
-  - co-frontend-concilia/01-deployment.yaml
-  - co-frontend-concilia/02-service.yaml
-  - co-frontend-concilia/03-route.yaml
