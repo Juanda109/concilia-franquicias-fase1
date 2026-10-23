@@ -24,7 +24,7 @@ spec:
       
       containers:
         - name: backend
-          image: artifactory.globaldevtools.bbva.com:443/co-genai-public-cloud-docker-local/ccrcs-genai/co-backend-concilia:v1.5
+          image: artifactory.globaldevtools.bbva.com:443/co-genai-public-cloud-docker-local/ccrcs-genai/co-backend-concilia:v1.8
           imagePullPolicy: Always
       
           ports:
