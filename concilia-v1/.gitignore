@@ -1,0 +1,183 @@
+__pycache__/
+*.pyc
+.venv/
+*.db
+*.sqlite*
+*.log
+.env
+.env.*
+!.env.example
+data/
+output/
+secrets/
+*.pem
+*.key
+*.p12
+*.pfx
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Respaldos locales de desarrollo
+*.bak
+
+# === CONCILIA V1 - EXCLUSIONES ===
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Credenciales
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*credentials*
+*secret*
+
+# PostgreSQL
+*.dump
+*.backup
+*.bak
+*.sql.bak
+RespaldosConcilia/
+
+# Archivos bancarios y muestras
+*.xls
+*.xlsx
+*.csv
+*.TXT
+*.txt
+*.zip
+
+# Excepciones de documentacion
+!README.txt
+
+# Paquetes temporales
+concilia_despliegue_027_028/
+concilia_ejecutor_027_028/
+concilia_despliegue_definitivo_028_027/
+concilia_restauracion_aislada/
+CONCILIA_SITE_PRUEBAS_MVP1/
+CONCILIA_PRUEBA_CARGA_AISLADA/
+CONCILIA_V1_FASE1_ESTABLE_20261022/
+concilia_frontend_mvp1/
+concilia_ux_original_integrado/
+
+# Scripts temporales de instalacion
+INTEGRAR_EN_FASTAPI.py
+
+# Logs y resultados
+*.log
+resultado.json
+.coverage
+htmlcov/
+
+# Backups de codigo
+*.pre_*.bak
+*.pre_*
+
+# BEGIN CONCILIA MVP1 DEPURADO
+.venv/
+venv/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+node_modules/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.dump
+*.backup
+*.bak
+*.log
+*.zip
+*.xls
+*.xlsx
+*.csv
+*.TXT
+# Muestras con nombres bancarios especificos
+GOF.*
+DESCARHA*
+PMDDetalleTransacciones*
+PMDGeneralEntidad*
+VSS BBVA*
+ANEXO 0017*
+# Versiones de UX de referencia: solo frontend/index.html es el UX publicado
+/ux/
+# Paquetes y herramientas temporales
+/concilia_despliegue_027_028/
+/concilia_ejecutor_027_028/
+/concilia_despliegue_definitivo_028_027/
+/concilia_restauracion_aislada/
+/concilia_frontend_mvp1/
+/concilia_ux_original_integrado/
+/CONCILIA_SITE_PRUEBAS_MVP1/
+/CONCILIA_PRUEBA_CARGA_AISLADA/
+/CONCILIA_V1_FASE1_ESTABLE_20261022/
+/INTEGRAR_EN_FASTAPI.py
+/resultado.json
+# Conservar declaracion de dependencias incluso si hay reglas antiguas de *.txt
+!requirements.txt
+!**/requirements.txt
+# END CONCILIA MVP1 DEPURADO
+
+# BEGIN CONCILIA RELEASE LIMPIO 20261022
+.venv/
+venv/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+node_modules/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+*.dump
+*.backup
+*.bak
+*.zip
+*.xls
+*.xlsx
+*.csv
+*.TXT
+*.log
+*.sqlite
+*.sqlite3
+GOF.*
+DESCARHA*
+PMDDetalleTransacciones*
+PMDGeneralEntidad*
+VSS BBVA*
+ANEXO 0017*
+/ux/
+/concilia_despliegue_027_028/
+/concilia_ejecutor_027_028/
+/concilia_despliegue_definitivo_028_027/
+/concilia_restauracion_aislada/
+/concilia_frontend_mvp1/
+/concilia_ux_original_integrado/
+/CONCILIA_SITE_PRUEBAS_MVP1/
+/CONCILIA_PRUEBA_CARGA_AISLADA/
+/CONCILIA_V1_FASE1_ESTABLE_20261022/
+/INTEGRAR_EN_FASTAPI.py
+/resultado.json
+!requirements.txt
+!**/requirements.txt
+# END CONCILIA RELEASE LIMPIO 20261022

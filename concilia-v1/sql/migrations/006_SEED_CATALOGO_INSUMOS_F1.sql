@@ -1,0 +1,56 @@
+﻿-- CONCILIA V1 - MVP1
+-- Carga inicial del catalogo funcional
+-- Version de prueba: 1
+-- Base destino: concilia_test
+
+BEGIN;
+
+INSERT INTO CON_CATALOGO_INSUMO (
+    TIPO_INSUMO,
+    FUENTE,
+    VERSION_CATALOGO,
+    OBLIGATORIO,
+    ACTIVO,
+    FEC_DESDE,
+    FEC_HASTA
+)
+VALUES
+    ('HA22', 'HOST', 1, TRUE, TRUE, '2026-01-01', NULL),
+    ('HA26', 'HOST', 1, TRUE, TRUE, '2026-01-01', NULL),
+    ('HA32', 'HOST', 1, TRUE, TRUE, '2026-01-01', NULL),
+
+    ('CAET', 'CREDIBANCO', 1, TRUE, TRUE, '2026-01-01', NULL),
+    ('CANT', 'CREDIBANCO', 1, TRUE, TRUE, '2026-01-01', NULL),
+    ('DEPO', 'CREDIBANCO', 1, TRUE, TRUE, '2026-01-01', NULL),
+    ('CARTA_COMPENSACION', 'CREDIBANCO', 1, TRUE, TRUE, '2026-01-01', NULL),
+
+    ('PMD', 'REDEBAN', 1, TRUE, TRUE, '2026-01-01', NULL),
+    ('MEP', 'REDEBAN', 1, TRUE, TRUE, '2026-01-01', NULL),
+
+    ('VSS', 'VISA', 1, TRUE, TRUE, '2026-01-01', NULL)
+
+ON CONFLICT (TIPO_INSUMO, VERSION_CATALOGO)
+DO NOTHING;
+
+DO $$
+DECLARE
+    v_total INTEGER;
+BEGIN
+    SELECT COUNT(*)
+    INTO v_total
+    FROM CON_CATALOGO_INSUMO
+    WHERE VERSION_CATALOGO = 1
+      AND ACTIVO = TRUE
+      AND OBLIGATORIO IS NOT NULL
+      AND FEC_DESDE <= DATE '2026-09-14'
+      AND (FEC_HASTA IS NULL OR FEC_HASTA >= DATE '2026-09-14');
+
+    IF v_total <> 10 THEN
+        RAISE EXCEPTION
+            'Catalogo MVP1 incompleto: % de 10',
+            v_total;
+    END IF;
+END;
+$$;
+
+COMMIT;

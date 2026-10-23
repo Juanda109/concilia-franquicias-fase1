@@ -1,0 +1,1784 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Concilia Franquicias</title>
+<style>
+:root{--core:#072146;--nav:#061b2f;--blue:#1464a5;--blue2:#004481;--cyan:#2dcccd;--bg:#f4f5f6;--white:#fff;--line:#dfe3e6;--text:#121f2d;--muted:#5b6a78;--green:#277a3e;--gb:#e9f5ec;--amber:#8a5a00;--ab:#fff4d6;--red:#b92a45;--rb:#fbeaec;--light:#e9f2f8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:Arial,"Helvetica Neue",Segoe UI,sans-serif;color:var(--text);font-size:13px}
+.topbar{background:#071b3a;color:#fff;padding:8px 16px;font:12px Arial}
+
+.app{display:grid;grid-template-columns:210px 1fr;min-height:100vh}
+.side{min-height:100vh;position:sticky;top:0;background:linear-gradient(180deg,var(--core),var(--nav));padding:18px 12px;color:#fff}
+.brand{font-size:21px;font-weight:800;padding:4px 9px 22px;letter-spacing:-.04em}
+.brand span{color:var(--cyan)}
+.brand small{display:block;color:#8ba0b6;font-size:8px;letter-spacing:.12em;margin-top:5px;white-space:nowrap}
+.lbl{font-size:8px;text-transform:uppercase;letter-spacing:.13em;color:#70869e;margin:15px 10px 6px}
+.nav button{width:100%;border:0;background:transparent;color:#bdc9d8;text-align:left;padding:10px 10px;border-radius:2px;margin:2px 0;font-size:11px;cursor:pointer}
+.nav button.active,.nav button:hover{background:#0b3b60;color:#fff}
+.nav button.active{box-shadow:inset 3px 0 var(--cyan)}
+
+main{min-width:0}
+.top{height:56px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.bbva{font-size:17px;color:var(--blue2);letter-spacing:-.05em}
+.topR{display:flex;gap:8px;align-items:center;color:var(--muted);font-size:10px}
+.badge{display:inline-block;padding:4px 7px;border-radius:2px;font-size:8px;font-weight:750}
+.ok{background:var(--gb);color:var(--green)}
+.warn{background:var(--ab);color:var(--amber)}
+.bad{background:var(--rb);color:var(--red)}
+.info{background:var(--light);color:var(--blue2)}
+
+.wrap{padding:21px 24px 48px;max-width:1450px;margin:auto}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.head h1{font-size:24px;color:var(--core);margin:0 0 5px}
+.head h1:after{content:"";display:block;width:34px;height:3px;background:var(--cyan);margin-top:8px}
+.head p{margin:0;color:var(--muted);font-size:11px;max-width:640px}
+.head input[type=date]{padding:8px;border:1px solid var(--line);font-size:11px}
+
+.card{background:#fff;border:1px solid var(--line);border-radius:2px;padding:16px;box-shadow:0 2px 8px #0721460a}
+.section{margin-top:13px}
+.hero{background:linear-gradient(110deg,var(--core),var(--blue2) 62%,var(--blue));color:#fff;border:0}
+.heroTop{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.heroTop h2{margin:0;font-size:18px}
+.heroLine{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:10px}
+.progressWrap{flex:1}
+.progressMeta{display:flex;justify-content:space-between;margin-bottom:6px;font-size:9px;color:#d5e5f1}
+.progressMeta b{color:#fff}
+.progress{height:9px;background:#ffffff22;border-radius:10px;overflow:hidden}
+.progress span{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),#7fe6e6);border-radius:10px;transition:width .3s}
+
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.kpi{background:#fff;border:1px solid var(--line);padding:12px}
+.kpi small{display:block;color:var(--muted);font-size:8px;text-transform:uppercase;letter-spacing:.05em}
+.kpi strong{display:block;font-size:20px;color:var(--core);margin-top:4px}
+
+.title{display:flex;justify-content:space-between;align-items:center;color:var(--core);font-weight:750;margin-bottom:12px}
+.title span{font-weight:400;color:var(--muted);font-size:9px}
+
+.tableScroll{width:100%;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:9.5px}
+th{text-align:left;background:var(--light);color:var(--blue2);padding:8px;border-bottom:1px solid var(--line);font-size:7.5px;text-transform:uppercase;white-space:nowrap}
+td{padding:9px 8px;border-bottom:1px solid #edf0f2;white-space:nowrap}
+.muted{color:var(--muted);font-size:10px}
+
+.btn{border:1px solid var(--blue);background:#fff;color:var(--blue2);border-radius:2px;padding:8px 11px;font-size:9px;font-weight:700;cursor:pointer}
+.btn.primary{background:var(--blue);color:#fff}
+.btn:hover{opacity:.85}
+.actionbar{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+
+.actionCell{display:flex;gap:5px;align-items:center;white-space:nowrap}
+.iconBtn{width:26px;height:26px;padding:0;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);background:#fff;border-radius:3px;cursor:pointer;color:var(--muted)}
+.iconBtn:hover{border-color:var(--blue);background:var(--light);color:var(--blue2)}
+.iconBtn.btnUpload{border-color:var(--blue);color:var(--blue2)}
+.iconBtn svg{display:block}
+
+.field{margin-bottom:10px}
+.field label{display:block;color:var(--muted);font-size:8px;font-weight:700;margin-bottom:4px;text-transform:uppercase}
+.field input,.field select{width:100%;border:1px solid var(--line);background:#fff;padding:8px;font-size:10px}
+
+.drawer{display:none;position:fixed;right:0;top:0;width:480px;max-width:100vw;height:100vh;background:#fff;z-index:20;box-shadow:-15px 0 45px #0002;padding:22px;overflow:auto}
+.drawer.show{display:block}
+.toast{position:fixed;bottom:22px;right:22px;background:var(--core);color:#fff;padding:11px 14px;z-index:50;box-shadow:0 5px 20px #0003;font-size:10px;display:none;max-width:320px}
+.toast.show{display:block}
+.toast.err{background:var(--red)}
+
+.modalBack{display:none;position:fixed;inset:0;background:#061b2f88;z-index:80;align-items:center;justify-content:center;padding:20px}
+.modalBack.show{display:flex}
+.modalBox{width:min(430px,95vw);background:#fff;border-top:4px solid var(--cyan);box-shadow:0 18px 60px #0004;padding:20px}
+.modalBox h3{margin:0 0 8px;color:var(--core);font-size:17px}
+.modalBox p{color:var(--muted);font-size:10px;line-height:1.55}
+
+.detailGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.detailGrid .kv b{display:block;font-size:8px;text-transform:uppercase;color:var(--muted);letter-spacing:.05em}
+.detailGrid .kv span{font-size:12px;word-break:break-all}
+.drawer h2{margin:0 0 4px;font-size:16px;color:var(--core)}
+.drawer h3{margin:18px 0 8px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.pager{display:flex;align-items:center;gap:12px;margin-top:10px}
+.pager .btn{padding:6px 12px}
+
+.panel{display:none}
+.panel.active{display:block}
+
+.fechaChips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.fechaChip{min-width:120px;border:1px solid var(--line);background:#fff;padding:8px 11px;text-align:left;cursor:pointer;border-radius:2px;color:var(--text)}
+.fechaChip:hover{border-color:#a9c6d9}
+.fechaChip.active{border-color:var(--blue);box-shadow:inset 0 -3px var(--cyan);background:#f8fbfc}
+.fechaChip small{display:block;color:var(--muted);font-size:7.5px;text-transform:uppercase}
+.fechaChip b{display:block;color:var(--core);font-size:11px;margin:3px 0 4px}
+
+.explain{background:#eef6fa;border:1px solid #cfe1ec;border-left:4px solid var(--cyan);padding:11px 13px;margin:10px 0 14px;font-size:9px;line-height:1.55;color:#40576a}
+.explain b{color:var(--core)}
+
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.fc{border:1px solid var(--line);padding:10px;background:#fff}
+.fc small{display:block;color:var(--muted);font-size:8px}
+.fc b{display:block;margin-top:4px;color:var(--core);font-size:11px}
+.summaryFlow{margin-bottom:12px}
+
+.toolbar{display:flex;gap:7px;margin-bottom:10px}
+.search,.select{border:1px solid var(--line);background:#fff;padding:8px;font-size:9px}
+.search{flex:1}
+.filterHint{font-size:8px;color:var(--muted);margin:7px 0 10px}
+
+.reconTable{width:100%;min-width:1050px;border-collapse:collapse;table-layout:auto}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+
+.tag{display:inline-block;padding:4px 7px;border-radius:2px;font-size:8px;font-weight:750}
+.tag.ok{background:var(--gb);color:var(--green)}
+.tag.warn{background:var(--ab);color:var(--amber)}
+.tag.info{background:var(--light);color:var(--blue2)}
+
+.lifecycle{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:12px 0}
+.life{border:1px solid var(--line);background:#fff;padding:9px;text-align:center}
+.life small{display:block;color:var(--muted);font-size:7px}
+.life b{display:block;color:var(--core);font-size:9px;margin-top:4px}
+.life.on{border-top:3px solid var(--cyan);background:#f8fbfc}
+
+.alert{background:#fffaf0;border:1px solid #e8d39a;border-left:4px solid #f8cd51;padding:12px}
+.alert p{font-size:9px;color:#6c665a;line-height:1.5}
+.friendlyNote{background:#eef6fa;border-left:4px solid var(--cyan);padding:10px;font-size:9px;line-height:1.5;margin:10px 0}
+.aiNext{margin-top:10px;padding:10px 11px;background:#eef6fa;border-left:3px solid var(--cyan);font-size:8.5px;color:var(--muted);line-height:1.5}
+.aiNext b{color:var(--core)}
+.decisionDone{display:none;margin-top:9px;color:var(--green);font-size:8px;font-weight:700}
+.aiLocked{opacity:.68;background:#f7f9fa!important;border-color:#cfd8df!important}
+.aiLocked button{pointer-events:none;opacity:.42}
+.aiLocked .decisionDone{display:block}
+
+.aiAutoFlow{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0}
+.aiAutoStep{border:1px solid var(--line);background:#fff;padding:9px;text-align:center;font-size:8px;color:var(--muted)}
+.aiAutoStep b{display:block;color:var(--core);margin-top:3px}
+.aiAutoStep.done{background:var(--gb);border-color:#c8e2cf}
+
+.emailDraft{background:#fff;border:1px solid var(--line);padding:12px;line-height:1.6;font-size:9px}
+.emailDraft .subject{border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:8px}
+
+
+/* ===== Vista dedicada de detalle de insumo ===== */
+.backLink{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--blue2);font-size:10px;font-weight:700;padding:0;margin:0 0 16px;cursor:pointer}
+.backLink:hover{text-decoration:underline}
+.detailPageHead{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;flex-wrap:wrap;margin-bottom:14px}
+.detailPageHead h1{font-size:24px;color:var(--core);margin:0 0 6px;word-break:break-word}
+.detailPageHead .sub{color:var(--muted);font-size:11px}
+.detailStatus{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.detailMetrics{display:grid;grid-template-columns:repeat(3,minmax(150px,1fr));gap:9px;margin:14px 0}
+.detailMetric{background:#fff;border:1px solid var(--line);padding:12px 14px}
+.detailMetric small{display:block;color:var(--muted);font-size:8px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+.detailMetric strong{display:block;color:var(--core);font-size:16px}
+.detailTableCard{padding:0;overflow:visible}
+.detailTableTop{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.detailTableTop .title{margin:0}
+.detailCount{color:var(--muted);font-size:9px}
+.detailTableWrap{width:100%;overflow-x:auto;overscroll-behavior-x:contain}
+.detailDataTable{min-width:980px;width:100%;font-size:10px}
+.detailDataTable th{position:sticky;top:0;z-index:2;background:var(--light);box-shadow:0 1px 0 var(--line)}
+.detailDataTable td,.detailDataTable th{padding:10px 11px}
+.detailPager{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;border-top:1px solid var(--line);flex-wrap:wrap}
+.detailPager .pagerInfo{color:var(--muted);font-size:9px}
+.emptyDetail{padding:28px;text-align:center;color:var(--muted)}
+@media(max-width:760px){.detailMetrics{grid-template-columns:1fr}.detailPageHead h1{font-size:20px}.techGrid{grid-template-columns:1fr}}
+
+@media(max-width:1000px){
+  .app{grid-template-columns:72px 1fr}
+  .brand{font-size:0}.brand:before{content:"BB";font-size:18px}
+  .brand small,.nav button{font-size:0}
+  .kpis{grid-template-columns:1fr 1fr}
+  .drawer{width:100vw}
+  .flow,.lifecycle,.aiAutoFlow{grid-template-columns:1fr 1fr}
+}
+
+/* Confirmacion integrada: respeta la identidad visual existente */
+.conciliaDialog{position:fixed;inset:0;z-index:120;background:#061b2f99;display:none;align-items:center;justify-content:center;padding:18px}
+.conciliaDialog.open{display:flex}
+.conciliaDialogBox{width:min(450px,100%);background:var(--white);border-top:4px solid var(--cyan);box-shadow:0 18px 55px #061b2f55;padding:22px;color:var(--text)}
+.conciliaDialogBox h2{font-size:18px;color:var(--core);margin:0 0 9px}
+.conciliaDialogBox p{line-height:1.55;font-size:12px;color:var(--muted);margin:0 0 15px}
+.conciliaDialogInfo{background:var(--light);padding:12px;margin-bottom:16px;display:grid;gap:8px;font-size:11px}
+.conciliaDialogInfo div{display:flex;justify-content:space-between;gap:14px}
+.conciliaDialogInfo span{color:var(--muted)}
+.conciliaDialogInfo strong{color:var(--core);overflow-wrap:anywhere;text-align:right}
+.conciliaDialogActions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.conciliaDialogActions .btn{font-size:11px;padding:10px 14px}
+.conciliaDialog:focus{outline:none}
+
+/* CONCILIA_CANT_PANEL_035 */
+.cantOverlay{position:fixed;inset:0;background:rgba(7,19,48,.48);z-index:110;display:none}
+.cantOverlay.show{display:block}
+.cantPanel{position:absolute;right:0;top:0;bottom:0;width:min(690px,100%);background:#fff;box-shadow:-12px 0 36px #0003;display:flex;flex-direction:column;color:var(--core)}
+.cantPanelHead{padding:22px 24px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.cantPanelHead h2{font-size:19px;margin:4px 0}.cantPanelBody{overflow:auto;padding:22px 24px;flex:1}
+.cantMetrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:16px 0}
+.cantMetric{background:#f3f7fb;border:1px solid #dce5ee;padding:13px;border-radius:5px}
+.cantMetric small{display:block;font-size:11px;color:#53677f}.cantMetric strong{font-size:24px;display:block;margin-top:5px}
+.cantNotice{background:#fff8e8;border-left:3px solid #bd8100;padding:12px 14px;font-size:12px;line-height:1.6;margin:14px 0}
+.cantTableWrap{overflow-x:auto}.cantPanel table{font-size:11px}.cantPanel th{font-size:10px}.cantPanel td{white-space:normal;vertical-align:top;font-size:11px}
+.cantPanel .cantPager{display:flex;align-items:center;gap:10px;justify-content:flex-end;margin-top:12px;font-size:11px}
+.cantPanel .cantPager button:disabled{opacity:.4;cursor:not-allowed}
+.cantPanel h3{font-size:13px;margin:22px 0 10px}.cantPanel .muted{font-size:11px}
+@media(max-width:540px){.cantPanelHead,.cantPanelBody{padding:16px}.cantMetrics{gap:5px}.cantMetric{padding:8px}.cantMetric strong{font-size:19px}}
+
+/* CONCILIA_F1_MODAL_UNIFICADO */
+.conciliaDialogBox{border-radius:6px;max-height:min(90vh,760px);overflow-y:auto;width:min(480px,100%)}
+.conciliaDialogField{display:grid;gap:6px;margin:12px 0}
+.conciliaDialogField label{font-size:11px;font-weight:700;color:var(--core)}
+.conciliaDialogField input,.conciliaDialogField textarea{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:3px;padding:10px 11px;font:inherit;font-size:12px;background:#fff;color:var(--text)}
+.conciliaDialogField textarea{min-height:96px;resize:vertical}
+.conciliaDialogField input:focus,.conciliaDialogField textarea:focus{outline:2px solid var(--cyan);outline-offset:1px}
+.conciliaDialogError{font-size:11px;color:var(--red);min-height:1em;margin-bottom:8px}
+#noDataModal{z-index:120}#noDataModal .modalBox{width:min(450px,100%);border-radius:6px;padding:22px}#noDataModal .actionbar{justify-content:flex-end}
+@media(max-width:540px){.conciliaDialog{padding:12px}.conciliaDialogBox{padding:16px;max-height:92vh}}
+</style>
+<style>/* Fase 1: panel contable reservado para Fase 2 */ #cantPanelOverlay, #cantPanel {display:none !important;}</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="brand">CON<span>CILIA</span><small>COMPENSACIÓN Y CONCILIACIÓN</small></div>
+    <div class="lbl">Operación</div>
+    <div class="nav">
+      <button class="active" onclick="go('insumos',this)">&#9679; &nbsp; Insumos</button>
+      <button onclick="go('conciliacion',this)">&#8644; &nbsp; Conciliación</button>
+      <button onclick="go('ia',this)">&#10022; &nbsp; Diagnostico IA</button>
+    </div>
+  </aside>
+
+  <main>
+    <div class="top">
+      <b><span class="bbva">BBVA</span>&nbsp;&nbsp;|&nbsp;&nbsp; Concilia</b>
+      <div class="topR"></div>
+    </div>
+
+    <div class="wrap">
+    <section id="insumos" class="panel active">
+      <div class="head">
+        <div>
+          <h1>Estado de insumos</h1>
+          
+        </div>
+        <div class="field">
+          <label for="fecha">Fecha de conciliación</label>
+          <input id="fecha" type="date">
+        </div>
+      </div>
+
+      <div class="muted" style="margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em">Fecha(s) contable(s) de esta ejecución</div>
+      <div id="fechaContablesEjecucion" class="fechaChips"></div>
+
+      <div class="card hero">
+        <div class="heroTop">
+          <h2 id="heroTitulo">Jornada —</h2>
+          <span id="heroBadge" class="badge info">—</span>
+        </div>
+        <div class="heroLine">
+          <div class="progressWrap">
+            <div class="progressMeta"><span>Avance de carga</span><b id="heroPct">0%</b></div>
+            <div class="progress"><span id="heroBar" style="width:0%"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpis section">
+        <div class="kpi"><small>Esperados</small><strong id="kpiEsperados">-</strong></div>
+        <div class="kpi"><small>Recibidos</small><strong id="kpiRecibidos">-</strong></div>
+        <div class="kpi"><small>Procesados</small><strong id="kpiProcesados">-</strong></div>
+        <div class="kpi"><small>Con error</small><strong id="kpiErrores">-</strong></div>
+        <div class="kpi"><small>Revisión funcional</small><strong id="kpiRevisionFuncional">-</strong></div>
+      </div>
+
+      <div class="card section">
+        <div class="title">Archivos de la jornada <span id="tblMeta"></span></div>
+        <div class="tableScroll">
+          <table>
+            <thead>
+              <tr><th>ID</th><th>Fuente</th><th>Tipo</th><th>Archivo</th><th>Registros</th><th>Recepción</th><th>Procesamiento</th><th>Acción</th></tr>
+            </thead>
+            <tbody id="tblArchivos"><tr><td colspan="8" class="muted">Selecciona una fecha contable.</td></tr></tbody>
+          </table>
+        </div>
+        <div id="cargaResultado" class="muted section" role="status" aria-live="polite"></div>
+        <div class="actionbar"><button type="button" class="btn" id="btnTrazabilidad" style="display:none">Ver trazabilidad de jornada</button></div>
+        <div class="actionbar" id="jornadaAcciones" style="display:none"><button type="button" class="btn primary" id="btnPrepararJornada">Crear e inicializar jornada</button></div>
+      </div>
+      <input id="uploadFileHidden" type="file" style="display:none">
+    </section>
+
+
+
+    <section id="detalleInsumo" class="panel">
+      <button type="button" class="backLink" id="btnVolverInsumos">← Volver a Insumos</button>
+      <div id="detalleInsumoContent">
+        <div class="emptyDetail">Selecciona un archivo desde la vista de Insumos.</div>
+      </div>
+    </section>
+
+    <section id="conciliacion" class="panel">
+      <div class="head">
+        <div>
+          <h1>Conciliación y Reporte Maestro</h1><p>Vista de referencia: resultados demostrativos, aún no conectados al motor real.</p>
+          <p>Cruce Franquicia ↔ Host y resultado del Reporte Maestro en un solo cuadro operativo.</p>
+        </div>
+      </div>
+      
+
+      <div class="flow summaryFlow">
+        <div class="fc"><small>CUENTAS / CRUCES</small><b>29</b></div>
+        <div class="fc"><small>CONCILIADOS</small><b>23</b></div>
+        <div class="fc"><small>DIFERENCIAS</small><b>6</b></div>
+        <div class="fc"><small>INCORPORADOS MAESTRO</small><b>23</b></div>
+      </div>
+
+      <div class="card section">
+        <div class="toolbar">
+          <input id="reconQ" class="search" onkeyup="filterReconRows()" placeholder="Buscar cuenta o concepto...">
+          <select id="reconFr" class="select" onchange="filterReconRows()">
+            <option value="">Todas las franquicias</option><option>Credibanco</option><option>Redeban</option><option>VISA</option>
+          </select>
+          <select id="reconSt" class="select" onchange="filterReconRows()">
+            <option value="">Todos los estados</option><option>Conciliado</option><option>Diferencia</option>
+          </select>
+        </div>
+        
+        <div class="tableScroll">
+          <table id="recon" class="reconTable">
+            <thead><tr><th>Franquicia</th><th>Cuenta</th><th>Concepto</th><th>Valor franquicia</th><th>HA22</th><th>HA26</th><th>HA32</th><th>Total Host</th><th>Diferencia</th><th>Estado conciliación</th><th>Acción</th></tr></thead>
+            <tbody id="reconBody">
+<tr data-filter-status="Conciliado" data-franchise="Credibanco"><td>Credibanco</td><td>259095341</td><td><b>Movimientos cuenta</b></td><td class="num">$12.450.000</td><td class="num">$12.450.000</td><td class="num">—</td><td class="num">—</td><td class="num">$12.450.000</td><td class="num">$0</td><td><span class="badge ok">Conciliado</span></td><td><button class="btn" onclick="verDetalleRecon('259095341','HA22','$12.450.000','$12.450.000')">Detalle</button></td></tr>
+<tr data-filter-status="Conciliado" data-franchise="Credibanco"><td>Credibanco</td><td>299095109</td><td><b>Mayor diario</b></td><td class="num">$318.697.901</td><td class="num">—</td><td class="num">—</td><td class="num">$318.697.901</td><td class="num">$318.697.901</td><td class="num">$0</td><td><span class="badge ok">Conciliado</span></td><td><button class="btn" onclick="verDetalleRecon('299095109','HA32','$318.697.901','$318.697.901')">Detalle</button></td></tr>
+<tr data-filter-status="Conciliado" data-franchise="VISA"><td>VISA</td><td>299095302</td><td><b>Canje recibido VISA</b></td><td class="num">$15.059.792.833</td><td class="num">$4.216.265.259</td><td class="num">—</td><td class="num">$10.843.527.574</td><td class="num">$15.059.792.833</td><td class="num">$0</td><td><span class="badge ok">Conciliado</span></td><td><button class="btn" onclick="verDetalleRecon('299095302','HA32 + HA22','$15.059.792.833','$15.059.792.833')">Detalle</button></td></tr>
+<tr data-filter-status="Conciliado" data-franchise="Credibanco"><td>Credibanco</td><td>299095508</td><td><b>Movimientos cuenta</b></td><td class="num">$745.800</td><td class="num">$745.800</td><td class="num">—</td><td class="num">—</td><td class="num">$745.800</td><td class="num">$0</td><td><span class="badge ok">Conciliado</span></td><td><button class="btn" onclick="verDetalleRecon('299095508','HA22','$745.800','$745.800')">Detalle</button></td></tr>
+<tr data-filter-status="Conciliado" data-franchise="Redeban"><td>Redeban</td><td>299095870</td><td><b>Pendiente / referencia</b></td><td class="num">$416.383.471</td><td class="num">—</td><td class="num">$416.383.471</td><td class="num">—</td><td class="num">$416.383.471</td><td class="num">$0</td><td><span class="badge ok">Conciliado</span></td><td><button class="btn" onclick="verDetalleRecon('299095870','HA26','$416.383.471','$416.383.471')">Detalle</button></td></tr>
+<tr data-filter-status="Conciliado" data-franchise="Redeban"><td>Redeban</td><td>196095001215</td><td><b>Rechazo / referencia</b></td><td class="num">$56.000</td><td class="num">—</td><td class="num">$56.000</td><td class="num">—</td><td class="num">$56.000</td><td class="num">$0</td><td><span class="badge ok">Conciliado</span></td><td><button class="btn" onclick="verDetalleRecon('196095001215','HA26','$56.000','$56.000')">Detalle</button></td></tr>
+<tr data-filter-status="Conciliado" data-franchise="Redeban"><td>Redeban</td><td>196095001828</td><td><b>Depósitos electrónicos</b></td><td class="num">$327.450.800</td><td class="num">—</td><td class="num">—</td><td class="num">$327.450.800</td><td class="num">$327.450.800</td><td class="num">$0</td><td><span class="badge ok">Conciliado</span></td><td><button class="btn" onclick="verDetalleRecon('196095001828','HA32','$327.450.800','$327.450.800')">Detalle</button></td></tr>
+<tr data-filter-status="Conciliado" data-franchise="Credibanco"><td>Credibanco</td><td>196095001838</td><td><b>Movimientos + mayor</b></td><td class="num">$70.626</td><td class="num">$35.313</td><td class="num">—</td><td class="num">$35.313</td><td class="num">$70.626</td><td class="num">$0</td><td><span class="badge ok">Conciliado</span></td><td><button class="btn" onclick="verDetalleRecon('196095001838','HA22 + HA32','$70.626','$70.626')">Detalle</button></td></tr>
+<tr data-filter-status="Conciliado" data-franchise="VISA"><td>VISA</td><td>196095001845</td><td><b>Mayor diario</b></td><td class="num">$655.800.012</td><td class="num">—</td><td class="num">—</td><td class="num">$655.800.000</td><td class="num">$655.800.000</td><td class="num">$12</td><td><span class="badge ok">Conciliado</span></td><td><button class="btn" onclick="verDetalleRecon('196095001845','HA32','$655.800.012','$655.800.000')">Detalle</button></td></tr>
+<tr data-filter-status="Diferencia" data-franchise="VISA"><td>VISA</td><td>299095408</td><td><b>Canje internacional</b></td><td class="num">$18.420.000</td><td class="num">—</td><td class="num">—</td><td class="num">$18.590.000</td><td class="num">$18.590.000</td><td class="num">$170.000</td><td><span class="badge warn">Diferencia</span></td><td><button class="btn primary" onclick="verIA('299095408','$170.000')">Analizar IA</button></td></tr>
+<tr data-filter-status="Diferencia" data-franchise="VISA"><td>VISA</td><td>299095409</td><td><b>Comisión canje internacional</b></td><td class="num">$0</td><td class="num">—</td><td class="num">—</td><td class="num">$170.000</td><td class="num">$170.000</td><td class="num">$170.000</td><td><span class="badge warn">Diferencia</span></td><td><button class="btn primary" onclick="verIA('299095409','$170.000')">Analizar IA</button></td></tr>
+<tr data-filter-status="Diferencia" data-franchise="Redeban"><td>Redeban</td><td>196095001829</td><td><b>Afectación posterior</b></td><td class="num">$245.900.000</td><td class="num">—</td><td class="num">—</td><td class="num">$245.911.000</td><td class="num">$245.911.000</td><td class="num">$11.000</td><td><span class="badge warn">Diferencia</span></td><td><button class="btn primary" onclick="verIA('196095001829','$11.000')">Analizar IA</button></td></tr>
+<tr data-filter-status="Diferencia" data-franchise="Credibanco"><td>Credibanco</td><td>196095001839</td><td><b>Movimientos cuenta</b></td><td class="num">$285.971</td><td class="num">$70.626</td><td class="num">—</td><td class="num">—</td><td class="num">$70.626</td><td class="num">$215.345</td><td><span class="badge warn">Diferencia</span></td><td><button class="btn primary" onclick="verIA('196095001839','$215.345')">Analizar IA</button></td></tr>
+<tr data-filter-status="Diferencia" data-franchise="Credibanco"><td>Credibanco</td><td>196095001859</td><td><b>Devolución ventas</b></td><td class="num">$285.971</td><td class="num">$70.626</td><td class="num">—</td><td class="num">—</td><td class="num">$70.626</td><td class="num">$215.345</td><td><span class="badge warn">Diferencia</span></td><td><button class="btn primary" onclick="verIA('196095001859','$215.345')">Analizar IA</button></td></tr>
+<tr data-filter-status="Diferencia" data-franchise="Redeban"><td>Redeban</td><td>196095001918</td><td><b>Pendiente Host</b></td><td class="num">$9.420.500</td><td class="num">—</td><td class="num">$0</td><td class="num">—</td><td class="num">$0</td><td class="num">$9.420.500</td><td><span class="badge warn">Diferencia</span></td><td><button class="btn primary" onclick="verIA('196095001918','$9.420.500')">Analizar IA</button></td></tr>
+</tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="ia" class="panel">
+      <div class="head">
+        <div>
+          <h1>Diagnostico IA de Conciliación</h1><p>Vista demostrativa: no ejecuta análisis IA real.</p>
+          <p>La IA se activa únicamente sobre excepciones que no pudieron explicarse con las reglas vigentes. El usuario interactúa mediante decisiones guiadas, no como un chat.</p>
+        </div>
+        <span class="tag info">IA por excepción</span>
+      </div>
+      
+
+      <div class="lifecycle">
+        <div class="life on"><small>1</small><b>Diferencia</b></div>
+        <div class="life"><small>2</small><b>Análisis IA</b></div>
+        <div class="life"><small>3</small><b>Confirmar causa</b></div>
+        <div class="life"><small>4</small><b>Proponer regla</b></div>
+        <div class="life"><small>5</small><b>Reejecutar</b></div>
+      </div>
+
+      <div class="card">
+        <div class="title">Caso · Redeban / Cuenta ...829 <span id="aiState" class="tag warn">Excepción</span></div>
+        <div class="flow">
+          <div class="fc"><small>VALOR FRANQUICIA</small><b>$245.900.000</b></div>
+          <div class="fc"><small>VALOR HOST</small><b>$245.911.000</b></div>
+          <div class="fc"><small>DIFERENCIA</small><b id="caseDiff" style="color:var(--red)">$11.000</b></div>
+          <div class="fc"><small>REGLAS</small><b id="ruleVersion">Versión 18</b></div>
+        </div>
+        <div id="aiResult" class="alert" style="margin-top:12px">
+          <b>Excepción no resuelta por reglas vigentes</b>
+          <p>Las reglas vigentes no pudieron cerrar automáticamente esta diferencia.</p>
+          <button class="btn primary" onclick="runGovernedAI()">Analizar diferencia con IA</button>
+        </div>
+      </div>
+
+      <div id="afterAI" class="card section" style="display:none">
+        <div class="title">Propuesta del Diagnostico IA <span class="tag info">94% confianza</span></div>
+        <div class="alert">
+          <b>Posible causa: movimiento posterior en Host</b>
+          <p>Se encontró un movimiento adicional por <b>$11.000</b> posterior al archivo de Redeban. Coinciden cuenta, importe y contexto.</p>
+          <div class="actionbar">
+            <button class="btn primary" onclick="confirmCause()">Confirmar causa</button>
+            <button class="btn" onclick="discardCause()">Descartar hipótesis</button>
+            <button class="btn" onclick="openEmailDraft()">Generar borrador de correo</button>
+          </div>
+          <div class="decisionDone">✓ Decisión registrada.</div>
+        </div>
+      </div>
+
+      <div id="confirmedCause" class="card section" style="display:none">
+        <div class="title">Causa confirmada por Operaciones <span class="tag ok">Confirmada</span></div>
+        <div class="friendlyNote"><b>Movimiento posterior en Host.</b> La explicación quedó registrada. Confirmar la causa no altera importes ni contabilidad.</div>
+        <div class="aiNext"><b>Siguiente acción recomendada:</b> si esta causa debe automatizarse para futuras ejecuciones, se puede preparar la regla y reejecutar el caso en una sola acción (simulado).</div>
+        <div class="actionbar">
+          <button id="btnAutomatizar" class="btn primary" onclick="automateAndReprocess()">Aplicar regla y reejecutar</button>
+          <button class="btn" onclick="openEmailDraft()">Generar borrador de correo</button>
+        </div>
+        <div class="decisionDone">✓ Automatización ejecutada. No se requiere otra acción sobre este caso.</div>
+      </div>
+
+      <div id="reprocessResult" class="card section" style="display:none"></div>
+    </section>
+    </div>
+  </main>
+</div>
+
+<div id="drawer" class="drawer">
+  <button class="btn" style="float:right" id="btnCerrarDrawer">Cerrar</button>
+  <div id="drawerContent"></div>
+</div>
+
+
+<div id="confirmarJornadaModal" class="conciliaDialog" role="dialog" aria-modal="true" aria-labelledby="confirmarJornadaTitulo" aria-describedby="confirmarJornadaTexto" tabindex="-1">
+  <div class="conciliaDialogBox">
+    <h2 id="confirmarJornadaTitulo">Preparar jornada</h2>
+    <p id="confirmarJornadaTexto">Se prepararán los insumos de Fase 1 para continuar con la recepción.</p>
+    <div class="conciliaDialogInfo">
+      <div><span>Fecha contable</span><strong id="confirmarJornadaFecha"></strong></div>
+      <div><span>Insumo</span><strong id="confirmarJornadaInsumo"></strong></div>
+      <div><span>Insumos esperados</span><strong>10</strong></div>
+    </div>
+    <div class="conciliaDialogActions">
+      <button type="button" class="btn" id="confirmarJornadaCancelar">Cancelar</button>
+      <button type="button" class="btn primary" id="confirmarJornadaAceptar">Preparar y continuar</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="validacionArchivoModal" class="conciliaDialog"
+     role="dialog" aria-modal="true"
+     aria-labelledby="validacionArchivoTitulo" tabindex="-1">
+  <div class="conciliaDialogBox">
+    <h2 id="validacionArchivoTitulo">Archivo rechazado</h2>
+    <p id="validacionArchivoMensaje"></p>
+    <div class="conciliaDialogInfo">
+      <div><span>Insumo</span><strong id="validacionArchivoTipo"></strong></div>
+      <div><span>Archivo</span><strong id="validacionArchivoNombre"></strong></div>
+      <div><span>Codigo</span><strong id="validacionArchivoCodigo"></strong></div>
+    </div>
+    <div id="validacionArchivoErrores"
+         style="max-height:240px;overflow:auto;margin-top:12px"></div>
+    <div class="conciliaDialogActions">
+      <button type="button" class="btn primary"
+              id="validacionArchivoCerrar">Entendido</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="cantExcepcionesOverlay" class="cantOverlay" aria-hidden="true">
+  <section class="cantPanel" role="dialog" aria-modal="true" aria-labelledby="cantPanelTitulo" tabindex="-1">
+    <header class="cantPanelHead">
+      <div><div class="muted">CREDIBANCO · CANT</div><h2 id="cantPanelTitulo">Revisión funcional</h2><div class="muted" id="cantPanelArchivo">Archivo —</div></div>
+      <button type="button" class="btn" id="cantPanelCerrar" aria-label="Cerrar panel de excepciones">Cerrar</button>
+    </header>
+    <div class="cantPanelBody" id="cantPanelContenido" aria-live="polite"></div>
+  </section>
+</div>
+
+
+<div id="conciliaAccionModal" class="conciliaDialog" role="dialog" aria-modal="true" aria-labelledby="conciliaAccionTitulo" aria-describedby="conciliaAccionDescripcion" aria-hidden="true" tabindex="-1">
+  <div class="conciliaDialogBox">
+    <h2 id="conciliaAccionTitulo"></h2>
+    <p id="conciliaAccionDescripcion"></p>
+    <div id="conciliaAccionCampos"></div>
+    <p id="conciliaAccionError" class="conciliaDialogError" role="alert"></p>
+    <div class="conciliaDialogActions">
+      <button type="button" class="btn" id="conciliaAccionCancelar">Cancelar</button>
+      <button type="button" class="btn primary" id="conciliaAccionAceptar">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<div id="noDataModal" class="modalBack">
+  <div class="modalBox">
+    <h3>Sin información para la fecha seleccionada</h3>
+    <p>No se encontró información para la fecha de conciliación seleccionada.</p>
+    <div class="actionbar"><button class="btn primary" id="btnCerrarModal">Entendido</button></div>
+  </div>
+</div>
+
+<script>
+const el = (id) => document.getElementById(id);
+
+const fechaInput = el('fecha');
+const tblArchivos = el('tblArchivos');
+const tblMeta = el('tblMeta');
+const drawer = el('drawer');
+const drawerContent = el('drawerContent');
+const toastEl = el('toast');
+const noDataModal = el('noDataModal');
+const detalleInsumoContent = el('detalleInsumoContent');
+let insumosScrollY = 0;
+
+let toastTimer = null;
+let pendingTipoInsumoUpload = null;
+let jornadasPorFecha = new Map();
+let consultaActual = 0;
+let cargaEnCurso = false;
+const procesamientoEnCurso = new Set();
+const CONCILIA_API_BASE = window.location.protocol === 'file:' ? 'http://127.0.0.1:8000' : window.location.origin;
+// Version de catalogo de prueba disponible en concilia_test; configurable por despliegue.
+const CONCILIA_VERSION_CATALOGO = 2;
+const TIPOS_F1 = ['HA22','HA26','HA32','CAET','CANT','DEPO','CARTA_COMPENSACION','PMD','MEP','VSS','VISA_SS_INTERNATIONAL'];
+const FUENTES_F1 = {HA22:'HOST',HA26:'HOST',HA32:'HOST',CAET:'CREDIBANCO',CANT:'CREDIBANCO',DEPO:'CREDIBANCO',CARTA_COMPENSACION:'CREDIBANCO',PMD:'REDEBAN',MEP:'REDEBAN',VSS:'VISA',VISA_SS_INTERNATIONAL:'VISA'};
+const escapar = (valor) => String(valor ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function apiConcilia(ruta, opciones = {}) {
+  let respuesta;
+  try { respuesta = await fetch(CONCILIA_API_BASE + ruta, opciones); }
+  catch (e) { throw new Error('No se pudo conectar con FastAPI: ' + e.message); }
+  const datos = await respuesta.json().catch(() => ({}));
+  if (!respuesta.ok) {
+    const detalle = datos.detail ?? datos;
+    const mensaje = typeof detalle === 'string'
+      ? detalle
+      : (detalle.mensaje || `Error HTTP ${respuesta.status}`);
+    const error = new Error(mensaje);
+    error.status = respuesta.status;
+    error.detalle = detalle;
+    throw error;
+  }
+  return datos;
+}
+async function consultarJornadas() {
+  const datos = await apiConcilia('/api/v1/jornadas');
+  jornadasPorFecha = new Map((datos.jornadas ?? []).map(j => [String(j.fecha_contable).slice(0,10), j]));
+  return jornadasPorFecha;
+}
+
+// Íconos minimalistas (SVG en línea, trazo simple, sin dependencias externas)
+const ICON_EYE = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
+const ICON_UPLOAD = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>';
+
+function toISO(d) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+function addDays(d, n) { const r = new Date(d); r.setDate(r.getDate() + n); return r; }
+function fechaCorta(iso) {
+  const [y, m, d] = iso.split('-').map(Number);
+  let dia = new Date(y, m - 1, d).toLocaleDateString('es-ES', { weekday: 'short' }).replace('.', '');
+  dia = dia.charAt(0).toUpperCase() + dia.slice(1);
+  return `${dia} ${String(d).padStart(2, '0')}`;
+}
+
+// fechaInput = "fecha de conciliación" (la que elige el usuario en el
+// calendario), de la que se DERIVA la(s) fecha(s) contable(s) real(es).
+// Regla: si la fecha de conciliación cae en martes, se derivan 3 fechas
+// contables (sábado/domingo/lunes anteriores, por el rezago de fin de
+// semana sin operación bancaria); cualquier otro día se deriva solo 1: el
+// día hábil inmediatamente anterior.
+let fechaContableActiva = null;
+
+function derivarFechasContables(fechaEjecucionISO) {
+  const [y, m, d] = fechaEjecucionISO.split('-').map(Number);
+  const fe = new Date(y, m - 1, d);
+  if (fe.getDay() === 2) return [addDays(fe, -3), addDays(fe, -2), addDays(fe, -1)];
+  let b = addDays(fe, -1);
+  while (b.getDay() === 0 || b.getDay() === 6) b = addDays(b, -1);
+  return [b];
+}
+
+function estadoFechaContable(iso) {
+  const jornada = jornadasPorFecha.get(iso);
+  return jornada ? normalizarEstadoJornada(jornada.estado) : 'Sin jornada';
+}
+function normalizarEstadoJornada(estado) {
+  const valores = {PENDIENTE:'Pendiente',RECIBIDO:'Recibido',PROCESADO:'Procesado',COMPLETA:'Completa',COMPLETADA:'Completada',ERROR:'Error',EN_PROCESO:'Procesando'};
+  return valores[String(estado ?? '').toUpperCase()] ?? (estado || 'Pendiente');
+}
+
+function renderFechasContables() {
+  const host = el('fechaContablesEjecucion');
+  const candidatos = derivarFechasContables(fechaInput.value).map(toISO);
+  host.innerHTML = candidatos.map((iso) => `
+    <button type="button" class="fechaChip${iso === fechaContableActiva ? ' active' : ''}" data-fecha="${iso}">
+      <small>Fecha contable</small><b>${fechaCorta(iso)}</b>${badge(estadoFechaContable(iso))}
+    </button>`).join('');
+  host.querySelectorAll('.fechaChip').forEach((btn) => {
+    btn.addEventListener('click', () => seleccionarFechaContable(btn.dataset.fecha));
+  });
+}
+
+function seleccionarFechaContable(iso) {
+  fechaContableActiva = iso;
+  hideNoData();
+  renderFechasContables();
+  buscarArchivos();
+}
+
+function actualizarFechaEjecucion() {
+  const candidatos = derivarFechasContables(fechaInput.value).map(toISO);
+  seleccionarFechaContable(candidatos[candidatos.length - 1]);
+}
+
+// En producción esta fecha actual se envía a GET /api/v1/jornadas?fechaConciliacion=YYYY-MM-DD.
+fechaInput.value = toISO(new Date());
+
+const BADGE_CLASS = {
+  Recibido: 'ok', Procesado: 'ok', Completa: 'ok', Completada: 'ok',
+  'No recibido': 'warn', 'Con novedad': 'warn',
+  Pendiente: 'info', Procesando: 'info', Esperado: 'info',
+  Error: 'bad', 'Sin jornada': 'warn',
+};
+function badge(estado) {
+  if (!estado) return '<span class="badge info">-</span>';
+  return `<span class="badge ${BADGE_CLASS[estado] ?? 'info'}">${estado}</span>`;
+}
+
+function toast(msg, isErr) {
+  toastEl.textContent = msg;
+  toastEl.className = 'toast show' + (isErr ? ' err' : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { toastEl.className = 'toast'; }, 4500);
+}
+
+function openDrawer() { drawer.className = 'drawer show'; }
+function closeDrawer() { drawer.className = 'drawer'; }
+el('btnCerrarDrawer').addEventListener('click', closeDrawer);
+
+function showNoData() { noDataModal.className = 'modalBack show'; }
+function hideNoData() { noDataModal.className = 'modalBack'; }
+el('btnCerrarModal').addEventListener('click', hideNoData);
+
+// Sin datos simulados de detalle: los registros se consultan exclusivamente a la API.
+
+// ================================================================================
+
+
+
+function actualizarHeroDesdeArchivos(fecha, items, totalEsperados) {
+  const recibidos = items.filter((a) => a.estadoRecepcion === 'Recibido').length;
+  const procesados = items.filter((a) => a.estadoProcesamiento === 'Procesado').length;
+  const conError = items.some((a) => a.estadoProcesamiento === 'Error');
+  el('heroTitulo').textContent = `Jornada ${fecha}`;
+  const estado = conError ? 'Error'
+    : totalEsperados > 0 && procesados >= totalEsperados ? 'Completa'
+    : (recibidos > 0 && recibidos < totalEsperados) ? 'Con novedad'
+    : 'Pendiente';
+  el('heroBadge').outerHTML = `<span id="heroBadge" class="badge ${BADGE_CLASS[estado]}">${estado}</span>`;
+  const pct = totalEsperados ? (100 * procesados / totalEsperados) : 0;
+  el('heroPct').textContent = `${pct.toFixed(0)}%`;
+  el('heroBar').style.width = `${Math.min(100, pct)}%`;
+  el('kpiEsperados').textContent = totalEsperados ?? '-';
+  el('kpiRecibidos').textContent = recibidos;
+  el('kpiProcesados').textContent = procesados;
+  el('kpiErrores').textContent = items.filter((a) => a.estadoProcesamiento === 'Error').length;
+  el('kpiRevisionFuncional').textContent = items.filter(a => a.enRevision).length;
+}
+
+// El catalogo F1 permite presentar las acciones antes de crear la jornada.
+// Estos son tipos configurados, NO estados ni archivos simulados.
+function pintarInsumosPendientes(fecha, version = CONCILIA_VERSION_CATALOGO) {
+  const tipos = version === 1 ? TIPOS_F1.filter(t => t !== 'VISA_SS_INTERNATIONAL') : TIPOS_F1;
+  tblMeta.textContent = `${tipos.length} insumos por preparar`;
+  tblArchivos.innerHTML = tipos.map(tipo => `<tr>
+    <td>-</td><td>${escapar(FUENTES_F1[tipo])}</td><td>${escapar(tipo)}</td>
+    <td>-</td><td>-</td><td>${badge('No recibido')}</td>
+    <td>${badge('Pendiente')}</td>
+    <td class="actionCell"><button type="button" class="iconBtn btnUpload" data-tipo="${escapar(tipo)}"
+      title="Preparar jornada y cargar archivo" aria-label="Cargar ${escapar(tipo)}">${ICON_UPLOAD}</button></td>
+  </tr>`).join('');
+  conectarBotonesCarga();
+}
+function conectarBotonesCarga() {
+  tblArchivos.querySelectorAll('.btnUpload').forEach(btn => btn.addEventListener('click', () => {
+    pendingTipoInsumoUpload = btn.dataset.tipo;
+    const input = el('uploadFileHidden');
+    input.value = '';
+    input.click();
+  }));
+}
+// Estado operativo: solo datos de Jornada API y Archivos API.
+function pintarSinJornada(fecha) {
+  tblMeta.textContent = 'Sin jornada';
+  actualizarHeroDesdeArchivos(fecha, [], 0);
+  el('heroBadge').outerHTML = `<span id="heroBadge" class="badge warn">Sin jornada</span>`;
+  pintarInsumosPendientes(fecha);
+  el('jornadaAcciones').style.display = 'flex';
+}
+
+/* CONCILIA_PROCESAMIENTO_UX_F1 */
+function conectarBotonesProcesamiento() {
+  tblArchivos.querySelectorAll('.btnProcesarArchivo').forEach(boton => {
+    boton.addEventListener('click', () => {
+      const id = Number(boton.dataset.idArchivo);
+      const tipo = boton.dataset.tipo;
+      if (!Number.isSafeInteger(id) || id <= 0) return;
+      procesarArchivoF1(id, tipo, boton);
+    });
+  });
+}
+
+async function procesarArchivoF1(idArchivo, tipo, boton) {
+  if (procesamientoEnCurso.has(idArchivo)) return;
+  if (!TIPOS_F1.includes(tipo)) return;
+
+  const fechaInicial = fechaContableActiva;
+  const host = ['HA22', 'HA26', 'HA32'].includes(tipo);
+  const endpoint = `/api/v1/archivos/${idArchivo}/` +
+    (host ? 'procesar' : 'procesar-franquicia');
+
+  procesamientoEnCurso.add(idArchivo);
+  boton.disabled = true;
+  boton.textContent = 'Procesando...';
+
+  const mensaje = el('cargaResultado');
+  mensaje.textContent = `Procesando ${tipo}, archivo ${idArchivo}...`;
+
+  try {
+    await apiConcilia(endpoint, {method: 'POST'});
+
+    if (fechaContableActiva === fechaInicial) {
+      mensaje.textContent = `${tipo}: procesamiento solicitado correctamente.`;
+      await buscarArchivos();
+    }
+  } catch (error) {
+    console.error('Error procesando archivo:', error);
+    if (fechaContableActiva === fechaInicial) {
+      mensaje.textContent = `${tipo}: ${error.message}`;
+    }
+    boton.disabled = false;
+    boton.textContent = 'Reintentar';
+  } finally {
+    procesamientoEnCurso.delete(idArchivo);
+  }
+}
+
+/* CONCILIA_CANT_PANEL_035: consulta paginada de solo lectura */
+const cantOverlay = el('cantExcepcionesOverlay');
+const cantContenido = el('cantPanelContenido');
+let cantArchivoActual = null;
+let cantPaginaActual = 1;
+let cantSolicitudActual = 0;
+let cantFocoAnterior = null;
+function cerrarExcepcionesCant() {
+  cantSolicitudActual++;
+  cantArchivoActual = null;
+  cantOverlay.classList.remove('show');
+  cantOverlay.setAttribute('aria-hidden', 'true');
+  if (cantFocoAnterior?.isConnected) cantFocoAnterior.focus();
+}
+el('cantPanelCerrar').addEventListener('click', cerrarExcepcionesCant);
+cantOverlay.addEventListener('click', e => { if (e.target === cantOverlay) cerrarExcepcionesCant(); });
+document.addEventListener('keydown', e => {
+  if (!cantOverlay.classList.contains('show')) return;
+  if (e.key === 'Escape') { e.preventDefault(); cerrarExcepcionesCant(); }
+  if (e.key === 'Tab') {
+    const focos = [...cantOverlay.querySelectorAll('button:not([disabled])')];
+    if (!focos.length) return;
+    const primero = focos[0], ultimo = focos[focos.length-1];
+    if (e.shiftKey && document.activeElement === primero) {e.preventDefault();ultimo.focus();}
+    else if (!e.shiftKey && document.activeElement === ultimo) {e.preventDefault();primero.focus();}
+  }
+});
+async function abrirExcepcionesCant(idArchivo) {
+  if (!Number.isSafeInteger(idArchivo) || idArchivo <= 0) return;
+  cantFocoAnterior = document.activeElement;
+  cantArchivoActual = idArchivo;
+  cantOverlay.classList.add('show');
+  cantOverlay.setAttribute('aria-hidden', 'false');
+  el('cantPanelArchivo').textContent = `Archivo ${idArchivo}`;
+  el('cantPanelCerrar').focus();
+  await cargarPaginaExcepcionesCant(1);
+}
+async function cargarPaginaExcepcionesCant(pagina) {
+  if (!cantArchivoActual || pagina < 1) return;
+  const idArchivo = cantArchivoActual;
+  const solicitud = ++cantSolicitudActual;
+  cantContenido.innerHTML = '<p class="muted" role="status">Consultando excepciones...</p>';
+  try {
+    const r = await apiConcilia(`/api/v1/archivos/${idArchivo}/excepciones-cant?page=${pagina}&pageSize=20`);
+    if (solicitud !== cantSolicitudActual || cantArchivoActual !== idArchivo) return;
+    cantPaginaActual = pagina;
+    const total = Number(r.total ?? r.excepciones ?? 0);
+    const paginas = Math.max(1, Math.ceil(total / 20));
+    const cuentas = Array.isArray(r.cuentas) ? r.cuentas : [];
+    const detalle = Array.isArray(r.detalle) ? r.detalle : [];
+    const filasCuentas = cuentas.map(c => `<tr><td>${escapar(c.cuenta)}</td><td style="text-align:right">${escapar(c.cantidad)}</td></tr>`).join('');
+    const filasDetalle = detalle.map(d => `<tr><td>${escapar(d.linea_origen)}</td><td>${escapar(d.cuenta)}</td><td>Cuenta sin regla aprobada</td></tr>`).join('');
+    cantContenido.innerHTML = `
+      <div class="cantMetrics">
+        <div class="cantMetric"><small>Recibidos</small><strong>${escapar(r.registros_recibidos)}</strong></div>
+        <div class="cantMetric"><small>Normalizados</small><strong>${escapar(r.normalizados)}</strong></div>
+        <div class="cantMetric"><small>Sin regla</small><strong>${escapar(r.excepciones)}</strong></div>
+      </div>
+      <div class="cantNotice">Se identificaron movimientos cuyas cuentas todavía no tienen una regla de normalización aprobada. Se conservaron para revisión funcional; la conciliación no está completa.</div>
+      <h3>Resumen por cuenta</h3>
+      <div class="cantTableWrap"><table><thead><tr><th>Cuenta</th><th>Cantidad</th></tr></thead><tbody>${filasCuentas || '<tr><td colspan="2">Sin excepciones</td></tr>'}</tbody></table></div>
+      <h3>Detalle de movimientos pendientes</h3>
+      <div class="cantTableWrap"><table><thead><tr><th>Línea</th><th>Cuenta</th><th>Motivo</th></tr></thead><tbody>${filasDetalle || '<tr><td colspan="3">Sin registros</td></tr>'}</tbody></table></div>
+      <div class="cantPager"><button type="button" class="btn" id="cantAnterior" ${pagina <= 1 ? 'disabled' : ''}>Anterior</button><span>Página ${pagina} de ${paginas}</span><button type="button" class="btn" id="cantSiguiente" ${pagina >= paginas ? 'disabled' : ''}>Siguiente</button></div>`;
+    el('cantAnterior').addEventListener('click', () => cargarPaginaExcepcionesCant(cantPaginaActual - 1));
+    el('cantSiguiente').addEventListener('click', () => cargarPaginaExcepcionesCant(cantPaginaActual + 1));
+  } catch (error) {
+    if (solicitud !== cantSolicitudActual) return;
+    cantContenido.innerHTML = `<div class="cantNotice" role="alert">No fue posible consultar las excepciones: ${escapar(error.message)}</div><button type="button" class="btn" id="cantReintentarConsulta">Volver a consultar</button>`;
+    el('cantReintentarConsulta').addEventListener('click', () => cargarPaginaExcepcionesCant(pagina));
+  }
+}
+
+async function buscarArchivos() {
+  const fecha = fechaContableActiva;
+  if (!fecha) return;
+  const solicitud = ++consultaActual;
+  el('jornadaAcciones').style.display = 'none';
+  actualizarBotonTrazabilidad(null);
+  tblMeta.textContent = 'Consultando...';
+  tblArchivos.innerHTML = '<tr><td colspan="8" class="muted">Consultando jornada...</td></tr>';
+  try {
+    await consultarJornadas();
+    if (solicitud !== consultaActual) return;
+    renderFechasContables();
+    const jornada = jornadasPorFecha.get(fecha);
+    if (!jornada) { pintarSinJornada(fecha); return; }
+    const datos = await apiConcilia(`/api/v1/jornadas/${jornada.id_jornada}/insumos`);
+    if (solicitud !== consultaActual) return;
+    const insumos = datos.insumos ?? [];
+    if (insumos.length === 0) {
+      actualizarHeroDesdeArchivos(fecha, [], 0);
+      tblMeta.textContent = 'Jornada sin inicializar';
+      pintarInsumosPendientes(fecha, Number(jornada.version_catalogo) || 1);
+      el('jornadaAcciones').style.display = 'flex';
+      return;
+    }
+    const confirmaciones = await apiConcilia(`/api/v1/archivos/confirmaciones/jornada/${jornada.id_jornada}`);
+    const confirmados = new Set(confirmaciones.ids_archivos.map(String));
+    const archivos = await apiConcilia('/api/v1/archivos');
+    if (solicitud !== consultaActual) return;
+    const porId = new Map((archivos.archivos ?? []).map(a => [String(a.id_archivo),a]));
+    const items = insumos.filter(i => TIPOS_F1.includes(i.tipo_insumo)).map(i => {
+      const archivo = i.id_archivo == null ? null : porId.get(String(i.id_archivo));
+      const estado = String(i.estado).toUpperCase();
+      const recibido = i.id_archivo != null || ['RECIBIDO','PROCESADO','PROCESANDO'].includes(estado);
+      return {
+        idInsumo: i.id_insumo_esperado,
+        idArchivo: i.id_archivo,
+        fuente: i.fuente,
+        tipoInsumo: i.tipo_insumo,
+        nombreArchivo: archivo?.nombre_archivo ?? null,
+        totalRegistros: archivo?.total_registros ?? null,
+        estadoRecepcion: recibido ? 'Recibido' : 'No recibido',
+        estadoProcesamiento: confirmados.has(String(i.id_archivo)) ? 'Sin movimientos confirmado' : estado === 'PROCESADO' ? 'Procesado' : estado === 'ERROR' ? 'Error' : estado === 'PROCESANDO' ? 'Procesando' : 'Pendiente',
+        sinMovimientos: archivo?.total_registros === 0 && estado === 'RECIBIDO' && !confirmados.has(String(i.id_archivo)),
+        confirmadoSinMovimientos: confirmados.has(String(i.id_archivo)),
+        puedeCargar: String(jornada.estado).toUpperCase() !== 'COMPLETADA' && estado === 'PENDIENTE' && i.id_archivo == null,
+        puedeReemplazar: i.id_archivo != null && estado === 'RECIBIDO' &&
+          String(archivo?.estado ?? '').toUpperCase() === 'RECIBIDO' &&
+          !confirmados.has(String(i.id_archivo)) &&
+          String(jornada.estado).toUpperCase() !== 'COMPLETADA',
+        puedeVerDetalle: i.id_archivo != null
+      };
+    });
+    const recibidos = items.filter(i => i.estadoRecepcion === 'Recibido').length;
+    tblMeta.textContent = `${recibidos} de ${datos.total} insumos recibidos`;
+    actualizarHeroDesdeArchivos(fecha, items, datos.total);
+    if (String(jornada.estado).toUpperCase() === 'COMPLETADA') {
+      el('heroBadge').outerHTML = '<span id="heroBadge" class="badge ok">Completada</span>';
+    }
+    actualizarBotonTrazabilidad(jornada);
+    tblArchivos.innerHTML = items.map(a => `<tr>
+      <td>${escapar(a.idArchivo ?? a.idInsumo)}</td>
+      <td>${escapar(a.fuente)}</td>
+      <td>${escapar(a.tipoInsumo)}</td>
+      <td>${escapar(a.nombreArchivo ?? '-')}</td>
+      <td>${escapar(a.totalRegistros ?? '-')}</td>
+      <td>${badge(a.estadoRecepcion)}</td>
+      <td>${badge(a.estadoProcesamiento)}</td>
+      <td class="actionCell">
+        ${a.puedeCargar ? `<button type="button" class="iconBtn btnUpload" data-tipo="${escapar(a.tipoInsumo)}" title="Cargar archivo original" aria-label="Cargar ${escapar(a.tipoInsumo)}">${ICON_UPLOAD}</button>` : ''}
+        ${a.sinMovimientos ? `<label><input type="checkbox" class="chkConfirmarVacio" data-id="${escapar(a.idArchivo)}"> Confirmar sin movimientos</label>
+          <button type="button" class="btn btnConfirmarVacio" data-id="${escapar(a.idArchivo)}">Confirmar</button>` : ''}
+        ${a.puedeReemplazar ? `<button type="button" class="btn btnReemplazarVacio" data-tipo="${escapar(a.tipoInsumo)}" title="Volver a subir archivo">Volver a subir</button>` : ''}
+        ${a.puedeVerDetalle ? `<button type="button" class="btn btnVerDetalle" data-id-archivo="${escapar(a.idArchivo)}">Ver detalle</button>` : ''}
+      </td>
+    </tr>`).join('');
+    conectarBotonesCarga();
+    // F1: procesamiento automatico; no conectar botones manuales.
+    conectarConfirmacionesSinMovimientos();
+    tblArchivos.querySelectorAll('.btnVerDetalle').forEach(boton => {
+      boton.addEventListener('click', () => {
+        const idArchivo = Number(boton.dataset.idArchivo);
+        if (Number.isSafeInteger(idArchivo) && idArchivo > 0) {
+          abrirDetalle(idArchivo);
+        }
+      });
+    });
+  } catch (error) {
+    if (solicitud !== consultaActual) return;
+    console.error('Error consultando insumos:', error);
+    tblMeta.textContent = 'Error de consulta';
+    tblArchivos.innerHTML = `<tr><td colspan="8">${escapar(error.message)}</td></tr>`;
+    el('cargaResultado').textContent = 'No fue posible consultar la jornada: ' + error.message;
+  }
+}
+async function asegurarJornada(fecha) {
+  await consultarJornadas();
+  let jornada = jornadasPorFecha.get(fecha);
+  if (!jornada) {
+    try {
+      jornada = await apiConcilia('/api/v1/jornadas', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({fecha_contable:fecha})
+      });
+    } catch (e) {
+      if (!e.message.startsWith('HTTP 409:')) throw e;
+      await consultarJornadas();
+      jornada = jornadasPorFecha.get(fecha);
+      if (!jornada) throw e;
+    }
+  }
+  if (String(jornada.estado).toUpperCase() === 'COMPLETADA') {
+    throw new Error('La jornada está COMPLETADA y no puede inicializarse de nuevo.');
+  }
+  const datos = await apiConcilia(`/api/v1/jornadas/${jornada.id_jornada}/insumos`);
+  if ((datos.insumos ?? []).length === 0) {
+    await apiConcilia(`/api/v1/jornadas/${jornada.id_jornada}/inicializar`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({version_catalogo:CONCILIA_VERSION_CATALOGO})
+    });
+  }
+  return jornada;
+}
+// Confirmacion accesible, sin dialogos nativos del navegador.
+function confirmarPreparacionJornada({fechaContable, tipoInsumo}) {
+  return new Promise(resolve => {
+    const modal = el('confirmarJornadaModal');
+    const aceptar = el('confirmarJornadaAceptar');
+    const cancelar = el('confirmarJornadaCancelar');
+    const anterior = document.activeElement;
+    el('confirmarJornadaFecha').textContent = fechaContable;
+    el('confirmarJornadaInsumo').textContent = tipoInsumo || 'Todos los insumos';
+    el('confirmarJornadaTexto').textContent = tipoInsumo
+      ? 'No existe una jornada inicializada para esta fecha. Se prepararán los diez insumos y después continuará la carga seleccionada.'
+      : 'Se prepararán los diez insumos funcionales de Fase 1 para esta fecha contable.';
+    modal.classList.add('open');
+    const terminar = valor => {
+      modal.classList.remove('open');
+      aceptar.removeEventListener('click', si);
+      cancelar.removeEventListener('click', no);
+      modal.removeEventListener('click', fondo);
+      document.removeEventListener('keydown', teclado);
+      if (anterior && anterior.isConnected) anterior.focus();
+      resolve(valor);
+    };
+    const si = () => terminar(true);
+    const no = () => terminar(false);
+    const fondo = e => { if (e.target === modal) no(); };
+    const teclado = e => {
+      if (e.key === 'Escape') { e.preventDefault(); no(); }
+      if (e.key === 'Tab') {
+        const destino = e.shiftKey ? cancelar : aceptar;
+        if (document.activeElement === (e.shiftKey ? aceptar : cancelar)) {
+          e.preventDefault(); destino.focus();
+        }
+      }
+    };
+    aceptar.addEventListener('click', si);
+    cancelar.addEventListener('click', no);
+    modal.addEventListener('click', fondo);
+    document.addEventListener('keydown', teclado);
+    cancelar.focus();
+  });
+}
+
+async function prepararJornada() {
+  const fecha = fechaContableActiva;
+  if (!fecha) return;
+  const boton = el('btnPrepararJornada');
+  if (!await confirmarPreparacionJornada({fechaContable: fecha, tipoInsumo: null})) return;
+  boton.disabled = true;
+  try {
+    const jornada = await asegurarJornada(fecha);
+    el('cargaResultado').textContent = `Jornada ${jornada.id_jornada} inicializada para ${fecha}.`;
+    await buscarArchivos();
+  } catch (e) {
+    el('cargaResultado').textContent = 'No fue posible inicializar la jornada: ' + e.message;
+    toast(e.message, true);
+  } finally { boton.disabled = false; }
+}
+el('btnPrepararJornada').addEventListener('click', prepararJornada);
+
+let detalleIdArchivo = null;
+let detallePagina = 0;
+const DETALLE_PAGE_SIZE = 30;
+
+
+function abrirDetalle(idArchivo) {
+  detalleIdArchivo = idArchivo;
+  detallePagina = 0;
+  insumosScrollY = window.scrollY;
+
+  document.querySelectorAll('.panel').forEach(
+    p => p.classList.remove('active')
+  );
+  el('detalleInsumo').classList.add('active');
+
+  document.querySelectorAll('.nav button').forEach(
+    b => b.classList.remove('active')
+  );
+
+  document.querySelector('.nav button')?.classList.add('active');
+  window.scrollTo(0, 0);
+
+  renderDetallePagina();
+}
+
+
+const FORMATO_MONEDA_DETALLE = new Intl.NumberFormat(
+  'es-CO',
+  {
+    style: 'currency',
+    currency: 'COP',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }
+);
+
+const CAMPOS_MONETARIOS_DETALLE = new Set([
+  'valor_debe',
+  'valor_haber',
+  'valor_saldo',
+  'valor_normalizado',
+  'valor', 'vl_total', 'vl_interc', 'valor_comision', 'importe'
+]);
+
+function formatearMonedaDetalle(campo, valor) {
+  if (valor === null || valor === undefined || valor === '') {
+    return '-';
+  }
+
+  if (!CAMPOS_MONETARIOS_DETALLE.has(
+    String(campo).toLowerCase()
+  )) {
+    return valor;
+  }
+
+  const numero = Number(valor);
+
+  if (!Number.isFinite(numero)) {
+    return valor;
+  }
+
+  return FORMATO_MONEDA_DETALLE.format(numero);
+}
+
+async function renderDetallePagina() {
+  const idArchivo = detalleIdArchivo;
+  const pagina = detallePagina + 1;
+
+  const contenedor = el('detalleInsumoContent');
+
+  contenedor.innerHTML =
+    '<div class="card emptyDetail">Consultando registros...</div>';
+
+  try {
+    const datos = await apiConcilia(
+      `/api/v1/archivos/${idArchivo}/contenido` +
+      `?page=${pagina}&pageSize=${DETALLE_PAGE_SIZE}`
+    );
+
+    if (idArchivo !== detalleIdArchivo ||
+        pagina !== detallePagina + 1) return;
+
+    const archivo = datos.archivo;
+    const contenido = datos.contenido;
+
+    const headers = contenido.headers ?? [];
+    const items = contenido.items ?? [];
+    const total = contenido.total ?? 0;
+    const totalPages = contenido.totalPages ?? 1;
+    const origen = datos.origen_datos ?? 'PERSISTIDO';
+    const controles = datos.controles ?? [];
+    const errores = datos.errores ?? [];
+    const descripcionOrigen = origen === 'FUENTE_F1'
+      ? 'Plano fuente de Fase 1: incluye movimientos candidatos y totales de control; sin cuentas contables.'
+      : origen === 'INTERPRETADO'
+      ? 'Vista interpretada del archivo recibido; no son resultados persistidos.'
+      : origen === 'PERSISTIDO'
+        ? 'Resultados persistidos en PostgreSQL.'
+        : 'El contenido original no está disponible para consulta.';
+    const resumenControles = controles.length
+      ? `<div class="card section"><strong>Controles del parser</strong><ul>${controles.map(c => `<li>${escapar(c.codigo ?? 'CONTROL')}: ${escapar(c.obtenido ?? c.estado ?? '-')}</li>`).join('')}</ul></div>`
+      : '';
+    const resumenErrores = errores.length
+      ? `<div class="card section"><strong>Incidencias del parser (${errores.length})</strong><pre>${escapar(JSON.stringify(errores.slice(0, 20), null, 2))}</pre></div>`
+      : '';
+
+    const inicio = detallePagina * DETALLE_PAGE_SIZE;
+    const fin = inicio + items.length;
+
+    const tabla = items.length
+      ? `
+        <div class="detailTableWrap">
+          <table class="detailDataTable">
+            <thead>
+              <tr>
+                ${headers.map(
+                  h => `<th>${escapar(h.label)}</th>`
+                ).join('')}
+              </tr>
+            </thead>
+            <tbody>
+              ${items.map(row => `
+                <tr>
+                  ${headers.map(h => `
+                    <td>${escapar(formatearMonedaDetalle(h.key, row[h.key]))}</td>
+                  `).join('')}
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+        <div class="detailPager">
+          <span class="pagerInfo">
+            Registros ${inicio + 1}-${fin} de ${total}
+          </span>
+          <div class="pager">
+            <button class="btn" id="btnDetalleAnterior"
+              ${detallePagina === 0 ? 'disabled' : ''}>
+              Anterior
+            </button>
+            <span class="muted">
+              P?gina ${pagina} de ${totalPages}
+            </span>
+            <button class="btn" id="btnDetalleSiguiente"
+              ${pagina >= totalPages ? 'disabled' : ''}>
+              Siguiente
+            </button>
+          </div>
+        </div>
+      `
+      : `<div class="emptyDetail">
+           ${archivo.estado === 'RECIBIDO'
+             ? 'Archivo recibido. A?n no tiene resultados normalizados persistidos.'
+             : 'No existen resultados persistidos para este archivo.'}
+         </div>`;
+
+    contenedor.innerHTML = `
+      <div class="detailPageHead">
+        <div>
+          <h1>${escapar(archivo.nombre_archivo)}</h1>
+          <div class="sub">
+            ${escapar(archivo.proceso_origen)} ?
+            ${escapar(archivo.tipo_archivo)}
+          </div>
+        </div>
+        <div class="detailStatus">
+          ${badge(archivo.estado)}
+        </div>
+      </div>
+
+      <div class="detailMetrics">
+        <div class="detailMetric">
+          <small>ID archivo</small>
+          <strong>${escapar(archivo.id_archivo)}</strong>
+        </div>
+        <div class="detailMetric">
+          <small>${origen === 'FUENTE_F1' ? 'Lineas del plano fuente' : origen === 'INTERPRETADO' ? 'Registros interpretados' : 'Registros persistidos'}</small>
+          <strong>${total}</strong>
+        </div>
+        <div class="detailMetric">
+          <small>Fecha contable</small>
+          <strong>${escapar(archivo.fecha_contable)}</strong>
+        </div>
+      </div>
+
+      <div class="card detailTableCard section">
+        <div class="detailTableTop">
+          <div class="title">Contenido del archivo</div>
+          <div class="detailCount">
+            ${total} registros ? ${escapar(archivo.tipo_archivo)}
+          </div>
+        </div>
+        <p class="muted">${escapar(descripcionOrigen)}</p>
+        ${datos.advertencia ? `<p>${escapar(datos.advertencia)}</p>` : ''}
+        ${tabla}
+      </div>
+      ${resumenControles}
+      ${resumenErrores}
+    `;
+
+    el('btnDetalleAnterior')?.addEventListener(
+      'click', () => cambiarPaginaDetalle(-1)
+    );
+
+    el('btnDetalleSiguiente')?.addEventListener(
+      'click', () => cambiarPaginaDetalle(1)
+    );
+
+  } catch (error) {
+    console.error('Error consultando detalle:', error);
+
+    contenedor.innerHTML = `
+      <div class="card emptyDetail">
+        No fue posible consultar el detalle:
+        ${escapar(error.message)}
+      </div>
+    `;
+  }
+}
+
+function cambiarPaginaDetalle(delta) {
+  detallePagina += delta;
+  renderDetallePagina();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function volverAInsumos() {
+  document.querySelectorAll('.panel').forEach((p) => p.classList.remove('active'));
+  el('insumos').classList.add('active');
+  document.querySelectorAll('.nav button').forEach((b) => b.classList.remove('active'));
+  document.querySelector('.nav button')?.classList.add('active');
+  requestAnimationFrame(() => window.scrollTo(0, insumosScrollY));
+}
+
+el('btnVolverInsumos').addEventListener('click', volverAInsumos);
+
+
+function mostrarErroresValidacion(error, tipoInsumo, archivo) {
+  const detalle = error.detalle;
+  if (!detalle || typeof detalle !== 'object') return false;
+
+  const modal = el('validacionArchivoModal');
+  const lista = el('validacionArchivoErrores');
+  const cerrar = el('validacionArchivoCerrar');
+  const anterior = document.activeElement;
+
+  el('validacionArchivoTipo').textContent = tipoInsumo;
+  el('validacionArchivoNombre').textContent = archivo.name;
+  el('validacionArchivoCodigo').textContent =
+    detalle.codigo || 'VALIDACION';
+  el('validacionArchivoMensaje').textContent =
+    detalle.mensaje || error.message;
+
+  lista.replaceChildren();
+
+  for (const item of (Array.isArray(detalle.errores) ? detalle.errores : [])) {
+    const fila = document.createElement('div');
+    fila.style.padding = '8px 0';
+
+    const codigo = document.createElement('strong');
+    codigo.textContent = item.codigo || 'ERROR';
+
+    const descripcion = document.createElement('div');
+    descripcion.textContent =
+      (item.linea == null ? '' : `Linea ${item.linea}: `) +
+      (item.descripcion || '');
+
+    fila.append(codigo, descripcion);
+    lista.appendChild(fila);
+  }
+
+  modal.classList.add('open');
+
+  const terminar = () => {
+    modal.classList.remove('open');
+    cerrar.removeEventListener('click', terminar);
+    document.removeEventListener('keydown', teclado);
+    if (anterior && anterior.isConnected) anterior.focus();
+  };
+
+  const teclado = event => {
+    if (event.key === 'Escape') terminar();
+  };
+
+  cerrar.addEventListener('click', terminar);
+  document.addEventListener('keydown', teclado);
+  cerrar.focus();
+  return true;
+}
+
+
+
+/* Dialogo compartido para acciones de Fase 1: sin prompt/confirm nativos. */
+function dialogoConcilia({titulo, descripcion, aceptarTexto='Confirmar', campos=[]}) {
+  return new Promise(resolve => {
+    const modal=el('conciliaAccionModal'), aceptar=el('conciliaAccionAceptar');
+    const cancelar=el('conciliaAccionCancelar'), contenedor=el('conciliaAccionCampos');
+    const error=el('conciliaAccionError'), anterior=document.activeElement;
+    el('conciliaAccionTitulo').textContent=titulo;
+    el('conciliaAccionDescripcion').textContent=descripcion;
+    aceptar.textContent=aceptarTexto; error.textContent='';
+    contenedor.replaceChildren();
+    const entradas=[];
+    campos.forEach((campo,i)=>{
+      const grupo=document.createElement('div'); grupo.className='conciliaDialogField';
+      const etiqueta=document.createElement('label'); etiqueta.textContent=campo.etiqueta;
+      const input=document.createElement(campo.multilinea?'textarea':'input');
+      input.id='conciliaAccionCampo'+i;
+      if (!campo.multilinea) input.type='text';
+      input.maxLength=campo.maximo||500;
+      input.required=true;
+      etiqueta.htmlFor=input.id;
+      grupo.append(etiqueta,input); contenedor.append(grupo); entradas.push(input);
+    });
+    modal.classList.add('open'); modal.setAttribute('aria-hidden','false');
+    function terminar(valor){
+      modal.classList.remove('open'); modal.setAttribute('aria-hidden','true');
+      aceptar.removeEventListener('click',si); cancelar.removeEventListener('click',no);
+      modal.removeEventListener('click',fondo); document.removeEventListener('keydown',teclado);
+      if(anterior?.isConnected) anterior.focus(); resolve(valor);
+    }
+    function si(){
+      const valores=entradas.map(x=>x.value.trim());
+      const invalido=campos.findIndex((c,i)=>valores[i].length<(c.minimo||1));
+      if(invalido>=0){error.textContent=`${campos[invalido].etiqueta}: mínimo ${campos[invalido].minimo||1} caracteres.`;entradas[invalido].focus();return;}
+      terminar(valores);
+    }
+    const no=()=>terminar(null);
+    const fondo=e=>{if(e.target===modal)no();};
+    function teclado(e){
+      if(e.key==='Escape'){e.preventDefault();no();return;}
+      if(e.key==='Tab'){
+        const focos=[...modal.querySelectorAll('input,textarea,button')].filter(x=>!x.disabled);
+        const primero=focos[0], ultimo=focos[focos.length-1];
+        if(e.shiftKey&&document.activeElement===primero){e.preventDefault();ultimo.focus();}
+        else if(!e.shiftKey&&document.activeElement===ultimo){e.preventDefault();primero.focus();}
+      }
+    }
+    aceptar.addEventListener('click',si); cancelar.addEventListener('click',no);
+    modal.addEventListener('click',fondo); document.addEventListener('keydown',teclado);
+    (entradas[0]||cancelar).focus();
+  });
+}
+
+/* CONCILIA_CONFIRMACION_AUTOMATICA_V1 */
+function conectarConfirmacionesSinMovimientos() {
+  tblArchivos.querySelectorAll('.btnReemplazarVacio').forEach(b => {
+    b.addEventListener('click', () => {
+      pendingTipoInsumoUpload = b.dataset.tipo;
+      const input = el('uploadFileHidden');
+      input.value = '';
+      configurarFormatoCarga(pendingTipoInsumoUpload);
+      input.click();
+    });
+  });
+  tblArchivos.querySelectorAll('.btnConfirmarVacio').forEach(b => {
+    b.addEventListener('click', async () => {
+      const fila = b.closest('tr');
+      if (!fila.querySelector('.chkConfirmarVacio').checked) {
+        toast('Marque la confirmación de ausencia de movimientos.', true); return;
+      }
+      const valores = await dialogoConcilia({
+        titulo:'Confirmar sin movimientos',
+        descripcion:'Esta acción quedará registrada con usuario, motivo y trazabilidad. Verifique que el archivo no contiene movimientos persistibles.',
+        aceptarTexto:'Registrar confirmación',
+        campos:[{etiqueta:'Usuario responsable',minimo:2,maximo:100},
+                {etiqueta:'Motivo de confirmación',minimo:5,maximo:500,multilinea:true}]
+      });
+      if (!valores) return;
+      const [usuario,motivo] = valores;
+      b.disabled = true;
+      try {
+        await apiConcilia(`/api/v1/archivos/${encodeURIComponent(b.dataset.id)}/confirmar-sin-movimientos`, {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({usuario:usuario.trim(),motivo:motivo.trim()})
+        });
+        toast('Ausencia de movimientos confirmada y registrada.');
+        await buscarArchivos();
+      } catch(e) { b.disabled = false; toast(e.message, true); }
+    });
+  });
+}
+
+async function subirArchivo(tipoInsumo, file) {
+  if (!fechaContableActiva || !TIPOS_F1.includes(tipoInsumo) || cargaEnCurso) return;
+  const fechaCarga = fechaContableActiva;
+  cargaEnCurso = true;
+  el('cargaResultado').textContent = `Enviando ${file.name}...`;
+  try {
+    // Confirmar estado actual antes de cargar: evita cargar en otra fecha o duplicar.
+    await consultarJornadas();
+    let jornada = jornadasPorFecha.get(fechaCarga);
+    let datos = jornada ? await apiConcilia(`/api/v1/jornadas/${jornada.id_jornada}/insumos`) : null;
+    if (!jornada || (datos?.insumos ?? []).length === 0) {
+      if (!await confirmarPreparacionJornada({fechaContable: fechaCarga, tipoInsumo})) {
+        el('cargaResultado').textContent = 'Carga cancelada.';
+        return;
+      }
+      jornada = await asegurarJornada(fechaCarga);
+      datos = await apiConcilia(`/api/v1/jornadas/${jornada.id_jornada}/insumos`);
+    }
+    if (fechaContableActiva !== fechaCarga) throw new Error('La fecha contable cambió; vuelva a seleccionar el archivo');
+    if (String(jornada.estado).toUpperCase() === 'COMPLETADA') {
+      throw new Error('La jornada está COMPLETADA y no admite nuevas cargas.');
+    }
+    const insumo = (datos.insumos ?? []).find(i => i.tipo_insumo === tipoInsumo);
+    if (!insumo || !((insumo.estado === 'PENDIENTE' && insumo.id_archivo == null) ||
+        (insumo.estado === 'RECIBIDO' && insumo.id_archivo != null))) {
+      throw new Error('El insumo no admite carga ni reemplazo');
+    }
+    if (insumo.estado === 'RECIBIDO') {
+      const confirmaciones = await apiConcilia(`/api/v1/archivos/confirmaciones/jornada/${jornada.id_jornada}`);
+      if ((confirmaciones.ids_archivos || []).map(String).includes(String(insumo.id_archivo))) {
+        throw new Error('Archivo confirmado sin movimientos: reemplazo bloqueado');
+      }
+      const decision = await dialogoConcilia({
+        titulo:'Volver a subir archivo',
+        descripcion:`Se conservará el archivo anterior de ${tipoInsumo} y se registrará el reemplazo con trazabilidad. La jornada debe permanecer abierta.`,
+        aceptarTexto:'Confirmar reemplazo'
+      });
+      if (!decision) return;
+    }
+    const form = new FormData();
+    form.append('fecha_contable', fechaCarga);
+    form.append('tipo_archivo', tipoInsumo);
+    form.append('archivo', file);
+    const respuesta = await apiConcilia('/api/v1/archivos', {method:'POST',body:form});
+    if (!respuesta.id_archivo || !respuesta.estado) {
+      throw new Error('Respuesta de recepcion incompleta');
+    }
+    el('cargaResultado').textContent =
+      `Archivo recibido: ${file.name}. ID: ${respuesta.id_archivo}. Ingesta Fase 1 en curso.`;
+    toast('Archivo recibido. Se inició la ingesta automática de Fase 1.');
+    await buscarArchivos();
+    // El procesamiento puede terminar después de la respuesta de recepción.
+    // Refrescar sin volver a enviar el archivo.
+    const archivoNuevo = respuesta.id_archivo;
+    for (let intento = 0; intento < 12; intento++) {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      if (fechaContableActiva !== fechaCarga) break;
+      const estadoActual = await apiConcilia(`/api/v1/archivos/${archivoNuevo}`);
+      if (estadoActual.estado === 'PROCESADO') {
+        el('cargaResultado').textContent = `Ingesta Fase 1 completada: ${file.name}. ID: ${archivoNuevo}.`;
+        await buscarArchivos();
+        break;
+      }
+      if (estadoActual.estado === 'ERROR') {
+        el('cargaResultado').textContent = `Error de ingesta Fase 1: ${file.name}. Consulte trazabilidad.`;
+        await buscarArchivos();
+        break;
+      }
+      if (intento === 11) {
+        el('cargaResultado').textContent = `Archivo ${archivoNuevo} recibido; ingesta aún pendiente. Consulte el estado antes de volver a subir.`;
+        await buscarArchivos();
+      }
+    }
+  } catch (e) {
+    el('cargaResultado').textContent = 'Carga no completada: ' + e.message;
+    if (!mostrarErroresValidacion(e, tipoInsumo, file)) {
+      toast(e.message, true);
+    }
+  } finally { cargaEnCurso = false; }
+}
+
+/* CONCILIA_VISA_SS_PDF_UX */
+function configurarFormatoCarga(tipo) {
+  const input = el('uploadFileHidden');
+
+  const formatos = {
+    VISA_SS_INTERNATIONAL: '.pdf,application/pdf',
+    PMD: '.xls,.xlsx',
+    MEP: '.xls,.xlsx',
+    CARTA_COMPENSACION: '.xls,.xlsx'
+  };
+
+  input.accept = formatos[tipo] || '.txt,.csv';
+}
+
+el('uploadFileHidden').addEventListener('click', () => {
+  configurarFormatoCarga(pendingTipoInsumoUpload);
+});
+
+el('uploadFileHidden').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  const tipo = pendingTipoInsumoUpload;
+  pendingTipoInsumoUpload = null;
+  if (file && tipo) await subirArchivo(tipo, file);
+});
+
+fechaInput.addEventListener('change', actualizarFechaEjecucion);
+
+// ---- Navegación de pestañas (Insumos / Conciliación / Diagnostico IA) ----
+function go(id, btn) {
+  document.querySelectorAll('.panel').forEach((p) => p.classList.remove('active'));
+  el(id).classList.add('active');
+  document.querySelectorAll('.nav button').forEach((b) => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function filterReconRows() {
+  const q = (el('reconQ').value || '').toLowerCase();
+  const fr = el('reconFr').value || '';
+  const st = el('reconSt').value || '';
+  document.querySelectorAll('#recon tbody tr').forEach((r) => {
+    const okq = r.innerText.toLowerCase().includes(q);
+    const okfr = !fr || r.dataset.franchise === fr;
+    const okst = !st || r.dataset.filterStatus === st;
+    r.style.display = okq && okfr && okst ? 'table-row' : 'none';
+  });
+}
+
+function verDetalleRecon(cta, tx, vf, vh) {
+  drawerContent.innerHTML = `<h2>Detalle de conciliación</h2><span class="badge info">${cta}</span>
+    <div class="explain"><b>Origen Host:</b> ${tx}</div>
+    <table><thead><tr><th>Lado</th><th>Valor</th></tr></thead><tbody>
+      <tr><td>Franquicia</td><td>${vf}</td></tr>
+      <tr><td>Host</td><td>${vh}</td></tr>
+      <tr><td>Resultado</td><td>${vf === vh ? 'Conciliado' : 'Diferencia'}</td></tr>
+    </tbody></table>`;
+  openDrawer();
+}
+
+// ---- Diagnostico IA (storyboard de UX) ----
+function verIA(cta, diff) {
+  const navBtn = document.querySelectorAll('.nav button')[2];
+  go('ia', navBtn);
+  el('caseDiff').textContent = diff;
+  el('caseDiff').style.color = 'var(--red)';
+  const st = el('aiState');
+  st.className = 'tag warn';
+  st.textContent = 'Excepción';
+  el('aiResult').innerHTML =
+    '<b>Excepción no resuelta por reglas vigentes</b><p>Las reglas vigentes no pudieron cerrar automáticamente esta diferencia.</p>' +
+    '<button class="btn primary" onclick="runGovernedAI()">Analizar diferencia con IA</button>';
+  ['afterAI', 'confirmedCause', 'reprocessResult'].forEach((id) => {
+    const x = el(id);
+    x.style.display = 'none';
+    x.classList.remove('aiLocked');
+  });
+}
+
+function runGovernedAI() {
+  const state = el('aiState');
+  const box = el('aiResult');
+  state.className = 'tag info';
+  state.textContent = 'Analizando';
+  box.innerHTML = '<b>Analizando evidencia...</b><p>Cuenta, importe, fecha, referencia y movimientos relacionados.</p><div class="progress"><span id="govBar" style="width:8%"></span></div>';
+  let n = 8;
+  const t = setInterval(() => {
+    n += 16;
+    const b = el('govBar');
+    if (b) b.style.width = `${Math.min(n, 100)}%`;
+    if (n >= 100) {
+      clearInterval(t);
+      state.textContent = 'Propuesta IA';
+      box.innerHTML = '<b>Análisis completado</b><p>Se encontró una hipótesis con evidencia suficiente para revisión.</p>';
+      box.classList.add('aiLocked');
+      const p = el('afterAI');
+      p.style.display = 'block';
+      p.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, 120);
+}
+
+function confirmCause() {
+  el('afterAI').classList.add('aiLocked');
+  const state = el('aiState');
+  state.className = 'tag ok';
+  state.textContent = 'Causa confirmada';
+  const c = el('confirmedCause');
+  c.style.display = 'block';
+  toast('Causa confirmada; los importes no cambiaron');
+  setTimeout(() => c.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
+}
+
+function discardCause() {
+  el('afterAI').classList.add('aiLocked');
+  const state = el('aiState');
+  state.className = 'tag warn';
+  state.textContent = 'Hipótesis descartada';
+  toast('Hipótesis descartada; la excepción permanece abierta');
+}
+
+function automateAndReprocess() {
+  const btn = el('btnAutomatizar');
+  if (btn) { btn.disabled = true; btn.textContent = 'Aplicando regla y reejecutando...'; }
+  el('confirmedCause').classList.add('aiLocked');
+  const result = el('reprocessResult');
+  result.style.display = 'block';
+  result.innerHTML =
+    '<div class="title">Automatización en curso <span class="tag info">Procesando</span></div>' +
+    '<div class="aiAutoFlow"><div id="auto1" class="aiAutoStep">1<b>Proponer regla</b></div><div id="auto2" class="aiAutoStep">2<b>Aplicar regla</b></div><div id="auto3" class="aiAutoStep">3<b>Reejecutar caso</b></div></div>' +
+    '<div class="progress"><span id="autoBar" style="width:8%"></span></div>';
+  result.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  let n = 8;
+  const t = setInterval(() => {
+    n += 12;
+    const bar = el('autoBar');
+    if (bar) bar.style.width = `${Math.min(n, 100)}%`;
+    if (n >= 34) el('auto1')?.classList.add('done');
+    if (n >= 66) el('auto2')?.classList.add('done');
+    if (n >= 100) {
+      el('auto3')?.classList.add('done');
+      clearInterval(t);
+      const diff = el('caseDiff');
+      diff.textContent = '$0';
+      diff.style.color = 'var(--green)';
+      el('ruleVersion').textContent = 'Versión 19';
+      const st = el('aiState');
+      st.className = 'tag ok';
+      st.textContent = 'Conciliado';
+      result.innerHTML =
+        '<div class="title">Resultado del reproceso <span class="tag ok">Conciliado</span></div>' +
+        '<div class="aiAutoFlow"><div class="aiAutoStep done">1<b>Regla propuesta</b></div><div class="aiAutoStep done">2<b>Regla aplicada</b></div><div class="aiAutoStep done">3<b>Caso reejecutado</b></div></div>' +
+        '<div class="friendlyNote"><b>Reporte Maestro actualizado (simulado).</b> La regla quedó aplicada y el caso fue reejecutado sin pasos adicionales para el usuario.</div>';
+      toast('Regla aplicada y caso conciliado');
+    }
+  }, 110);
+}
+
+function openEmailDraft() {
+  drawerContent.innerHTML = `<h2>Borrador de correo</h2>
+    <div class="friendlyNote"><b>La IA genera el texto, pero no envía el correo ni accede al buzón del usuario.</b></div>
+    <div class="emailDraft">
+      <div class="subject"><b>Asunto:</b> Validación diferencia conciliación Redeban</div>
+      Buenos días,<br><br>
+      Durante el proceso de conciliación identificamos una diferencia de <b>${el('caseDiff').textContent}</b> asociada a la cuenta.<br><br>
+      El análisis encontró un posible movimiento posterior en Host. Agradecemos validar la información correspondiente.<br><br>
+      Gracias.
+    </div>
+    <div class="actionbar"><button class="btn" onclick="closeDrawer()">Cerrar</button></div>`;
+  openDrawer();
+}
+
+
+let jornadaTrazabilidadActiva = null;
+function actualizarBotonTrazabilidad(jornada) {
+  jornadaTrazabilidadActiva = jornada ? Number(jornada.id_jornada) : null;
+  const boton = el('btnTrazabilidad');
+  boton.style.display = jornadaTrazabilidadActiva ? 'inline-block' : 'none';
+}
+async function verTrazabilidadJornada() {
+  if (!jornadaTrazabilidadActiva) return;
+  const id = jornadaTrazabilidadActiva;
+  drawerContent.innerHTML = '<h2>Trazabilidad técnica</h2><p class="muted">Consultando eventos...</p>';
+  openDrawer();
+  try {
+    const datos = await apiConcilia(`/api/v1/jornadas/${id}/trazabilidad`);
+    if (jornadaTrazabilidadActiva !== id) return;
+    const eventos = Array.isArray(datos.eventos) ? datos.eventos : [];
+    drawerContent.innerHTML = `<h2>Trazabilidad de jornada ${escapar(id)}</h2>
+      <p class="muted">${eventos.length} evento(s) registrados. Completitud técnica no equivale a conciliación financiera.</p>
+      <div class="tableScroll"><table><thead><tr><th>Evento</th><th>Componente</th><th>Fecha</th><th>Correlación</th></tr></thead>
+      <tbody>${eventos.length ? eventos.map(e => `<tr>
+        <td>${escapar(e.tipo_evento)}</td><td>${escapar(e.componente)}</td>
+        <td>${escapar(e.fec_evento)}</td><td>${escapar(e.correlation_id)}</td>
+      </tr>`).join('') : '<tr><td colspan="4">Sin eventos asociados.</td></tr>'}</tbody></table></div>
+      <h3>Detalles</h3>${eventos.map(e => `<div class="friendlyNote">${escapar(e.detalle ?? '-')}</div>`).join('')}`;
+  } catch (error) {
+    drawerContent.innerHTML = `<h2>Trazabilidad técnica</h2><p role="alert">${escapar(error.message)}</p>`;
+  }
+}
+el('btnTrazabilidad').addEventListener('click', verTrazabilidadJornada);
+
+actualizarFechaEjecucion();
+</script>
+
+<script>
+/* CONCILIA_COP_CURRENCY_MASK_V1 */
+(() => {
+  "use strict";
+
+  const formatoCOP = new Intl.NumberFormat("es-CO", {
+    style: "currency",
+    currency: "COP",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+
+  const formatoUSD = new Intl.NumberFormat("es-CO", {
+    style: "currency", currency: "USD",
+    minimumFractionDigits: 2, maximumFractionDigits: 2
+  });
+
+  const encabezadoMonetario =
+    /(valor|importe|monto|comision|comisi?n|saldo|debe|haber|debito|d?bito|credito|cr?dito|neto|vl_total|vl_descue|vl_interc|descuento|intercambio|^iva$)/i;
+
+  function obtenerEncabezado(celda) {
+    const tabla = celda.closest("table");
+    if (!tabla) return "";
+
+    let fila = tabla.tHead &&
+               tabla.tHead.rows.length
+      ? tabla.tHead.rows[tabla.tHead.rows.length - 1]
+      : null;
+
+    if (!fila) {
+      fila = Array.from(tabla.rows).find(
+        r => r.querySelector("th")
+      );
+    }
+
+    return fila && fila.cells[celda.cellIndex]
+      ? fila.cells[celda.cellIndex].textContent.trim()
+      : "";
+  }
+
+  function formatearElemento(elemento, nombreCampo) {
+    if (!encabezadoMonetario.test(nombreCampo)) return;
+
+    if (elemento.matches("input, textarea, select, button")) return;
+    if (elemento.children.length > 0) return;
+
+    const texto = elemento.textContent.trim();
+
+    if (!texto || elemento.dataset.copLastText === texto) return;
+
+    // No reinterpretar valores que ya vienen con separadores locales.
+    if (!/^-?\d+(?:\.\d+)?$/.test(texto)) return;
+
+    const numero = Number(texto);
+    if (!Number.isFinite(numero)) return;
+
+    const fila = elemento.closest("tr");
+    const celdas = fila ? Array.from(fila.cells) : [];
+    const esUSD = celdas.some(c => c.textContent.trim().toUpperCase() === "USD");
+    elemento.textContent = (esUSD ? formatoUSD : formatoCOP).format(numero);
+    elemento.dataset.copLastText = elemento.textContent;
+  }
+
+  function aplicarMascara() {
+    document.querySelectorAll("table tbody tr td").forEach(celda => {
+      const encabezado = obtenerEncabezado(celda);
+      formatearElemento(celda, encabezado);
+    });
+
+    document.querySelectorAll("[data-money]").forEach(elemento => {
+      formatearElemento(
+        elemento,
+        elemento.getAttribute("data-field") ||
+        elemento.getAttribute("data-key") ||
+        "valor"
+      );
+    });
+  }
+
+  let pendiente = false;
+
+  function programar() {
+    if (pendiente) return;
+    pendiente = true;
+
+    requestAnimationFrame(() => {
+      pendiente = false;
+      aplicarMascara();
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", programar, {
+      once: true
+    });
+  } else {
+    programar();
+  }
+
+  new MutationObserver(programar).observe(document.documentElement, {
+    childList: true,
+    subtree: true
+  });
+})();
+</script>
+
+</body>
+</html>

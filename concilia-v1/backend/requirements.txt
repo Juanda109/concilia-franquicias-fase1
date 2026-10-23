@@ -1,0 +1,10 @@
+fastapi==0.150.0
+uvicorn==0.54.0
+psycopg[binary]==3.3.6
+pytest==9.1.1
+httpx==0.28.1
+python-multipart==0.0.32
+openpyxl==3.1.5
+xlrd==2.0.2
+
+PyMuPDF>=1.24,<2
