@@ -145,10 +145,10 @@ def cargar_archivo_original(id_jornada:int,background_tasks:BackgroundTasks,idAr
         if error=='CARGA_NO_PERMITIDA': raise HTTPException(409,error)
 
         nombre_archivo=archivo.filename or f'{tipo_insumo}.dat'
-        tiene_regla,coincide,fecha_archivo=validar_nombre(tipo_insumo,nombre_archivo)
+        fecha_contable_iso=fecha_contable.isoformat()
+        tiene_regla,coincide,fecha_archivo=validar_nombre(tipo_insumo,nombre_archivo,fecha_contable_iso)
         if tiene_regla and not coincide:
             raise HTTPException(400,f'NOMBRE_ARCHIVO_INVALIDO: el archivo {nombre_archivo} no cumple la estructura esperada para {tipo_insumo}')
-        fecha_contable_iso=fecha_contable.isoformat()
         if fecha_archivo and fecha_archivo!=fecha_contable_iso:
             raise HTTPException(409,f'FECHA_NO_COINCIDE_CON_ARCHIVO: el archivo {nombre_archivo} corresponde a {fecha_archivo}, no a {fecha_contable_iso}')
 
