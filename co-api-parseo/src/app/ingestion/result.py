@@ -21,3 +21,9 @@ class IngestionResult:
     # igual se inserta con ese campo en NULL).
     diagnosticos: list[RecordError] = field(default_factory=list)
     controls: list[dict[str,Any]] = field(default_factory=list)
+    # Solo para insumos con tabla padre+detalle (ej. VSS: CON_VSS_REPORTE +
+    # CON_VSS_DETALLE). Cada dict de "reportes" debe traer "_key" (id interno
+    # unico de esa pagina/reporte); cada dict de "records" que pertenezca a
+    # ese reporte debe traer "_report_key" con el mismo valor, para que
+    # ResultRepository pueda resolver el FK real despues del INSERT del padre.
+    reportes: list[dict[str,Any]] = field(default_factory=list)

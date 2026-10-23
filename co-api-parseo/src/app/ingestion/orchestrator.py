@@ -28,7 +28,7 @@ class ParseoOrchestrator:
     er.save_many(id_archivo,tipo,"DIAGNOSTICO",correlation_id,result.diagnosticos);self.conn.commit()
    def _progreso(n):
     ar.set_progreso(id_archivo,n);self.conn.commit()
-   inserted=rr.insert_records(tipo,id_archivo,result.records,on_progress=_progreso)
+   inserted=rr.insert_records(tipo,id_archivo,result.records,reportes=result.reportes,on_progress=_progreso)
    ar.update_procesamiento(id_archivo,"Procesado")
    tr.add(id_archivo,"PROCESAMIENTO","Procesando","Procesado","FIN_PROCESAMIENTO",correlation_id,{"registros":inserted})
    self.conn.commit()
