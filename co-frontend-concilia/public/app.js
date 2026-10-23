@@ -171,6 +171,7 @@ const drawer = el('drawer');
 const drawerContent = el('drawerContent');
 const toastEl = el('toast');
 const noDataModal = el('noDataModal');
+const erroresProcesamientoModal = el('erroresProcesamientoModal');
 const detalleInsumoContent = el('detalleInsumoContent');
 let insumosScrollY = 0;
 
@@ -242,6 +243,37 @@ el('btnCerrarDrawer').addEventListener('click', closeDrawer);
 function showNoData() { noDataModal.className = 'modalBack show'; }
 function hideNoData() { noDataModal.className = 'modalBack'; }
 el('btnCerrarModal').addEventListener('click', hideNoData);
+
+function hideErroresProcesamiento() { erroresProcesamientoModal.className = 'modalBack'; }
+el('btnCerrarErroresProcesamiento').addEventListener('click', hideErroresProcesamiento);
+
+// Al terminar en "Error", se consulta el detalle (CON_ERROR_REGISTRO, una
+// fila por línea con problema) en vez de solo mostrar un toast genérico —
+// la analista ve de una vez todo lo que falló, no solo que algo falló.
+async function mostrarErroresProcesamiento(idArchivo, tipoInsumo, nombreArchivo) {
+  el('erroresProcesamientoTipo').textContent = tipoInsumo;
+  el('erroresProcesamientoNombre').textContent = nombreArchivo ?? '';
+  el('erroresProcesamientoMotivo').textContent = '';
+  const lista = el('erroresProcesamientoLista');
+  lista.innerHTML = '<div class="errorVacio">Consultando detalle…</div>';
+  erroresProcesamientoModal.className = 'modalBack show';
+  try {
+    const r = await apiFetch(`${API}/archivos/${idArchivo}/errores`);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const d = await r.json();
+    el('erroresProcesamientoMotivo').textContent = d.motivoEstado || '';
+    if (!d.items.length) {
+      lista.innerHTML = '<div class="errorVacio">No hay detalle línea por línea para este error.</div>';
+      return;
+    }
+    lista.innerHTML = d.items.map((e) => `
+      <div class="errorFila">
+        ${e.numeroLinea != null ? `<b>Línea ${e.numeroLinea}:</b> ` : ''}${e.mensaje ?? e.codigoError}
+      </div>`).join('');
+  } catch (e) {
+    lista.innerHTML = `<div class="errorVacio">No se pudo consultar el detalle: ${e.message}</div>`;
+  }
+}
 
 async function checkHealth() {
   const badgeEl = el('apiStatus');
@@ -567,7 +599,7 @@ function iniciarPolling(idArchivo) {
         clearInterval(pollers.get(idArchivo));
         pollers.delete(idArchivo);
         if (a.estadoProcesamiento === 'PROCESADO') toast(`${a.tipoInsumo} cargado: ${a.totalRegistros ?? '-'} registros`);
-        else toast(`${a.tipoInsumo}: error en el procesamiento`, true);
+        else void mostrarErroresProcesamiento(idArchivo, a.tipoInsumo, a.nombreArchivo);
       }
     } catch (e) {
       // Error de red puntual durante el polling: se reintenta en el próximo tick,
