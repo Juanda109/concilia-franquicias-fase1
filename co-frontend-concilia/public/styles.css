@@ -181,11 +181,6 @@ td{padding:9px 8px;border-bottom:1px solid #edf0f2;white-space:nowrap}
 .detailPager .pagerInfo{color:var(--muted);font-size:9px}
 .emptyDetail{padding:28px;text-align:center;color:var(--muted)}
 
-.uploadError{position:relative;background:var(--rb);border-left:4px solid var(--red);padding:11px 36px 11px 13px;font-size:10px;line-height:1.5;color:#6b2436}
-.uploadError b{display:block;margin-bottom:3px;color:var(--red)}
-.uploadError p{margin:0}
-.uploadErrorClose{position:absolute;top:6px;right:6px;border:0;background:transparent;color:var(--red);font-size:16px;line-height:1;cursor:pointer;padding:4px 7px}
-.uploadErrorClose:hover{opacity:.7}
 @media(max-width:760px){.detailMetrics{grid-template-columns:1fr}.detailPageHead h1{font-size:20px}}
 
 @media(max-width:1000px){

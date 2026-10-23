@@ -247,6 +247,39 @@ el('btnCerrarModal').addEventListener('click', hideNoData);
 function hideErroresProcesamiento() { erroresProcesamientoModal.className = 'modalBack'; }
 el('btnCerrarErroresProcesamiento').addEventListener('click', hideErroresProcesamiento);
 
+// Ventana emergente única para cualquier error de archivo (rechazo al subir
+// o falla de procesamiento): título + subtítulo opcional (tipo · nombre) +
+// motivo + lista de errores opcional (línea por línea, cuando aplica).
+function mostrarModalError({ titulo, tipoInsumo, nombreArchivo, motivo, items }) {
+  el('erroresProcesamientoTitulo').textContent = titulo;
+  const subtitulo = el('erroresProcesamientoSubtitulo');
+  if (tipoInsumo || nombreArchivo) {
+    subtitulo.hidden = false;
+    el('erroresProcesamientoTipo').textContent = tipoInsumo ?? '';
+    el('erroresProcesamientoNombre').textContent = nombreArchivo ?? '';
+  } else {
+    subtitulo.hidden = true;
+  }
+  el('erroresProcesamientoMotivo').textContent = motivo ?? '';
+  const lista = el('erroresProcesamientoLista');
+  if (!items) {
+    lista.hidden = true;
+  } else {
+    lista.hidden = false;
+    lista.innerHTML = items.length
+      ? items.map((e) => `
+          <div class="errorFila">
+            ${e.numeroLinea != null ? `<b>Línea ${e.numeroLinea}:</b> ` : ''}${e.mensaje ?? e.codigoError}
+          </div>`).join('')
+      : '<div class="errorVacio">No hay detalle línea por línea para este error.</div>';
+  }
+  erroresProcesamientoModal.className = 'modalBack show';
+}
+
+function mostrarErrorCarga(mensaje) {
+  mostrarModalError({ titulo: 'No se pudo cargar el archivo', motivo: mensaje });
+}
+
 // MOTIVO_ESTADO a veces es el mensaje crudo de una excepción de Python/una
 // librería (ej. openpyxl rechazando un .pdf), no un texto pensado para la
 // analista — se traducen los casos conocidos, igual que mensajeErrorCarga()
@@ -267,27 +300,29 @@ function causaProcesamiento(motivo) {
 // fila por línea con problema) en vez de solo mostrar un toast genérico —
 // la analista ve de una vez todo lo que falló, no solo que algo falló.
 async function mostrarErroresProcesamiento(idArchivo, tipoInsumo, nombreArchivo) {
-  el('erroresProcesamientoTipo').textContent = tipoInsumo;
-  el('erroresProcesamientoNombre').textContent = nombreArchivo ?? '';
-  el('erroresProcesamientoMotivo').textContent = '';
-  const lista = el('erroresProcesamientoLista');
-  lista.innerHTML = '<div class="errorVacio">Consultando detalle…</div>';
-  erroresProcesamientoModal.className = 'modalBack show';
+  mostrarModalError({
+    titulo: 'No se pudo procesar el archivo',
+    tipoInsumo, nombreArchivo,
+    motivo: 'Consultando detalle…',
+    items: null,
+  });
   try {
     const r = await apiFetch(`${API}/archivos/${idArchivo}/errores`);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const d = await r.json();
-    el('erroresProcesamientoMotivo').textContent = causaProcesamiento(d.motivoEstado);
-    if (!d.items.length) {
-      lista.innerHTML = '<div class="errorVacio">No hay detalle línea por línea para este error.</div>';
-      return;
-    }
-    lista.innerHTML = d.items.map((e) => `
-      <div class="errorFila">
-        ${e.numeroLinea != null ? `<b>Línea ${e.numeroLinea}:</b> ` : ''}${e.mensaje ?? e.codigoError}
-      </div>`).join('');
+    mostrarModalError({
+      titulo: 'No se pudo procesar el archivo',
+      tipoInsumo, nombreArchivo,
+      motivo: causaProcesamiento(d.motivoEstado),
+      items: d.items,
+    });
   } catch (e) {
-    lista.innerHTML = `<div class="errorVacio">No se pudo consultar el detalle: ${e.message}</div>`;
+    mostrarModalError({
+      titulo: 'No se pudo procesar el archivo',
+      tipoInsumo, nombreArchivo,
+      motivo: `No se pudo consultar el detalle: ${e.message}`,
+      items: [],
+    });
   }
 }
 
@@ -549,20 +584,6 @@ function mensajeErrorCarga(detalle) {
   return resto || detalle;
 }
 
-// Caja de error persistente junto a la tabla (reemplaza el toast flotante que
-// se autocerraba): se queda visible hasta que la analista la cierra o
-// intenta cargar de nuevo, para que le dé tiempo a leerla con calma.
-function mostrarErrorCarga(mensaje) {
-  const resultado = el('cargaResultado');
-  resultado.innerHTML = `
-    <div class="uploadError">
-      <button type="button" class="uploadErrorClose" aria-label="Cerrar">&times;</button>
-      <b>No se pudo cargar el archivo</b>
-      <p>${mensaje}</p>
-    </div>`;
-  resultado.querySelector('.uploadErrorClose').addEventListener('click', () => { resultado.innerHTML = ''; });
-}
-
 async function subirArchivo(idArchivo, file) {
   const resultado = el('cargaResultado');
   if (!idJornadaActiva) { toast('Selecciona una fecha contable.', true); return; }
@@ -582,6 +603,7 @@ async function subirArchivo(idArchivo, file) {
       let detalle = `HTTP ${r.status}`;
       try { detalle = (await r.json()).detail ?? detalle; } catch { /* cuerpo no es JSON */ }
       if (r.status === 413) detalle = 'El archivo es demasiado grande para el límite configurado.';
+      resultado.innerHTML = '';
       mostrarErrorCarga(mensajeErrorCarga(detalle));
       return;
     }
@@ -589,6 +611,7 @@ async function subirArchivo(idArchivo, file) {
     await cargarJornada();
     iniciarPolling(idArchivo);
   } catch (e) {
+    resultado.innerHTML = '';
     mostrarErrorCarga('Error de red al cargar el archivo. Verifica tu conexión e intenta de nuevo.');
   }
 }
