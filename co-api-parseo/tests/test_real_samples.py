@@ -14,7 +14,7 @@ def run():
   (HA32Parser(),Path("/mnt/data/DESCARHA32_F260914(2).TXT"),19),
   (PMDParser(),Path("/mnt/data/PMDDetalleTransacciones20260702(1).xlsx"),5),
   (MEPParser(),Path("/mnt/data/MEP(1).xlsx"),2),
-  (VSSParser(),Path("/mnt/data/VSS BBVA 02 JULIO(4).txt"),4),
+  (VSSParser(),Path("/mnt/data/VSS BBVA 02 JULIO.txt"),13),
   (CartaCompensacionParser(),Path("/mnt/data/090926(3).xlsx"),50),
  ]
  for parser,path,expected in cases:
