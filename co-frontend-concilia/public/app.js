@@ -247,6 +247,22 @@ el('btnCerrarModal').addEventListener('click', hideNoData);
 function hideErroresProcesamiento() { erroresProcesamientoModal.className = 'modalBack'; }
 el('btnCerrarErroresProcesamiento').addEventListener('click', hideErroresProcesamiento);
 
+// MOTIVO_ESTADO a veces es el mensaje crudo de una excepción de Python/una
+// librería (ej. openpyxl rechazando un .pdf), no un texto pensado para la
+// analista — se traducen los casos conocidos, igual que mensajeErrorCarga()
+// hace con los códigos de rechazo al subir. Si no se reconoce el patrón, se
+// muestra el texto tal cual (mejor mostrar algo que ocultar información).
+function causaProcesamiento(motivo) {
+  if (!motivo) return '';
+  if (/does not support .* file format/i.test(motivo)) {
+    return 'El archivo no tiene el formato esperado para este insumo (revisa que sea el archivo correcto para este tipo).';
+  }
+  if (/^API_PARSEO_NO_DISPONIBLE/.test(motivo)) {
+    return 'No se pudo conectar con el servicio de parseo. Intenta cargar el archivo de nuevo en unos minutos.';
+  }
+  return motivo;
+}
+
 // Al terminar en "Error", se consulta el detalle (CON_ERROR_REGISTRO, una
 // fila por línea con problema) en vez de solo mostrar un toast genérico —
 // la analista ve de una vez todo lo que falló, no solo que algo falló.
@@ -261,7 +277,7 @@ async function mostrarErroresProcesamiento(idArchivo, tipoInsumo, nombreArchivo)
     const r = await apiFetch(`${API}/archivos/${idArchivo}/errores`);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const d = await r.json();
-    el('erroresProcesamientoMotivo').textContent = d.motivoEstado || '';
+    el('erroresProcesamientoMotivo').textContent = causaProcesamiento(d.motivoEstado);
     if (!d.items.length) {
       lista.innerHTML = '<div class="errorVacio">No hay detalle línea por línea para este error.</div>';
       return;
