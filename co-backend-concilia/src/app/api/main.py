@@ -77,6 +77,7 @@ def jornada_detalle(id_jornada:int):
         resumen=JornadaRepository(c).resumen(id_jornada)
         if not resumen: raise HTTPException(404,'JORNADA_NO_ENCONTRADA')
         _,fecha_contable=resumen
+        ArchivoRepo(c).ensure_insumos(id_jornada)
         insumos=[_insumo_contrato(i) for i in ArchivoRepo(c).listar_insumos(id_jornada)]
     return {
         "idJornada":id_jornada,"fechaContable":fecha_contable.isoformat(),"estado":_estado_jornada(insumos),
