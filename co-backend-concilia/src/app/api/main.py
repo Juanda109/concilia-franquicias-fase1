@@ -95,16 +95,8 @@ def archivo_errores(id_archivo:int):
  FROM CON_ARCHIVO_CARGA a JOIN CON_INSUMO_ESPERADO i ON i.ID_INSUMO=a.ID_INSUMO WHERE a.ID_ARCHIVO=%s''',(id_archivo,)).fetchone()
         if not row: raise HTTPException(404,'ARCHIVO_NO_ENCONTRADO')
         nombre_archivo,motivo_estado,tipo_insumo=row
-        # Las filas de detalle (linea/campo/mensaje) las deja co-api-parseo en
-        # CON_ERROR_REGISTRO al validar el archivo (ver ErrorRegistroRepository);
-        # MOTIVO_ESTADO es el resumen que ya se mostraba como toast, se manda
-        # igual como respaldo para fallos que no llegan a generar esas filas
-        # (ej. API_PARSEO_NO_DISPONIBLE).
-        rows=c.execute('''SELECT NUMERO_LINEA,CAMPO,CODIGO_ERROR,MENSAJE FROM CON_ERROR_REGISTRO
- WHERE ID_ARCHIVO=%s AND ETAPA='PROCESAMIENTO' ORDER BY NUMERO_LINEA NULLS LAST LIMIT 50''',(id_archivo,)).fetchall()
-    keys=['numeroLinea','campo','codigoError','mensaje']
     return {'idArchivo':id_archivo,'nombreArchivo':nombre_archivo,'tipoInsumo':tipo_insumo,
-            'motivoEstado':motivo_estado,'items':[dict(zip(keys,r)) for r in rows]}
+            'motivoEstado':motivo_estado}
 
 @app.get('/api/v1/archivos/{id_archivo}/contenido')
 def contenido(id_archivo:int,page:int=0,pageSize:int=30):

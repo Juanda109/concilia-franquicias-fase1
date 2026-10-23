@@ -88,11 +88,6 @@ td{padding:9px 8px;border-bottom:1px solid #edf0f2;white-space:nowrap}
 .modalBox h3{margin:0 0 8px;color:var(--core);font-size:17px}
 .modalBox p{color:var(--muted);font-size:10px;line-height:1.55}
 .errorModalBox{width:min(560px,95vw)}
-.errorLista{max-height:260px;overflow-y:auto;border:1px solid var(--line);margin-top:10px}
-.errorLista .errorFila{padding:8px 11px;border-bottom:1px solid var(--line);font-size:10px;line-height:1.5}
-.errorLista .errorFila:last-child{border-bottom:0}
-.errorLista .errorFila b{color:var(--red)}
-.errorLista .errorVacio{padding:12px;color:var(--muted);font-size:10px;text-align:center}
 
 .detailGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
 .detailGrid .kv b{display:block;font-size:8px;text-transform:uppercase;color:var(--muted);letter-spacing:.05em}

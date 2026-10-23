@@ -249,8 +249,8 @@ el('btnCerrarErroresProcesamiento').addEventListener('click', hideErroresProcesa
 
 // Ventana emergente única para cualquier error de archivo (rechazo al subir
 // o falla de procesamiento): título + subtítulo opcional (tipo · nombre) +
-// motivo + lista de errores opcional (línea por línea, cuando aplica).
-function mostrarModalError({ titulo, tipoInsumo, nombreArchivo, motivo, items }) {
+// motivo.
+function mostrarModalError({ titulo, tipoInsumo, nombreArchivo, motivo }) {
   el('erroresProcesamientoTitulo').textContent = titulo;
   const subtitulo = el('erroresProcesamientoSubtitulo');
   if (tipoInsumo || nombreArchivo) {
@@ -261,18 +261,6 @@ function mostrarModalError({ titulo, tipoInsumo, nombreArchivo, motivo, items })
     subtitulo.hidden = true;
   }
   el('erroresProcesamientoMotivo').textContent = motivo ?? '';
-  const lista = el('erroresProcesamientoLista');
-  if (!items) {
-    lista.hidden = true;
-  } else {
-    lista.hidden = false;
-    lista.innerHTML = items.length
-      ? items.map((e) => `
-          <div class="errorFila">
-            ${e.numeroLinea != null ? `<b>Línea ${e.numeroLinea}:</b> ` : ''}${e.mensaje ?? e.codigoError}
-          </div>`).join('')
-      : '<div class="errorVacio">No hay detalle línea por línea para este error.</div>';
-  }
   erroresProcesamientoModal.className = 'modalBack show';
 }
 
@@ -296,15 +284,13 @@ function causaProcesamiento(motivo) {
   return motivo;
 }
 
-// Al terminar en "Error", se consulta el detalle (CON_ERROR_REGISTRO, una
-// fila por línea con problema) en vez de solo mostrar un toast genérico —
-// la analista ve de una vez todo lo que falló, no solo que algo falló.
+// Al terminar en "Error", se consulta el motivo guardado (MOTIVO_ESTADO) en
+// vez de solo mostrar un toast genérico.
 async function mostrarErroresProcesamiento(idArchivo, tipoInsumo, nombreArchivo) {
   mostrarModalError({
     titulo: 'No se pudo procesar el archivo',
     tipoInsumo, nombreArchivo,
     motivo: 'Consultando detalle…',
-    items: null,
   });
   try {
     const r = await apiFetch(`${API}/archivos/${idArchivo}/errores`);
@@ -314,14 +300,12 @@ async function mostrarErroresProcesamiento(idArchivo, tipoInsumo, nombreArchivo)
       titulo: 'No se pudo procesar el archivo',
       tipoInsumo, nombreArchivo,
       motivo: causaProcesamiento(d.motivoEstado),
-      items: d.items,
     });
   } catch (e) {
     mostrarModalError({
       titulo: 'No se pudo procesar el archivo',
       tipoInsumo, nombreArchivo,
       motivo: `No se pudo consultar el detalle: ${e.message}`,
-      items: [],
     });
   }
 }
