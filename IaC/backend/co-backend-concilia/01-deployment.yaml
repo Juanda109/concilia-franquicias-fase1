@@ -41,6 +41,12 @@ spec:
                 name: concilia-config
             - secretRef:
                 name: concilia-secrets
+            # OIDC_CLIENT_SECRET y SESSION_SIGN_KEY (ver IaC/README.md para
+            # crear este Secret en el namespace; no se versiona con valores
+            # reales). Sin esto, AuthSettings() revienta al arrancar porque
+            # AUTH_ENABLED=true (del ConfigMap) exige estas dos claves.
+            - secretRef:
+                name: concilia-oidc
 
           env:
             - name: TZ

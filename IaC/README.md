@@ -34,6 +34,36 @@ Flujo real de una carga: front → back (recibe el archivo) → back sube a
 → parseo descarga de minio, parsea, e inserta en **postgres** → parseo
 responde a back → back responde a front.
 
+## Autenticación Nauthilus (Secret `concilia-oidc`)
+
+`co-backend-concilia` exige `OIDC_CLIENT_SECRET` y `SESSION_SIGN_KEY` para
+arrancar (`AUTH_ENABLED=true` por defecto, ver `backend/00-configmap.yaml`
+para el resto de variables no sensibles). Sin este Secret el pod queda en
+crash loop (`AuthSettings()` revienta al importar `main.py`) y OpenShift
+nunca reemplaza al pod/ReplicaSet anterior, así que el front sigue viendo
+el código viejo aunque la imagen nueva ya esté publicada.
+
+Crear el Secret en el namespace (no se versiona con valores reales):
+
+```
+oc create secret generic concilia-oidc \
+  --from-literal=OIDC_CLIENT_SECRET='<secreto real del client OIDC>' \
+  --from-literal=SESSION_SIGN_KEY="$(openssl rand -base64 32)"
+```
+
+`SESSION_SIGN_KEY` es de uso interno (firma la cookie de sesión propia, no
+la valida Nauthilus) — cualquier valor aleatorio de al menos 32 bytes
+sirve, y debe ser el mismo en las dos réplicas (ya lo es: ambas leen el
+mismo Secret). `OIDC_CLIENT_SECRET` sí es el secreto real del client
+registrado en Nauthilus para este `client_id`.
+
+Tras crear o actualizar el Secret, forzar que el Deployment lo recoja
+(un Secret nuevo no reinicia los pods que ya estaban corriendo):
+
+```
+oc rollout restart deployment/co-backend-concilia
+```
+
 ## Estado
 
 Estructura lista (`kustomization.yaml` anidado por categoría,
