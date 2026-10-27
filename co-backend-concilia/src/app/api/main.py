@@ -1,5 +1,14 @@
-import math,uuid
+import logging,math,uuid
 from datetime import date
+
+# Sin esto, logger.info/debug de los modulos de la app (ej. app.auth.oidc) no
+# tienen handler propio y Python los descarta silenciosamente: uvicorn solo
+# configura sus propios loggers (uvicorn, uvicorn.access, uvicorn.error), no
+# el root logger que usan getLogger(__name__) en el resto del codigo.
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+)
 from fastapi import FastAPI,HTTPException,Header,UploadFile,File,Form,BackgroundTasks,Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
