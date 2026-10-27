@@ -31,32 +31,32 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
-          # envFrom ANTES de env: así, si concilia-secrets todavía trae un
-          # DATABASE_URL viejo (apuntando a nuestro propio Postgres, no al de
-          # la plataforma), el DATABASE_URL explícito de abajo —el correcto—
-          # siempre gana (Kubernetes resuelve por orden de aparición; lo que
-          # está más abajo en el pod sobrescribe lo de más arriba).
           envFrom:
             - configMapRef:
                 name: concilia-config
             - secretRef:
                 name: concilia-secrets
-            # OIDC_CLIENT_SECRET y SESSION_SIGN_KEY (ver IaC/README.md para
-            # crear este Secret en el namespace; no se versiona con valores
-            # reales). Sin esto, AuthSettings() revienta al arrancar porque
-            # AUTH_ENABLED=true (del ConfigMap) exige estas dos claves.
             - secretRef:
                 name: concilia-oidc
 
           env:
             - name: TZ
               value: America/Bogota
-
-            # El ConfigMap real (feature/reestructuracion) no trae esta
-            # clave; sin ella el codigo caia en un default viejo
-            # (http://parseo:8081) que no resuelve al Service real.
+            - name: HTTP_PROXY
+              value: "http://172.17.81.140:9480"
+            - name: HTTPS_PROXY
+              value: "http://172.17.81.140:9480"
+            - name: http_proxy
+              value: "http://172.17.81.140:9480"
+            - name: https_proxy
+              value: "http://172.17.81.140:9480"
             - name: PARSEO_API_URL
               value: http://co-api-parseo:8081
+
+            - name: NO_PROXY
+              value: "localhost,127.0.0.1,.svc,.cluster.local,postgresql,opensearch,.co.nextgen.igrupobbva"
+            - name: no_proxy
+              value: "localhost,127.0.0.1,.svc,.cluster.local,postgresql,opensearch,.co.nextgen.igrupobbva"
 
             - name: POSTGRESQL_USER
               valueFrom:
@@ -75,12 +75,6 @@ spec:
                 secretKeyRef:
                   name: postgresql-secret
                   key: POSTGRESQL_DATABASE
-
-            # $(VAR) -no ${VAR}- es la sintaxis real de Kubernetes para
-            # referenciar otra env var YA definida arriba en este mismo pod.
-            # TODO: confirmar que el Service de Postgres real se llama
-            # "postgresql" (lo inferimos de POSTGRESQL_SERVICE_HOST en el pod
-            # postgresql-0, pero no lo vimos confirmado con "oc get svc").
             - name: DATABASE_URL
               value: postgresql://$(POSTGRESQL_USER):$(POSTGRESQL_PASSWORD)@postgresql:5432/$(POSTGRESQL_DATABASE)
           resources:
