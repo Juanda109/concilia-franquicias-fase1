@@ -26,7 +26,10 @@ data:
   OIDC_ISSUER: "https://preidp.work.global.platform.bbva.com/oidc/"
   OIDC_REDIRECT_URI: "https://co-ccrcs-frontend-concilia-ccrcs-genai-dev.apps.work.ocp.co.igrupobbva/"
   FRONTEND_ORIGIN: "https://co-ccrcs-frontend-concilia-ccrcs-genai-dev.apps.work.ocp.co.igrupobbva"
-  OIDC_ALLOWED_ROLES: "conciliacion_adquirencias_Administrador_Plataforma,conciliacion_adquirencias_Analista"
+  # Nauthilus/GIAM entrega el rol sin el prefijo "conciliacion_adquirencias_"
+  # (confirmado en logs: roles recibidos: ['Analista']). Se dejan ambas formas
+  # por si en otro ambiente/claim si viniera con el prefijo completo.
+  OIDC_ALLOWED_ROLES: "conciliacion_adquirencias_Administrador_Plataforma,conciliacion_adquirencias_Analista,Administrador_Plataforma,Analista"
   OIDC_ROLE_CLAIM_PATHS: "realm_access.roles,resource_access.<client_id>.roles,roles,groups"
   OIDC_ROLE_DIAGNOSTICS: "false"
   # Proxy corporativo (Zscaler) para salir a internet hacia Nauthilus.
