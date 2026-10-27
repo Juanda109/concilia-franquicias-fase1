@@ -16,9 +16,15 @@ class AuthSettings(BaseSettings):
     oidc_redirect_uri: str = (
         "https://co-ccrcs-frontend-concilia-ccrcs-genai-dev.apps.work.ocp.co.igrupobbva/"
     )
+    # Nauthilus/GIAM entrega el rol sin el prefijo del sistema gestionado
+    # (confirmado en logs: roles recibidos: ['Analista'], no
+    # 'conciliacion_adquirencias_Analista'). Se dejan ambas formas por si en
+    # otro ambiente/claim si viniera con el prefijo completo.
     oidc_allowed_roles: str = (
         "conciliacion_adquirencias_Administrador_Plataforma,"
-        "conciliacion_adquirencias_Analista"
+        "conciliacion_adquirencias_Analista,"
+        "Administrador_Plataforma,"
+        "Analista"
     )
     oidc_role_claim_paths: str = (
         "realm_access.roles,resource_access.<client_id>.roles,roles,groups"
