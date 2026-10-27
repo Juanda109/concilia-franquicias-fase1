@@ -29,3 +29,13 @@ data:
   OIDC_ALLOWED_ROLES: "conciliacion_adquirencias_Administrador_Plataforma,conciliacion_adquirencias_Analista"
   OIDC_ROLE_CLAIM_PATHS: "realm_access.roles,resource_access.<client_id>.roles,roles,groups"
   OIDC_ROLE_DIAGNOSTICS: "false"
+  # Proxy corporativo (Zscaler) para salir a internet hacia Nauthilus.
+  # httpx (usado en oidc.py) respeta estas variables automaticamente
+  # (trust_env=True por defecto), sin necesidad de cambios de codigo.
+  # Valores confirmados funcionando en el pod minio-0 de este mismo namespace.
+  HTTP_PROXY: "http://172.17.81.140:9480"
+  HTTPS_PROXY: "http://172.17.81.140:9480"
+  NO_PROXY: "localhost,80.0.0.0/8,127.0.0.1,.ocp.co.igrupobbva,.co.igrupobbva,.apps.ocp.co.igrupobbva,10.96.0.0/12,kubernetes.default.svc,.svc,.cluster.local"
+  http_proxy: "http://172.17.81.140:9480"
+  https_proxy: "http://172.17.81.140:9480"
+  no_proxy: "localhost,80.0.0.0/8,127.0.0.1,.ocp.co.igrupobbva,.co.igrupobbva,.apps.ocp.co.igrupobbva,10.96.0.0/12,kubernetes.default.svc,.svc,.cluster.local"
