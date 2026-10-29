@@ -62,6 +62,9 @@ spec:
           volumeMounts:
             - name: postgresql-data
               mountPath: /var/lib/pgsql/data
+            - name: postgresql-init
+              mountPath: /opt/app-root/src/postgresql-init
+              readOnly: true
           startupProbe:
             exec:
               command:
@@ -101,3 +104,6 @@ spec:
         - name: postgresql-data
           persistentVolumeClaim:
             claimName: postgresql-data
+        - name: postgresql-init
+          configMap:
+            name: concilia-postgres-initdb
