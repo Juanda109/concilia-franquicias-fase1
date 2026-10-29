@@ -25,11 +25,8 @@ spec:
             capabilities:
               drop: ["ALL"]
           env:
-            # Apunta al Postgres real confirmado en el clúster (Service
-            # "postgresql", secret "postgresql-secret") — NO al Deployment
-            # "co-db-concilia" de este mismo folder. Si en algún momento se
-            # confirma que sí se usa el nuestro, cambiar host y secretKeyRef
-            # a "co-db-concilia" / "concilia-postgres-secret".
+            # Apunta al StatefulSet "postgresql" de este mismo folder
+            # (Service "postgresql", secret "postgresql-secret").
             - name: POSTGRESQL_USER
               valueFrom: {secretKeyRef: {name: postgresql-secret, key: POSTGRESQL_USER}}
             - name: POSTGRESQL_PASSWORD
@@ -49,6 +46,8 @@ spec:
               PGPASSWORD="$POSTGRESQL_PASSWORD" psql -h postgresql -U "$POSTGRESQL_USER" -d "$POSTGRESQL_DATABASE" -f /sql/00_concilia_fase1_ddl_21_tablas.sql
               echo "Aplicando seed (12 insumos esperados, idempotente)..."
               PGPASSWORD="$POSTGRESQL_PASSWORD" psql -h postgresql -U "$POSTGRESQL_USER" -d "$POSTGRESQL_DATABASE" -f /sql/22_seed_insumos_esperados.sql
+              echo "Aplicando seed de BINES/canje (idempotente)..."
+              PGPASSWORD="$POSTGRESQL_PASSWORD" psql -h postgresql -U "$POSTGRESQL_USER" -d "$POSTGRESQL_DATABASE" -f /sql/23_seed_bines_canje.sql
               echo "Listo."
           volumeMounts:
             - name: sql
