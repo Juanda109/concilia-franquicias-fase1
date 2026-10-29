@@ -21,6 +21,7 @@ from app.repositories.database import connection
 from app.repositories.jornada import JornadaRepository
 from app.repositories.archivo import ArchivoRepository as ArchivoRepo
 from app.repositories.content import ContentRepository
+from app.repositories.trazabilidad import TrazabilidadRepository
 from app.clients import minio_client
 from app.clients.parseo_client import parsear
 app=FastAPI(title="Concilia Franquicias Fase 1 - Back",version="2.4.0")
@@ -28,7 +29,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[auth_settings.frontend_origin],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
     allow_headers=["Content-Type", "X-Correlation-Id"],
 )
 app.include_router(auth_router)
@@ -36,11 +37,17 @@ app.include_router(auth_router)
 @app.middleware("http")
 async def protect_api(request: Request, call_next):
     path = request.url.path
-    if request.method != "OPTIONS" and auth_settings.auth_enabled and (path == "/api/v1" or path.startswith("/api/v1/")):
-        try:
-            read_session(request.cookies.get(COOKIE_NAME))
-        except HTTPException as exc:
-            return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+    # request.state.usuario queda disponible para los endpoints que registran
+    # trazabilidad (ver TrazabilidadRepository) - antes read_session() se
+    # llamaba solo para validar y su resultado (sub/email/roles) se
+    # descartaba, asi que ninguna accion quedaba asociada a quien la hizo.
+    request.state.usuario = {"sub": "local-dev", "email": None, "name": None, "roles": []}
+    if request.method != "OPTIONS" and (path == "/api/v1" or path.startswith("/api/v1/")):
+        if auth_settings.auth_enabled:
+            try:
+                request.state.usuario = read_session(request.cookies.get(COOKIE_NAME))
+            except HTTPException as exc:
+                return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
     return await call_next(request)
 
 ESTADO_RECEPCION_MAP={"Recibido":"RECIBIDO","No recibido":"NO_RECIBIDO","Rechazado":"RECHAZADO"}
@@ -112,22 +119,45 @@ def contenido(id_archivo:int,page:int=0,pageSize:int=30):
     if page<0 or pageSize<1 or pageSize>100:
         raise HTTPException(400,'PAGINACION_INVALIDA')
     with connection() as c:
-        row=c.execute('''SELECT a.ESTADO_RECEPCION,a.ESTADO_PROCESAMIENTO,a.NOMBRE_ARCHIVO,a.CORRELATION_ID,i.TIPO_INSUMO
+        row=c.execute('''SELECT a.ESTADO_RECEPCION,a.ESTADO_PROCESAMIENTO,a.NOMBRE_ARCHIVO,a.CORRELATION_ID,a.MOTIVO_ESTADO,i.TIPO_INSUMO
  FROM CON_ARCHIVO_CARGA a JOIN CON_INSUMO_ESPERADO i ON i.ID_INSUMO=a.ID_INSUMO WHERE a.ID_ARCHIVO=%s''',(id_archivo,)).fetchone()
         if not row: raise HTTPException(404,'ARCHIVO_NO_ENCONTRADO')
-        estado_recepcion,estado_procesamiento,nombre_archivo,correlation_id,tipo_insumo=row
+        estado_recepcion,estado_procesamiento,nombre_archivo,correlation_id,motivo_estado,tipo_insumo=row
         # "Procesando" se permite a propósito: deja ver en vivo lo que ya se
         # insertó (DELETE+INSERT incremental en parseo) mientras el archivo
-        # sigue cargando, no solo cuando ya terminó.
-        if estado_procesamiento not in ('Procesado','Procesando'): raise HTTPException(409,'ARCHIVO_NO_DISPONIBLE')
-        items,total,headers=ContentRepository(c).page(tipo_insumo,id_archivo,page,pageSize)
+        # sigue cargando, no solo cuando ya terminó. En Error/Rechazado no hay
+        # contenido tabular, pero igual se deja "ver detalle" para mostrar el
+        # motivo guardado (ver _acciones_permitidas) en vez de un 409.
+        disponible=estado_procesamiento in ('Procesado','Procesando','Error') or estado_recepcion=='Rechazado'
+        if not disponible: raise HTTPException(409,'ARCHIVO_NO_DISPONIBLE')
+        if estado_procesamiento in ('Procesado','Procesando'):
+            items,total,headers=ContentRepository(c).page(tipo_insumo,id_archivo,page,pageSize)
+        else:
+            items,total,headers=[],0,[]
     return {
         'idArchivo':id_archivo,'tipoInsumo':tipo_insumo,'nombreArchivo':nombre_archivo,
         'estadoRecepcion':ESTADO_RECEPCION_MAP.get(estado_recepcion,'ESPERADO'),
         'estadoProcesamiento':ESTADO_PROCESAMIENTO_MAP.get(estado_procesamiento,'PENDIENTE'),
-        'correlationId':correlation_id,'headers':headers,'items':items,
+        'correlationId':correlation_id,'headers':headers,'items':items,'motivoEstado':motivo_estado,
         'pagination':{'page':page,'pageSize':pageSize,'totalItems':total,'totalPages':math.ceil(total/pageSize) if total else 0},
     }
+
+@app.delete('/api/v1/archivos/{id_archivo}')
+def eliminar_archivo(id_archivo:int,request:Request):
+    with connection() as c:
+        datos,error=ArchivoRepo(c).obtener_para_eliminar(id_archivo)
+        if error=='ARCHIVO_NO_ENCONTRADO': raise HTTPException(404,error)
+        if error=='ELIMINACION_NO_PERMITIDA': raise HTTPException(409,error)
+        if datos['nombreArchivo']:
+            _,fecha_contable=JornadaRepository(c).resumen(datos['idJornada'])
+            minio_key=f"{fecha_contable.isoformat()}/{datos['tipoInsumo']}/{id_archivo}_{datos['nombreArchivo']}"
+            try: minio_client.eliminar(minio_key)
+            except Exception: pass  # un rechazo al subir nunca llega a crear el objeto real
+        ContentRepository(c).delete(datos['tipoInsumo'],id_archivo)
+        ArchivoRepo(c).eliminar_carga(id_archivo)
+        TrazabilidadRepository(c).add(id_archivo,datos['estadoRecepcion'],'No recibido','ELIMINACION_ARCHIVO',
+            datos['correlationId'],request.state.usuario,{'nombreArchivoEliminado':datos['nombreArchivo']})
+    return {'idArchivo':id_archivo,'estado':'ELIMINADO'}
 
 def _procesar_en_segundo_plano(id_archivo:int,tipo_insumo:str,minio_key:str,correlation_id:str):
     """El parseo puede tardar minutos en archivos grandes (inserta registro a
@@ -151,7 +181,7 @@ def _procesar_en_segundo_plano(id_archivo:int,tipo_insumo:str,minio_key:str,corr
             ArchivoRepo(c).update_state(id_archivo,'ESTADO_PROCESAMIENTO','Error',str(exc.detail))
 
 @app.post('/api/v1/jornadas/{id_jornada}/archivos')
-def cargar_archivo_original(id_jornada:int,background_tasks:BackgroundTasks,idArchivo:int=Form(...),archivo:UploadFile=File(...),
+def cargar_archivo_original(id_jornada:int,background_tasks:BackgroundTasks,request:Request,idArchivo:int=Form(...),archivo:UploadFile=File(...),
                              x_correlation_id:str|None=Header(None,alias='X-Correlation-Id')):
     """Carga manual del archivo original esperado (CARGAR_ARCHIVO_ORIGINAL):
     idArchivo identifica el insumo esperado -placeholder ya creado al resolver
@@ -160,7 +190,7 @@ def cargar_archivo_original(id_jornada:int,background_tasks:BackgroundTasks,idAr
         resumen=JornadaRepository(c).resumen(id_jornada)
         if not resumen: raise HTTPException(404,'JORNADA_NO_ENCONTRADA')
         _,fecha_contable=resumen
-        tipo_insumo,correlation_id_actual,error=ArchivoRepo(c).obtener_para_carga(idArchivo,id_jornada)
+        tipo_insumo,correlation_id_actual,estado_recepcion_anterior,error=ArchivoRepo(c).obtener_para_carga(idArchivo,id_jornada)
         if error=='ARCHIVO_NO_ENCONTRADO' or error=='ARCHIVO_NO_PERTENECE_A_JORNADA': raise HTTPException(404,error)
         if error=='CARGA_NO_PERMITIDA': raise HTTPException(409,error)
 
@@ -168,12 +198,25 @@ def cargar_archivo_original(id_jornada:int,background_tasks:BackgroundTasks,idAr
         fecha_contable_iso=fecha_contable.isoformat()
         tiene_regla,coincide,fecha_archivo=validar_nombre(tipo_insumo,nombre_archivo,fecha_contable_iso)
         if tiene_regla and not coincide:
-            raise HTTPException(400,f'NOMBRE_ARCHIVO_INVALIDO: el archivo {nombre_archivo} no cumple la estructura esperada para {tipo_insumo}')
+            motivo=f'NOMBRE_ARCHIVO_INVALIDO: el archivo {nombre_archivo} no cumple la estructura esperada para {tipo_insumo}'
+            ArchivoRepo(c).marcar_rechazado(idArchivo,nombre_archivo,motivo)
+            TrazabilidadRepository(c).add(idArchivo,estado_recepcion_anterior,'Rechazado','RECHAZO_CARGA',
+                correlation_id_actual,request.state.usuario,{'nombreArchivo':nombre_archivo,'motivo':motivo})
+            c.commit()  # sin esto, el rollback automatico de "with connection()" al
+            # propagar el HTTPException deshace tambien el UPDATE/INSERT de arriba
+            raise HTTPException(400,motivo)
         if fecha_archivo and fecha_archivo!=fecha_contable_iso:
-            raise HTTPException(409,f'FECHA_NO_COINCIDE_CON_ARCHIVO: el archivo {nombre_archivo} corresponde a {fecha_archivo}, no a {fecha_contable_iso}')
+            motivo=f'FECHA_NO_COINCIDE_CON_ARCHIVO: el archivo {nombre_archivo} corresponde a {fecha_archivo}, no a {fecha_contable_iso}'
+            ArchivoRepo(c).marcar_rechazado(idArchivo,nombre_archivo,motivo)
+            TrazabilidadRepository(c).add(idArchivo,estado_recepcion_anterior,'Rechazado','RECHAZO_CARGA',
+                correlation_id_actual,request.state.usuario,{'nombreArchivo':nombre_archivo,'motivo':motivo})
+            c.commit()
+            raise HTTPException(409,motivo)
 
         correlation_id=x_correlation_id or correlation_id_actual
         ArchivoRepo(c).marcar_recibido(idArchivo,nombre_archivo,correlation_id)
+        TrazabilidadRepository(c).add(idArchivo,estado_recepcion_anterior,'Recibido','CARGA_ARCHIVO',
+            correlation_id,request.state.usuario,{'nombreArchivo':nombre_archivo})
 
     minio_key=f"{fecha_contable_iso}/{tipo_insumo}/{idArchivo}_{nombre_archivo}"
     minio_client.subir(minio_key,archivo.file.read())

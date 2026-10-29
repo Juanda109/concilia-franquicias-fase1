@@ -40,3 +40,16 @@ class ContentRepository:
         rows=self._rows(cur,all_cols,visibles)
         total=self.conn.execute(f'SELECT COUNT(*) FROM {table} WHERE ID_ARCHIVO=%s',(id_archivo,)).fetchone()[0]
         return rows,total,headers
+    def delete(self,tipo,id_archivo):
+        if tipo=='VSS':
+            self.conn.execute('''DELETE FROM CON_VSS_DETALLE WHERE ID_VSS_REPORTE IN
+ (SELECT ID_VSS_REPORTE FROM CON_VSS_REPORTE WHERE ID_ARCHIVO=%s)''',(id_archivo,))
+            self.conn.execute('DELETE FROM CON_VSS_REPORTE WHERE ID_ARCHIVO=%s',(id_archivo,))
+            return
+        table=TABLES.get(tipo)
+        # A diferencia de page(), un tipo sin tabla de resultado (insumo aun
+        # sin parser, ej. PMPD1322/PMRD8000) no es un error aqui: no hay nada
+        # que borrar, y ELIMINAR_ARCHIVO puede llegar a mostrarse para
+        # cualquier insumo que se haya intentado cargar.
+        if not table: return
+        self.conn.execute(f'DELETE FROM {table} WHERE ID_ARCHIVO=%s',(id_archivo,))
