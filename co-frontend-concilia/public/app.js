@@ -182,6 +182,7 @@ const pollers = new Map(); // idArchivo -> intervalId, para no duplicar polling 
 // Íconos minimalistas (SVG en línea, trazo simple, sin dependencias externas)
 const ICON_EYE = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
 const ICON_UPLOAD = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>';
+const ICON_TRASH = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
 
 function toISO(d) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -284,30 +285,25 @@ function causaProcesamiento(motivo) {
   return motivo;
 }
 
-// Al terminar en "Error", se consulta el motivo guardado (MOTIVO_ESTADO) en
-// vez de solo mostrar un toast genérico.
-async function mostrarErroresProcesamiento(idArchivo, tipoInsumo, nombreArchivo) {
-  mostrarModalError({
-    titulo: 'No se pudo procesar el archivo',
-    tipoInsumo, nombreArchivo,
-    motivo: 'Consultando detalle…',
-  });
+// Reconsulta el motivo guardado (MOTIVO_ESTADO, vía GET /archivos/{id}/errores)
+// para poder reabrir el detalle de un rechazo/error en cualquier momento, no
+// solo en el instante en que ocurrió. `traducir` decide cómo pasar de código
+// crudo a texto en español: causaProcesamiento para fallas de procesamiento,
+// mensajeErrorCarga para rechazos al momento de subir (nombre/fecha).
+async function mostrarMotivoGuardado(idArchivo, tipoInsumo, nombreArchivo, titulo, traducir) {
+  mostrarModalError({ titulo, tipoInsumo, nombreArchivo, motivo: 'Consultando detalle…' });
   try {
     const r = await apiFetch(`${API}/archivos/${idArchivo}/errores`);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const d = await r.json();
-    mostrarModalError({
-      titulo: 'No se pudo procesar el archivo',
-      tipoInsumo, nombreArchivo,
-      motivo: causaProcesamiento(d.motivoEstado),
-    });
+    mostrarModalError({ titulo, tipoInsumo, nombreArchivo, motivo: traducir(d.motivoEstado) });
   } catch (e) {
-    mostrarModalError({
-      titulo: 'No se pudo procesar el archivo',
-      tipoInsumo, nombreArchivo,
-      motivo: `No se pudo consultar el detalle: ${e.message}`,
-    });
+    mostrarModalError({ titulo, tipoInsumo, nombreArchivo, motivo: `No se pudo consultar el detalle: ${e.message}` });
   }
+}
+
+function mostrarErroresProcesamiento(idArchivo, tipoInsumo, nombreArchivo) {
+  return mostrarMotivoGuardado(idArchivo, tipoInsumo, nombreArchivo, 'No se pudo procesar el archivo', causaProcesamiento);
 }
 
 async function checkHealth() {
@@ -414,6 +410,10 @@ function renderTablaInsumos(insumos) {
     // CONSULTAR cualquier fecha anterior, pero no subir archivos para ella.
     const cargarBtn = acciones.includes('CARGAR_ARCHIVO_ORIGINAL') && fechaInput.value === HOY_ISO
       ? `<button type="button" class="iconBtn btnUpload" data-id="${a.idArchivo}" title="Cargar archivo original">${ICON_UPLOAD}</button>` : '';
+    // Mismo criterio que cargarBtn: solo se puede borrar viendo hoy, no un
+    // día histórico ya cerrado.
+    const eliminarBtn = acciones.includes('ELIMINAR_ARCHIVO') && fechaInput.value === HOY_ISO
+      ? `<button type="button" class="iconBtn btnEliminar" data-id="${a.idArchivo}" title="Eliminar archivo cargado">${ICON_TRASH}</button>` : '';
     return `
     <tr data-id="${a.idArchivo}">
       <td>${a.idArchivo}</td>
@@ -423,7 +423,7 @@ function renderTablaInsumos(insumos) {
       <td>${celdaRegistros(a)}</td>
       <td>${badge(a.estadoRecepcion)}</td>
       <td>${badge(a.estadoProcesamiento)}</td>
-      <td class="actionCell">${verBtn}${cargarBtn}</td>
+      <td class="actionCell">${verBtn}${cargarBtn}${eliminarBtn}</td>
     </tr>`;
   }).join('');
   tblArchivos.querySelectorAll('.btnView').forEach((btn) => {
@@ -437,6 +437,26 @@ function renderTablaInsumos(insumos) {
       input.click();
     });
   });
+  tblArchivos.querySelectorAll('.btnEliminar').forEach((btn) => {
+    btn.addEventListener('click', () => eliminarArchivo(Number(btn.dataset.id)));
+  });
+}
+
+async function eliminarArchivo(idArchivo) {
+  if (!confirm('¿Eliminar el archivo cargado para este insumo? Se borrará también la información ya procesada en base de datos. Esta acción no se puede deshacer.')) return;
+  try {
+    const r = await apiFetch(`${API}/archivos/${idArchivo}`, { method: 'DELETE' });
+    if (!r.ok) {
+      let detalle = `HTTP ${r.status}`;
+      try { detalle = (await r.json()).detail ?? detalle; } catch { /* body no es JSON */ }
+      toast(`No se pudo eliminar: ${detalle}`, true);
+      return;
+    }
+    toast('Archivo eliminado.');
+    await cargarJornada();
+  } catch (e) {
+    toast(`Error de red al eliminar: ${e.message}`, true);
+  }
 }
 
 // ---- Vista dedicada de detalle de un insumo ----
@@ -479,6 +499,35 @@ async function cargarContenidoDetalle() {
 }
 
 function renderDetallePagina(d) {
+  // Error de procesamiento o rechazo al subir: no hay contenido tabular que
+  // paginar, se muestra el motivo guardado (MOTIVO_ESTADO) en su lugar -
+  // antes esto llegaba aquí como un 409 genérico ("aún se encuentra en
+  // procesamiento"), que era engañoso para un archivo que en realidad falló
+  // o fue rechazado, no uno que sigue en curso.
+  if (d.motivoEstado) {
+    // Un rechazo al subir también queda con estadoProcesamiento=ERROR (para
+    // que el estado de la jornada lo refleje), pero el badge/traducción debe
+    // seguir siendo el de RECHAZADO -más específico- cuando aplica.
+    const esRechazo = d.estadoRecepcion === 'RECHAZADO';
+    const motivo = esRechazo ? mensajeErrorCarga(d.motivoEstado) : causaProcesamiento(d.motivoEstado);
+    detalleInsumoContent.innerHTML = `
+      <div class="detailPageHead">
+        <div>
+          <h1>${d.nombreArchivo ?? '(sin nombre)'}</h1>
+          <div class="sub">${d.tipoInsumo}</div>
+        </div>
+        <div class="detailStatus">${badge(esRechazo ? d.estadoRecepcion : d.estadoProcesamiento)}</div>
+      </div>
+      <div class="detailMetrics">
+        <div class="detailMetric"><small>Recepción</small><strong>${ESTADO_LABEL[d.estadoRecepcion] ?? d.estadoRecepcion}</strong></div>
+        <div class="detailMetric"><small>Procesamiento</small><strong>${ESTADO_LABEL[d.estadoProcesamiento] ?? d.estadoProcesamiento}</strong></div>
+      </div>
+      <div class="card detailTableCard section">
+        <div class="detailTableTop"><div class="title">Motivo</div></div>
+        <div class="emptyDetail">${motivo}</div>
+      </div>`;
+    return;
+  }
   const { page, pageSize, totalItems, totalPages } = d.pagination;
   const start = totalItems ? page * pageSize + 1 : 0;
   const end = Math.min(page * pageSize + d.items.length, totalItems);

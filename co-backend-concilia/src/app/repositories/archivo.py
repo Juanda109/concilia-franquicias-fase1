@@ -3,14 +3,24 @@ import uuid
 
 def _acciones_permitidas(estado_recepcion, estado_procesamiento):
     acciones = []
-    if estado_procesamiento in ('Procesando', 'Procesado'):
+    # También se puede "ver detalle" en Error/Rechazado: ahí no hay contenido
+    # tabular, pero la vista de detalle muestra el motivo guardado (ver
+    # GET /archivos/{id}/contenido, que para estos casos responde el motivo
+    # en vez de filas).
+    if estado_procesamiento in ('Procesando', 'Procesado', 'Error') or estado_recepcion == 'Rechazado':
         acciones.append('VER_CONTENIDO')
-    # Permite cargar de nuevo tanto si nunca llegó como si llegó pero el
-    # procesamiento terminó en error (reintento) - nunca mientras está
-    # procesando, para no pisar un parseo en curso.
+    # Permite cargar de nuevo si nunca llegó, si se rechazó al subir (nombre o
+    # fecha no coincide), o si llegó pero el procesamiento terminó en error
+    # (reintento) - nunca mientras está procesando, para no pisar un parseo
+    # en curso.
     if estado_procesamiento != 'Procesando' and (
-            estado_recepcion == 'No recibido' or estado_procesamiento == 'Error'):
+            estado_recepcion in ('No recibido', 'Rechazado') or estado_procesamiento == 'Error'):
         acciones.append('CARGAR_ARCHIVO_ORIGINAL')
+    # Solo hay algo que borrar si se intentó cargar algo (aceptado o
+    # rechazado) - nunca mientras está procesando, para no borrar bajo un
+    # parseo en curso.
+    if estado_procesamiento != 'Procesando' and estado_recepcion != 'No recibido':
+        acciones.append('ELIMINAR_ARCHIVO')
     return acciones
 
 
@@ -79,13 +89,48 @@ class ArchivoRepository:
  FROM CON_ARCHIVO_CARGA a JOIN CON_INSUMO_ESPERADO i ON i.ID_INSUMO=a.ID_INSUMO WHERE a.ID_ARCHIVO=%s""",
             (id_archivo,)).fetchone()
         if not row:
-            return None, None, 'ARCHIVO_NO_ENCONTRADO'
+            return None, None, None, 'ARCHIVO_NO_ENCONTRADO'
         id_jornada_real, estado_recepcion, estado_procesamiento, correlation_id, tipo_insumo = row
         if id_jornada_real != id_jornada:
-            return None, None, 'ARCHIVO_NO_PERTENECE_A_JORNADA'
+            return None, None, None, 'ARCHIVO_NO_PERTENECE_A_JORNADA'
         if 'CARGAR_ARCHIVO_ORIGINAL' not in _acciones_permitidas(estado_recepcion, estado_procesamiento):
-            return None, None, 'CARGA_NO_PERMITIDA'
-        return tipo_insumo, correlation_id, None
+            return None, None, None, 'CARGA_NO_PERMITIDA'
+        return tipo_insumo, correlation_id, estado_recepcion, None
+
+    def obtener_para_eliminar(self, id_archivo):
+        row = self.conn.execute(
+            """SELECT a.ID_JORNADA,a.ESTADO_RECEPCION,a.ESTADO_PROCESAMIENTO,a.NOMBRE_ARCHIVO,a.CORRELATION_ID,i.TIPO_INSUMO
+ FROM CON_ARCHIVO_CARGA a JOIN CON_INSUMO_ESPERADO i ON i.ID_INSUMO=a.ID_INSUMO WHERE a.ID_ARCHIVO=%s""",
+            (id_archivo,)).fetchone()
+        if not row:
+            return None, 'ARCHIVO_NO_ENCONTRADO'
+        id_jornada, estado_recepcion, estado_procesamiento, nombre_archivo, correlation_id, tipo_insumo = row
+        if 'ELIMINAR_ARCHIVO' not in _acciones_permitidas(estado_recepcion, estado_procesamiento):
+            return None, 'ELIMINACION_NO_PERMITIDA'
+        return {
+            "idJornada": id_jornada, "tipoInsumo": tipo_insumo, "nombreArchivo": nombre_archivo,
+            "estadoRecepcion": estado_recepcion, "correlationId": correlation_id,
+        }, None
+
+    def eliminar_carga(self, id_archivo):
+        """Vuelve la fila al mismo estado "placeholder" que deja ensure_insumos
+        para un insumo nunca cargado, para poder subir el archivo de cero."""
+        self.conn.execute("""UPDATE CON_ARCHIVO_CARGA SET NOMBRE_ARCHIVO=NULL,ESTADO_RECEPCION='No recibido',
+ ESTADO_PROCESAMIENTO='Pendiente',TOTAL_REGISTROS=NULL,REGISTROS_PROCESADOS=0,MOTIVO_ESTADO=NULL,
+ FECHA_CAMBIO_ESTADO=CURRENT_TIMESTAMP WHERE ID_ARCHIVO=%s""",
+            (id_archivo,))
+
+    def marcar_rechazado(self, id_archivo, nombre_archivo, motivo):
+        """Carga rechazada antes de aceptarse (nombre/fecha no coincide con lo
+        esperado) - se guarda el nombre intentado y el motivo para que quede
+        visible en la tabla (ver /archivos/{id}/errores), no solo en el modal
+        que se muestra en el momento del rechazo. También marca
+        ESTADO_PROCESAMIENTO='Error' -no solo ESTADO_RECEPCION- para que
+        _estado_jornada() (que solo mira estadoProcesamiento) refleje el
+        problema a nivel de jornada, no solo en la fila del insumo."""
+        self.conn.execute("""UPDATE CON_ARCHIVO_CARGA SET NOMBRE_ARCHIVO=%s,ESTADO_RECEPCION='Rechazado',
+ ESTADO_PROCESAMIENTO='Error',MOTIVO_ESTADO=%s,FECHA_CAMBIO_ESTADO=CURRENT_TIMESTAMP WHERE ID_ARCHIVO=%s""",
+            (nombre_archivo, motivo, id_archivo))
 
     def marcar_recibido(self, id_archivo, nombre_archivo, correlation_id):
         # Limpia totales/motivo de un intento anterior (reintento tras error): sin
