@@ -32,7 +32,7 @@ spec:
                 topologyKey: kubernetes.io/hostname
       containers:
         - name: backend
-          image: artifactory.globaldevtools.bbva.com:443/co-genai-public-cloud-docker-local/ccrcs-genai/co-backend-concilia:v1.10
+          image: artifactory.globaldevtools.bbva.com:443/co-genai-public-cloud-docker-local/ccrcs-genai/co-backend-concilia:v1.12
           imagePullPolicy: Always
       
           ports:
