@@ -62,9 +62,9 @@ spec:
               value: http://co-api-parseo:8081
 
             - name: NO_PROXY
-              value: "localhost,127.0.0.1,.svc,.cluster.local,postgresql,opensearch,.co.nextgen.igrupobbva"
+              value: "localhost,127.0.0.1,.svc,.cluster.local,postgresql,opensearch,co-api-parseo,.co.nextgen.igrupobbva"
             - name: no_proxy
-              value: "localhost,127.0.0.1,.svc,.cluster.local,postgresql,opensearch,.co.nextgen.igrupobbva"
+              value: "localhost,127.0.0.1,.svc,.cluster.local,postgresql,opensearch,co-api-parseo,.co.nextgen.igrupobbva"
 
             - name: POSTGRESQL_USER
               valueFrom:
