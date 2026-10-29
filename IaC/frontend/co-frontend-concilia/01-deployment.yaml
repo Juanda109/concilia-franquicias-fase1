@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/name: co-frontend-concilia
     app.kubernetes.io/part-of: frontend
 spec:
-  replicas: 1
+  replicas: 2
   revisionHistoryLimit: 10
   progressDeadlineSeconds: 600
   selector:
@@ -30,6 +30,15 @@ spec:
       terminationGracePeriodSeconds: 30
       dnsPolicy: ClusterFirst
       schedulerName: default-scheduler
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: co-frontend-concilia
+                topologyKey: kubernetes.io/hostname
       containers:
         - name: co-frontend-concilia
           image: 'artifactory.globaldevtools.bbva.com:443/co-genai-public-cloud-docker-local/ccrcs-genai/co-frontend-concilia:v1.8'
@@ -38,6 +47,22 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           resources: {}

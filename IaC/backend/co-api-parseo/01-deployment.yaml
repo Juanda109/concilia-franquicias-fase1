@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/component: backend-parseo
     app.openshift.io/runtime: python
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: co-api-parseo
@@ -26,6 +26,15 @@ spec:
         runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: co-api-parseo
+                topologyKey: kubernetes.io/hostname
       containers:
         - name: parseo
           image: artifactory.globaldevtools.bbva.com:443/co-genai-public-cloud-docker-local/ccrcs-genai/co-api-parseo:v1.8

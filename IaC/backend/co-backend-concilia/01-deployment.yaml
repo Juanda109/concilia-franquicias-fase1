@@ -21,7 +21,15 @@ spec:
         app.kubernetes.io/part-of: backend
         app.kubernetes.io/component: backend-api
     spec:
-      
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: co-backend-concilia
+                topologyKey: kubernetes.io/hostname
       containers:
         - name: backend
           image: artifactory.globaldevtools.bbva.com:443/co-genai-public-cloud-docker-local/ccrcs-genai/co-backend-concilia:v1.10
