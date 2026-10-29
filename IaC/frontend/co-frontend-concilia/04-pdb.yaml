@@ -1,0 +1,12 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: co-frontend-concilia
+  labels:
+    app: co-frontend-concilia
+    app.kubernetes.io/part-of: frontend
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: co-frontend-concilia

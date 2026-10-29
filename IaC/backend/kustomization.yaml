@@ -3,5 +3,7 @@ kind: Kustomization
 resources:
   - co-backend-concilia/01-deployment.yaml
   - co-backend-concilia/02-service.yaml
+  - co-backend-concilia/03-pdb.yaml
   - co-api-parseo/01-deployment.yaml
   - co-api-parseo/02-service.yaml
+  - co-api-parseo/03-pdb.yaml

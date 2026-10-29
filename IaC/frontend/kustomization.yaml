@@ -5,3 +5,4 @@ resources:
   - co-frontend-concilia/01-deployment.yaml
   - co-frontend-concilia/02-service.yaml
   - co-frontend-concilia/03-route.yaml
+  - co-frontend-concilia/04-pdb.yaml
