@@ -4,9 +4,9 @@ metadata:
   name: minio
   labels:
     app: minio
-    app.kubernetes.io/part-of: date
+    app.kubernetes.io/part-of: document-validation
 spec:
-  serviceName: minio
+  serviceName: minio-headless
   replicas: 1
   selector:
     matchLabels:
@@ -15,22 +15,60 @@ spec:
     metadata:
       labels:
         app: minio
+        app.kubernetes.io/part-of: document-validation
     spec:
+      serviceAccountName: default
+      imagePullSecrets:
+        - name: artifactory-auth
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: minio
-          image: minio/minio:RELEASE.2025-04-22T22-12-26Z
+          image: artifactory.globaldevtools.bbva.com:443/co-genai-public-cloud-docker-local/minio/minio@sha256:5e277e67ee7109a74942717e574062facf89bc78b66464a653a8a4cb0f75803b
+          imagePullPolicy: IfNotPresent
           args:
             - server
             - /data
             - --console-address
-            - ":9001"
-          envFrom:
-            - secretRef:
-                name: minio-creds
+            - :9001
+          env:
+            # El Secret "minio-secret" se crea directamente en OKD (seccion
+            # Secrets), no se versiona en este repo.
+            - name: MINIO_ROOT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secret
+                  key: MINIO_ROOT_USER
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secret
+                  key: MINIO_ROOT_PASSWORD
           ports:
-            - name: api
+            - name: s3-api
               containerPort: 9000
+              protocol: TCP
             - name: console
               containerPort: 9001
+              protocol: TCP
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           resources:
             requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 2Gi
+          volumeMounts:
+            - name: minio-data
+              mountPath: /data
+      volumes:
+        - name: minio-data
+          persistentVolumeClaim:
+            claimName: minio-data-pvc
