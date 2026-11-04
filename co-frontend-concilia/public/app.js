@@ -152,13 +152,18 @@ el('logoutButton').addEventListener('click', async () => {
   try {
     const response = await fetch('/api/v0/auth/logout', { method: 'POST', credentials: 'include' });
     if (!response.ok) throw new Error();
+    const data = await response.json().catch(() => ({}));
     sessionStorage.removeItem('oidc_state');
     sessionStorage.removeItem('oidc_code_verifier');
     for (const timer of pollers.values()) clearInterval(timer);
     pollers.clear();
     appStarted = false;
     authRedirectStarted = false;
-    void redirectToLogin();
+    // Si el backend pudo armar el RP-Initiated Logout contra Nauthilus,
+    // hay que ir ahí (cierra también la sesión SSO del IdP) y no al
+    // authorize de siempre, que solo la retomaría en silencio.
+    if (data.endSessionUrl) window.location.assign(data.endSessionUrl);
+    else void redirectToLogin();
   } catch {
     toast('No se pudo cerrar la sesión. Intenta de nuevo.', true);
   }

@@ -219,6 +219,10 @@ class OidcClient:
             "email": claims.get("email") or claims.get("mail"),
             "name": claims.get("name") or claims.get("preferred_username"),
             "roles": application_roles,
+            # Se conserva para poder armar el RP-Initiated Logout
+            # (id_token_hint) contra Nauthilus al cerrar sesión - nunca se
+            # expone al frontend, solo viaja dentro de la cookie de sesión.
+            "id_token": token_data["id_token"],
         }
 
 
