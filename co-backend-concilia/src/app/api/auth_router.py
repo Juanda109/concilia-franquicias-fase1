@@ -2,7 +2,7 @@ from fastapi import APIRouter, Cookie, HTTPException, Response, status
 from pydantic import BaseModel, Field
 
 from app.auth.oidc import OidcInvalid, OidcUnavailable, oidc_client
-from app.auth.session import COOKIE_NAME, create_session, read_session
+from app.auth.session import COOKIE_NAME, create_session, read_session, revoke_session
 from app.core.auth_config import auth_settings
 
 router = APIRouter(prefix="/api/v0", tags=["Auth"])
@@ -46,7 +46,8 @@ async def me(session_token: str | None = Cookie(default=None)):
 
 
 @router.post("/auth/logout")
-async def logout(response: Response):
+async def logout(response: Response, session_token: str | None = Cookie(default=None)):
+    revoke_session(session_token)
     response.delete_cookie(
         key=COOKIE_NAME,
         path="/",
