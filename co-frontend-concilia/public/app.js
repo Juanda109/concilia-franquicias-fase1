@@ -182,6 +182,7 @@ const pollers = new Map(); // idArchivo -> intervalId, para no duplicar polling 
 const ICON_EYE = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
 const ICON_UPLOAD = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>';
 const ICON_TRASH = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+const ICON_ERROR = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
 
 function toISO(d) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -369,8 +370,9 @@ function renderTablaInsumos(insumos) {
   }
   tblArchivos.innerHTML = insumos.map((a) => {
     const acciones = a.accionesPermitidas ?? [];
+    const conError = a.estadoProcesamiento === 'ERROR' || a.estadoRecepcion === 'RECHAZADO';
     const verBtn = acciones.includes('VER_CONTENIDO')
-      ? `<button type="button" class="iconBtn btnView" data-id="${a.idArchivo}" title="Ver detalle">${ICON_EYE}</button>` : '';
+      ? `<button type="button" class="iconBtn btnView${conError ? ' btnViewError' : ''}" data-id="${a.idArchivo}" title="${conError ? 'Ver error' : 'Ver detalle'}">${conError ? ICON_ERROR : ICON_EYE}</button>` : '';
     // La carga manual solo se habilita viendo el día de hoy - se puede
     // CONSULTAR cualquier fecha anterior, pero no subir archivos para ella.
     const cargarBtn = acciones.includes('CARGAR_ARCHIVO_ORIGINAL') && fechaInput.value === HOY_ISO
