@@ -144,7 +144,7 @@ function showApplication(user) {
   if (appStarted) return;
   appStarted = true;
   checkHealth();
-  actualizarFechaConciliacion();
+  cargarPorFechaContable();
 }
 
 el('authRetry').addEventListener('click', () => { void redirectToLogin(); });
@@ -170,7 +170,6 @@ const tblMeta = el('tblMeta');
 const drawer = el('drawer');
 const drawerContent = el('drawerContent');
 const toastEl = el('toast');
-const noDataModal = el('noDataModal');
 const erroresProcesamientoModal = el('erroresProcesamientoModal');
 const detalleInsumoContent = el('detalleInsumoContent');
 let insumosScrollY = 0;
@@ -187,13 +186,6 @@ const ICON_TRASH = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" 
 function toISO(d) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
-function fechaCorta(iso) {
-  const [y, m, d] = iso.split('-').map(Number);
-  let dia = new Date(y, m - 1, d).toLocaleDateString('es-ES', { weekday: 'short' }).replace('.', '');
-  dia = dia.charAt(0).toUpperCase() + dia.slice(1);
-  return `${dia} ${String(d).padStart(2, '0')}`;
-}
-
 // Vocabulario de estados del contrato ENT-01 v2.4.0 (siempre en MAYÚSCULA,
 // resueltos por backend: fecha(s) contable(s), estado de jornada,
 // estadoRecepcion/estadoProcesamiento y accionesPermitidas). El frontend solo
@@ -240,10 +232,6 @@ function toast(msg, isErr) {
 function openDrawer() { drawer.className = 'drawer show'; }
 function closeDrawer() { drawer.className = 'drawer'; }
 el('btnCerrarDrawer').addEventListener('click', closeDrawer);
-
-function showNoData() { noDataModal.className = 'modalBack show'; }
-function hideNoData() { noDataModal.className = 'modalBack'; }
-el('btnCerrarModal').addEventListener('click', hideNoData);
 
 function hideErroresProcesamiento() { erroresProcesamientoModal.className = 'modalBack'; }
 el('btnCerrarErroresProcesamiento').addEventListener('click', hideErroresProcesamiento);
@@ -317,49 +305,28 @@ async function checkHealth() {
   }
 }
 
-// ---- Insumos: Fecha de conciliación -> jornada(s) contable(s) (backend) ----
+// ---- Insumos: Fecha contable -> jornada (backend) ----
+// La fecha contable ya no se deriva de una fecha de conciliación: el
+// calendario selecciona la fecha contable directamente, 1:1 con la jornada.
 let idJornadaActiva = null;
-let jornadasEjecucion = []; // última respuesta de GET /jornadas?fechaConciliacion=
 
-async function actualizarFechaConciliacion() {
-  const host = el('fechaContablesEjecucion');
-  host.innerHTML = '<span class="muted">Consultando…</span>';
+function _renderJornada(d) {
+  tblMeta.textContent = `${d.archivosRecibidos} de ${d.archivosEsperados} insumos recibidos`;
+  actualizarHero(d);
+  renderTablaInsumos(d.insumos);
+}
+
+async function cargarPorFechaContable() {
   try {
-    const r = await apiFetch(`${API}/jornadas?fechaConciliacion=${encodeURIComponent(fechaInput.value)}`);
-    if (r.status === 204) {
-      jornadasEjecucion = [];
-      host.innerHTML = '';
-      idJornadaActiva = null;
-      tblArchivos.innerHTML = `<tr><td colspan="8" class="muted">Sin información para esta fecha.</td></tr>`;
-      actualizarHero(null);
-      showNoData();
-      return;
-    }
+    const r = await apiFetch(`${API}/jornadas?fechaContable=${encodeURIComponent(fechaInput.value)}`);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    const data = await r.json();
-    jornadasEjecucion = data.jornadas;
-    seleccionarJornada(jornadasEjecucion[jornadasEjecucion.length - 1].idJornada);
+    const d = await r.json();
+    idJornadaActiva = d.idJornada;
+    _renderJornada(d);
   } catch (e) {
-    host.innerHTML = `<span class="muted">Error consultando jornadas: ${e.message}</span>`;
+    idJornadaActiva = null;
+    tblArchivos.innerHTML = `<tr><td colspan="8" class="muted">Error consultando la jornada: ${e.message}</td></tr>`;
   }
-}
-
-function renderFechasContables() {
-  const host = el('fechaContablesEjecucion');
-  host.innerHTML = jornadasEjecucion.map((j) => `
-    <button type="button" class="fechaChip${j.idJornada === idJornadaActiva ? ' active' : ''}" data-id="${j.idJornada}">
-      <small>Fecha contable</small><b>${fechaCorta(j.fechaContable)}</b>${badge(j.estado)}
-    </button>`).join('');
-  host.querySelectorAll('.fechaChip').forEach((btn) => {
-    btn.addEventListener('click', () => seleccionarJornada(Number(btn.dataset.id)));
-  });
-}
-
-function seleccionarJornada(idJornada) {
-  idJornadaActiva = idJornada;
-  hideNoData();
-  renderFechasContables();
-  cargarJornada();
 }
 
 function actualizarHero(d) {
@@ -388,9 +355,7 @@ async function cargarJornada() {
     const r = await apiFetch(`${API}/jornadas/${idJornadaActiva}`);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const d = await r.json();
-    tblMeta.textContent = `${d.archivosRecibidos} de ${d.archivosEsperados} insumos recibidos`;
-    actualizarHero(d);
-    renderTablaInsumos(d.insumos);
+    _renderJornada(d);
     return d;
   } catch (e) {
     tblArchivos.innerHTML = `<tr><td colspan="8" class="muted">Error consultando la jornada: ${e.message}</td></tr>`;
@@ -701,7 +666,7 @@ fechaInput.addEventListener('change', () => {
     toast('No se pueden consultar fechas futuras.', true);
     return;
   }
-  actualizarFechaConciliacion();
+  cargarPorFechaContable();
 });
 
 // ---- Navegación de pestañas (Insumos / Conciliación / Agente IA) ----

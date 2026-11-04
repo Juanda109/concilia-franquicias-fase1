@@ -42,13 +42,10 @@
           <p>Seguimiento de los 12 insumos esperados por jornada contable: recepción y procesamiento (parseo + carga a las tablas de resultado).</p>
         </div>
         <div class="field">
-          <label for="fecha">Fecha de conciliación</label>
+          <label for="fecha">Fecha contable</label>
           <input id="fecha" type="date">
         </div>
       </div>
-
-      <div class="muted" style="margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em">Fecha(s) contable(s) de esta ejecución</div>
-      <div id="fechaContablesEjecucion" class="fechaChips"></div>
 
       <div class="card hero">
         <div class="heroTop">
@@ -214,14 +211,6 @@
 </div>
 
 <div id="toast" class="toast"></div>
-
-<div id="noDataModal" class="modalBack">
-  <div class="modalBox">
-    <h3>Sin información para la fecha seleccionada</h3>
-    <p>El servicio respondió <b>HTTP 204 No Content</b>. No existen archivos registrados para la fecha contable consultada.</p>
-    <div class="actionbar"><button class="btn primary" id="btnCerrarModal">Entendido</button></div>
-  </div>
-</div>
 
 <div id="erroresProcesamientoModal" class="modalBack">
   <div class="modalBox errorModalBox">
