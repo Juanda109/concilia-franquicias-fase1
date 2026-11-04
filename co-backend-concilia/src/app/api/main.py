@@ -15,7 +15,6 @@ from fastapi.responses import JSONResponse
 from app.api.auth_router import router as auth_router
 from app.auth.session import COOKIE_NAME, read_session
 from app.core.auth_config import auth_settings
-from app.core.fechas import derivar_fechas_contables
 from app.core.nombres_archivo import validar_nombre
 from app.repositories.database import connection
 from app.repositories.jornada import JornadaRepository
@@ -72,29 +71,9 @@ def _estado_jornada(insumos:list[dict])->str:
 def health():
     return {'status':'UP'}
 
-@app.get("/api/v1/jornadas")
-def jornadas(fechaConciliacion:str):
-    try: fecha=date.fromisoformat(fechaConciliacion)
-    except ValueError: raise HTTPException(400,'FECHA_INVALIDA')
-    fechas=sorted(derivar_fechas_contables(fecha))
-    items=[]
-    with connection() as c:
-        for fc in fechas:
-            id_jornada=JornadaRepository(c).get_or_create(fc)
-            ArchivoRepo(c).ensure_insumos(id_jornada)
-            insumos=[_insumo_contrato(i) for i in ArchivoRepo(c).listar_insumos(id_jornada)]
-            items.append({"idJornada":id_jornada,"fechaContable":fc.isoformat(),"estado":_estado_jornada(insumos)})
-    if not items: raise HTTPException(204)
-    return {"fechaConciliacion":fechaConciliacion,"jornadas":items}
-
-@app.get("/api/v1/jornadas/{id_jornada}")
-def jornada_detalle(id_jornada:int):
-    with connection() as c:
-        resumen=JornadaRepository(c).resumen(id_jornada)
-        if not resumen: raise HTTPException(404,'JORNADA_NO_ENCONTRADA')
-        _,fecha_contable=resumen
-        ArchivoRepo(c).ensure_insumos(id_jornada)
-        insumos=[_insumo_contrato(i) for i in ArchivoRepo(c).listar_insumos(id_jornada)]
+def _detalle_jornada(c,id_jornada:int,fecha_contable:date)->dict:
+    ArchivoRepo(c).ensure_insumos(id_jornada)
+    insumos=[_insumo_contrato(i) for i in ArchivoRepo(c).listar_insumos(id_jornada)]
     return {
         "idJornada":id_jornada,"fechaContable":fecha_contable.isoformat(),"estado":_estado_jornada(insumos),
         "archivosEsperados":len(insumos),
@@ -103,6 +82,25 @@ def jornada_detalle(id_jornada:int):
         "archivosConError":sum(1 for i in insumos if i["estadoProcesamiento"]=="ERROR"),
         "insumos":insumos,
     }
+
+@app.get("/api/v1/jornadas")
+def jornadas(fechaContable:str):
+    """La fecha contable ya no se deriva de una fecha de conciliación - el
+    calendario del frontend selecciona la fecha contable directamente, 1:1
+    con la jornada (ver JornadaRepository.get_or_create)."""
+    try: fecha=date.fromisoformat(fechaContable)
+    except ValueError: raise HTTPException(400,'FECHA_INVALIDA')
+    with connection() as c:
+        id_jornada=JornadaRepository(c).get_or_create(fecha)
+        return _detalle_jornada(c,id_jornada,fecha)
+
+@app.get("/api/v1/jornadas/{id_jornada}")
+def jornada_detalle(id_jornada:int):
+    with connection() as c:
+        resumen=JornadaRepository(c).resumen(id_jornada)
+        if not resumen: raise HTTPException(404,'JORNADA_NO_ENCONTRADA')
+        _,fecha_contable=resumen
+        return _detalle_jornada(c,id_jornada,fecha_contable)
 
 @app.get('/api/v1/archivos/{id_archivo}/errores')
 def archivo_errores(id_archivo:int):
