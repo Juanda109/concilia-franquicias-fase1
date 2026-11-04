@@ -16,10 +16,12 @@ def _acciones_permitidas(estado_recepcion, estado_procesamiento):
     if estado_procesamiento != 'Procesando' and (
             estado_recepcion in ('No recibido', 'Rechazado') or estado_procesamiento == 'Error'):
         acciones.append('CARGAR_ARCHIVO_ORIGINAL')
-    # Solo hay algo que borrar si se intentó cargar algo (aceptado o
-    # rechazado) - nunca mientras está procesando, para no borrar bajo un
-    # parseo en curso.
-    if estado_procesamiento != 'Procesando' and estado_recepcion != 'No recibido':
+    # Solo hay algo que borrar si se intentó cargar algo y no terminó en
+    # error - nunca mientras está procesando (no pisar un parseo en curso), y
+    # tampoco en Error: ahí ya se puede volver a subir directamente (reemplaza
+    # el intento fallido), así que el ícono de eliminar sería redundante y
+    # solo deben verse "volver a subir" + "ver error".
+    if estado_procesamiento not in ('Procesando', 'Error') and estado_recepcion != 'No recibido':
         acciones.append('ELIMINAR_ARCHIVO')
     return acciones
 
