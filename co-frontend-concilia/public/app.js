@@ -600,6 +600,10 @@ async function subirArchivo(idArchivo, file) {
       try { detalle = (await r.json()).detail ?? detalle; } catch { /* cuerpo no es JSON */ }
       if (r.status === 413) detalle = 'El archivo es demasiado grande para el límite configurado.';
       resultado.innerHTML = '';
+      // El rechazo (400/409) ya actualizó el estado del insumo en el backend
+      // (ver marcar_rechazado) - sin este refresco la tabla se queda con el
+      // estado viejo hasta que algo más la vuelva a cargar.
+      await cargarJornada();
       mostrarErrorCarga(mensajeErrorCarga(detalle));
       return;
     }
