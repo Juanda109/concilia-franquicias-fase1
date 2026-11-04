@@ -67,17 +67,20 @@ def read_session(token: str | None) -> dict:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Sesión expirada o inválida") from None
 
 
-def revoke_session(token: str | None) -> None:
+def revoke_session(token: str | None) -> str | None:
     """Logout real: registra el jti del token actual como revocado, para que
     read_session lo rechace aunque su EXP original todavia no haya pasado.
     Silencioso ante cualquier token ausente/invalido - un logout nunca debe
-    fallar porque la cookie ya estaba vencida o corrupta."""
+    fallar porque la cookie ya estaba vencida o corrupta.
+    Devuelve el id_token original (si lo trae la sesión) para que el router
+    pueda armar el RP-Initiated Logout contra Nauthilus - sin eso, cerrar
+    sesión solo aquí no cierra la sesión SSO del IdP."""
     if not token or not auth_settings.session_sign_key:
-        return
+        return None
     try:
         data = _decode(token)
     except JWTError:
-        return
+        return None
     exp = datetime.fromtimestamp(data["exp"], tz=timezone.utc)
     with connection() as c:
         c.execute(
@@ -88,3 +91,4 @@ def revoke_session(token: str | None) -> None:
         # Limpieza oportunista: una fila revocada ya no hace falta despues de
         # su propio EXP (el JWT se rechazaria por vencido de todas formas).
         c.execute("DELETE FROM CON_SESION_REVOCADA WHERE EXPIRA_EN < CURRENT_TIMESTAMP")
+    return data.get("id_token")
