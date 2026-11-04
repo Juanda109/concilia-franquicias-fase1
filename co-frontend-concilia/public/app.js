@@ -373,13 +373,9 @@ function renderTablaInsumos(insumos) {
     const conError = a.estadoProcesamiento === 'ERROR' || a.estadoRecepcion === 'RECHAZADO';
     const verBtn = acciones.includes('VER_CONTENIDO')
       ? `<button type="button" class="iconBtn btnView${conError ? ' btnViewError' : ''}" data-id="${a.idArchivo}" title="${conError ? 'Ver error' : 'Ver detalle'}">${conError ? ICON_ERROR : ICON_EYE}</button>` : '';
-    // La carga manual solo se habilita viendo el día de hoy - se puede
-    // CONSULTAR cualquier fecha anterior, pero no subir archivos para ella.
-    const cargarBtn = acciones.includes('CARGAR_ARCHIVO_ORIGINAL') && fechaInput.value === HOY_ISO
+    const cargarBtn = acciones.includes('CARGAR_ARCHIVO_ORIGINAL')
       ? `<button type="button" class="iconBtn btnUpload" data-id="${a.idArchivo}" title="Cargar archivo original">${ICON_UPLOAD}</button>` : '';
-    // Mismo criterio que cargarBtn: solo se puede borrar viendo hoy, no un
-    // día histórico ya cerrado.
-    const eliminarBtn = acciones.includes('ELIMINAR_ARCHIVO') && fechaInput.value === HOY_ISO
+    const eliminarBtn = acciones.includes('ELIMINAR_ARCHIVO')
       ? `<button type="button" class="iconBtn btnEliminar" data-id="${a.idArchivo}" title="Eliminar archivo cargado">${ICON_TRASH}</button>` : '';
     return `
     <tr data-id="${a.idArchivo}">
@@ -655,10 +651,9 @@ el('uploadFileHidden').addEventListener('change', (e) => {
   pendingIdArchivoUpload = null;
 });
 
-// Se puede elegir cualquier fecha de conciliación para CONSULTAR (días
-// anteriores incluidos) - lo que se restringe es la CARGA de archivos,
-// que solo se permite cuando se está viendo el día de hoy (ver
-// renderTablaInsumos, que oculta el ícono de carga si no es HOY_ISO).
+// Se puede elegir cualquier fecha contable para CONSULTAR y tambien para
+// CARGAR/ELIMINAR archivos (dias anteriores incluidos, sin restriccion) -
+// lo unico que sigue bloqueado es seleccionar una fecha futura.
 const HOY_ISO = toISO(new Date());
 fechaInput.value = HOY_ISO;
 fechaInput.max = HOY_ISO; // bloquea fechas futuras en el selector nativo; sin min, los días anteriores siguen disponibles
