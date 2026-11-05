@@ -820,4 +820,12 @@ function openEmailDraft() {
   openDrawer();
 }
 
+// Si el navegador restaura la página desde bfcache (ej. botón "atrás" tras
+// cerrar sesión), el DOM vuelve tal cual quedó en memoria - ya autenticado -
+// sin volver a correr bootstrapAuth() ni pedir nada al backend. Forzamos un
+// reload real para que se vuelva a verificar la sesión desde cero.
+window.addEventListener('pageshow', (event) => {
+  if (event.persisted) window.location.reload();
+});
+
 bootstrapAuth();
