@@ -33,7 +33,6 @@ class AuthSettings(BaseSettings):
     frontend_origin: str = (
         "https://co-ccrcs-frontend-concilia-ccrcs-genai-dev.apps.work.ocp.co.igrupobbva"
     )
-    session_sign_key: SecretStr | None = None
     session_ttl_seconds: int = 8 * 60 * 60
     cookie_secure: bool = True
     jwks_cache_ttl: int = 480
@@ -46,8 +45,6 @@ class AuthSettings(BaseSettings):
             return self
         if not self.oidc_client_secret or not self.oidc_client_secret.get_secret_value():
             raise ValueError("OIDC_CLIENT_SECRET es obligatorio")
-        if not self.session_sign_key or len(self.session_sign_key.get_secret_value().encode()) < 32:
-            raise ValueError("SESSION_SIGN_KEY debe tener al menos 32 bytes")
         if not self.allowed_roles:
             raise ValueError("OIDC_ALLOWED_ROLES no puede estar vacío")
         if not self.role_claim_paths:
