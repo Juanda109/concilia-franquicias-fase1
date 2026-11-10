@@ -1,0 +1,18 @@
+INSUMOS_FUNCIONALES = {
+    "HA22": "HOST",
+    "HA26": "HOST",
+    "HA32": "HOST",
+    "CAET": "CREDIBANCO",
+    "CANT": "CREDIBANCO",
+    "DEPO": "CREDIBANCO",
+    "CARTA_COMPENSACION": "CREDIBANCO",
+    "PMD": "REDEBAN",
+    "MEP": "REDEBAN",
+    "VSS": "VISA",
+    "VISA_SS_INTERNATIONAL": "VISA",
+}
+
+INSUMOS_TECNICOS = {
+    "PMRD8000",
+    "PMPD1322",
+}
