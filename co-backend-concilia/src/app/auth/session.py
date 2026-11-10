@@ -26,11 +26,14 @@ def create_session(user: dict) -> str:
     now = datetime.now(timezone.utc)
     exp = now + timedelta(seconds=auth_settings.session_ttl_seconds)
     with connection() as c:
-        c.execute("DELETE FROM CON_SESION_ACTIVA WHERE FECHA_EXPIRA < CURRENT_TIMESTAMP")
+        c.execute(
+            "DELETE FROM CON_SESION_ACTIVA WHERE FECHA_EXPIRA < CURRENT_TIMESTAMP"
+        )
         c.execute(
             """
             INSERT INTO CON_SESION_ACTIVA
-                (ID_SESION, USUARIO_SUB, EMAIL, NOMBRE, ROLES, ID_TOKEN, FECHA_CREACION, FECHA_EXPIRA)
+                (ID_SESION, USUARIO_SUB, EMAIL, NOMBRE, ROLES, ID_TOKEN,
+                 FECHA_CREACION, FECHA_EXPIRA)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             ON CONFLICT (USUARIO_SUB) DO UPDATE SET
                 ID_SESION = EXCLUDED.ID_SESION,
@@ -57,10 +60,14 @@ def read_session(token: str | None) -> dict:
             (_hash(token),),
         ).fetchone()
     if not row:
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Sesión expirada o inválida")
+        raise HTTPException(
+            status.HTTP_401_UNAUTHORIZED, "Sesión expirada o inválida"
+        )
     sub, email, nombre, roles = row
     if not auth_settings.allowed_roles.intersection(roles or []):
-        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Sesión expirada o inválida")
+        raise HTTPException(
+            status.HTTP_401_UNAUTHORIZED, "Sesión expirada o inválida"
+        )
     return {"sub": sub, "email": email, "name": nombre, "roles": roles}
 
 
@@ -73,7 +80,8 @@ def revoke_session(token: str | None) -> str | None:
         return None
     with connection() as c:
         row = c.execute(
-            "DELETE FROM CON_SESION_ACTIVA WHERE ID_SESION=%s RETURNING ID_TOKEN",
+            "DELETE FROM CON_SESION_ACTIVA WHERE ID_SESION=%s "
+            "RETURNING ID_TOKEN",
             (_hash(token),),
         ).fetchone()
     return row[0] if row else None

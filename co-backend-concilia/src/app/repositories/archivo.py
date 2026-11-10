@@ -34,6 +34,8 @@ class ArchivoRepository:
         allowed = {"ESTADO_RECEPCION", "ESTADO_PROCESAMIENTO"}
         if field not in allowed:
             raise ValueError(field)
+        # nosec B608 - `field` ya se validó contra `allowed` (línea 35),
+        # nunca llega aquí un valor fuera de ese whitelist.
         self.conn.execute(
             f"UPDATE CON_ARCHIVO_CARGA SET {field}=%s,MOTIVO_ESTADO=%s,"
             f"FECHA_CAMBIO_ESTADO=CURRENT_TIMESTAMP WHERE ID_ARCHIVO=%s",

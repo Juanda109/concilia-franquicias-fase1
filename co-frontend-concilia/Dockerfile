@@ -1,5 +1,11 @@
 FROM nginx:alpine
 
+# 0. Actualizar los paquetes del sistema (Alpine/apk) a la última versión
+# disponible en el repo al momento del build - cubre CVEs de brotli-libs,
+# curl/libcurl, libexpat, etc. que trae la imagen base y que no dependen de
+# nada de este Dockerfile.
+RUN apk update && apk upgrade --no-cache
+
 # 1. Crear el usuario appuser con UID 10001 (UID > 1000 por buenas prácticas)
 # y asignarle el grupo principal 0 (root) requerido por OpenShift
 RUN adduser -D -u 10001 -G root appuser

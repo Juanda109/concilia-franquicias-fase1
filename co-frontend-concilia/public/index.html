@@ -39,9 +39,36 @@
           <h1>Estado de insumos</h1>
           <p>Seguimiento de los 12 insumos esperados por jornada contable: recepción y procesamiento (parseo + carga a las tablas de resultado).</p>
         </div>
-        <div class="field">
-          <label for="fecha">Fecha contable</label>
-          <input id="fecha" type="date">
+        <div class="field rangoField">
+          <label for="rangoTrigger">Fecha contable</label>
+          <button type="button" id="rangoTrigger" class="rangoTrigger" aria-haspopup="dialog" aria-expanded="false">
+            <span id="rangoTexto">—</span>
+          </button>
+          <div id="rangoPopover" class="rangoPopover" hidden role="dialog" aria-label="Seleccionar rango de fechas contables">
+            <div class="rangoCalHead">
+              <button type="button" id="rangoMesAnterior" class="iconBtn" aria-label="Mes anterior">‹</button>
+              <span id="rangoMesLabel"></span>
+              <button type="button" id="rangoMesSiguiente" class="iconBtn" aria-label="Mes siguiente">›</button>
+            </div>
+            <div id="rangoDiasLabel" class="rangoDiasLabel" aria-hidden="true"></div>
+            <div class="rangoGrid" id="rangoGrid"></div>
+            <div class="rangoFooter">
+              <span id="rangoAyuda" class="muted">Selecciona el día inicial y el final.</span>
+              <button type="button" id="rangoHoy" class="btn">Hoy</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card section">
+        <div class="title">Jornadas del rango <span id="jornadasRangoMeta"></span></div>
+        <div class="tableScroll">
+          <table>
+            <thead>
+              <tr><th>Fecha</th><th>Estado</th><th>Avance</th><th>Esperados</th><th>Recibidos</th><th>Procesados</th><th>Con error</th></tr>
+            </thead>
+            <tbody id="tblJornadas"><tr><td colspan="7" class="muted">Selecciona un rango de fechas.</td></tr></tbody>
+          </table>
         </div>
       </div>
 
@@ -77,7 +104,7 @@
         </div>
         <div id="cargaResultado" class="muted section"></div>
       </div>
-      <input id="uploadFileHidden" type="file" style="display:none">
+      <input id="uploadFileHidden" type="file" style="display:none" aria-label="Archivo a cargar">
     </section>
 
     <section id="detalleInsumo" class="panel">
@@ -105,11 +132,11 @@
 
       <div class="card section">
         <div class="toolbar">
-          <input id="reconQ" class="search" onkeyup="filterReconRows()" placeholder="Buscar cuenta o concepto...">
-          <select id="reconFr" class="select" onchange="filterReconRows()">
+          <input id="reconQ" class="search" onkeyup="filterReconRows()" placeholder="Buscar cuenta o concepto..." aria-label="Buscar cuenta o concepto">
+          <select id="reconFr" class="select" onchange="filterReconRows()" aria-label="Filtrar por franquicia">
             <option value="">Todas las franquicias</option><option>Credibanco</option><option>Redeban</option><option>VISA</option>
           </select>
-          <select id="reconSt" class="select" onchange="filterReconRows()">
+          <select id="reconSt" class="select" onchange="filterReconRows()" aria-label="Filtrar por estado de conciliación">
             <option value="">Todos los estados</option><option>Conciliado</option><option>Diferencia</option>
           </select>
         </div>

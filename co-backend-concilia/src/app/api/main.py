@@ -1,15 +1,18 @@
-import logging,math,uuid
+import logging
+import math
+import uuid
 from datetime import date
 
-# Sin esto, logger.info/debug de los modulos de la app (ej. app.auth.oidc) no
-# tienen handler propio y Python los descarta silenciosamente: uvicorn solo
-# configura sus propios loggers (uvicorn, uvicorn.access, uvicorn.error), no
-# el root logger que usan getLogger(__name__) en el resto del codigo.
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+from fastapi import (
+    FastAPI,
+    HTTPException,
+    Header,
+    UploadFile,
+    File,
+    Form,
+    BackgroundTasks,
+    Request,
 )
-from fastapi import FastAPI,HTTPException,Header,UploadFile,File,Form,BackgroundTasks,Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from app.api.auth_router import router as auth_router
@@ -23,6 +26,17 @@ from app.repositories.content import ContentRepository
 from app.repositories.trazabilidad import TrazabilidadRepository
 from app.clients import minio_client
 from app.clients.parseo_client import parsear
+
+# Sin esto, logger.info/debug de los modulos de la app (ej. app.auth.oidc) no
+# tienen handler propio y Python los descarta silenciosamente: uvicorn solo
+# configura sus propios loggers (uvicorn, uvicorn.access, uvicorn.error), no
+# el root logger que usan getLogger(__name__) en el resto del codigo.
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+)
+logger = logging.getLogger(__name__)
+
 app=FastAPI(title="Concilia Franquicias Fase 1 - Back",version="2.4.0")
 app.add_middleware(
     CORSMiddleware,
@@ -71,7 +85,10 @@ def _estado_jornada(insumos:list[dict])->str:
 def health():
     return {'status':'UP'}
 
-def _detalle_jornada(c,id_jornada:int,fecha_contable:date)->dict:
+
+def _detalle_jornada(
+    c, id_jornada: int, fecha_contable: date
+) -> dict:
     ArchivoRepo(c).ensure_insumos(id_jornada)
     insumos=[_insumo_contrato(i) for i in ArchivoRepo(c).listar_insumos(id_jornada)]
     return {
@@ -83,16 +100,24 @@ def _detalle_jornada(c,id_jornada:int,fecha_contable:date)->dict:
         "insumos":insumos,
     }
 
+RANGO_JORNADAS_MAX_DIAS=90
+
 @app.get("/api/v1/jornadas")
-def jornadas(fechaContable:str):
-    """La fecha contable ya no se deriva de una fecha de conciliación - el
-    calendario del frontend selecciona la fecha contable directamente, 1:1
-    con la jornada (ver JornadaRepository.get_or_create)."""
-    try: fecha=date.fromisoformat(fechaContable)
-    except ValueError: raise HTTPException(400,'FECHA_INVALIDA')
+def jornadas(fechaDesde:date,fechaHasta:date):
+    """El calendario del frontend selecciona un rango de fechas contables
+    (un solo día es un rango de un elemento); cada día del rango sigue
+    siendo 1:1 con una jornada (ver JornadaRepository.get_or_create_rango).
+    El formato de fecha (YYYY-MM-DD) ya lo valida FastAPI vía el tipo `date`
+    - un valor con formato inválido devuelve 422, no el 400 de abajo."""
+    if fechaHasta<fechaDesde: raise HTTPException(400,'RANGO_INVALIDO')
+    if (fechaHasta-fechaDesde).days>=RANGO_JORNADAS_MAX_DIAS: raise HTTPException(400,'RANGO_DEMASIADO_AMPLIO')
     with connection() as c:
-        id_jornada=JornadaRepository(c).get_or_create(fecha)
-        return _detalle_jornada(c,id_jornada,fecha)
+        return {
+            "jornadas":[
+                _detalle_jornada(c,id_jornada,fecha)
+                for fecha,id_jornada in JornadaRepository(c).get_or_create_rango(fechaDesde,fechaHasta)
+            ]
+        }
 
 @app.get("/api/v1/jornadas/{id_jornada}")
 def jornada_detalle(id_jornada:int):
@@ -149,8 +174,17 @@ def eliminar_archivo(id_archivo:int,request:Request):
         if datos['nombreArchivo']:
             _,fecha_contable=JornadaRepository(c).resumen(datos['idJornada'])
             minio_key=f"{fecha_contable.isoformat()}/{datos['tipoInsumo']}/{id_archivo}_{datos['nombreArchivo']}"
-            try: minio_client.eliminar(minio_key)
-            except Exception: pass  # un rechazo al subir nunca llega a crear el objeto real
+            try:
+                minio_client.eliminar(minio_key)
+            except Exception:
+                # remove_object no falla si la llave no existe (un rechazo al
+                # subir nunca llega a crear el objeto real); lo que sí puede
+                # fallar es la conexión a MinIO, y eso no debe tumbar el
+                # borrado del registro - pero sí queda logueado para no
+                # perder de vista objetos huérfanos en el bucket.
+                logger.warning(
+                    "No se pudo eliminar %s de MinIO", minio_key, exc_info=True
+                )
         ContentRepository(c).delete(datos['tipoInsumo'],id_archivo)
         ArchivoRepo(c).eliminar_carga(id_archivo)
         TrazabilidadRepository(c).add(id_archivo,datos['estadoRecepcion'],'No recibido','ELIMINACION_ARCHIVO',

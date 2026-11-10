@@ -144,7 +144,11 @@ class OidcClient:
         if code_verifier:
             form["code_verifier"] = code_verifier
         secret = auth_settings.oidc_client_secret
-        assert secret is not None
+        if secret is None:
+            # No debería ocurrir: auth_config.py ya exige OIDC_CLIENT_SECRET
+            # cuando AUTH_ENABLED=true. Se valida de nuevo aquí porque
+            # `assert` se elimina en bytecode optimizado (python -O).
+            raise OidcUnavailable("OIDC_CLIENT_SECRET no configurado")
         logger.info(
             "OIDC exchange: POST %s client_id=%s redirect_uri=%s pkce=%s",
             metadata["token_endpoint"],

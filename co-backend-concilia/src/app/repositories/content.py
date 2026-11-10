@@ -34,11 +34,13 @@ class ContentRepository:
             return rows,total,headers
         table=TABLES.get(tipo)
         if not table: raise KeyError(tipo)
+        # nosec B608 - `table` sale de TABLES.get(tipo), nunca de texto libre;
+        # el `raise` anterior corta cualquier `tipo` que no esté en ese dict.
         cur=self.conn.execute(f'SELECT * FROM {table} WHERE ID_ARCHIVO=%s ORDER BY NUMERO_LINEA NULLS LAST LIMIT %s OFFSET %s',(id_archivo,size,page*size))
         all_cols=[c.name for c in cur.description]
         visibles,headers=_headers(all_cols)
         rows=self._rows(cur,all_cols,visibles)
-        total=self.conn.execute(f'SELECT COUNT(*) FROM {table} WHERE ID_ARCHIVO=%s',(id_archivo,)).fetchone()[0]
+        total=self.conn.execute(f'SELECT COUNT(*) FROM {table} WHERE ID_ARCHIVO=%s',(id_archivo,)).fetchone()[0]  # nosec B608
         return rows,total,headers
     def delete(self,tipo,id_archivo):
         if tipo=='VSS':
@@ -52,4 +54,4 @@ class ContentRepository:
         # que borrar, y ELIMINAR_ARCHIVO puede llegar a mostrarse para
         # cualquier insumo que se haya intentado cargar.
         if not table: return
-        self.conn.execute(f'DELETE FROM {table} WHERE ID_ARCHIVO=%s',(id_archivo,))
+        self.conn.execute(f'DELETE FROM {table} WHERE ID_ARCHIVO=%s',(id_archivo,))  # nosec B608

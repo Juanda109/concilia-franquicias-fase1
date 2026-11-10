@@ -23,7 +23,7 @@ function clearOidcReturn() {
 
 function base64Url(bytes) {
   return btoa(String.fromCharCode(...bytes))
-    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 }
 
 async function redirectToLogin() {
@@ -143,8 +143,8 @@ function showApplication(user) {
   el('appRoot').hidden = false;
   if (appStarted) return;
   appStarted = true;
-  checkHealth();
-  cargarPorFechaContable();
+  void checkHealth();
+  void cargarPorRango();
 }
 
 el('authRetry').addEventListener('click', () => { void redirectToLogin(); });
@@ -169,9 +169,20 @@ el('logoutButton').addEventListener('click', async () => {
   }
 });
 
-const fechaInput = el('fecha');
 const tblArchivos = el('tblArchivos');
 const tblMeta = el('tblMeta');
+const tblJornadas = el('tblJornadas');
+const jornadasRangoMeta = el('jornadasRangoMeta');
+const rangoTrigger = el('rangoTrigger');
+const rangoTexto = el('rangoTexto');
+const rangoPopover = el('rangoPopover');
+const rangoMesAnterior = el('rangoMesAnterior');
+const rangoMesSiguiente = el('rangoMesSiguiente');
+const rangoMesLabel = el('rangoMesLabel');
+const rangoDiasLabel = el('rangoDiasLabel');
+const rangoGrid = el('rangoGrid');
+const rangoAyuda = el('rangoAyuda');
+const rangoHoy = el('rangoHoy');
 const drawer = el('drawer');
 const drawerContent = el('drawerContent');
 const toastEl = el('toast');
@@ -311,10 +322,14 @@ async function checkHealth() {
   }
 }
 
-// ---- Insumos: Fecha contable -> jornada (backend) ----
-// La fecha contable ya no se deriva de una fecha de conciliación: el
-// calendario selecciona la fecha contable directamente, 1:1 con la jornada.
+// ---- Insumos: rango de fechas contables -> jornadas (backend) ----
+// Cada día del rango sigue siendo 1:1 con una jornada (GET /jornadas ahora
+// recibe fechaDesde/fechaHasta y devuelve una jornada por día). La tabla
+// "Jornadas del rango" lista ese resumen día por día; al hacer click en una
+// fila se muestra el detalle completo de esa jornada (hero + insumos) abajo,
+// igual que antes cuando solo existía un selector de un día.
 let idJornadaActiva = null;
+let jornadasRango = [];
 
 function _renderJornada(d) {
   tblMeta.textContent = `${d.archivosRecibidos} de ${d.archivosEsperados} insumos recibidos`;
@@ -322,16 +337,53 @@ function _renderJornada(d) {
   renderTablaInsumos(d.insumos);
 }
 
-async function cargarPorFechaContable() {
+function renderTablaJornadas(jornadas) {
+  jornadasRangoMeta.textContent = `${jornadas.length} día${jornadas.length === 1 ? '' : 's'}`;
+  if (!jornadas.length) {
+    tblJornadas.innerHTML = `<tr><td colspan="7" class="muted">Sin jornadas en el rango.</td></tr>`;
+    return;
+  }
+  tblJornadas.innerHTML = jornadas.map((j) => `
+    <tr data-id-jornada="${j.idJornada}" class="${j.idJornada === idJornadaActiva ? 'active' : ''}">
+      <td>${j.fechaContable}</td>
+      <td>${badge(j.estado)}</td>
+      <td>${j.archivosEsperados ? Math.round((100 * j.archivosProcesados) / j.archivosEsperados) : 0}%</td>
+      <td>${j.archivosEsperados}</td>
+      <td>${j.archivosRecibidos}</td>
+      <td>${j.archivosProcesados}</td>
+      <td>${j.archivosConError}</td>
+    </tr>`).join('');
+  tblJornadas.querySelectorAll('tr[data-id-jornada]').forEach((tr) => {
+    tr.addEventListener('click', () => {
+      const jornada = jornadas.find((j) => j.idJornada === Number(tr.dataset.idJornada));
+      if (jornada) seleccionarJornadaDelRango(jornada);
+    });
+  });
+}
+
+function seleccionarJornadaDelRango(jornada) {
+  idJornadaActiva = jornada.idJornada;
+  _renderJornada(jornada);
+  tblJornadas.querySelectorAll('tr[data-id-jornada]').forEach((tr) => {
+    tr.classList.toggle('active', Number(tr.dataset.idJornada) === idJornadaActiva);
+  });
+}
+
+async function cargarPorRango() {
   try {
-    const r = await apiFetch(`${API}/jornadas?fechaContable=${encodeURIComponent(fechaInput.value)}`);
+    const r = await apiFetch(`${API}/jornadas?fechaDesde=${encodeURIComponent(rangoFechaDesde)}&fechaHasta=${encodeURIComponent(rangoFechaHasta)}`);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const d = await r.json();
-    idJornadaActiva = d.idJornada;
-    _renderJornada(d);
+    jornadasRango = d.jornadas;
+    renderTablaJornadas(jornadasRango);
+    const seleccionada = jornadasRango.find((j) => j.fechaContable === rangoFechaHasta) ?? jornadasRango[jornadasRango.length - 1];
+    if (seleccionada) seleccionarJornadaDelRango(seleccionada);
   } catch (e) {
+    jornadasRango = [];
     idJornadaActiva = null;
-    tblArchivos.innerHTML = `<tr><td colspan="8" class="muted">Error consultando la jornada: ${e.message}</td></tr>`;
+    tblJornadas.innerHTML = `<tr><td colspan="7" class="muted">Error consultando el rango: ${e.message}</td></tr>`;
+    tblArchivos.innerHTML = `<tr><td colspan="8" class="muted">Error consultando el rango: ${e.message}</td></tr>`;
+    actualizarHero(null);
   }
 }
 
@@ -361,6 +413,8 @@ async function cargarJornada() {
     const r = await apiFetch(`${API}/jornadas/${idJornadaActiva}`);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const d = await r.json();
+    const idx = jornadasRango.findIndex((j) => j.idJornada === idJornadaActiva);
+    if (idx !== -1) { jornadasRango[idx] = d; renderTablaJornadas(jornadasRango); }
     _renderJornada(d);
     return d;
   } catch (e) {
@@ -439,7 +493,7 @@ function abrirDetalle(idArchivo) {
   document.querySelectorAll('.panel').forEach((p) => p.classList.remove('active'));
   el('detalleInsumo').classList.add('active');
   window.scrollTo(0, 0);
-  cargarContenidoDetalle();
+  void cargarContenidoDetalle();
 }
 
 function volverAInsumos() {
@@ -548,7 +602,7 @@ function renderDetallePagina(d) {
 
 function cambiarPaginaDetalle(delta) {
   detallePagina += delta;
-  cargarContenidoDetalle();
+  void cargarContenidoDetalle();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -567,9 +621,12 @@ function mensajeErrorCarga(detalle) {
   // El backend a veces manda solo el código ("CARGA_NO_PERMITIDA") y a veces
   // "CODIGO: resto del mensaje" (ej. FECHA_NO_COINCIDE_CON_ARCHIVO) — hay que
   // detectar ambas formas antes de intentar traducir.
-  const m = /^([A-Z_]+):\s*(.*)$/.exec(detalle || '');
-  const codigo = m ? m[1] : (detalle || '').trim();
-  const resto = m ? m[2] : detalle;
+  const texto = detalle || '';
+  const sep = texto.indexOf(':');
+  const prefijo = sep === -1 ? '' : texto.slice(0, sep);
+  const esCodigo = prefijo !== '' && /^[A-Z_]+$/.test(prefijo);
+  const codigo = esCodigo ? prefijo : texto.trim();
+  const resto = esCodigo ? texto.slice(sep + 1).trimStart() : detalle;
   if (codigo === 'FECHA_NO_COINCIDE_CON_ARCHIVO') {
     const mm = /el archivo (.+) corresponde a (\d{4}-\d{2}-\d{2}), no a (\d{4}-\d{2}-\d{2})/.exec(resto);
     if (mm) return `El archivo «${mm[1]}» corresponde al ${fechaDDMMAAAA(mm[2])}, pero esta jornada es del ${fechaDDMMAAAA(mm[3])}.`;
@@ -651,28 +708,138 @@ function iniciarPolling(idArchivo) {
     }
   };
   pollers.set(idArchivo, setInterval(tick, 1000));
-  tick();
+  void tick();
 }
 
 el('uploadFileHidden').addEventListener('change', (e) => {
   const file = e.target.files[0];
-  if (file && pendingIdArchivoUpload) subirArchivo(pendingIdArchivoUpload, file);
+  if (file && pendingIdArchivoUpload) void subirArchivo(pendingIdArchivoUpload, file);
   pendingIdArchivoUpload = null;
 });
 
-// Se puede elegir cualquier fecha contable para CONSULTAR y tambien para
-// CARGAR/ELIMINAR archivos (dias anteriores incluidos, sin restriccion) -
-// lo unico que sigue bloqueado es seleccionar una fecha futura.
+// Se puede elegir cualquier rango de fechas contables para CONSULTAR y
+// tambien para CARGAR/ELIMINAR archivos (dias anteriores incluidos, sin
+// restriccion) - lo unico que sigue bloqueado es seleccionar una fecha
+// futura, tanto en el calendario propio (sin dependencias externas) como
+// antes en el selector nativo.
 const HOY_ISO = toISO(new Date());
-fechaInput.value = HOY_ISO;
-fechaInput.max = HOY_ISO; // bloquea fechas futuras en el selector nativo; sin min, los días anteriores siguen disponibles
-fechaInput.addEventListener('change', () => {
-  if (fechaInput.value > HOY_ISO) {
-    fechaInput.value = HOY_ISO;
-    toast('No se pueden consultar fechas futuras.', true);
+let rangoFechaDesde = HOY_ISO;
+let rangoFechaHasta = HOY_ISO;
+let rangoMesVista = fromISO(HOY_ISO);
+rangoMesVista.setDate(1);
+let rangoSeleccionando = false;
+let rangoSeleccionInicio = null;
+
+function fromISO(iso) {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
+function formatoFechaCorta(iso) {
+  return fromISO(iso).toLocaleDateString('es-CO', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+function actualizarTextoRango() {
+  rangoTexto.textContent = rangoFechaDesde === rangoFechaHasta
+    ? formatoFechaCorta(rangoFechaDesde)
+    : `${formatoFechaCorta(rangoFechaDesde)} – ${formatoFechaCorta(rangoFechaHasta)}`;
+}
+
+function diasDelMes(mesVista) {
+  const primero = new Date(mesVista.getFullYear(), mesVista.getMonth(), 1);
+  const diaSemana = (primero.getDay() + 6) % 7; // 0 = lunes, calendario arranca en lunes
+  const inicioGrid = new Date(primero);
+  inicioGrid.setDate(primero.getDate() - diaSemana);
+  return Array.from({ length: 42 }, (_, i) => {
+    const d = new Date(inicioGrid);
+    d.setDate(inicioGrid.getDate() + i);
+    return d;
+  });
+}
+
+function renderRangoCalendario() {
+  rangoMesLabel.textContent = rangoMesVista.toLocaleDateString('es-CO', { month: 'long', year: 'numeric' });
+  const inicioActivo = rangoSeleccionando ? rangoSeleccionInicio : rangoFechaDesde;
+  const finActivo = rangoSeleccionando ? rangoSeleccionInicio : rangoFechaHasta;
+  rangoGrid.innerHTML = diasDelMes(rangoMesVista).map((d) => {
+    const iso = toISO(d);
+    const futura = iso > HOY_ISO;
+    const esExtremo = iso === inicioActivo || iso === finActivo;
+    const enRango = !esExtremo && iso > inicioActivo && iso < finActivo;
+    const clases = ['rangoDia'];
+    if (d.getMonth() !== rangoMesVista.getMonth()) clases.push('fueraDeMes');
+    if (esExtremo) clases.push('extremo');
+    else if (enRango) clases.push('enRango');
+    return `<button type="button" class="${clases.join(' ')}" data-iso="${iso}" ${futura ? 'disabled' : ''}>${d.getDate()}</button>`;
+  }).join('');
+  rangoGrid.querySelectorAll('.rangoDia').forEach((btn) => {
+    btn.addEventListener('click', () => onDiaRangoClick(btn.dataset.iso));
+  });
+}
+
+function aplicarRango(desde, hasta) {
+  rangoFechaDesde = desde;
+  rangoFechaHasta = hasta;
+  rangoAyuda.textContent = 'Selecciona el día inicial y el final.';
+  actualizarTextoRango();
+  cerrarRangoPopover();
+  void cargarPorRango();
+}
+
+function onDiaRangoClick(iso) {
+  if (iso > HOY_ISO) return; // ya viene disabled; verificación extra por si acaso
+  if (!rangoSeleccionando) {
+    rangoSeleccionando = true;
+    rangoSeleccionInicio = iso;
+    rangoAyuda.textContent = 'Selecciona el día final.';
+    renderRangoCalendario();
     return;
   }
-  cargarPorFechaContable();
+  rangoSeleccionando = false;
+  aplicarRango(...(iso < rangoSeleccionInicio ? [iso, rangoSeleccionInicio] : [rangoSeleccionInicio, iso]));
+}
+
+function abrirRangoPopover() {
+  rangoMesVista = fromISO(rangoFechaHasta);
+  rangoMesVista.setDate(1);
+  rangoSeleccionando = false;
+  rangoAyuda.textContent = 'Selecciona el día inicial y el final.';
+  renderRangoCalendario();
+  rangoPopover.hidden = false;
+  rangoTrigger.setAttribute('aria-expanded', 'true');
+}
+
+function cerrarRangoPopover() {
+  rangoPopover.hidden = true;
+  rangoTrigger.setAttribute('aria-expanded', 'false');
+}
+
+rangoDiasLabel.innerHTML = ['L', 'M', 'X', 'J', 'V', 'S', 'D'].map((d) => `<span>${d}</span>`).join('');
+actualizarTextoRango();
+rangoTrigger.addEventListener('click', () => {
+  if (rangoPopover.hidden) abrirRangoPopover(); else cerrarRangoPopover();
+});
+// Captura (no burbuja): un click en un día del calendario repinta rangoGrid
+// en el propio handler (ver onDiaRangoClick -> renderRangoCalendario), lo
+// que destruye el botón clickeado. En fase de burbuja, para cuando este
+// listener llegaría a dispatch, ese botón ya no está en el DOM y
+// rangoPopover.contains(e.target) daría false aunque el click fue adentro -
+// cerrando el popover antes de poder hacer el segundo click del rango. En
+// fase de captura corremos antes de esa mutación, con el árbol intacto.
+document.addEventListener('click', (e) => {
+  if (!rangoPopover.hidden && !rangoPopover.contains(e.target) && !rangoTrigger.contains(e.target)) cerrarRangoPopover();
+}, true);
+rangoMesAnterior.addEventListener('click', () => {
+  rangoMesVista.setMonth(rangoMesVista.getMonth() - 1);
+  renderRangoCalendario();
+});
+rangoMesSiguiente.addEventListener('click', () => {
+  rangoMesVista.setMonth(rangoMesVista.getMonth() + 1);
+  renderRangoCalendario();
+});
+rangoHoy.addEventListener('click', () => {
+  rangoSeleccionando = false;
+  aplicarRango(HOY_ISO, HOY_ISO);
 });
 
 // ---- Navegación de pestañas (Insumos / Conciliación / Agente IA) ----
@@ -828,4 +995,4 @@ window.addEventListener('pageshow', (event) => {
   if (event.persisted) window.location.reload();
 });
 
-bootstrapAuth();
+void bootstrapAuth();

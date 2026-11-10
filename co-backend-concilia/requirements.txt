@@ -7,3 +7,10 @@ minio>=7.2,<8
 httpx>=0.27,<1
 python-jose[cryptography]>=3.3,<4
 pydantic-settings>=2,<3
+
+# Pines de seguridad sobre transitivas (no son dependencias directas de la
+# app): certifi/urllib3 los trae minio, pyasn1 lo trae python-jose vía rsa.
+# Sin este piso, pip resuelve versiones con CVE conocido.
+certifi>=2026.10.18
+urllib3>=2.8.0
+pyasn1>=0.6.5
