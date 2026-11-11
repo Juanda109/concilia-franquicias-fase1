@@ -10,7 +10,7 @@ from uuid import uuid4
 from app.batch.clasificacion_errores import clasificar_error
 from app.batch.bloqueo_host import bloqueo_host
 from app.repositories.database import connection
-from app.services.procesamiento_host import procesar_host
+from app.services.procesamiento_host_completo import procesar_host_completo as procesar_host
 
 TIPOS_HOST = ("HA22", "HA26", "HA32")
 
@@ -38,9 +38,46 @@ def consultar_pendientes(limite=100):
                   ON j.id_jornada = i.id_jornada
                 WHERE a.tipo_archivo IN ('HA22', 'HA26', 'HA32')
                   AND i.tipo_insumo = a.tipo_archivo
-                  AND a.estado = 'RECIBIDO'
-                  AND i.estado = 'RECIBIDO'
                   AND a.fecha_contable = j.fecha_contable
+                  AND (
+                      (
+                          a.estado = 'RECIBIDO'
+                          AND i.estado = 'RECIBIDO'
+                      )
+                      OR
+                      (
+                          a.estado = 'PROCESADO'
+                          AND i.estado = 'PROCESADO'
+                          AND (
+                              CASE a.tipo_archivo
+                                  WHEN 'HA22' THEN (
+                                      SELECT COUNT(*)
+                                      FROM public.con_ha22_detalle d
+                                      WHERE d.id_archivo = a.id_archivo
+                                  )
+                                  WHEN 'HA26' THEN (
+                                      SELECT COUNT(*)
+                                      FROM public.con_ha26_detalle d
+                                      WHERE d.id_archivo = a.id_archivo
+                                  )
+                                  WHEN 'HA32' THEN (
+                                      SELECT COUNT(*)
+                                      FROM public.con_ha32_detalle d
+                                      WHERE d.id_archivo = a.id_archivo
+                                  )
+                              END <> a.total_registros
+
+                              OR (
+                                  SELECT COUNT(*)
+                                  FROM public.con_trazabilidad t
+                                  WHERE t.id_archivo = a.id_archivo
+                                    AND t.id_jornada = i.id_jornada
+                                    AND t.tipo_evento = 'DETALLE_PERSISTIDO'
+                                    AND t.componente = 'PROCESAMIENTO_DETALLE'
+                              ) <> 1
+                          )
+                      )
+                  )
                 ORDER BY
                     a.fecha_contable,
                     a.id_archivo

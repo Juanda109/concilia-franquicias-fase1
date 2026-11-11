@@ -8,7 +8,8 @@ from app.services.procesamiento_credibanco import (
 from app.services.persistencia_detalle import persistir_detalle, DetalleError
 
 router = APIRouter(prefix="/api/v1/archivos", tags=["Procesamiento franquicias"])
-TIPOS = frozenset(("CAET", "CANT", "DEPO", "CARTA_COMPENSACION", "PMD", "MEP", "VSS", "VISA_SS_INTERNATIONAL"))
+# CONCILIA_V74_MEP_RETIRO_PROCESAMIENTO
+TIPOS = frozenset(("CAET", "CANT", "DEPO", "CARTA_COMPENSACION", "PMD", "VSS", "VISA_SS_INTERNATIONAL"))
 
 
 def ejecutar_franquicia(id_archivo: int):
@@ -32,8 +33,29 @@ def ejecutar_franquicia(id_archivo: int):
         # Fase 1: ingesta y persistencia del detalle fuente exclusivamente.
         # Las reglas contables CANT pertenecen a Fase 2.
         detalle = persistir_detalle(id_archivo)
-        return {"id_archivo": id_archivo, "tipo_archivo": tipo,
-                "estado": "PROCESADO", "normalizado": None, "detalle": detalle}
+
+        detalle_auxiliar = None
+
+        if tipo == "CARTA_COMPENSACION":
+            from app.services.persistencia_carta_auxiliar_v69 import (
+                persistir_carta_auxiliar_v69,
+            )
+
+            detalle_auxiliar = persistir_carta_auxiliar_v69(
+                id_archivo,
+                dry_run=False,
+            )
+
+        return {
+            "id_archivo": id_archivo,
+            "tipo_archivo": tipo,
+            "estado": "PROCESADO",
+            "normalizado": None,
+            "detalle": detalle,
+            "detalle_auxiliar": detalle_auxiliar,
+        }
+    except (ValueError, RuntimeError, FileNotFoundError) as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
     except (ProcesamientoCredibancoError, DetalleError) as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
     except (OperationalError, KeyError) as exc:

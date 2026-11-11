@@ -10,6 +10,7 @@ import os
 import stat
 from fastapi.encoders import jsonable_encoder
 from app.ingestion.registry import obtener_parser
+from app.ingestion.catalogo import INSUMOS_FUNCIONALES
 
 from fastapi import APIRouter, HTTPException, Path as ApiPath, Query
 from psycopg import OperationalError
@@ -70,7 +71,7 @@ def interpretar_archivo_con_nombre_original(
 ):
     """Ejecuta el parser sin modificar el archivo almacenado."""
 
-    if tipo in ("MEP", "PMD", "VISA_SS_INTERNATIONAL"):
+    if tipo in ("PMD", "VISA_SS_INTERNATIONAL"):
         with archivo_con_nombre_original(
             fisico, nombre_original
         ) as temporal:
@@ -113,6 +114,8 @@ def consultar_contenido(
                     )
 
                 tipo = archivo["tipo_archivo"]
+                if tipo not in INSUMOS_FUNCIONALES:
+                    raise HTTPException(410, "Tipo de insumo fuera del alcance funcional vigente")
 
                 tabla_nueva = {
                     "HA22": "con_ha22_detalle",
@@ -123,7 +126,6 @@ def consultar_contenido(
                     "DEPO": "con_depo_detalle",
                     "CARTA_COMPENSACION": "con_carta_compensacion_detalle",
                     "PMD": "con_pmd_detalle",
-                    "MEP": "con_mep_detalle",
                     "VSS": "con_vss_detalle",
                     "VISA_SS_INTERNATIONAL": "con_visa_ss_international_detalle",
                 }.get(tipo)
@@ -236,27 +238,6 @@ def consultar_contenido(
                                 )
 
                                 items = cur.fetchall()
-
-                            elif tipo == 'MEP':
-                                from app.services.persistencia_detalle import CAMPOS_MEP
-
-                                campos = ('linea_origen', *CAMPOS_MEP)
-
-                                cur.execute(
-                                    f"SELECT {', '.join(campos)} "
-                                    f"FROM {tabla_nueva} "
-                                    "WHERE id_archivo=%s "
-                                    "ORDER BY linea_origen "
-                                    "LIMIT %s OFFSET %s",
-                                    (id_archivo, pageSize, offset),
-                                )
-
-                                items = cur.fetchall()
-
-                                for item in items:
-                                    for clave, valor in item.items():
-                                        if hasattr(valor, 'as_tuple'):
-                                            item[clave] = str(valor)
 
                             elif tipo == 'PMD':
                                 from app.services.persistencia_detalle import CAMPOS_PMD

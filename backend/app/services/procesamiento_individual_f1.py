@@ -34,15 +34,24 @@ def procesar_archivo_recibido_f1(id_jornada: int, id_archivo: int):
             jornada_estado, tipo, insumo_estado, archivo_estado, total, confirmado = fila
             if jornada_estado == "COMPLETADA":
                 return {"estado": "JORNADA_COMPLETADA"}
-            if insumo_estado != "RECIBIDO" or archivo_estado != "RECIBIDO":
+            if tipo in HOST:
+                if (
+                    insumo_estado not in ("RECIBIDO", "PROCESADO")
+                    or archivo_estado != insumo_estado
+                ):
+                    return {"estado": "NO_APLICA"}
+            elif (
+                insumo_estado != "RECIBIDO"
+                or archivo_estado != "RECIBIDO"
+            ):
                 return {"estado": "NO_APLICA"}
             if confirmado or total is None or total <= 0:
                 return {"estado": "ESPERANDO_CONFIRMACION_SIN_MOVIMIENTOS"}
             try:
                 if tipo in HOST:
                     # No imponer limite de reintentos al Host Loader existente.
-                    from app.services.procesamiento_host import procesar_host
-                    resultado = procesar_host(id_archivo)
+                    from app.services.procesamiento_host_completo import procesar_host_completo
+                    resultado = procesar_host_completo(id_archivo)
                 else:
                     from app.api.procesamiento_franquicias import ejecutar_franquicia
                     resultado = ejecutar_franquicia(id_archivo)

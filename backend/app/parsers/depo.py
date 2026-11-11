@@ -26,12 +26,12 @@ def _tasa_intercambio(row):
  diff=_num(row["VALOR_TOTAL"])-_num(row["VALOR_INTERCAMBIO_2"])
  return -diff if row["TIPO_MOVIMIENTO"]=="26" else diff
 def _persiste(row):
- """DEPO-F1-001 — filtro de persistencia. Solo se implementan las reglas
- 1, 2 y 5 (confirmadas); las reglas 3 (INDICADOR_CNB) y 4 (CLASIFICACION_AMEX)
- quedan PENDIENTES por falta de definición/catálogo — un registro que solo
- calificara por esas dos reglas no se persiste todavía con esta versión."""
+ """DEPO-F1-001: excluye 05; persiste tipos 02/06/26/42, los seis
+ indicadores CNB o tasa != 0. AMEX solo sigue pendiente hasta que se
+ acredite el catalogo de BIN y su vigencia. No inventar esa clasificacion."""
  if row["TIPO_MOVIMIENTO"]=="05": return False                       # regla 1
  if row["TIPO_MOVIMIENTO"] in ("02","06","26","42"): return True      # regla 2
+ if row["INDICADOR_CASH_BACK"] in ("010", "011", "012", "110", "111", "112"): return True  # regla 3 CNB
  if row["TASA_DE_INTERCAMBIO"]!=0: return True                        # regla 5
  return False
 class DEPOParser(Parser):

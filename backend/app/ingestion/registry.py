@@ -1,6 +1,5 @@
 from app.parsers.visa_ss_international import VisaSSInternationalParser
 from app.parsers.vss import VSSParser
-from app.parsers.mep import MEPParser
 from app.parsers.pmd import PMDParser
 from app.parsers.ha32 import HA32Parser
 from app.parsers.ha22 import HA22Parser
@@ -18,7 +17,6 @@ PARSERS = {
     "CAET": CAETParser,
     "CANT": CANTParser,
     "PMD": PMDParser,
-    "MEP": MEPParser,
     "VSS": VSSParser,
     "VISA_SS_INTERNATIONAL": VisaSSInternationalParser,
     "DEPO": DEPOParser,

@@ -1,3 +1,4 @@
+from app.api.reporte_maestro_diagnostico import router as reporte_maestro_router
 from app.api.procesamiento_franquicias import router as franquicias_router
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -83,6 +84,7 @@ app.include_router(consolidacion_router)
 app.include_router(archivos_router)
 app.include_router(franquicias_router)
 app.include_router(detalle_archivos_router)
+app.include_router(reporte_maestro_router)
 
 
 @app.get("/health")
@@ -98,3 +100,50 @@ app.include_router(confirmacion_sin_movimientos_router)
 
 from app.api.excepciones_cant import router as excepciones_cant_router
 app.include_router(excepciones_cant_router)
+
+# INC47: endpoint aditivo Credibanco, no altera el endpoint INC33
+from app.api.reporte_credibanco_inc47 import router as reporte_credibanco_inc47_router
+app.include_router(reporte_credibanco_inc47_router)
+
+# INC50: reporte diagnostico Host, no homologado
+from app.api.reporte_host_inc50 import router as reporte_host_inc50_router
+app.include_router(reporte_host_inc50_router)
+
+# INC51: diagnostico monetario CAET/CANT, sin homologacion
+from app.api.reporte_credibanco_inc51 import router as reporte_credibanco_inc51_router
+app.include_router(reporte_credibanco_inc51_router)
+
+# CONCILIA_SYNC3976_API: synthetic read-only fixture, never certified.
+from app.api.credibanco_sync3976_api import router as sync3976_router
+app.include_router(sync3976_router)
+
+# CONCILIA_V22_RUTA_INDEPENDIENTE
+from app.api.reporte_maestro_diagnostico import router_ensayo_v22
+app.include_router(router_ensayo_v22)
+
+# CONCILIA_V24_AUDITORIA_PERSISTIDA
+from app.api.router_v24 import router as auditoria_v24_router
+app.include_router(auditoria_v24_router)
+
+
+# CONCILIA_V26_ROUTER
+from app.api.router_v26 import router as motor_v26_router
+app.include_router(motor_v26_router)
+
+# CONCILIA_V27_CRITERIOS_ACEPTACION
+from app.api.router_criterios_v27 import router as criterios_v27_router
+app.include_router(criterios_v27_router)
+
+# CONCILIA_V67_CIERRE_CREDIBANCO_SOLO_LECTURA
+from app.api.cierre_credibanco_v67 import router as cierre_credibanco_v67_router
+app.include_router(cierre_credibanco_v67_router)
+
+# CONCILIA_V71_QA_PANTALLA_BEGIN
+# CONCILIA_V71_QA_PANTALLA_END
+
+from app.api.reporte_credibanco_productivo import router as reporte_credibanco_productivo_router
+app.include_router(reporte_credibanco_productivo_router)
+
+# F2 5683: endpoint opt-in, aislado del catalogo productivo
+from app.api.credibanco_f2_prueba_5683 import router as f2_prueba_5683_router
+app.include_router(f2_prueba_5683_router)

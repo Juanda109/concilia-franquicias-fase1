@@ -29,7 +29,7 @@ def procesar_jornada_si_lista(id_jornada: int):
                 return {'estado':'NO_APLICA'}
             # Se procesan insumos validos solo cuando todos los obligatorios
             # tienen archivo recibido o confirmacion explicita de cero.
-            obligatorios=[r for r in filas if r[5] and r[1]!='MEP']
+            obligatorios=[r for r in filas if r[5]]
             if not obligatorios or any(r[3] is None or (r[4]==0 and not r[6])
                                       or r[2] not in ('RECIBIDO','PROCESADO')
                                       for r in obligatorios):
@@ -38,13 +38,22 @@ def procesar_jornada_si_lista(id_jornada: int):
             parciales = []
             errores = []
             for _,tipo,estado,archivo,total,obligatorio,confirmado in filas:
-                if estado!='RECIBIDO' or archivo is None or confirmado or total==0:
+                if archivo is None or confirmado or total==0:
                     continue
+
+                if tipo in HOST:
+                    # RECIBIDO: procesa ambas etapas.
+                    # PROCESADO: permite recuperar el detalle fuente pendiente.
+                    if estado not in ("RECIBIDO", "PROCESADO"):
+                        continue
+                elif estado != "RECIBIDO":
+                    continue
+
                 try:
                     if tipo in HOST:
-                        # El Host Loader conserva su politica de reintentos indefinidos.
-                        from app.services.procesamiento_host import procesar_host
-                        procesar_host(archivo)
+                        # El Host Loader conserva los reintentos indefinidos.
+                        from app.services.procesamiento_host_completo import procesar_host_completo
+                        resultado = procesar_host_completo(archivo)
                     else:
                         from app.api.procesamiento_franquicias import ejecutar_franquicia
                         resultado = ejecutar_franquicia(archivo)

@@ -92,31 +92,6 @@ MESES_VSS = {
 }
 
 
-def extraer_fecha_mep(nombre):
-    patron = re.fullmatch(
-        r"ANEXO\s+0017\s+MEP_COMPENSACION\s+"
-        r"(?P<fecha>\d{8})\.XLSX",
-        nombre,
-        re.I,
-    )
-
-    if not patron:
-        raise CorrespondenciaInvalida(
-            "NOMBRE_ARCHIVO_INVALIDO",
-            "Nombre MEP no corresponde al contrato"
-        )
-
-    try:
-        return datetime.strptime(
-            patron.group("fecha"), "%d%m%Y"
-        ).date()
-    except ValueError as exc:
-        raise CorrespondenciaInvalida(
-            "FECHA_ARCHIVO_INVALIDA",
-            "Fecha MEP invalida"
-        ) from exc
-
-
 def extraer_fecha_vss(nombre):
     patron = re.fullmatch(
         r"VSS\s+BBVA\s+"
@@ -209,35 +184,35 @@ def validar_correspondencia(
         )
 
     if tipo_insumo == "CARTA_COMPENSACION":
-        patron_carta = re.fullmatch(
-            r"CARTA\s+(\d{2})-(\d{2})-(\d{4})\.XLSX",
-            nombre,
-            re.I,
-        )
-
-        if not patron_carta:
+        # El nombre identifica el insumo; el contenido sigue validado por el parser.
+        if "CARTA" not in nombre or not nombre.endswith(".XLSX"):
             raise CorrespondenciaInvalida(
-                "NOMBRE_ARCHIVO_INVALIDO",
-                "Se espera carta DD-MM-AAAA.xlsx"
+                "NOMBRE_ARCHIVO_INVALIDO", "Se requiere un archivo .xlsx cuyo nombre contenga carta"
             )
-
-        dia, mes, anio = patron_carta.groups()
-
-        try:
-            fecha_archivo = date(
-                int(anio), int(mes), int(dia)
-            )
-        except ValueError as exc:
+        # La fecha del nombre es opcional; si existe debe coincidir con la jornada.
+        fechas = []
+        for match in re.finditer(r"(?<!\d)(\d{2})[-_](\d{2})[-_](\d{4})(?!\d)", nombre):
+            dia, mes, anio = map(int, match.groups())
+            try:
+                fechas.append(date(anio, mes, dia))
+            except ValueError as exc:
+                raise CorrespondenciaInvalida("FECHA_ARCHIVO_INVALIDA", "Fecha de Carta invalida") from exc
+        for match in re.finditer(r"(?<![A-Z0-9])F(\d{6})(?!\d)", nombre):
+            try:
+                fechas.append(datetime.strptime(match.group(1), "%y%m%d").date())
+            except ValueError as exc:
+                raise CorrespondenciaInvalida("FECHA_ARCHIVO_INVALIDA", "Fecha de Carta invalida") from exc
+        if len(set(fechas)) > 1:
+            raise CorrespondenciaInvalida("FECHA_ARCHIVO_AMBIGUA", "Carta contiene fechas distintas")
+        if not fechas:
             raise CorrespondenciaInvalida(
-                "FECHA_ARCHIVO_INVALIDA",
-                "La fecha indicada en Carta no es valida"
-            ) from exc
+                "FECHA_ARCHIVO_NO_IDENTIFICADA",
+                "La Carta debe contener una fecha contable en el nombre"
+            )
+        fecha_archivo = fechas[0]
 
     elif tipo_insumo == "PMD":
         fecha_archivo = extraer_fecha_pmd(nombre)
-
-    elif tipo_insumo == "MEP":
-        fecha_archivo = extraer_fecha_mep(nombre)
 
     elif tipo_insumo == "VISA_SS_INTERNATIONAL":
         patron_ss = re.fullmatch(

@@ -1,0 +1,68 @@
+{
+  "referencia": "Plantilla Maestra(10).xlsx",
+  "sha256_referencia": "df7a1b4757cddbaa554fcd579d1288f9851d7fc8cd0b3f77508c9f0cfcdefc84",
+  "hoja": "PLANTILLA (2)",
+  "reglas": [
+    {
+      "concepto": "017-CANJE RECIBIDO TARJETA CREDITO PAGOS",
+      "cuenta": "299095302",
+      "hoja": "PLANTILLA (2)",
+      "fila": 58,
+      "celda_cuenta": "B58",
+      "celda_concepto": "C58",
+      "formula_F": null,
+      "formula_G": "=IF(ISNA(VLOOKUP(C58,[2]TOTALES!$A:$B,2,0)),0,VLOOKUP(C58,[2]TOTALES!$A:$B,2,0))"
+    },
+    {
+      "concepto": "017-ORIGINAL REEMBOLSOS CREDITO",
+      "cuenta": "299095302",
+      "hoja": "PLANTILLA (2)",
+      "fila": 60,
+      "celda_cuenta": "B60",
+      "celda_concepto": "C60",
+      "formula_F": null,
+      "formula_G": "=IF(ISNA(VLOOKUP(C60,[2]TOTALES!$A:$C,3,0)),0,VLOOKUP(C60,[2]TOTALES!$A:$C,3,0))"
+    },
+    {
+      "concepto": "017-CANJE RECIBIDO TARJETA DEBITO REVERSIONES",
+      "cuenta": "299095301",
+      "hoja": "PLANTILLA (2)",
+      "fila": 67,
+      "celda_cuenta": "B67",
+      "celda_concepto": "C67",
+      "formula_F": null,
+      "formula_G": "=IF(ISNA(VLOOKUP(C67,[2]TOTALES!$A:$B,2,0)),0,VLOOKUP(C67,[2]TOTALES!$A:$B,2,0))"
+    },
+    {
+      "concepto": "017-ORIGINAL REEMBOLSOS DEBITO",
+      "cuenta": "299095301",
+      "hoja": "PLANTILLA (2)",
+      "fila": 69,
+      "celda_cuenta": "B69",
+      "celda_concepto": "C69",
+      "formula_F": null,
+      "formula_G": "=IF(ISNA(VLOOKUP(C69,[2]TOTALES!$A:$C,3,0)),0,VLOOKUP(C69,[2]TOTALES!$A:$C,3,0))"
+    },
+    {
+      "concepto": "017-REPRESENTACION  VENTA NAL (CENTRO 730)",
+      "cuenta": "299095038",
+      "hoja": "PLANTILLA (2)",
+      "fila": 80,
+      "celda_cuenta": "B80",
+      "celda_concepto": "C80",
+      "formula_F": "=IF(ISNA(VLOOKUP(C80,[2]TOTALES!$A:$B,2,0)),0,VLOOKUP(C80,[2]TOTALES!$A:$B,2,0))",
+      "formula_G": null
+    },
+    {
+      "concepto": "017-COMISIONES NO EXITOSAS TD Y TC IMPUTABLES BANCO",
+      "cuenta": "299095843",
+      "hoja": "PLANTILLA (2)",
+      "fila": 92,
+      "celda_cuenta": "B92",
+      "celda_concepto": "C92",
+      "formula_F": "=IF(ISNA(VLOOKUP(C92,[2]TOTALES!$A:$B,2,0)),0,VLOOKUP(C92,[2]TOTALES!$A:$B,2,0)-F90)",
+      "formula_G": null
+    }
+  ],
+  "criterio": "Coincidencia literal exacta. Cuenta de plantilla identificada; campo importe, signo, filtro, correspondencia Host y homologacion pendientes."
+}

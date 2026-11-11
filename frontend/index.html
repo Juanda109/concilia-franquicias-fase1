@@ -1,3 +1,4 @@
+<!-- CONCILIA_EXCLUSION_MEP_V2 -->
 <!doctype html>
 <html lang="es">
 <head>
@@ -228,8 +229,404 @@ td{padding:9px 8px;border-bottom:1px solid #edf0f2;white-space:nowrap}
 .conciliaDialogError{font-size:11px;color:var(--red);min-height:1em;margin-bottom:8px}
 #noDataModal{z-index:120}#noDataModal .modalBox{width:min(450px,100%);border-radius:6px;padding:22px}#noDataModal .actionbar{justify-content:flex-end}
 @media(max-width:540px){.conciliaDialog{padding:12px}.conciliaDialogBox{padding:16px;max-height:92vh}}
+
+/* CONCILIA_UX_REPORTE_COMPACTO_V1: solo presentacion */
+.card.section:has(#reconFechaContable) {
+  padding: 10px 14px !important;
+  margin-bottom: 8px !important;
+}
+.card.section:has(#reconFechaContable) .field {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin: 0 !important;
+}
+.card.section:has(#reconFechaContable) .field label {
+  margin: 0 !important;
+  flex: 0 0 auto;
+}
+#reconFechaContable {
+  width: min(100%, 230px) !important;
+  max-width: 230px !important;
+  min-height: 34px;
+  padding: 5px 9px;
+  flex: 0 1 230px;
+}
+/* Las tarjetas estaban basadas en Insumos y no representan la fecha activa. */
+#reconFechasContables,
+.card.section:has(#reconFechaContable) .muted { display: none !important; }
+.card.section:has(#reconFechaContable) .filterHint {
+  margin: 4px 0 0 !important;
+  font-size: 11px;
+}
+
+
+/* CONCILIA_DETALLE_ANCHO_V1: modal Detalle existente, todas las franquicias. */
+#drawer.drawer {
+  width: min(70vw, 1200px);
+  max-width: 100vw;
+  box-sizing: border-box;
+  padding: 22px 28px 32px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+#drawer #btnCerrarDrawer {
+  position: sticky;
+  top: 0;
+  float: right;
+  z-index: 2;
+  background: #fff;
+  margin-left: 12px;
+}
+#drawer #drawerContent {min-width: 0; overflow-wrap: anywhere;}
+#drawer #drawerContent .tableScroll {width:100%;max-width:100%;overflow-x:auto;}
+#drawer #drawerContent .reconTable {
+  width:100%;min-width:0;table-layout:auto;border-collapse:collapse;
+}
+#drawer #drawerContent .reconTable th,
+#drawer #drawerContent .reconTable td {
+  white-space:normal;overflow-wrap:anywhere;
+  padding:9px 8px;vertical-align:top;
+}
+#drawer #drawerContent .reconTable th {font-size:10px;}
+#drawer #drawerContent .reconTable td {font-size:11px;}
+@media (max-width: 1000px) {
+  #drawer.drawer {width:100vw;max-width:100vw;padding:18px;}
+}
+
+
+/* CONCILIA_SELECTOR_TARJETAS_REPORTE_V1 */
+.reconDateSection{padding:14px 16px!important;margin-bottom:10px!important}
+.reconDateTop{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.reconDateEyebrow{font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--core)}
+.reconDateSubtitle{font-size:11px;color:var(--muted);margin-top:4px}
+.reconDatePicker{display:flex;align-items:center;gap:9px}
+.reconDatePicker label{font-size:10px;font-weight:600;color:var(--muted)}
+#reconFechaContable{width:170px!important;max-width:100%!important;min-height:34px!important;flex:none!important;border:1px solid var(--line);border-radius:4px;padding:5px 9px;background:#fff}
+#reconFechasContables.reconDateChips{display:flex!important;gap:9px;flex-wrap:wrap;margin:0!important}
+.reconDateChip{position:relative;min-width:136px;border-radius:5px!important;padding:10px 12px 12px!important;transition:background .15s,border-color .15s}
+.reconDateChip.active{border-color:var(--blue)!important;box-shadow:inset 0 -3px var(--cyan)!important;background:#f5f9ff!important}
+.reconDateChip:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.reconDateChip small{font-size:9px!important;letter-spacing:.05em}
+.reconDateChip b{font-size:13px!important;margin:5px 0!important}
+.reconDateState{display:inline-block;background:#eaf2fa;color:#29476c;padding:3px 7px;border-radius:3px;font-size:10px}
+.reconDateId{display:block;font-size:9px;color:var(--muted);margin-top:6px}
+.reconDateFoot{font-size:10px;color:var(--muted);margin-top:10px}
+.reconDateEmpty{font-size:11px;color:var(--muted)}
+@media(max-width:600px){.reconDatePicker{width:100%;justify-content:space-between}.reconDateChip{flex:1 1 125px}}
+
+.card.section.reconDateSection #reconFechasContables{display:flex!important}
+
+
+/* CONCILIA_CARTA_HOJAS_ORIGEN_V5 */
+.conciliaCartaHojas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 16px 0;
+}
+
+.conciliaCartaHoja {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+  background: #f7fafc;
+  border: 1px solid #dbe4ee;
+  border-left: 4px solid #16a6b6;
+  border-radius: 10px;
+}
+
+.conciliaCartaHoja strong {
+  color: #12346b;
+  font-size: 14px;
+}
+
+.conciliaCartaHoja small,
+.conciliaCartaAviso {
+  color: #66788a;
+  font-size: 12px;
+}
+
+.conciliaCartaAviso {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 700px) {
+  .conciliaCartaHojas {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
+
+
+
+/* CONCILIA_ICONOS_INSUMOS_MOCKUP_V1 */
+#tblArchivos td.actionCell {white-space:nowrap;}
+#tblArchivos td.actionCell .iconBtn {width:28px;height:28px;min-width:28px;display:inline-flex;align-items:center;justify-content:center;padding:0;margin-right:5px;vertical-align:middle;border:1px solid var(--line);border-radius:3px;background:#fff;color:var(--muted);cursor:pointer;}
+#tblArchivos td.actionCell .iconBtn svg {display:block;width:14px;height:14px;}
+#tblArchivos td.actionCell .btnUpload,#tblArchivos td.actionCell .btnReemplazarVacio {border-color:var(--blue);color:var(--blue2);}
+#tblArchivos td.actionCell .btnErrorInsumo {color:var(--red);}
+#tblArchivos td.actionCell .iconBtn:hover {background:var(--light);border-color:var(--blue);}
+#tblArchivos td.actionCell .iconBtn:focus-visible {outline:2px solid var(--blue);outline-offset:2px;}
+
+/* CONCILIA_ESTILO_MOCKUP_CONCILIACION_V1
+   Solo apariencia. No modifica datos, acciones, fechas ni estados. */
+#conciliacion { max-width: 1450px; margin-left: auto; margin-right: auto; }
+#conciliacion .head { display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:14px; }
+#conciliacion .head h1 { font-size:24px; line-height:1.22; font-weight:700; color:#072146; margin:0 0 5px; }
+#conciliacion .head h1::after { content:""; display:block; width:34px; height:3px; background:#2dcccd; margin-top:8px; }
+#conciliacion .head p { font-size:11px; color:#5b6a78; line-height:1.5; margin:0; }
+#conciliacion .summaryFlow, #conciliacion .flow.summaryFlow { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin:0 0 12px; }
+#conciliacion .summaryFlow .fc { min-width:0; background:#fff; border:1px solid #dfe3e6; border-radius:0; box-shadow:none; padding:10px 12px; }
+#conciliacion .summaryFlow .fc small { display:block; font-size:8px; font-weight:400; color:#5b6a78; text-transform:uppercase; }
+#conciliacion .summaryFlow .fc b { display:block; font-size:12px; font-weight:700; color:#072146; margin-top:4px; }
+#conciliacion .card { background:#fff; border:1px solid #dfe3e6; border-radius:2px; box-shadow:0 2px 8px #0721460a; }
+#conciliacion .toolbar { display:flex; align-items:center; gap:7px; margin-bottom:10px; }
+#conciliacion .toolbar .search, #conciliacion .toolbar .select, #conciliacion #reconQ, #conciliacion #reconFr, #conciliacion #reconSt { min-height:31px; padding:7px 8px; font-size:9px; background:#fff; border:1px solid #dfe3e6; border-radius:0; box-shadow:none; }
+#conciliacion .toolbar .search, #conciliacion #reconQ { flex:1 1 auto; min-width:130px; }
+#conciliacion .toolbar .select, #conciliacion #reconFr, #conciliacion #reconSt { flex:0 0 auto; max-width:190px; }
+#conciliacion .tableScroll { width:100%; overflow-x:auto; }
+#conciliacion #recon { width:100%; min-width:1050px; border-collapse:collapse; table-layout:auto; font-size:9.5px; }
+#conciliacion #recon th { background:#e9f2f8; color:#004481; text-align:left; padding:8px; font-size:7.5px; font-weight:700; text-transform:uppercase; white-space:nowrap; border-bottom:1px solid #dfe3e6; }
+#conciliacion #recon td { padding:9px 8px; font-size:9.5px; line-height:1.3; border-bottom:1px solid #edf0f2; vertical-align:middle; white-space:nowrap; }
+#conciliacion #recon .num, #conciliacion #recon td.num { text-align:right; font-variant-numeric:tabular-nums; }
+#conciliacion #recon .badge, #conciliacion #recon .tag { display:inline-block; padding:4px 7px; font-size:8px; line-height:1.2; font-weight:750; border-radius:2px; }
+#conciliacion #recon .ok { background:#e9f5ec; color:#277a3e; }
+#conciliacion #recon .warn { background:#fff4d6; color:#8a5a00; }
+#conciliacion #recon .bad { background:#fbeaec; color:#b92a45; }
+#conciliacion #recon .info { background:#e9f2f8; color:#004481; }
+#conciliacion #recon .btn { display:inline-flex; align-items:center; justify-content:center; min-height:27px; padding:6px 10px; border:1px solid #1464a5; border-radius:2px; background:#fff; color:#004481; font-size:9px; font-weight:700; line-height:1.2; cursor:pointer; white-space:nowrap; }
+#conciliacion #recon .btn.primary { background:#1464a5; color:#fff; }
+#conciliacion #recon .btn:hover { opacity:.85; }
+@media (max-width:950px) { #conciliacion .summaryFlow, #conciliacion .flow.summaryFlow { grid-template-columns:repeat(2,minmax(0,1fr)); } #conciliacion .toolbar { flex-wrap:wrap; } }
+@media (max-width:600px) { #conciliacion .summaryFlow, #conciliacion .flow.summaryFlow { grid-template-columns:1fr; } }
+
+
+/* CONCILIA_PRESENTACION_MOCKUP_V41 */
+
+#conciliacion {
+    max-width: 1450px;
+    margin: 0 auto;
+}
+
+#conciliacion .summaryFlow {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin: 12px 0;
+}
+
+#conciliacion .fc {
+    background: #fff;
+    border: 1px solid #dfe3e6;
+    padding: 10px 12px;
+}
+
+#conciliacion .fc small {
+    color: #5b6a78;
+    font-size: 8px;
+    text-transform: uppercase;
+}
+
+#conciliacion .fc b {
+    color: #072146;
+    font-size: 12px;
+}
+
+#conciliacion .card {
+    background: #fff;
+    border: 1px solid #dfe3e6;
+    border-radius: 2px;
+    padding: 16px;
+    box-shadow: 0 2px 8px #0721460a;
+}
+
+#conciliacion .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 10px;
+}
+
+#conciliacion .search {
+    flex: 1;
+    min-width: 0;
+}
+
+#conciliacion .search,
+#conciliacion .select {
+    height: 34px;
+    padding: 8px;
+    border: 1px solid #dfe3e6;
+    background: #fff;
+    font-size: 9px;
+}
+
+#conciliacion .tableScroll {
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* CONCILIA_V75_QA_ESTILOS */
+.qaV75Panel {border:1px dashed #a67b33; padding:12px; margin:8px 0 12px; border-radius:5px; font-size:12px;}
+.qaV75Panel small {display:block; margin-top:5px; color:#805e32;}
+#reconQaV75Resumen {margin-top:5px; font-size:12px;}
+/* Tabla real identificada por reconBody */
+#conciliacion table:has(#reconBody) {
+    width: 100%;
+    min-width: 1050px;
+    border-collapse: collapse;
+    table-layout: auto;
+    font-size: 9.5px;
+}
+
+#conciliacion table:has(#reconBody) th {
+    background: #e9f2f8;
+    color: #004481;
+    padding: 8px;
+    font-size: 7.5px;
+    font-weight: 700;
+    text-align: left;
+    text-transform: uppercase;
+    white-space: nowrap;
+    border-bottom: 1px solid #dfe3e6;
+}
+
+#conciliacion table:has(#reconBody) td {
+    padding: 9px 8px;
+    border-bottom: 1px solid #edf0f2;
+    font-size: 9.5px;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+#conciliacion table:has(#reconBody) td.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+#conciliacion .badge,
+#conciliacion .tag {
+    display: inline-block;
+    padding: 4px 7px;
+    border-radius: 2px;
+    font-size: 8px;
+    font-weight: 750;
+}
+
+#conciliacion .badge.ok,
+#conciliacion .tag.ok {
+    background: #e9f5ec;
+    color: #277a3e;
+}
+
+#conciliacion .badge.warn,
+#conciliacion .tag.warn {
+    background: #fff4d6;
+    color: #8a5a00;
+}
+
+#conciliacion .badge.info,
+#conciliacion .tag.info {
+    background: #e9f2f8;
+    color: #004481;
+}
+
+#conciliacion .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 28px;
+    padding: 6px 11px;
+    border: 1px solid #1464a5;
+    border-radius: 2px;
+    background: #fff;
+    color: #004481;
+    font-size: 9px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+#conciliacion .btn.primary {
+    background: #1464a5;
+    color: #fff;
+}
+
+@media (max-width: 1000px) {
+    #conciliacion .summaryFlow {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+
+/* CONCILIA_OCULTAR_FUENTE_DEPO_V1 */
+#conciliacion #reconFuenteHost {
+    display: none !important;
+}
+
+
+/* CONCILIA_ESTADO_DETALLE_V5 */
+
+#conciliacion .conciliaEstadoBadge {
+    display: inline-block;
+    padding: 4px 7px;
+    border-radius: 2px;
+    font-size: 8px;
+    font-weight: 750;
+    white-space: nowrap;
+}
+
+#conciliacion .conciliaEstadoBadge.sin-movimientos,
+#conciliacion .conciliaEstadoBadge.pendiente {
+    background: #e9f2f8;
+    color: #004481;
+}
+
+#conciliacion .conciliaEstadoBadge.conciliado {
+    background: #e9f5ec;
+    color: #277a3e;
+}
+
+#conciliacion .conciliaEstadoBadge.diferencia {
+    background: #fff4d6;
+    color: #8a5a00;
+}
+
+#conciliacion .conciliaDetalleBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 28px;
+    padding: 6px 11px;
+    border: 1px solid #1464a5;
+    border-radius: 2px;
+    background: #fff;
+    color: #004481;
+    font-size: 9px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+#conciliacion .conciliaDetalleBtn:hover {
+    background: #e9f2f8;
+}
+
+
+/* CONCILIA_V14_ALINEACION_DETALLE */
+#detalleCuentaConciliaV6 .conciliaDetalleTablaV14 { width:100%; min-width:0; table-layout:auto; border-collapse:collapse; }
+#detalleCuentaConciliaV6 .conciliaDetalleTablaV14 th,
+#detalleCuentaConciliaV6 .conciliaDetalleTablaV14 td { padding:8px 10px; box-sizing:border-box; vertical-align:middle; }
+#detalleCuentaConciliaV6 .conciliaDetalleTablaV14 th { text-align:left; }
+#detalleCuentaConciliaV6 .conciliaDetalleTablaV14 th:nth-child(n+3),
+#detalleCuentaConciliaV6 .conciliaDetalleTablaV14 td.num { text-align:right; font-variant-numeric:tabular-nums; }
 </style>
-<style>/* Fase 1: panel contable reservado para Fase 2 */ #cantPanelOverlay, #cantPanel {display:none !important;}</style>
+<style>/* Fase 1: panel contable reservado para Fase 2 */ #cantPanelOverlay, #cantPanel {display:none !important;}
+</style>
 </head>
 <body>
 <div class="app">
@@ -313,61 +710,161 @@ td{padding:9px 8px;border-bottom:1px solid #edf0f2;white-space:nowrap}
     </section>
 
     <section id="conciliacion" class="panel">
-      <div class="head">
-        <div>
-          <h1>Conciliación y Reporte Maestro</h1><p>Vista de referencia: resultados demostrativos, aún no conectados al motor real.</p>
-          <p>Cruce Franquicia ↔ Host y resultado del Reporte Maestro en un solo cuadro operativo.</p>
+      <div class="head"><div><h1>Conciliación y Reporte Maestro</h1>
+        <p>Cruce Franquicia ↔ Host y resultado del Reporte Maestro en un solo cuadro operativo.</p>
+        <p id="reconJornada" role="status" aria-live="polite">Seleccione una fecha contable en Insumos.</p>
+      </div></div>
+      <!-- CONCILIA_SELECTOR_TARJETAS_REPORTE_V1 -->
+      <div class="card section reconDateSection">
+        <div class="reconDateTop">
+          <div><div class="reconDateEyebrow">FECHAS CONTABLES</div><div class="reconDateSubtitle">Seleccione una jornada para consultar su conciliacion</div></div>
+          <div class="reconDatePicker"><label for="reconFechaContable">Ir a fecha</label><input id="reconFechaContable" type="date" aria-label="Ir a fecha contable del Reporte Maestro"></div>
         </div>
+        <div id="reconFechasContables" class="fechaChips reconDateChips" aria-label="Jornadas contables disponibles"></div>
+        <div class="reconDateFoot">Consulta independiente de la fecha de Insumos. Estados obtenidos de las jornadas existentes.</div>
       </div>
-      
-
-      <div class="flow summaryFlow">
-        <div class="fc"><small>CUENTAS / CRUCES</small><b>29</b></div>
-        <div class="fc"><small>CONCILIADOS</small><b>23</b></div>
-        <div class="fc"><small>DIFERENCIAS</small><b>6</b></div>
-        <div class="fc"><small>INCORPORADOS MAESTRO</small><b>23</b></div>
+      <div class="flow summaryFlow" id="reconSummary">
+        <div class="fc"><small>CUENTAS / CRUCES</small><b id="reconCruces">0</b></div>
+        <div class="fc"><small>CONCILIADOS</small><b id="reconConciliados">0</b></div>
+        <div class="fc"><small>DIFERENCIAS</small><b id="reconDiferencias">0</b></div>
+        <div class="fc"><small>INCORPORADOS MAESTRO</small><b id="reconIncorporados">0</b></div>
       </div>
-
       <div class="card section">
+        <div id="reconAviso" class="filterHint" role="status" aria-live="polite">Sin consulta ejecutada.</div>
+        <!-- CONCILIA_V75_QA_PANEL_INICIO -->
+        </div>
+        <!-- CONCILIA_V75_QA_PANEL_FIN -->
         <div class="toolbar">
           <input id="reconQ" class="search" onkeyup="filterReconRows()" placeholder="Buscar cuenta o concepto...">
           <select id="reconFr" class="select" onchange="filterReconRows()">
-            <option value="">Todas las franquicias</option><option>Credibanco</option><option>Redeban</option><option>VISA</option>
+            <option value="">Todas las franquicias</option><option value="CREDIBANCO">Credibanco</option><option value="REDEBAN">Redeban</option><option value="VISA">Visa</option>
           </select>
+          <!-- CONCILIA_OCULTAR_FUENTE_DEPO_V1 -->
+<select hidden aria-hidden="true" tabindex="-1" id="reconFuenteHost" class="select" onchange="cargarReporteMaestro()"><option value="">Sin seleccionar</option><option value="HA22">HA22</option><option value="HA26">HA26</option><option value="HA32">HA32</option></select>
           <select id="reconSt" class="select" onchange="filterReconRows()">
-            <option value="">Todos los estados</option><option>Conciliado</option><option>Diferencia</option>
-          </select>
+  <option value="">Todos los estados</option>
+  <option value="CONCILIADO">Conciliado</option>
+  <option value="CON_DIFERENCIA">Con diferencia</option>
+  <option value="PENDIENTE_CONCILIACION">Pendiente de conciliación</option>
+  <option value="SIN_INFORMACION">Sin información suficiente</option>
+  <option value="NO_APLICA">No aplica</option>
+</select>
         </div>
-        
-        <div class="tableScroll">
-          <table id="recon" class="reconTable">
-            <thead><tr><th>Franquicia</th><th>Cuenta</th><th>Concepto</th><th>Valor franquicia</th><th>HA22</th><th>HA26</th><th>HA32</th><th>Total Host</th><th>Diferencia</th><th>Estado conciliación</th><th>Acción</th></tr></thead>
-            <tbody id="reconBody">
-<tr data-filter-status="Conciliado" data-franchise="Credibanco"><td>Credibanco</td><td>259095341</td><td><b>Movimientos cuenta</b></td><td class="num">$12.450.000</td><td class="num">$12.450.000</td><td class="num">—</td><td class="num">—</td><td class="num">$12.450.000</td><td class="num">$0</td><td><span class="badge ok">Conciliado</span></td><td><button class="btn" onclick="verDetalleRecon('259095341','HA22','$12.450.000','$12.450.000')">Detalle</button></td></tr>
-<tr data-filter-status="Conciliado" data-franchise="Credibanco"><td>Credibanco</td><td>299095109</td><td><b>Mayor diario</b></td><td class="num">$318.697.901</td><td class="num">—</td><td class="num">—</td><td class="num">$318.697.901</td><td class="num">$318.697.901</td><td class="num">$0</td><td><span class="badge ok">Conciliado</span></td><td><button class="btn" onclick="verDetalleRecon('299095109','HA32','$318.697.901','$318.697.901')">Detalle</button></td></tr>
-<tr data-filter-status="Conciliado" data-franchise="VISA"><td>VISA</td><td>299095302</td><td><b>Canje recibido VISA</b></td><td class="num">$15.059.792.833</td><td class="num">$4.216.265.259</td><td class="num">—</td><td class="num">$10.843.527.574</td><td class="num">$15.059.792.833</td><td class="num">$0</td><td><span class="badge ok">Conciliado</span></td><td><button class="btn" onclick="verDetalleRecon('299095302','HA32 + HA22','$15.059.792.833','$15.059.792.833')">Detalle</button></td></tr>
-<tr data-filter-status="Conciliado" data-franchise="Credibanco"><td>Credibanco</td><td>299095508</td><td><b>Movimientos cuenta</b></td><td class="num">$745.800</td><td class="num">$745.800</td><td class="num">—</td><td class="num">—</td><td class="num">$745.800</td><td class="num">$0</td><td><span class="badge ok">Conciliado</span></td><td><button class="btn" onclick="verDetalleRecon('299095508','HA22','$745.800','$745.800')">Detalle</button></td></tr>
-<tr data-filter-status="Conciliado" data-franchise="Redeban"><td>Redeban</td><td>299095870</td><td><b>Pendiente / referencia</b></td><td class="num">$416.383.471</td><td class="num">—</td><td class="num">$416.383.471</td><td class="num">—</td><td class="num">$416.383.471</td><td class="num">$0</td><td><span class="badge ok">Conciliado</span></td><td><button class="btn" onclick="verDetalleRecon('299095870','HA26','$416.383.471','$416.383.471')">Detalle</button></td></tr>
-<tr data-filter-status="Conciliado" data-franchise="Redeban"><td>Redeban</td><td>196095001215</td><td><b>Rechazo / referencia</b></td><td class="num">$56.000</td><td class="num">—</td><td class="num">$56.000</td><td class="num">—</td><td class="num">$56.000</td><td class="num">$0</td><td><span class="badge ok">Conciliado</span></td><td><button class="btn" onclick="verDetalleRecon('196095001215','HA26','$56.000','$56.000')">Detalle</button></td></tr>
-<tr data-filter-status="Conciliado" data-franchise="Redeban"><td>Redeban</td><td>196095001828</td><td><b>Depósitos electrónicos</b></td><td class="num">$327.450.800</td><td class="num">—</td><td class="num">—</td><td class="num">$327.450.800</td><td class="num">$327.450.800</td><td class="num">$0</td><td><span class="badge ok">Conciliado</span></td><td><button class="btn" onclick="verDetalleRecon('196095001828','HA32','$327.450.800','$327.450.800')">Detalle</button></td></tr>
-<tr data-filter-status="Conciliado" data-franchise="Credibanco"><td>Credibanco</td><td>196095001838</td><td><b>Movimientos + mayor</b></td><td class="num">$70.626</td><td class="num">$35.313</td><td class="num">—</td><td class="num">$35.313</td><td class="num">$70.626</td><td class="num">$0</td><td><span class="badge ok">Conciliado</span></td><td><button class="btn" onclick="verDetalleRecon('196095001838','HA22 + HA32','$70.626','$70.626')">Detalle</button></td></tr>
-<tr data-filter-status="Conciliado" data-franchise="VISA"><td>VISA</td><td>196095001845</td><td><b>Mayor diario</b></td><td class="num">$655.800.012</td><td class="num">—</td><td class="num">—</td><td class="num">$655.800.000</td><td class="num">$655.800.000</td><td class="num">$12</td><td><span class="badge ok">Conciliado</span></td><td><button class="btn" onclick="verDetalleRecon('196095001845','HA32','$655.800.012','$655.800.000')">Detalle</button></td></tr>
-<tr data-filter-status="Diferencia" data-franchise="VISA"><td>VISA</td><td>299095408</td><td><b>Canje internacional</b></td><td class="num">$18.420.000</td><td class="num">—</td><td class="num">—</td><td class="num">$18.590.000</td><td class="num">$18.590.000</td><td class="num">$170.000</td><td><span class="badge warn">Diferencia</span></td><td><button class="btn primary" onclick="verIA('299095408','$170.000')">Analizar IA</button></td></tr>
-<tr data-filter-status="Diferencia" data-franchise="VISA"><td>VISA</td><td>299095409</td><td><b>Comisión canje internacional</b></td><td class="num">$0</td><td class="num">—</td><td class="num">—</td><td class="num">$170.000</td><td class="num">$170.000</td><td class="num">$170.000</td><td><span class="badge warn">Diferencia</span></td><td><button class="btn primary" onclick="verIA('299095409','$170.000')">Analizar IA</button></td></tr>
-<tr data-filter-status="Diferencia" data-franchise="Redeban"><td>Redeban</td><td>196095001829</td><td><b>Afectación posterior</b></td><td class="num">$245.900.000</td><td class="num">—</td><td class="num">—</td><td class="num">$245.911.000</td><td class="num">$245.911.000</td><td class="num">$11.000</td><td><span class="badge warn">Diferencia</span></td><td><button class="btn primary" onclick="verIA('196095001829','$11.000')">Analizar IA</button></td></tr>
-<tr data-filter-status="Diferencia" data-franchise="Credibanco"><td>Credibanco</td><td>196095001839</td><td><b>Movimientos cuenta</b></td><td class="num">$285.971</td><td class="num">$70.626</td><td class="num">—</td><td class="num">—</td><td class="num">$70.626</td><td class="num">$215.345</td><td><span class="badge warn">Diferencia</span></td><td><button class="btn primary" onclick="verIA('196095001839','$215.345')">Analizar IA</button></td></tr>
-<tr data-filter-status="Diferencia" data-franchise="Credibanco"><td>Credibanco</td><td>196095001859</td><td><b>Devolución ventas</b></td><td class="num">$285.971</td><td class="num">$70.626</td><td class="num">—</td><td class="num">—</td><td class="num">$70.626</td><td class="num">$215.345</td><td><span class="badge warn">Diferencia</span></td><td><button class="btn primary" onclick="verIA('196095001859','$215.345')">Analizar IA</button></td></tr>
-<tr data-filter-status="Diferencia" data-franchise="Redeban"><td>Redeban</td><td>196095001918</td><td><b>Pendiente Host</b></td><td class="num">$9.420.500</td><td class="num">—</td><td class="num">$0</td><td class="num">—</td><td class="num">$0</td><td class="num">$9.420.500</td><td><span class="badge warn">Diferencia</span></td><td><button class="btn primary" onclick="verIA('196095001918','$9.420.500')">Analizar IA</button></td></tr>
-</tbody>
-          </table>
-        </div>
+        <!-- CONCILIA_V25_PERSISTIDO -->
+<div class="card" style="padding:14px;margin:14px 0">
+  <h3>Auditoría monetaria — Datos PostgreSQL</h3>
+  <p>Importes candidatos no homologados. Sin conciliación certificada.</p>
+  <button type="button" class="btn" onclick="mostrarV25()">
+    Consultar importes persistidos
+  </button>
+  <div id="resultadoV25" role="status"></div>
+</div>
+<script>
+async function mostrarV25() {
+  const destino = document.getElementById('resultadoV25');
+  destino.textContent = 'Consultando PostgreSQL...';
+
+  try {
+    const fecha = obtenerFechaReporteMaestro();
+    if (!fecha) throw Error('Seleccione una fecha contable');
+
+    await consultarJornadas();
+    const jornada = jornadasPorFecha.get(fecha);
+    if (!jornada) throw Error('No existe jornada para esa fecha');
+
+    const id = Number(jornada.id_jornada);
+    if (!Number.isSafeInteger(id) || id <= 0)
+      throw Error('Jornada inválida');
+
+    const r = await fetch(
+      '/api/v1/auditoria-monetaria/jornadas/' + id,
+      {cache:'no-store'}
+    );
+    if (!r.ok) throw Error('HTTP ' + r.status);
+
+    const datos = await r.json();
+    if (datos.certificado !== false ||
+        datos.modo !== 'AUDITORIA_MONETARIA_PERSISTIDA_NO_CERTIFICADA' ||
+        Number(datos.id_jornada) !== id ||
+        String(datos.fecha_contable) !== fecha)
+      throw Error('Respuesta no corresponde a la jornada');
+
+    const tabla = document.createElement('table');
+    tabla.className = 'reconTable';
+
+    const encabezado = document.createElement('thead');
+    encabezado.innerHTML =
+      '<tr><th>Cuenta</th><th>Concepto</th>' +
+      '<th>Registros</th><th>Importe candidato</th>' +
+      '<th>Host</th><th>Estado</th></tr>';
+    tabla.appendChild(encabezado);
+
+    const cuerpo = document.createElement('tbody');
+
+    for (const x of datos.resultados || []) {
+      const fila = document.createElement('tr');
+      const valores = [
+        x.cuenta,
+        x.concepto_patron,
+        x.registros_canje,
+        x.importe_candidato_no_homologado,
+        x.movimientos_host,
+        x.estado
+      ];
+
+      for (const valor of valores) {
+        const celda = document.createElement('td');
+        celda.textContent = valor == null ? '—' : String(valor);
+        fila.appendChild(celda);
+      }
+      cuerpo.appendChild(fila);
+    }
+
+    tabla.appendChild(cuerpo);
+
+    if (obtenerFechaReporteMaestro() !== fecha)
+      throw Error('La fecha cambió durante la consulta');
+
+    destino.replaceChildren(tabla);
+
+  } catch (error) {
+    destino.textContent = 'Error V25: ' + error.message;
+  }
+}
+</script>
+<!-- CONCILIA_V67_TOTALES_GLOBALES_INDEPENDIENTES -->
+<div id="conciliaV67Totales" class="card section" hidden aria-live="polite">
+  <div class="title">Totales globales de origen <span>Diagnóstico no certificado</span></div>
+  <p id="conciliaV67Meta" class="muted"></p>
+  <div class="tableScroll"><table class="reconTable" aria-label="Totales globales de origen V67">
+    <thead><tr><th>Insumo externo</th><th>Archivo ID</th><th>Registros</th><th>VL TOTAL</th><th>VL INTERC</th><th>Comision</th></tr></thead>
+    <tbody id="conciliaV67Filas"></tbody>
+  </table></div>
+  <p class="friendlyNote">Importes de origen por archivo, sin homologación monetaria ni certificación. No sumar CAET y CANT entre sí, ni con Host. Los valores se presentan en su unidad persistida, sin inferir moneda o escala. Un campo no disponible no equivale a cero. Carta, DEPO y PMD no se calculan desde este contrato.</p>
+</div>
+<div class="title" style="margin-top:6px">Resultados de conciliación <span id="reconMetaTotal">0 registros</span></div>
+        <div class="tableScroll"><table class="reconTable"><thead><tr>
+          <th>Franquicia</th><th>Cuenta</th><th>Concepto</th><th>Cantidad*</th><th>VL INTERC*</th><th>VL TOTAL*</th><th>VALOR INTERCAMBIO</th><th>HA22 Debe</th><th>HA22 Haber</th><th>HA22 Neto*</th><th>HA26 Debe</th><th>HA26 Haber</th><th>HA26 Neto*</th><th>HA32 Debe</th><th>HA32 Haber</th><th>HA32 Neto*</th><th>Total Host</th><th>Diferencia</th><th>Estado conciliación</th><th>Acción</th>
+        </tr></thead><tbody id="reconBody"><tr><td colspan="20">Sin resultados consultados.</td></tr></tbody></table></div><div id="reconCredibancoSinCorrespondencia" style="margin-top:12px"></div><div id="reconDePoCnbInc57" class="filterHint" style="margin-top:12px"></div>
+        <p class="filterHint">*: diagnóstico no homologado, puede repetirse entre conceptos de una misma cuenta. —: no disponible / sin cruce homologado. 0*: valor provisional, no calculado. Los resultados Host sin correspondencia se consultan en trazabilidad separada; no se inventan cruces ni totales.</p>
+        <div class="actionbar" style="justify-content:flex-end;margin-top:12px"><button type="button" class="btn" id="reconAbrirTrazabilidad" onclick="abrirTrazabilidadHost()">Ver trazabilidad Host (0)</button></div>
       </div>
     </section>
 
-    <section id="ia" class="panel">
+
+<!-- CONCILIA_ESTADO_DETALLE_V6 -->
+<section id="detalleCuentaConciliaV6" class="panel">
+  <button type="button" class="backLink"
+    id="volverDetalleCuentaV6">
+    &#8592; Volver a Resultados de conciliación
+  </button>
+  <div id="contenidoDetalleCuentaV6" class="card"></div>
+</section>
+
+<section id="ia" class="panel">
       <div class="head">
         <div>
-          <h1>Diagnostico IA de Conciliación</h1><p>Vista demostrativa: no ejecuta análisis IA real.</p>
+          <h1>Diagnostico IA de Conciliación</h1><p>SIMULACIÓN AISLADA: no ejecuta IA real, no modifica PostgreSQL ni el Reporte Maestro.</p>
           <p>La IA se activa únicamente sobre excepciones que no pudieron explicarse con las reglas vigentes. El usuario interactúa mediante decisiones guiadas, no como un chat.</p>
         </div>
         <span class="tag info">IA por excepción</span>
@@ -528,8 +1025,10 @@ const procesamientoEnCurso = new Set();
 const CONCILIA_API_BASE = window.location.protocol === 'file:' ? 'http://127.0.0.1:8000' : window.location.origin;
 // Version de catalogo de prueba disponible en concilia_test; configurable por despliegue.
 const CONCILIA_VERSION_CATALOGO = 2;
-const TIPOS_F1 = ['HA22','HA26','HA32','CAET','CANT','DEPO','CARTA_COMPENSACION','PMD','MEP','VSS','VISA_SS_INTERNATIONAL'];
-const FUENTES_F1 = {HA22:'HOST',HA26:'HOST',HA32:'HOST',CAET:'CREDIBANCO',CANT:'CREDIBANCO',DEPO:'CREDIBANCO',CARTA_COMPENSACION:'CREDIBANCO',PMD:'REDEBAN',MEP:'REDEBAN',VSS:'VISA',VISA_SS_INTERNATIONAL:'VISA'};
+const TIPOS_F1 = ['HA22','HA26','HA32','CAET','CANT','DEPO','CARTA_COMPENSACION','PMD','VSS','VISA_SS_INTERNATIONAL'];
+const TIPOS_FUNCIONALES_V74 = Object.freeze(['HA22','HA26','HA32','CAET','CANT','DEPO','CARTA_COMPENSACION','PMD','VSS']);
+// VISA_SS_INTERNATIONAL sigue visible como insumo tecnico, no se cuenta dentro de los nueve.
+const FUENTES_F1 = {HA22:'HOST',HA26:'HOST',HA32:'HOST',CAET:'CREDIBANCO',CANT:'CREDIBANCO',DEPO:'CREDIBANCO',CARTA_COMPENSACION:'CREDIBANCO',PMD:'REDEBAN',VSS:'VISA',VISA_SS_INTERNATIONAL:'VISA'};
 const escapar = (valor) => String(valor ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function apiConcilia(ruta, opciones = {}) {
   let respuesta;
@@ -555,6 +1054,7 @@ async function consultarJornadas() {
 }
 
 // Íconos minimalistas (SVG en línea, trazo simple, sin dependencias externas)
+const ICON_ERROR_INSUMOS = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 7v6M12 17h.01"/></svg>';
 const ICON_EYE = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>';
 const ICON_UPLOAD = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>';
 
@@ -878,8 +1378,18 @@ async function buscarArchivos() {
       };
     });
     const recibidos = items.filter(i => i.estadoRecepcion === 'Recibido').length;
-    tblMeta.textContent = `${recibidos} de ${datos.total} insumos recibidos`;
-    actualizarHeroDesdeArchivos(fecha, items, datos.total);
+    // CONCILIA_V74_CONTEO_9_FUNCIONALES
+    const itemsFuncionalesV74 = items.filter(i => TIPOS_FUNCIONALES_V74.includes(i.tipoInsumo));
+    const recibidosFuncionalesV74 = itemsFuncionalesV74.filter(i => i.estadoRecepcion === 'Recibido').length;
+    const adicionalTecnicoV74 = items.length - itemsFuncionalesV74.length;
+    tblMeta.textContent = `${recibidosFuncionalesV74} de ${itemsFuncionalesV74.length} insumos funcionales recibidos` +
+      (adicionalTecnicoV74 ? ` · ${adicionalTecnicoV74} tecnico(s) adicional(es)` : '') +
+      ' · MEP retirado · Cierre tecnico no inferido';
+    actualizarHeroDesdeArchivos(fecha, itemsFuncionalesV74, itemsFuncionalesV74.length);
+    // No confundir 9/9 procesados con el cierre tecnico de la jornada.
+    if (String(jornada.estado).toUpperCase() !== 'COMPLETADA') {
+      el('heroBadge').outerHTML = '<span id="heroBadge" class="badge warn">Pendiente cierre técnico</span>';
+    }
     if (String(jornada.estado).toUpperCase() === 'COMPLETADA') {
       el('heroBadge').outerHTML = '<span id="heroBadge" class="badge ok">Completada</span>';
     }
@@ -896,13 +1406,24 @@ async function buscarArchivos() {
         ${a.puedeCargar ? `<button type="button" class="iconBtn btnUpload" data-tipo="${escapar(a.tipoInsumo)}" title="Cargar archivo original" aria-label="Cargar ${escapar(a.tipoInsumo)}">${ICON_UPLOAD}</button>` : ''}
         ${a.sinMovimientos ? `<label><input type="checkbox" class="chkConfirmarVacio" data-id="${escapar(a.idArchivo)}"> Confirmar sin movimientos</label>
           <button type="button" class="btn btnConfirmarVacio" data-id="${escapar(a.idArchivo)}">Confirmar</button>` : ''}
-        ${a.puedeReemplazar ? `<button type="button" class="btn btnReemplazarVacio" data-tipo="${escapar(a.tipoInsumo)}" title="Volver a subir archivo">Volver a subir</button>` : ''}
-        ${a.puedeVerDetalle ? `<button type="button" class="btn btnVerDetalle" data-id-archivo="${escapar(a.idArchivo)}">Ver detalle</button>` : ''}
+        ${a.puedeReemplazar ? `<button type="button" class="iconBtn btnReemplazarVacio" aria-label="Volver a subir archivo" data-tipo="${escapar(a.tipoInsumo)}" title="Volver a subir archivo">${ICON_UPLOAD}</button>` : ''}
+        ${a.estadoProcesamiento === 'Error' && a.idArchivo != null
+          ? `<button type="button" class="iconBtn btnErrorInsumo" data-id-archivo="${escapar(a.idArchivo)}" title="Ver error" aria-label="Ver error de procesamiento">${ICON_ERROR_INSUMOS}</button>`
+          : ''}
+        ${a.puedeVerDetalle ? `<button type="button" class="iconBtn btnVerDetalle" title="Ver detalle" aria-label="Ver detalle del archivo" data-id-archivo="${escapar(a.idArchivo)}">${ICON_EYE}</button>` : ''}
       </td>
     </tr>`).join('');
     conectarBotonesCarga();
     // F1: procesamiento automatico; no conectar botones manuales.
     conectarConfirmacionesSinMovimientos();
+    tblArchivos.querySelectorAll('.btnErrorInsumo').forEach(boton => {
+      boton.addEventListener('click', () => {
+        const idArchivo = Number(boton.dataset.idArchivo);
+        if (Number.isSafeInteger(idArchivo) && idArchivo > 0) {
+          abrirDetalle(idArchivo);
+        }
+      });
+    });
     tblArchivos.querySelectorAll('.btnVerDetalle').forEach(boton => {
       boton.addEventListener('click', () => {
         const idArchivo = Number(boton.dataset.idArchivo);
@@ -957,8 +1478,8 @@ function confirmarPreparacionJornada({fechaContable, tipoInsumo}) {
     el('confirmarJornadaFecha').textContent = fechaContable;
     el('confirmarJornadaInsumo').textContent = tipoInsumo || 'Todos los insumos';
     el('confirmarJornadaTexto').textContent = tipoInsumo
-      ? 'No existe una jornada inicializada para esta fecha. Se prepararán los diez insumos y después continuará la carga seleccionada.'
-      : 'Se prepararán los diez insumos funcionales de Fase 1 para esta fecha contable.';
+      ? 'No existe una jornada inicializada para esta fecha. Se prepararán los insumos de la versión vigente y después continuará la carga seleccionada.'
+      : 'Se prepararán los nueve insumos funcionales vigentes de Fase 1; MEP no participa.';
     modal.classList.add('open');
     const terminar = valor => {
       modal.classList.remove('open');
@@ -1122,7 +1643,11 @@ async function renderDetallePagina() {
             <thead>
               <tr>
                 ${headers.map(
-                  h => `<th>${escapar(h.label)}</th>`
+                  h => `<th>${escapar(
+  ['CAET','CANT'].includes(String(archivo?.tipo_archivo || '').toUpperCase())
+    ? ({CUENTA:'CONCEPTO FUNCIONAL', CUENTAS_COMISIONES:'CONCEPTO COMISIONES'}[h.key] || h.label)
+    : h.label
+)}</th>`
                 ).join('')}
               </tr>
             </thead>
@@ -1496,6 +2021,9 @@ el('uploadFileHidden').addEventListener('change', async e => {
 });
 
 fechaInput.addEventListener('change', actualizarFechaEjecucion);
+el('reconFechaContable').addEventListener(
+  'change', cambiarFechaReporteMaestro
+);
 
 // ---- Navegación de pestañas (Insumos / Conciliación / Diagnostico IA) ----
 function go(id, btn) {
@@ -1504,29 +2032,1514 @@ function go(id, btn) {
   document.querySelectorAll('.nav button').forEach((b) => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
   window.scrollTo(0, 0);
+  if (id === 'conciliacion') cargarReporteMaestro();
+  else invalidarReporteMaestro();
 }
+
+
+/* CONCILIA_F2_INC33_REPORTE_MAESTRO_REAL */
+let solicitudReporteMaestro = 0;
+let fechaReporteMaestro = null;
+
+function obtenerFechaReporteMaestro() {
+  const input = el('reconFechaContable');
+  if (!fechaReporteMaestro) {
+    fechaReporteMaestro = fechaContableActiva || '';
+    if (input) input.value = fechaReporteMaestro;
+  }
+  return input?.value || fechaReporteMaestro;
+}
+
+function renderFechasReporteMaestro() {
+  const host = el('reconFechasContables');
+  if (!host) return;
+  const activa = obtenerFechaReporteMaestro();
+  const fechas = Array.from(jornadasPorFecha.keys()).filter(f => /^\d{4}-\d{2}-\d{2}$/.test(f));
+  // Elegir jornadas cercanas a la seleccion, no fechas derivadas del modulo Insumos.
+  const tiempo = f => new Date(`${f}T12:00:00`).getTime();
+  const ref = /^\d{4}-\d{2}-\d{2}$/.test(activa) ? tiempo(activa) : Date.now();
+  const cercanas = fechas.sort((a,b) => Math.abs(tiempo(a)-ref)-Math.abs(tiempo(b)-ref) || b.localeCompare(a)).slice(0,5);
+  if (activa && !cercanas.includes(activa)) cercanas.push(activa);
+  cercanas.sort((a,b) => b.localeCompare(a));
+  if (!cercanas.length) {
+    host.innerHTML = '<span class="reconDateEmpty">Sin jornadas registradas. Seleccione una fecha en el calendario.</span>';
+    return;
+  }
+  host.innerHTML = cercanas.map(iso => {
+    const jornada = jornadasPorFecha.get(iso);
+    const estado = jornada ? normalizarEstadoJornada(jornada.estado) : 'Sin jornada';
+    const id = jornada ? `Jornada ${escapar(String(jornada.id_jornada))}` : 'Sin jornada';
+    return `<button type="button" class="fechaChip reconDateChip${iso === activa ? ' active' : ''}"
+       data-fecha="${iso}" aria-pressed="${iso === activa}">
+       <small>FECHA CONTABLE</small><b>${fechaCorta(iso)}</b>
+       <span class="reconDateState">${escapar(String(estado))}</span>
+       <span class="reconDateId">${id}</span>
+     </button>`;
+  }).join('');
+  host.querySelectorAll('.reconDateChip').forEach(btn => btn.addEventListener('click', () => {
+    const iso = btn.dataset.fecha;
+    if (iso === obtenerFechaReporteMaestro()) return;
+    fechaReporteMaestro = iso;
+    el('reconFechaContable').value = iso;
+    renderFechasReporteMaestro();
+    cargarReporteMaestro();
+  }));
+}
+
+function cambiarFechaReporteMaestro() {
+  fechaReporteMaestro = el('reconFechaContable').value;
+  renderFechasReporteMaestro();
+  cargarReporteMaestro();
+}
+
+function invalidarReporteMaestro() { solicitudReporteMaestro++; }
+// CONCILIA_V67_RENDER_GLOBAL: presentación, sin operaciones monetarias.
+function limpiarTotalesGlobalesV67() {
+  const panel = document.getElementById('conciliaV67Totales');
+  if (panel) panel.hidden = true;
+  const filas = document.getElementById('conciliaV67Filas');
+  if (filas) filas.replaceChildren();
+  const meta = document.getElementById('conciliaV67Meta');
+  if (meta) meta.textContent = '';
+}
+function pintarTotalesGlobalesV67(origen, jornadaId, fecha) {
+  origen = Array.isArray(origen) ? origen.filter(x => x && ['CAET','CANT','DEPO'].includes(x.insumo)) : [];
+  const panel = document.getElementById('conciliaV67Totales');
+  const tbody = document.getElementById('conciliaV67Filas');
+  const meta = document.getElementById('conciliaV67Meta');
+  if (!panel || !tbody || !meta) throw new Error('Panel V67 no disponible');
+
+  tbody.replaceChildren();
+
+  const numero = v => {
+    if (v === null || v === undefined || v === '') return '—';
+    const n = Number(v);
+    return Number.isFinite(n)
+      ? '$ ' + n.toLocaleString('es-CO', {minimumFractionDigits:2, maximumFractionDigits:2})
+      : '—';
+  };
+
+  const entero = v => {
+    if (v === null || v === undefined || v === '') return '—';
+    const n = Number(v);
+    return Number.isFinite(n) ? n.toLocaleString('es-CO') : '—';
+  };
+
+  const filasOrigen = Array.isArray(origen) ? origen : [];
+  const orden = ['CAET', 'CANT', 'DEPO', 'CARTA_COMPENSACION'];
+
+  const buscar = tipo => filasOrigen.find(x => String(x?.insumo ?? x?.tipo ?? '').toUpperCase() === tipo);
+
+  for (const tipo of orden) {
+    const x = buscar(tipo);
+    const tr = document.createElement('tr');
+    const valor = x || {};
+
+    const vlTotal = valor.vl_total ?? valor.valor_total ?? null;
+    const vlInterc = valor.vl_interc ?? valor.valor_intercambio ?? null;
+    const comision = valor.comisiones ?? valor.comision ?? valor.comision_op_exitosas ?? null;
+    const registros = valor.registros ?? valor.cantidad ?? null;
+    const archivo = valor.id_archivo ?? valor.archivo ?? null;
+
+    const c = (texto, clase) => {
+      const td = document.createElement('td');
+      td.textContent = texto;
+      if (clase) td.className = clase;
+      tr.appendChild(td);
+    };
+
+    c(tipo);
+    c(archivo === null ? '—' : String(archivo));
+    c(entero(registros), 'num');
+    c(numero(vlTotal), 'num');
+    c(numero(vlInterc), 'num');
+    c(numero(comision), 'num');
+    tbody.appendChild(tr);
+  }
+
+  meta.textContent = `Jornada ${jornadaId} · Fecha contable ${fecha}`;
+  panel.hidden = false;
+}
+function resetReporteMaestro() {
+  limpiarTotalesGlobalesV67();
+  const panelInc51 = document.getElementById('reconCredibancoSinCorrespondencia');
+  if (panelInc51) panelInc51.innerHTML = '';
+  const panelCnb = document.getElementById('reconDePoCnbInc57');
+  if (panelCnb) panelCnb.textContent = '';
+  for (const id of ['reconCruces','reconConciliados','reconDiferencias','reconIncorporados']) el(id).textContent = '0';
+  el('reconBody').innerHTML = '<tr><td colspan="20">Sin resultados disponibles.</td></tr>';
+  el('reconMetaTotal').textContent = '0 registros';
+  reporteHostDiagnostico = [];
+  el('reconAbrirTrazabilidad').textContent = 'Ver trazabilidad Host (0)';
+}
+function filtroReconFila(fuente, estado, valores) {
+  return `data-franchise="${escapar(fuente)}" data-filter-status="${escapar(estado)}" data-search="${escapar(valores.join(' ').toLowerCase())}"`;
+}
+function valorDiagnostico(valor) {
+  if (valor === null || valor === undefined || valor === '') return '—';
+  return escapar(String(valor));
+}
+function franquiciaDeInsumo(tipo) {
+  const mapa = {CAET:'CREDIBANCO',CANT:'CREDIBANCO',DEPO:'CREDIBANCO',CARTA_COMPENSACION:'CREDIBANCO',PMD:'REDEBAN',MEP:'REDEBAN',VSS:'VISA'};
+  return mapa[String(tipo ?? '').toUpperCase()] || null;
+}
+function esPruebaSintetica(r) {
+  return /PRUEBA SINTETICA/i.test(String(r.concepto ?? '')) || /^90000000/.test(String(r.cuenta ?? ''));
+}
+let reporteHostDiagnostico = [];
+let reporteFilasDetalle = [];
+function abrirDetalleReporte(indice) {
+  const r = reporteFilasDetalle[indice];
+  if (!r) return;
+  // CONCILIA_MODAL_EVIDENCIAS_UNIFICADAS_V1
+  if (r.id_jornada === 3976 && r.tipo_insumo === 'SIMULACION_CREDIBANCO' && Array.isArray(r.evidencias_sync3976)) {
+    const esc = v => escapar(v == null || v === '' ? '—' : String(v));
+    const td = v => `<td>${esc(v)}</td>`;
+    const hostPorFuente = r.host_sync3976 || {};
+    const evidencias = r.evidencias_sync3976;
+    const filas = [];
+    for (const fuente of ['HA22','HA26','HA32']) {
+      const h = hostPorFuente[fuente] || {};
+      const origen = evidencias.find(e => e.insumo === fuente);
+      filas.push(`<tr>${td(fuente)}${td(origen?.concepto || 'EVIDENCIA_HOST')}${td(r.cuenta)}${td(origen?.cantidad)}${td('—')}${td('—')}${td(h.debe)}${td(h.haber)}${td(h.neto)}${td('VALOR_HOST')}</tr>`);
+    }
+    for (const f of evidencias.filter(e => !['HA22','HA26','HA32'].includes(e.insumo))) {
+      const esCrudo = f.unidad === 'UNIDADES_CRUDAS';
+      const valor = f.valor_total == null ? '—' : (esCrudo ? `${f.valor_total} (crudo)` : String(f.valor_total));
+      filas.push(`<tr>${td(f.insumo)}${td(f.concepto)}${td(f.cuenta_visual || f.cuenta)}${td(f.cantidad)}${td(valor)}${td(f.valor_intercambio)}${td('—')}${td('—')}${td('—')}${td(f.unidad)}</tr>`);
+    }
+    drawerContent.innerHTML = `<h2>Detalle de conciliación simulada</h2>
+      <p><b>Jornada:</b> 3976 · 15/10/2026</p>
+      <p><b>Cuenta:</b> ${esc(r.cuenta)} · <b>Concepto:</b> ${esc(r.concepto)}</p>
+      <p><b>Valor franquicia:</b> ${esc(r.valor_origen)} · <b>Total Host:</b> ${esc(r.total_host_sync3976)} · <b>Diferencia:</b> ${esc(r.diferencia_sync3976)}</p>
+      <div class="friendlyNote">OK_SIMULADO · No certificado. Cada HA se compara por separado; CAET y CANT no se suman. DEPO en unidades crudas con escala 1/100 solo para la prueba. Carta es total global, no atribuible automaticamente a esta cuenta.</div>
+      <h3>Evidencias de origen y Host</h3>
+      <div class="tableScroll"><table class="reconTable"><thead><tr><th>Insumo</th><th>Concepto</th><th>Cuenta</th><th>Cantidad</th><th>Valor origen/crudo</th><th>Intercambio</th><th>Debe</th><th>Haber</th><th>Neto</th><th>Unidad</th></tr></thead><tbody>${filas.join('')}</tbody></table></div>`;
+
+    // CONCILIA_CARTA_DESGLOSE_3976_V1: detalle por seccion, no inventa hoja.
+    const bloqueCarta = document.createElement('section');
+    bloqueCarta.id = 'cartaDesglose3976';
+    bloqueCarta.innerHTML = '<h3>Carta de Compensación · desglose de origen</h3><p>Consultando secciones y valores...</p>';
+    drawerContent.appendChild(bloqueCarta);
+    apiConcilia('/api/v1/jornadas/3976/carta-desglose').then(datosCarta => {
+      if (!bloqueCarta.isConnected) return;
+      const escCarta = v => escapar(v == null || v === '' ? '—' : String(v));
+      const nombres = {valor_principal:'Principal',valor_proceso:'Proceso',valor_financiacion:'Financiación',valor_fotocopias:'Fotocopias',valor_red:'Red',valor_depositos_electronicos:'Depósitos electrónicos',valor_total:'Total informado',valor_outgoing:'Outgoing',valor_incoming:'Incoming',factor_compra:'Factor compra',factor_venta:'Factor venta'};
+      const filasCarta = (datosCarta.filas || []).map(f => {
+        const importes = Object.entries(f.importes || {}).filter(([k,v]) => v !== null);
+        const contenido = importes.length ? importes.map(([k,v]) => `<tr><td>${escCarta(nombres[k] || k)}</td><td class="num">${escCarta(v)}</td></tr>`).join('') : '<tr><td colspan="2">Sin importes registrados</td></tr>';
+        return `<details class="card" style="margin:10px 0;padding:12px"><summary><b>${escCarta(f.seccion || 'Sección no registrada')}</b> · ${escCarta(f.concepto)} · línea ${escCarta(f.linea_origen)}</summary><p style="font-size:12px">Archivo ${escCarta(f.id_archivo)} · ${escCarta(f.nombre_archivo)} · lado ${escCarta(f.lado)} · control ${f.es_control === true ? 'Sí' : f.es_control === false ? 'No' : 'No informado'}</p><table class="reconTable"><thead><tr><th>Campo de origen</th><th>Valor registrado</th></tr></thead><tbody>${contenido}</tbody></table></details>`;
+      }).join('');
+      bloqueCarta.innerHTML = `<h3>Carta de Compensación · desglose de origen</h3><div class="friendlyNote">La base conserva sección y línea, no el nombre de hoja. Valores originales sin sumar campos ni registros de control. No certificado.</div>${filasCarta || '<p>Sin registros de Carta para esta jornada.</p>'}`;
+
+// CONCILIA_CARTA_HOJAS_ORIGEN_V5
+{
+  const hojasCarta = document.createElement('div');
+  hojasCarta.className = 'conciliaCartaHojas';
+
+  hojasCarta.innerHTML = `
+    <section class="conciliaCartaHoja">
+      <strong>carta compensacion 224A</strong>
+      <small>Origen pendiente de acreditar.</small>
+    </section>
+
+    <section class="conciliaCartaHoja">
+      <strong>CAI224AS</strong>
+      <small>Origen pendiente de acreditar.</small>
+    </section>
+
+    <p class="conciliaCartaAviso">
+      Evidencia sint?tica conservada.
+      Sin conciliaci?n monetaria certificada.
+    </p>
+  `;
+
+  bloqueCarta.querySelector('h3')?.after(hojasCarta);
+}
+
+    }).catch(error => {
+      if (bloqueCarta.isConnected) bloqueCarta.textContent = 'No fue posible consultar el desglose de Carta: ' + error.message;
+    });
+    openDrawer();
+    return;
+  }
+  if (r.fuente === 'CREDIBANCO' && r.origen_agregado) {
+    const monto = v => v === null || v === undefined || v === '' ? '—' :
+      new Intl.NumberFormat('es-CO', {minimumFractionDigits:2,maximumFractionDigits:4}).format(Number(v));
+    const archivos = Array.isArray(r.archivos_origen) ? r.archivos_origen : [];
+    const lineas = Array.isArray(r.lineas_origen) ? r.lineas_origen : [];
+    drawerContent.innerHTML = `<h2>Detalle Credibanco</h2>
+      <div class="friendlyNote">Sumatorias diagnósticas CAET/CANT desde PostgreSQL. La cuenta puede estar homologada; fórmula monetaria y cruce Host pendientes.</div>
+      <p><b>Cuenta:</b> ${escapar(String(r.cuenta))}</p>
+      <p><b>Concepto:</b> ${escapar(String(r.concepto))}</p>
+      <p><b>Jornada:</b> ${escapar(String(r.id_jornada))}</p>
+      <p><b>Cantidad de operaciones:</b> ${valorDiagnostico(r.cantidad_operaciones)}</p>
+      <p><b>VL INTERC (diagnóstico):</b> ${escapar(monto(r.vl_interc))}</p>
+      <p><b>VL TOTAL (diagnóstico):</b> ${escapar(monto(r.vl_total))}</p>
+      <p><b>Fórmula ${escapar(String(r.celda))}:</b> ${valorDiagnostico(r.valor_diagnostico)} (${escapar(String(r.unidad))})</p>
+      <p><b>Archivos:</b> ${escapar(archivos.join(', ') || '—')}</p>
+      <p><b>Líneas origen:</b> ${escapar(lineas.join(', ') || '—')}</p>
+      ${r.host_diagnostico_inc50 ? `<h3>Host por cuenta — solo diagnóstico</h3>
+        <div class="friendlyNote">Importes sintéticos o no verificados. No homologados. No sumar fuentes ni calcular diferencia.</div>
+        ${['HA22','HA26','HA32'].map(fuente => {
+          const grupos = r.host_diagnostico_inc50.fuentes?.[fuente] || [];
+          return `<p><b>${fuente}:</b> ${grupos.length ? grupos.map(g =>
+            `Centro ${escapar(String(g.centro ?? '—'))} · Debe ${escapar(monto(g.debe))} · Haber ${escapar(monto(g.haber))} · Neto ${escapar(monto(g.neto_diagnostico))} · Saldo inicial ${fuente === 'HA32' ? 'No disponible en INC50' : 'No aplica'} · Archivo ${escapar(String(g.id_archivo))} · Líneas ${escapar((g.lineas_origen || []).join(', '))}`
+          ).join(' / ') : 'Sin movimientos'} (no homologado)</p>`;
+        }).join('')}` : ''}`;
+    openDrawer();
+    return;
+  }
+  drawerContent.innerHTML = `<h2>Detalle de resultado</h2><div class="friendlyNote">Resultado de PostgreSQL no homologado. No representa un cruce conciliado.</div><p><b>Franquicia:</b> ${escapar(String(r.fuente ?? r.franquicia ?? ""))}</p><p><b>Cuenta o clasificación de origen:</b> ${valorDiagnostico(r.cuenta)}</p><p><b>Concepto:</b> ${valorDiagnostico(r.concepto)}</p><p><b>Valor:</b> ${valorDiagnostico(r.valor)}</p><p><b>Archivo:</b> ${valorDiagnostico(r.id_archivo)}</p><p><b>Correlación:</b> ${valorDiagnostico(r.correlation_id)}</p>`;
+  openDrawer();
+}
+function abrirTrazabilidadHost() {
+  const filas = reporteHostDiagnostico.map(r => `<tr><td>${escapar(r.fuente)}</td><td>${valorDiagnostico(r.cuenta)}</td><td>${valorDiagnostico(r.concepto)}</td><td>${valorDiagnostico(r.valor)}</td><td>${valorDiagnostico(r.id_archivo)}</td><td>${r.sintetico ? "Prueba sintética · excluida" : "Sin correspondencia homologada"}</td></tr>`).join("");
+  drawerContent.innerHTML = `<h2>Trazabilidad Host sin correspondencia</h2><p>Registros diagnósticos excluidos de cruces. No pertenecen automáticamente a una franquicia.</p><div class="tableScroll"><table class="reconTable"><thead><tr><th>Fuente</th><th>Cuenta</th><th>Concepto</th><th>Valor</th><th>Archivo</th><th>Clasificación</th></tr></thead><tbody>${filas || "<tr><td colspan=6>Sin resultados Host.</td></tr>"}</tbody></table></div>`;
+  openDrawer();
+}
+
+// CONCILIA_COBERTURA_29_REPORTE_V1
+// CONCILIA_HOMOLOGACION_REPORTE_V3
+// CONCILIA_CUENTAS_CERO_V1
+// CONCILIA_RESUMEN_DETALLE_V5
+
+// CONCILIA_REPORTE_29_V6
+
+// CONCILIA_REPORTE_UNICO_V7
+// CONCILIA_REPORTE_UNICO_SEGURO_20261030
+/* CONCILIA_V72_CREDIBANCO_EN_PANTALLA_ORIGINAL_BEGIN */
+function pintarEstadoCredibancoV72(datos, idJornada, fechaContable) {
+  // No renderiza QA, no suma fuentes Host, no inventa diferencias.
+  const d = datos?.diagnostico_credibanco_v72;
+  const tbody = document.getElementById('reconBody');
+  const cuentasEsperadas = [
+    '299095302','299095408','299095409','196095001215','196095001830',
+    '196095001838','196095001839','196095001859','196095001918','299095882',
+    '299095301','299095300','299095880'
+  ];
+  const estados = {
+    PENDIENTE_HOMOLOGACION: 'Pendiente homologación',
+    SIN_MOVIMIENTOS_HOST: 'Sin movimientos Host · no homologado',
+    HOST_INCOMPLETO: 'Host incompleto · no homologado',
+    FUERA_CATALOGO_HOST: 'Fuera del catálogo Host · no homologado'
+  };
+  if (!tbody || !d || d.version !== 'V72' || d.certificado !== false ||
+      d.tipo !== 'DIAGNOSTICO_REAL_SOLO_LECTURA' || d.franquicia !== 'CREDIBANCO' ||
+      Number(d.id_jornada) !== Number(idJornada) ||
+      String(d.fecha_contable) !== String(fechaContable) ||
+      !Array.isArray(d.cuentas) || d.cuentas.length !== 13 ||
+      !d.indicadores || d.indicadores.cuentas_credibanco !== 13 ||
+      d.indicadores.cruces_homologados !== 0 || d.indicadores.conciliados !== 0 ||
+      d.indicadores.diferencias_homologadas !== 0 ||
+      d.indicadores.incorporados_maestro !== 0) {
+    throw new Error('V72: contrato de diagnostico Credibanco invalido o no corresponde a la jornada');
+  }
+  const mapa = new Map();
+  for (const c of d.cuentas) {
+    const cuenta = String(c?.cuenta || '');
+    if (!cuentasEsperadas.includes(cuenta) || mapa.has(cuenta) ||
+        c.franquicia !== 'CREDIBANCO' || !Object.hasOwn(estados, c.estado) ||
+        c.certificado !== false || c.correspondencia_aprobada !== false ||
+        c.procedencia_host_acreditada !== false ||
+        c.valor_franquicia_homologado != null || c.diferencia_homologada != null ||
+        !Array.isArray(c.motivos) ||
+        !Number.isSafeInteger(c.movimientos_host_observados) || c.movimientos_host_observados < 0) {
+      throw new Error('V72: cuenta, homologacion o importe no acreditado');
+    }
+    mapa.set(cuenta, c);
+  }
+  if (mapa.size !== 13) throw new Error('V72: faltan cuentas Credibanco');
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  const credibanco = rows.filter(r => r.dataset.franchise === 'CREDIBANCO');
+  if (rows.length !== 32 || credibanco.length !== 13 ||
+      new Set(credibanco.map(r => String(r.cells[1]?.textContent || '').trim())).size !== 13) {
+    throw new Error('V72: catalogo visual de 32 cuentas no coincide');
+  }
+  const detalles = window.conciliaDetallesCuenta;
+  if (!detalles || typeof detalles.get !== 'function') throw new Error('V72: detalle original no disponible');
+  for (const tr of credibanco) {
+    const cuenta = String(tr.cells[1]?.textContent || '').trim();
+    if (!mapa.has(cuenta) || tr.cells.length !== 11 || !detalles.get(cuenta)) {
+      throw new Error('V72: fila o detalle Credibanco no reconocido: ' + cuenta);
+    }
+  }
+  // A partir de aqui, y solo una vez validado TODO, cambiar estado y trazabilidad.
+  for (const tr of credibanco) {
+    const cuenta = String(tr.cells[1].textContent).trim();
+    const c = mapa.get(cuenta);
+    tr.dataset.filterStatus = c.estado;
+    tr.dataset.v72 = 'diagnostico-real-no-certificado';
+    const titulo = escapar(c.estado);
+    const etiqueta = escapar(estados[c.estado]);
+    tr.cells[9].innerHTML = `<span class="conciliaEstadoBadge pendiente" title="${titulo}">${etiqueta}</span>`;
+    // Las columnas monetarias permanecen intactas. No reemplazar nulos por cero.
+    const detalle = detalles.get(cuenta);
+    detalle.estado = c.estado;
+    const motivos = c.motivos.map(x => `<li>${escapar(x)}</li>`).join('');
+    const fuentes = Object.entries(c.movimientos_por_fuente || {})
+      .map(([fuente, e]) => `<tr><td>${escapar(fuente)}</td><td>${escapar(String(e.cantidad))}</td><td>${escapar(e.estado)}</td></tr>`).join('');
+    detalle.html += `<hr><h3>Estado Credibanco V72 · ${escapar(fechaContable)}</h3>
+      <p><b>Resultado:</b> ${etiqueta}. <b>Movimientos Host observados:</b> ${escapar(String(c.movimientos_host_observados))} (procedencia no acreditada).</p>
+      ${fuentes ? `<div class="tableScroll"><table><thead><tr><th>Fuente</th><th>Registros</th><th>Estado Host</th></tr></thead><tbody>${fuentes}</tbody></table></div>` : ''}
+      <p><b>Bloqueos y advertencias:</b></p><ul>${motivos}</ul>
+      <p><b>Clasificación documental:</b> ${escapar(c.franquicia_documental || 'Sin correspondencia documental en catálogo Host 29')}</p>
+      <p class="muted">Ninguna coincidencia de cálculo es una homologación o certificación. Se requiere regla aprobada, signo, escala, fecha y procedencia Host.</p>`;
+  }
+  const meta = d.indicadores;
+  document.getElementById('reconMetaTotal').textContent =
+    `32 cuentas · ${meta.cruces_homologados} cruces homologados · Credibanco: ${meta.cuentas_credibanco} diagnosticadas`;
+  document.getElementById('reconAviso').textContent =
+    `Credibanco V72: ${meta.pendiente_homologacion} pendientes, ${meta.sin_movimientos_host} sin movimientos Host, ` +
+    `${meta.host_incompleto} Host incompletos, ${meta.fuera_catalogo_host} fuera del catalogo 29. ` +
+    `No hay correspondencia monetaria ni procedencia bancaria Host acreditadas. Sin diferencias calculables; no certificado.`;
+  document.getElementById('reconCruces').textContent = String(rows.length);
+  document.getElementById('reconConciliados').textContent = String(meta.conciliados);
+  document.getElementById('reconDiferencias').textContent = String(meta.diferencias_homologadas);
+  document.getElementById('reconIncorporados').textContent = String(meta.incorporados_maestro);
+  for (const id of ['reconConciliados','reconDiferencias','reconIncorporados']) {
+    document.getElementById(id).title = 'Solo valores reales homologados; no incluye simulaciones QA V70/V71';
+  }
+  if (typeof filterReconRows === 'function') filterReconRows();
+  return true;
+}
+/* CONCILIA_V72_CREDIBANCO_EN_PANTALLA_ORIGINAL_END */
+// CONCILIA_V74_AUDITORIA_ORIGEN_INICIO
+function pintarAuditoriaOrigenV74(datos, jornadaId, fecha) {
+  const viejo = document.getElementById('reconAuditoriaV74');
+  if (viejo) viejo.remove();
+  const root = document.getElementById('reconAviso');
+  if (!root) return;
+  const d = datos && datos.auditoria_fuentes_credibanco_v74;
+  const bloque = document.createElement('div');
+  bloque.id = 'reconAuditoriaV74';
+  bloque.style.cssText = 'margin-top:8px;padding:9px;border-left:3px solid #2dcccd;background:#eef5fa;font-size:11px;white-space:normal';
+  if (!d || d.version !== 'V74' || d.certificado !== false ||
+      Number(d.id_jornada) !== Number(jornadaId) ||
+      String(d.fecha_contable) !== String(fecha) ||
+      d.total_insumos_funcionales !== 9 ||
+      !Array.isArray(d.fuentes_credibanco_host) || d.fuentes_credibanco_host.length !== 7) {
+    bloque.textContent = 'Auditoría de fuentes V74 no disponible para esta jornada; no se infieren datos.';
+  } else {
+    const conteos = d.fuentes_credibanco_host.map(x =>
+      `${String(x.tipo_insumo)}: ${x.registros_detalle === null ? 'sin archivo' : String(x.registros_detalle)} registros`
+    );
+    bloque.textContent = 'Origen PostgreSQL · Credibanco/Host (solo conteos): ' + conteos.join(' · ') +
+      '. 9 insumos funcionales vigentes; MEP retirado. No existen cruces homologados; ' +
+      'no se duplican detalles en con_franquicia_resultado. Jornada: ' +
+      String(d.id_jornada) + '. Diagnóstico no certificado.';
+  }
+  root.insertAdjacentElement('afterend', bloque);
+}
+// CONCILIA_V74_AUDITORIA_ORIGEN_FIN
+function pintarCoberturaContableHost(datos) {
+  const tbody = document.getElementById('reconBody');
+  const thead = tbody?.closest('table')?.querySelector('thead');
+  if (!tbody || !thead) return false;
+  const cuentas = datos?.cobertura_contable_host;
+  const grupos = {
+    VISA: ['259095341','299095888','299095303'],
+    CREDIBANCO: ['299095302','299095408','299095409','196095001215','196095001830','196095001838','196095001839','196095001859','196095001918','299095882','299095301','299095300','299095880'],
+    REDEBAN: ['196095001828','196095001829','196095001831','196095001845','196095001919','299095109','299095240','299095241','299095508','299095837','299095866','299095867','299095868','299095870','299095875','299095883']
+  };
+  const esperadas = Object.values(grupos).flat();
+  // CONCILIA_V65_CATALOGO_32_EN_TABLA
+  // 29 cuentas con cobertura Host + 3 Credibanco sin cuenta Host en este catalogo.
+  // No crear movimientos, netos ni importes para cuentas sin evidencia.
+  const hostEsperadas = esperadas.filter(c => !['299095301','299095300','299095880'].includes(c));
+  if (!Array.isArray(cuentas) || cuentas.length !== 29 ||
+      new Set(esperadas).size !== 32 || new Set(cuentas.map(c => String(c.cuenta))).size !== 29) {
+    throw new Error('Cobertura Host invalida: se esperan 29 cuentas distintas y 32 de catalogo');
+  }
+  const indice = new Map(cuentas.map(c => [String(c.cuenta), c]));
+  if (hostEsperadas.some(c => !indice.has(c)) || cuentas.some(c => !hostEsperadas.includes(String(c.cuenta)))) {
+    throw new Error('Catalogo Host diferente de las 29 cuentas documentadas');
+  }
+  for (const cuenta of ['299095301','299095300','299095880']) {
+    indice.set(cuenta, {
+      cuenta, centro:'0017', descripcion:'Cuenta Credibanco sin cobertura Host en catalogo de 29',
+      estado:'SIN_HOST_EN_CATALOGO', cantidad_movimientos:0,
+      monetario_host:{}, evidencias:[], movimientos:[], estado_homologacion:'PENDIENTE'
+    });
+  }
+  const safe = v => escapar(v == null || v === '' ? '—' : String(v));
+  const money = v => {
+    if (v == null || v === '') return '—';
+    const n = Number(v);
+    return Number.isFinite(n) ? '$ ' + n.toLocaleString('es-CO', {minimumFractionDigits:2, maximumFractionDigits:2}) : '—';
+  };
+  // CONCILIA_V64_CANDIDATOS_EN_TABLA
+  // No equivale a valor franquicia homologado: mostrar solo evidencia con etiqueta.
+  const candidatos = new Map();
+  const formulas = datos?.formulas_credibanco_v46?.resultados || [];
+  if (Array.isArray(formulas)) for (const f of formulas) {
+    if (f?.certificado === true || f?.valor_monetario_candidato == null) continue;
+    if (f?.unidad_v45 !== 'IMPORTE_CANDIDATO_NO_HOMOLOGADO') continue;
+    const cuenta = String(f.cuenta || '');
+    if (!/^\d+$/.test(cuenta)) continue;
+    if (!candidatos.has(cuenta)) candidatos.set(cuenta, []);
+    candidatos.get(cuenta).push(f);
+  }
+  const sources = ['HA22','HA26','HA32'];
+  const rows = [];
+  for (const [franquicia, lista] of Object.entries(grupos)) {
+    for (const cuenta of lista) {
+      const c = indice.get(cuenta);
+      const movimientos = Array.isArray(c.movimientos) ? c.movimientos : [];
+      const evidencias = Array.isArray(c.evidencias) ? c.evidencias : [];
+      const tiene = c.estado === 'CON_MOVIMIENTOS' || movimientos.length > 0 || Number(c.cantidad_movimientos || 0) > 0;
+      const sinHost = c.estado === 'SIN_HOST_EN_CATALOGO';
+      const sin = c.estado === 'SIN_MOVIMIENTOS' && !tiene;
+      const host = c.monetario_host || {};
+      const neto = f => {
+        const m = host[f];
+        if (m && m.neto != null) return money(m.neto);
+        return sin ? money(0) : '—';
+      };
+      const candidatosCuenta = franquicia === 'CREDIBANCO' ? (candidatos.get(cuenta) || []) : [];
+      const candidatoHtml = candidatosCuenta.length
+        ? `<span title="Componentes monetarios NO homologados; no son valor franquicia ni diferencia">${candidatosCuenta.map(x => safe(x.celda)+': '+money(x.valor_monetario_candidato)).join(' · ')}*</span>`
+        : '—';
+      const estado = sinHost || sin ? 'SIN_INFORMACION' : 'PENDIENTE_CONCILIACION';
+      const ref = sin ? money(0) : '—';
+      const detalleHost = sources.map(f => {
+        const m = host[f];
+        return `<tr><td>${f}</td><td class="num">${money(m?.debe)}</td><td class="num">${money(m?.haber)}</td><td class="num">${neto(f)}</td></tr>`;
+      }).join('');
+      const evidenciaHtml = evidencias.map(e => `<tr><td>${safe(e.tx_host || e.fuente)}</td><td>${safe(e.concepto)}</td><td>${safe(e.id_archivo)}</td><td>${safe(e.linea_origen)}</td><td>${safe(e.valor_normalizado)}</td></tr>`).join('');
+      const detalleCandidatos = candidatosCuenta.map(x => `<tr><td>${safe(x.celda)}</td><td>${safe(x.concepto)}</td><td>${money(x.valor_monetario_candidato)}</td><td>No homologado</td></tr>`).join('');
+      const detalle = `<div>
+        <p><b>Cuenta:</b> ${safe(cuenta)} · <b>Centro:</b> ${safe(c.centro || '0017')}</p>
+        <p><b>Conceptos / descripción:</b> ${safe(c.descripcion)}</p>
+        <p><b>Proceso:</b> ${safe(c.proceso_cuadre)} · <b>Homologación:</b> ${safe(c.estado_homologacion)}</p>
+        <p><b>Evidencia documental:</b> ${safe(c.evidencia_homologacion)}</p>
+        <div class="tableScroll"><table><thead><tr><th>Fuente</th><th>Debe</th><th>Haber</th><th>Neto</th></tr></thead><tbody>${detalleHost}</tbody></table></div>
+        <p><b>Evidencias:</b> ${evidencias.length}</p>
+        ${detalleCandidatos ? `<p><b>Componentes monetarios de franquicia (NO valor final):</b></p><div class="tableScroll"><table><thead><tr><th>Celda</th><th>Concepto</th><th>Importe candidato</th><th>Estado</th></tr></thead><tbody>${detalleCandidatos}</tbody></table></div>` : ''}
+        ${evidencias.length ? `<div class="tableScroll"><table><thead><tr><th>Fuente</th><th>Concepto</th><th>Archivo</th><th>Línea</th><th>Valor registrado</th></tr></thead><tbody>${evidenciaHtml}</tbody></table></div>` : ''}
+        <p class="muted">VL INTERC y conceptos adicionales: consultar archivo de origen; no hay homologación monetaria acreditada en este contrato.</p>
+      </div>`;
+      window.conciliaDetallesCuenta ||= new Map();
+      window.conciliaDetallesCuenta.set(
+        String(cuenta),
+        {
+          cuenta: String(cuenta),
+          franquicia,
+          estado,
+          html: detalle,
+          cruce_homologado: false,
+          diferencia_calculada: false,
+          diferencia: null
+        }
+      );
+
+      rows.push(`<tr data-franchise="${franquicia}" data-filter-status="${estado}" data-search="${safe((franquicia+' '+cuenta+' '+(c.descripcion || '')).toLowerCase())}">
+        <td>${franquicia}</td><td>${safe(cuenta)}</td><td class="num">${ref}</td><td class="num">${candidatoHtml}</td>
+        <td class="num">${neto('HA22')}</td><td class="num">${neto('HA26')}</td><td class="num">${neto('HA32')}</td>
+        <td class="num">${ref}</td><td class="num">—</td><td>
+          <span class="conciliaEstadoBadge ${
+             estado === 'SIN_INFORMACION'
+               ? 'sin-movimientos'
+               : 'pendiente'
+           }" title="${safe(c.estado)}">${
+             estado === 'SIN_INFORMACION'
+               ? 'Sin información suficiente'
+               : 'Pendiente de conciliación'
+           }</span>
+        </td>
+        <td>
+          <button type="button"
+            class="btn conciliaDetalleBtn"
+            data-cuenta="${safe(cuenta)}">
+            ${accionConciliacionVisible({
+              estado_conciliacion: estado,
+              cruce_homologado: false,
+              diferencia_calculada: false,
+              diferencia: null
+            }) === 'ANALIZAR_IA' ? 'Analizar IA' : 'Detalle'}
+          </button>
+        </td></tr>`);
+    }
+  }
+  thead.innerHTML = `<tr><th>Franquicia</th><th>Cuenta</th><th>VL TOTAL</th><th>VALOR INTERCAMBIO</th><th>HA22 Neto</th><th>HA26 Neto</th><th>HA32 Neto</th><th>Total rechazos</th><th>Diferencia</th><th>Estado conciliación</th><th>Acción</th></tr>`;
+  tbody.innerHTML = rows.join('');
+
+  if (!tbody.dataset.detalleV6) {
+    tbody.dataset.detalleV6 = '1';
+    tbody.addEventListener('click', event => {
+      const boton = event.target.closest(
+        'button.conciliaDetalleBtn'
+      );
+      if (!boton || !tbody.contains(boton)) return;
+      const registro = window.conciliaDetallesCuenta?.get(
+        String(boton.dataset.cuenta)
+      );
+
+      if (
+        registro &&
+        accionConciliacionVisible(registro) === 'ANALIZAR_IA'
+      ) {
+        abrirAnalisisIAConcilia(boton.dataset.cuenta);
+      } else {
+        abrirDetalleCuentaConciliaV6(boton.dataset.cuenta);
+      }
+    });
+  }
+  document.getElementById('cobertura29Host')?.remove();
+  document.getElementById('reconMetaTotal').textContent = '32 cuentas · 0 cruces homologados';
+  document.getElementById('reconAviso').textContent = '32 cuentas del catalogo · 29 con cobertura Host; 3 sin Host. Diagnostico no certificado.';
+  document.getElementById('reconCruces').textContent = '32';
+  document.getElementById('reconConciliados').textContent = '0';
+  document.getElementById('reconDiferencias').textContent = '0';
+  document.getElementById('reconIncorporados').textContent = '0';
+  if (typeof filterReconRows === 'function') filterReconRows();
+  return true;
+}
+
+function pintarResultadosReporte(datos) {
+  const fr = Array.isArray(datos.resultados_franquicia) ? datos.resultados_franquicia : [];
+  const host = Array.isArray(datos.resultados_host) ? datos.resultados_host : [];
+  const pendientes = Array.isArray(datos.insumos) ? datos.insumos : [];
+  resetReporteMaestro();
+  const panelSync = document.getElementById('reconSync3976');
+  if (panelSync) panelSync.hidden = true;
+  const filas = [];
+  reporteFilasDetalle = [];
+  let pruebasFranquicia = 0;
+  for (const r of fr) {
+    const fuente = String(r.fuente ?? r.franquicia ?? '').toUpperCase();
+    if (!['CREDIBANCO','REDEBAN','VISA'].includes(fuente)) continue;
+    if (esPruebaSintetica(r)) { pruebasFranquicia++; continue; }
+    const indice = reporteFilasDetalle.push(r) - 1;
+    filas.push(`<tr ${filtroReconFila(fuente,'PENDIENTE_HOMOLOGACION',[r.cuenta,r.concepto,r.id_archivo])}>
+      <td>${escapar(fuente)}</td><td>${valorDiagnostico(r.cuenta)}</td><td>${valorDiagnostico(r.concepto)}</td>
+      <td>—</td><td>—</td><td>—</td><td class="num">${valorDiagnostico(r.valor)}</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
+      <td><span class="tag info">Pendiente homologación</span></td><td><button type="button" class="btn" onclick="abrirDetalleReporte(${indice})">Detalle</button></td></tr>`);
+  }
+  for (const r of pendientes) {
+    const tipo = String(r.tipo_insumo ?? r.tipo ?? '');
+    const fuente = franquiciaDeInsumo(tipo);
+    if (!fuente) continue;
+    filas.push(`<tr ${filtroReconFila(fuente,'PENDIENTE_FASE_2',[tipo,fuente])}>
+      <td>${escapar(fuente)}</td><td>—</td><td>${escapar(tipo)} · Pendiente reglas Fase 2</td>
+      <td>—</td><td>—</td><td>—</td><td class="num" title="Cero provisional, no calculado">0*</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
+      <td><span class="tag warn">Pendiente Fase 2</span></td><td><span title="Sin cálculo disponible">—</span></td></tr>`);
+  }
+  el('reconBody').innerHTML = filas.length ? filas.join('') : '<tr><td colspan="20">Sin resultados de franquicia acreditados para esta jornada.</td></tr>';
+  el('reconMetaTotal').textContent = `${filas.length} resultados · 0 cruces homologados`;
+  const hostDiagnostico = host.map(r => ({
+    fuente: String(r.fuente ?? r.tx_host ?? 'HOST'), cuenta:r.cuenta, concepto:r.concepto,
+    valor:r.valor_normalizado ?? r.valor, id_archivo:r.id_archivo,
+    sintetico:esPruebaSintetica(r)
+  }));
+  reporteHostDiagnostico = hostDiagnostico;
+  el('reconAbrirTrazabilidad').textContent = `Ver trazabilidad Host (${hostDiagnostico.length})`;
+  filterReconRows();
+}
+
+function montoDiagnosticoHost(v) {
+  if (v === null || v === undefined || v === '') return '—';
+  const n = Number(v);
+  return Number.isFinite(n)
+    ? new Intl.NumberFormat('es-CO', {minimumFractionDigits:2, maximumFractionDigits:4}).format(n)
+    : '—';
+}
+// INC48: adaptación diagnóstica de Credibanco al UX existente de 11 columnas.
+function incorporarCredibancoInc48(datos, idJornada) {
+  if (!datos || Number(datos.id_jornada) !== Number(idJornada) || datos.certificado !== false ||
+      !Array.isArray(datos.columnas) || datos.columnas.length !== 11 ||
+      !Array.isArray(datos.filas) || !Array.isArray(datos.detalle)) {
+    throw new Error('Contrato Credibanco no certificado o inválido');
+  }
+  const detalles = datos.detalle;
+  const filas = [];
+  for (const d of detalles) {
+    if (!d || !['CANTIDAD','IMPORTE_ORIGEN'].includes(d.unidad)) continue;
+    const cuenta = String(d.cuenta ?? '');
+    const concepto = String(d.concepto ?? '');
+    const celda = String(d.celda ?? '');
+    const valor = d.valor_diagnostico;
+    // No confundir cantidad con dinero ni publicar un importe no homologado.
+    const texto = d.unidad === 'CANTIDAD'
+      ? `${valorDiagnostico(valor)} operaciones (diagnóstico)`
+      : `${valorDiagnostico(valor)} (importe origen, no homologado)`;
+    const indice = reporteFilasDetalle.push({
+      fuente:'CREDIBANCO', cuenta, concepto, valor: texto,
+      celda, unidad:d.unidad, valor_diagnostico:valor,
+      id_jornada:idJornada, cantidad_operaciones:d.cantidad_operaciones,
+      vl_interc:d.vl_interc, vl_total:d.vl_total,
+      archivos_origen:d.archivos_origen, lineas_origen:d.lineas_origen,
+      origen_agregado:d.origen_agregado, host_diagnostico_inc50:d.host_diagnostico_inc50,
+      id_archivo:d.id_archivo ?? null, correlation_id:d.correlation_id ?? null
+    }) - 1;
+    // INC50 FIX: importes visibles como diagnostico, nunca como valores homologados.
+    // Una cuenta puede figurar en varios conceptos: NO sumar estas celdas entre filas.
+    const hostFuentes = d.host_diagnostico_inc50?.fuentes || {};
+    const celdasHost = fuente => {
+      const grupos = Array.isArray(hostFuentes[fuente]) ? hostFuentes[fuente] : [];
+      // Una cuenta puede repetirse por concepto: cada registro es diagnostico por cuenta.
+      return ['debe','haber','neto_diagnostico'].map(campo => {
+        if (!grupos.length) return '<td title="Sin registros Host">—</td>';
+        const items = grupos.map(g => {
+          const valor = montoDiagnosticoHost(g[campo]);
+          const etiqueta = `Diagnostico ${fuente} ${campo}; cuenta ${g.cuenta ?? '—'}; centro ${g.centro ?? '—'}; archivo ${g.id_archivo ?? '—'}; NO HOMOLOGADO`;
+          return `<span title="${escapar(etiqueta)}">${escapar(valor)}*</span>`;
+        });
+        return `<td class="num">${items.join('<div></div>')}</td>`;
+      }).join('');
+    };
+    const productivo = window.conciliaReporteProductivo?.get(String(cuenta));
+    const resumenCredibanco = d.cantidad_operaciones != null || d.vl_interc != null
+      ? `<div style="font-size:10px;color:#596579">Diagnóstico: ${valorDiagnostico(d.cantidad_operaciones)} op. · VL INTERC ${escapar(montoDiagnosticoHost(productivo?.vl_interc ?? d.vl_interc))}</div>`
+      : '';
+    filas.push(`<tr ${filtroReconFila('CREDIBANCO','PENDIENTE_HOMOLOGACION',[cuenta,concepto,celda])}>
+      <td>CREDIBANCO</td><td>${escapar(cuenta)}</td><td>${escapar(concepto)}${resumenCredibanco}</td>
+      <td class="num" title="Cantidad diagnóstica">${valorDiagnostico(d.cantidad_operaciones)}</td>
+      <td class="num" title="VL INTERC diagnóstico">${escapar(montoDiagnosticoHost(productivo?.vl_interc ?? d.vl_interc))}</td>
+      <td class="num" title="VL TOTAL diagnóstico">${escapar(montoDiagnosticoHost(productivo?.vl_total ?? d.vl_total))}</td>
+      <td class="num" title="Valor Franquicia no homologado">—</td>
+      ${celdasHost('HA22')}${celdasHost('HA26')}${celdasHost('HA32')}<td title="Total Host sin homologación">—</td><td title="Diferencia sin homologación">—</td>
+      <td><span class="tag info">Pendiente homologación</span></td>
+      <td><button type="button" class="btn" onclick="abrirDetalleReporte(${indice})">Detalle</button></td></tr>`);
+  }
+  const tbody = el('reconBody');
+  // Se conservan otras franquicias; se retiran solo filas provisionales Credibanco.
+  for (const tr of Array.from(tbody.querySelectorAll('tr'))) {
+    if (tr.dataset.franchise === 'CREDIBANCO' || !tr.dataset.franchise) tr.remove();
+  }
+  tbody.insertAdjacentHTML('afterbegin', filas.join(''));
+  const n = tbody.querySelectorAll('tr').length;
+  el('reconMetaTotal').textContent = `${n} resultados · 0 cruces homologados`;
+  el('reconAviso').textContent = `Credibanco: ${filas.length} conceptos. * HA22/HA26/HA32 muestran Debe, Haber y Neto diagnósticos por cuenta, repetibles entre conceptos; no homologados. Valor Franquicia, Total Host y Diferencia pendientes.`;
+  filterReconRows();
+}
+
+
+function pintarDePoInc56I(datos) {
+  // CONCILIA_INC58_HOST_DEPO_POR_FUENTE: evidencia Host por cuenta y fuente, no conciliada.
+  const depo = datos?.diagnostico_credibanco_inc51?.depo;
+  const tbody = el('reconBody');
+  if (!tbody) return;
+  tbody.querySelectorAll('tr[data-inc56i-depo="1"]').forEach(tr => tr.remove());
+  if (!depo || !Array.isArray(depo.filas_cuentas_depo)) return;
+  const fuenteSeleccionada = el('reconFuenteHost')?.value || '';
+  const cuentas = depo.filas_cuentas_depo;
+  const sumatorias = Array.isArray(depo.sumatorias_host_por_fuente)
+    ? depo.sumatorias_host_por_fuente : [];
+  const fuentes = ['HA22', 'HA26', 'HA32'];
+  const autorizadas = new Set(['196095001838', '196095001839']);
+  const index = new Map();
+  for (const s of sumatorias) {
+    const fuente = String(s.fuente_host || '');
+    const cuenta = String(s.cuenta || '').trim();
+    const naturaleza = String(s.naturaleza || '').toUpperCase();
+    if (!fuentes.includes(fuente) || !autorizadas.has(cuenta) || !['D', 'H'].includes(naturaleza)) continue;
+    const clave = `${fuente}|${cuenta}|${naturaleza}`;
+    if (index.has(clave)) throw new Error(`DEPO: sumatoria Host duplicada ${clave}`);
+    index.set(clave, s.importe_contable);
+  }
+  const mostrar = (valor, fuente, naturaleza) => {
+    if (valor === null || valor === undefined || valor === '')
+      return '<td class="num">—</td>';
+    const numero = Number(valor);
+    if (!Number.isFinite(numero)) throw new Error('DEPO: importe Host no numerico');
+    return `<td class="num" title="DEPO ${escapar(fuente)} ${naturaleza}; evidencia Host no homologada">${escapar(montoDiagnosticoHost(valor))}*</td>`;
+  };
+  for (const f of cuentas) {
+    const cuenta = String(f.cuenta || '').trim();
+    if (!autorizadas.has(cuenta)) throw new Error('DEPO: cuenta no autorizada');
+    const concepto = String(f.concepto || 'DEPO - cuenta de referencia');
+    const celdas = [];
+    const evidenciaPorFuente = {};
+    for (const fuente of fuentes) {
+      const debe = index.get(`${fuente}|${cuenta}|D`) ?? null;
+      const haber = index.get(`${fuente}|${cuenta}|H`) ?? null;
+      evidenciaPorFuente[fuente] = {debe, haber};
+      celdas.push(mostrar(debe, fuente, 'Debe'));
+      celdas.push(mostrar(haber, fuente, 'Haber'));
+      celdas.push('<td class="num" title="Neto sin homologacion">—</td>');
+    }
+    const indice = reporteFilasDetalle.push({
+      fuente: 'CREDIBANCO', tipo_insumo: 'DEPO', cuenta, concepto,
+      valor: null, evidencia_host_por_fuente: evidenciaPorFuente,
+      fuente_host_seleccionada: fuenteSeleccionada || null,
+      certificado: false, estado: 'PENDIENTE_HOMOLOGACION_MONETARIA',
+      advertencia: depo.advertencia, id_archivo: f.id_archivo ?? null
+    }) - 1;
+    tbody.insertAdjacentHTML('beforeend', `<tr data-inc56i-depo="1" ${filtroReconFila('CREDIBANCO','PENDIENTE_HOMOLOGACION',[concepto,cuenta,'DEPO'])}>
+      <td>CREDIBANCO</td><td>${escapar(cuenta)}</td><td>${escapar(concepto)}<div style="font-size:10px">DEPO · Evidencia Host por fuente (no conciliada)</div></td>
+      <td>—</td><td>—</td><td>—</td><td>—</td>${celdas.join('')}<td>—</td><td>—</td>
+      <td><span class="tag warn">Sin certificación monetaria</span></td>
+      <td><button type="button" class="btn" onclick="abrirDetalleReporte(${indice})">Detalle</button></td></tr>`);
+  }
+}
+
+function pintarAgregadosNoHomologadosInc51(datos) {
+  const panel = el('reconCredibancoSinCorrespondencia');
+  if (!panel) return;
+  const grupos = datos?.diagnostico_credibanco_inc51?.agregados_sin_correspondencia || [];
+  pintarDePoInc56I(datos);
+  if (!grupos.length) { panel.innerHTML = '<div class="friendlyNote">CAET/CANT: sin agregados adicionales fuera de los conceptos del catálogo.</div>'; filterReconRows(); return; }
+  // Mostrar también los importes recibidos en el cuadro principal, pero como
+  // conceptos de origen; conservar cuenta homologada si existe, sin duplicar importes.
+  const tbody = el('reconBody');
+  tbody.querySelectorAll('tr[data-inc51-origen="1"]').forEach(tr => tr.remove());
+  const filas = grupos.map(g => {
+    const concepto = String(g.concepto_origen ?? '—');
+    const archivos = Array.isArray(g.archivos_origen) ? g.archivos_origen : [];
+    const lineas = Array.isArray(g.lineas_origen) ? g.lineas_origen : [];
+    const indice = reporteFilasDetalle.push({
+      fuente:'CREDIBANCO', cuenta:g.cuenta_homologada || null, concepto, valor:null,
+      cantidad_operaciones:g.cantidad, vl_interc:g.vl_interc, vl_total:g.vl_total,
+      origen_agregado:'SIN_CORRESPONDENCIA_LITERAL_NO_HOMOLOGADO',
+      archivos_origen:archivos, lineas_origen:lineas,
+      unidad:'IMPORTE_ORIGEN', celda:'SIN_MAPEO', id_jornada:datos.id_jornada
+    }) - 1;
+    const etiqueta = g.cuenta_homologada ? '<span class="tag warn">Cuenta homologada · fórmula pendiente</span>' : '<span class="tag warn">Sin correspondencia · diagnóstico</span>';
+    tbody.insertAdjacentHTML('beforeend', `<tr data-inc51-origen="1" ${filtroReconFila('CREDIBANCO','PENDIENTE_HOMOLOGACION',[concepto,...archivos])}>
+      <td>CREDIBANCO</td><td>${escapar(g.cuenta_homologada || "—")}</td><td>${escapar(concepto)}<div style="font-size:10px;color:#596579">CAET/CANT · concepto de origen</div></td>
+      <td class="num">${valorDiagnostico(g.cantidad)}</td><td class="num">${escapar(montoDiagnosticoHost(g.vl_interc))}</td><td class="num">${escapar(montoDiagnosticoHost(g.vl_total))}</td>
+      <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>${etiqueta}</td>
+      <td><button type="button" class="btn" onclick="abrirDetalleReporte(${indice})">Detalle</button></td></tr>`);
+    return `<tr><td>${escapar(concepto)}</td><td class="num">${valorDiagnostico(g.cantidad)}</td><td class="num">${escapar(montoDiagnosticoHost(g.vl_interc))}</td><td class="num">${escapar(montoDiagnosticoHost(g.vl_total))}</td><td>${escapar(archivos.join(', '))}</td><td>${escapar(lineas.join(', '))}</td></tr>`;
+  }).join('');
+  // INC56-A: mantener todas las filas de cada franquicia consecutivas.
+  // Reordena nodos existentes: no modifica importes, estados ni detalle.
+  const prioridadFranquicia = {CREDIBANCO:0, REDEBAN:1, VISA:2};
+  const filasOrdenadas = Array.from(tbody.querySelectorAll('tr'));
+  filasOrdenadas.sort((a,b) => {
+    const f = tr => (tr.dataset.franchise || tr.cells[0]?.textContent || '').trim().toUpperCase();
+    return (prioridadFranquicia[f(a)] ?? 99) - (prioridadFranquicia[f(b)] ?? 99);
+  });
+  filasOrdenadas.forEach(tr => tbody.appendChild(tr));
+  el('reconMetaTotal').textContent = `${tbody.querySelectorAll('tr').length} resultados · 0 cruces homologados`;
+  filterReconRows();
+  panel.innerHTML = `<h3>CAET / CANT — conceptos de origen y estado de homologación</h3><div class="friendlyNote">Solo diagnóstico; no alimentan Valor Franquicia ni generan cruces contables. DEPO pendiente de reglas Fase 2.</div><div class="tableScroll"><table class="reconTable"><thead><tr><th>Concepto de origen</th><th>Cantidad</th><th>VL INTERC</th><th>VL TOTAL</th><th>Archivos</th><th>Líneas</th></tr></thead><tbody>${filas}</tbody></table></div>`;
+}
+
+// INC57_CNB_DIAGNOSTICO: no alimentar columnas contables ni totalizar como COP.
+function pintarDiagnosticoCnbInc57(datos) {
+  const panel = document.getElementById('reconDePoCnbInc57');
+  if (!panel) return;
+  const cnb = datos?.diagnostico_credibanco_inc51?.depo?.diagnostico_cnb_inc57;
+  if (!cnb || !Number.isSafeInteger(cnb.cantidad) || cnb.cantidad === 0) {
+    panel.textContent = '';
+    return;
+  }
+  panel.textContent = `${cnb.concepto}: ${cnb.cantidad} operaciones; valor total crudo ${cnb.valor_total_crudo} (sin escala certificada, sin cuenta contable, sin conciliacion).`;
+  // CIERRE_DEPO_INTEGRAL_V1: evidencia adicional, no duplicar CNB en tabla.
+  const categorias = datos?.diagnostico_credibanco_inc51?.depo?.diagnostico_integral_depo;
+  if (Array.isArray(categorias)) {
+    const otras = categorias.filter(x => x.concepto !== '017-OP CNBS');
+    if (otras.length) {
+      const resumen = otras.map(x => `${x.concepto}: ${x.cantidad} operaciones; ` +
+        `valor crudo ${x.valor_total_crudo ?? 'no interpretable'}; ` +
+        `${x.registros_sin_valor} registros sin valor`).join(' | ');
+      panel.textContent += ' | Otras categorias DEPO (no homologadas): ' + resumen;
+    }
+  }
+
+  // INC59_CNB_FILA_MAESTRO
+  const tbody = el('reconBody');
+  if (!tbody) return;
+
+  tbody.querySelectorAll('tr[data-inc59-cnb="1"]').forEach(tr => tr.remove());
+
+  const indice = reporteFilasDetalle.push({
+    fuente: 'CREDIBANCO',
+    tipo_insumo: 'DEPO',
+    cuenta: null,
+    concepto: cnb.concepto,
+    cantidad_operaciones: cnb.cantidad,
+    valor_total_crudo: cnb.valor_total_crudo,
+    unidad: 'UNIDADES_CRUDAS',
+    lineas_origen: cnb.lineas_origen,
+    certificado: false,
+    estado: 'DIAGNOSTICO_NO_HOMOLOGADO'
+  }) - 1;
+
+  const celdasHost = Array(9).fill('<td>?</td>').join('');
+
+  tbody.insertAdjacentHTML('beforeend', `
+    <tr data-inc59-cnb="1"
+      ${filtroReconFila('CREDIBANCO','PENDIENTE_HOMOLOGACION',[cnb.concepto,'DEPO','CNB'])}>
+      <td>CREDIBANCO</td>
+      <td>?</td>
+      <td>${escapar(cnb.concepto)}
+        <div style="font-size:10px;color:#596579">
+          DEPO ? unidades crudas ? no homologado
+        </div>
+      </td>
+      <td class="num">${escapar(String(cnb.cantidad))}</td>
+      <td>?</td>
+      <td class="num" title="Valor total crudo sin escala monetaria">${escapar(String(cnb.valor_total_crudo))}*</td>
+      <td>?</td>
+      ${celdasHost}
+      <td>?</td><td>?</td>
+      <td><span class="tag warn">No homologado</span></td>
+      <td><button type="button" class="btn"
+        onclick="abrirDetalleReporte(${indice})">Detalle</button></td>
+    </tr>
+  `);
+
+  el('reconMetaTotal').textContent =
+    `${tbody.querySelectorAll('tr').length} resultados ? 0 cruces homologados`;
+
+  filterReconRows();
+}
+
+// CONCILIA_SYNC3976_PANEL: evidencia completa de siete insumos, sin cruces ficticios.
+async function cargarPanelCredibanco3976(jornadaId, solicitud, fecha) {
+  let panel = document.getElementById('reconSync3976');
+  if (!panel) {
+    panel = document.createElement('section');
+    panel.id = 'reconSync3976';
+    panel.style.cssText = 'margin:12px 0;padding:12px;border:1px solid #cbd5e1;border-radius:8px;overflow:auto';
+    const tabla = document.getElementById('reconBody');
+    if (!tabla) return;
+    (tabla.closest('.card') || tabla.closest('section') || tabla.parentElement).appendChild(panel);
+  }
+  panel.hidden = true;
+  if (panel.hidden) return;
+  const respuesta = await apiConcilia('/api/v1/jornadas/3976/credibanco-sintetico');
+  if (solicitud !== solicitudReporteMaestro || fecha !== obtenerFechaReporteMaestro()) return;
+  const esc = x => escapar(x === null || x === undefined || x === '' ? '—' : String(x));
+  panel.innerHTML = `<h3>Credibanco · Prueba integral 15/10/2026</h3>
+    <p>Datos sintéticos. Importes de origen, Host y Carta independientes; sin conciliación certificada.</p>
+    <div style="overflow-x:auto"><table class="reconTable"><thead><tr>
+    <th>Insumo</th><th>Cuenta</th><th>Concepto</th><th>Cantidad</th><th>Valor origen</th>
+    <th>Intercambio</th><th>Debe Host</th><th>Haber Host</th><th>Unidad</th></tr></thead><tbody>
+    ${(respuesta.filas || []).map(f => `<tr><td>${esc(f.insumo)}</td><td>${esc(f.cuenta)}</td>
+    <td>${esc(f.concepto)}</td><td>${esc(f.cantidad)}</td><td>${esc(f.valor_total)}</td>
+    <td>${esc(f.valor_intercambio)}</td><td>${esc(f.debe)}</td><td>${esc(f.haber)}</td>
+    <td>${esc(f.unidad)}</td></tr>`).join('')}</tbody></table></div>`;
+}
+
+// SYNC3976_TABLA_UNIFICADA_V1: escenario sintético aislado; no homologación productiva.
+// SYNC3976_NETOS_HOST_V1: neto diagnostico por fuente, Debe - Haber.
+// Opera en centavos enteros exactos; nunca suma HA22, HA26 y HA32.
+function netoHostSintetico3976(debe, haber) {
+  if (debe == null || haber == null) return '—';
+  function centavos(valor) {
+    const texto = String(valor).trim();
+    const match = /^(-?)(\d+)(?:\.(\d{1,2}))?$/.exec(texto);
+    if (!match) return null;
+    const entero = BigInt(match[2]) * 100n + BigInt((match[3] || '').padEnd(2, '0'));
+    return match[1] === '-' ? -entero : entero;
+  }
+  const d = centavos(debe), h = centavos(haber);
+  if (d === null || h === null) return '—';
+  const neto = d - h;
+  const negativo = neto < 0n;
+  const abs = negativo ? -neto : neto;
+  const entero = abs / 100n;
+  const decimal = String(abs % 100n).padStart(2, '0');
+  const miles = String(entero).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  return `${negativo ? '-' : ''}${miles},${decimal}`;
+}
+
+  // SYNC3976_VALOR_FRANQUICIA_ORIGEN
+// SIM3976_DEDUP_V1: vista resumida; evidencias en detalle por cuenta.
+  // CNB_CUENTA_1770_V1: cuenta CNB aprobada; importes crudos no certificados.
+async function pintarCredibanco3976Unificado(idJornada, vigente) {
+  if (Number(idJornada) !== 3976) return;
+  const [respuesta, sim] = await Promise.all([
+    apiConcilia('/api/v1/jornadas/3976/credibanco-sintetico'),
+    apiConcilia('/api/v1/jornadas/3976/cuadre-simulado')
+  ]);
+  if (!vigente()) return;
+  if (respuesta.id_jornada !== 3976 || respuesta.escenario !== 'SINTETICO_NO_CERTIFICADO' || !Array.isArray(respuesta.filas) ||
+      sim.id_jornada !== 3976 || sim.certificado_monetario !== false || !Array.isArray(sim.filas)) {
+    throw new Error('Contrato de simulacion 3976 invalido');
+  }
+  const tbody = el('reconBody');
+  if (!tbody) return;
+  const esc = v => escapar(v == null ? '—' : String(v));
+  const td = v => `<td class="num">${esc(v)}</td>`;
+  const filas = respuesta.filas;
+  const fuentes = ['HA22','HA26','HA32'];
+  const cuentasDEPO = {DEPOSITO_NACIONAL:'196095001838',DEPOSITO_INTERNACIONAL:'196095001839'};
+  const evidencias = (cuenta) => filas.filter(f => f.cuenta === cuenta || (f.insumo === 'DEPO' && cuentasDEPO[f.concepto] === cuenta));
+  // SIM3976_MODAL_DETALLE_V1: evidencias solo en el modal existente.
+  const evidenciasPorCuenta = cuenta => [
+    ...evidencias(cuenta),
+    ...filas.filter(f => f.insumo === 'CARTA_COMPENSACION')
+  ].map(f => ({...f, cuenta_visual: f.cuenta || cuentasDEPO[f.concepto] || null}));
+  const html = [];
+  for (const r of sim.filas) {
+    const host = fuentes.map(f => [td(r.host[f]?.debe),td(r.host[f]?.haber),td(r.host[f]?.neto)].join('')).join('');
+    const idx = reporteFilasDetalle.push({evidencias_sync3976:evidenciasPorCuenta(r.cuenta), host_sync3976:r.host, total_host_sync3976:r.total_host, diferencia_sync3976:r.diferencia, fuente:'CREDIBANCO',tipo_insumo:'SIMULACION_CREDIBANCO',cuenta:r.cuenta,concepto:r.concepto,valor_origen:r.valor_franquicia,unidad:'ESCALA_SINTETICA',estado:r.estado,certificado:false,id_jornada:3976})-1;
+    html.push(`<tr data-sync3976="1" ${filtroReconFila('CREDIBANCO',r.estado,[r.cuenta,r.concepto,'SIMULADO','CAET','CANT','DEPO','CARTA'])}><td>CREDIBANCO</td><td>${esc(r.cuenta)}</td><td>${esc(r.concepto)}<div style="font-size:10px">Cuadre sintetico · no certificado</div></td>${td(1)}${td('—')}${td(r.depo_crudo == null ? '—' : String(r.depo_crudo)+'*')}${td(r.valor_franquicia)}${host}${td(r.total_host)}${td(r.diferencia)}<td><span class="tag warn">${esc(r.estado)} · NO CERTIFICADO</span></td><td><button type="button" class="btn" onclick="abrirDetalleReporte(${idx})">Detalle</button></td></tr>`);
+  }
+  // Excepciones no homologadas no se asignan a cuentas ni se cuentan como OK.
+  const cnb = filas.filter(f => f.insumo === 'DEPO' && f.concepto === '017-OP CNBS');
+  if (cnb.length) {
+    const raw = cnb.map(f => esc(f.valor_total)).join(', ');
+    html.push(`<tr data-sync3976="1" ${filtroReconFila('CREDIBANCO','PENDIENTE_HOMOLOGACION',['DEPO','CNB','EXCEPCION'])}><td>CREDIBANCO</td><td>—</td><td>DEPO · 017-OP CNBS<div style="font-size:10px">Excepcion sin cuenta homologada · crudo ${raw}</div></td>${td(cnb.reduce((n,f)=>n+Number(f.cantidad||0),0))}${td('—')}${td(raw+'*')}${td('—')}${Array(9).fill(td('—')).join('')}${td('—')}${td('—')}<td><span class="tag warn">Excepcion no homologada</span></td>${td('—')}</tr>`);
+  }
+  // Conservar Redeban y Visa, evitando duplicar filas Credibanco anteriores.
+  const restantes = Array.from(tbody.querySelectorAll('tr')).filter(tr => {
+    const f = String(tr.dataset.franchise || tr.cells[0]?.textContent || '').trim().toUpperCase();
+    return f === 'REDEBAN' || f === 'VISA';
+  });
+  tbody.replaceChildren(...restantes);
+  tbody.insertAdjacentHTML('afterbegin',html.join(''));
+  el('reconMetaTotal').textContent = `${tbody.querySelectorAll('tr').length} resultados · ${sim.ok_simulados} OK simulados · 0 cruces homologados`;
+  // SYNC3976_KPIS_DINAMICOS_V1: solo simulacion; no representa certificacion productiva.
+  const consolidadas = sim.filas.filter(f => f && f.cuenta && f.estado);
+  const cuentasUnicas = new Set(consolidadas.map(f => String(f.cuenta)));
+  if (cuentasUnicas.size !== consolidadas.length) {
+    throw new Error('Cuentas duplicadas en cuadre simulado 3976');
+  }
+  const esCero = v => {
+    if (v === null || v === undefined || String(v).trim() === '') return false;
+    const n = Number(String(v).replace(',', '.'));
+    return Number.isFinite(n) && n === 0;
+  };
+  const evaluadas = consolidadas.length;
+  const ok = consolidadas.filter(f => f.estado === 'OK_SIMULADO' && esCero(f.diferencia)).length;
+  const diferencias = consolidadas.filter(f => f.diferencia != null &&
+    Number.isFinite(Number(f.diferencia)) && !esCero(f.diferencia)).length;
+  el('reconCruces').textContent = String(evaluadas);
+  el('reconConciliados').textContent = String(ok);
+  el('reconDiferencias').textContent = String(diferencias);
+  el('reconIncorporados').textContent = String(cuentasUnicas.size);
+  // La condicion de simulacion debe permanecer visible en el resumen.
+  for (const id of ['reconCruces','reconConciliados','reconDiferencias','reconIncorporados']) {
+    el(id).title = 'Indicador de simulacion no certificada, jornada 3976';
+  }
+  filterReconRows();
+}
+
+
+// CONCILIA_V28_ORIGEN_PERSISTIDO_EN_TABLA
+async function incorporarCandidatosPersistidosV28(idJornada, fecha, solicitud) {
+  const resp = await fetch('/api/v1/auditoria-monetaria/jornadas/' + encodeURIComponent(idJornada), {cache:'no-store'});
+  if (!resp.ok) throw new Error('Auditoría V24 HTTP ' + resp.status);
+  const d = await resp.json();
+  if (d.certificado !== false || d.modo !== 'AUDITORIA_MONETARIA_PERSISTIDA_NO_CERTIFICADA' ||
+      Number(d.id_jornada) !== Number(idJornada) || String(d.fecha_contable) !== String(fecha)) {
+    throw new Error('La auditoría no corresponde a la jornada consultada');
+  }
+  if (solicitud !== solicitudReporteMaestro || fecha !== obtenerFechaReporteMaestro()) return;
+  const tbody = document.getElementById('reconBody');
+  if (!tbody) throw new Error('No se encontró la tabla principal');
+  // CONCILIA_V66_UNA_FILA_POR_CUENTA
+  // V28 solo aporta evidencia VL TOTAL, nunca filas nuevas ni importes homologados.
+  const dinero = v => v == null || v === '' ? '—' : '$ ' + Number(v).toLocaleString('es-CO', {minimumFractionDigits:2, maximumFractionDigits:2});
+  const cuentas = new Map();
+  for (const tr of tbody.querySelectorAll('tr')) {
+    const clave = String(tr.cells[1]?.textContent || '').trim();
+    if (tr.dataset.franchise === 'CREDIBANCO' && /^\d+$/.test(clave)) {
+      if (cuentas.has(clave)) throw new Error('Cuenta Credibanco duplicada: ' + clave);
+      cuentas.set(clave, tr);
+    }
+  }
+  for (const r of (d.resultados || [])) {
+    const cuenta = String(r.cuenta || '').trim();
+    if (!['299095301','299095300','299095880'].includes(cuenta)) continue;
+    const tr = cuentas.get(cuenta);
+    if (!tr) throw new Error('Cuenta del catalogo no encontrada: ' + cuenta);
+    const importe = r.importe_candidato_no_homologado;
+    if (importe == null || importe === '') continue;
+    const n = Number(importe);
+    if (!Number.isFinite(n)) throw new Error('Importe V28 no numerico para ' + cuenta);
+    if (tr.dataset.v66VlTotal) throw new Error('Dos candidatos VL TOTAL para ' + cuenta);
+    tr.cells[2].textContent = dinero(importe) + '*';
+    tr.cells[2].title = 'VL TOTAL candidato de PostgreSQL; no homologado, no certifica conciliacion';
+    tr.dataset.v66VlTotal = '1';
+    const detalle = window.conciliaDetallesCuenta?.get(cuenta);
+    if (detalle) {
+      detalle.html += '<p><b>VL TOTAL candidato V28 (no homologado):</b> ' +
+        escapar(dinero(importe)) + ' · ' + escapar(r.concepto_patron || '') + '</p>';
+    }
+  }
+  if (tbody.querySelectorAll('tr').length !== 32) throw new Error('V66: se requieren exactamente 32 filas de cuentas');
+  const aviso = document.getElementById('reconAviso');
+  if (aviso) aviso.textContent += ' · V28: importes candidatos de Credibanco incorporados como filas NO HOMOLOGADAS; no son cruces ni afectan indicadores.';
+}
+
+async function cargarReporteMaestro() {
+  renderFechasReporteMaestro();
+  const solicitud = ++solicitudReporteMaestro;
+  const fecha = obtenerFechaReporteMaestro();
+  const fuenteHostDePoSeleccionada = el('reconFuenteHost')?.value || '';
+  resetReporteMaestro();
+  if (el('reconFuenteHost')) {
+    el('reconFuenteHost').value = fuenteHostDePoSeleccionada;
+  }
+  el('reconJornada').textContent = fecha ? `Fecha contable: ${fecha}` : 'Sin fecha contable seleccionada.';
+  el('reconAviso').textContent = 'Consultando resultados procesados; sin conciliación certificada...';
+  if (!fecha) { el('reconAviso').textContent = 'Seleccione una fecha contable del Reporte Maestro.'; return; }
+  try {
+    // Actualiza el catálogo para evitar reutilizar una jornada de otra consulta.
+    await consultarJornadas();
+    if (solicitud !== solicitudReporteMaestro || fecha !== obtenerFechaReporteMaestro()) return;
+    renderFechasReporteMaestro();
+    const jornada = jornadasPorFecha.get(fecha);
+    if (!jornada || !Number.isSafeInteger(Number(jornada.id_jornada)) || Number(jornada.id_jornada) <= 0) {
+      el('reconAviso').textContent = 'No existe una jornada para esta fecha contable. Sin resultados.';
+      return;
+    }
+    const [datos, datosProductivo] = await Promise.all([
+      apiConcilia(`/api/v1/jornadas/${encodeURIComponent(jornada.id_jornada)}/reporte-maestro-diagnostico`),
+      apiConcilia(`/api/v1/jornadas/${encodeURIComponent(jornada.id_jornada)}/conciliacion-credibanco`)
+        .catch(() => ({filas: []}))
+    ]);
+
+    window.conciliaReporteProductivo = new Map();
+
+    const filasProductivas = Array.isArray(datosProductivo.filas)
+      ? datosProductivo.filas
+      : [];
+
+    for (const f of filasProductivas) {
+      if (!f || f.cuenta == null) continue;
+
+      const cuentaKey = String(f.cuenta);
+
+      const actual = window.conciliaReporteProductivo.get(cuentaKey) || {
+        cuenta: cuentaKey,
+        cantidad_operaciones: 0,
+        vl_total: null,
+        vl_interc: null,
+        filas: 0,
+        insumos: []
+      };
+
+      const cantidad = Number(f.cantidad_operaciones);
+      if (Number.isFinite(cantidad)) {
+        actual.cantidad_operaciones += cantidad;
+      }
+
+      const vlTotal = Number(f.vl_total);
+      if (
+        f.vl_total != null &&
+        f.vl_total !== '' &&
+        Number.isFinite(vlTotal)
+      ) {
+        actual.vl_total = (actual.vl_total ?? 0) + vlTotal;
+      }
+
+      const vlInterc = Number(f.vl_interc);
+      if (
+        f.vl_interc != null &&
+        f.vl_interc !== '' &&
+        Number.isFinite(vlInterc)
+      ) {
+        actual.vl_interc = (actual.vl_interc ?? 0) + vlInterc;
+      }
+
+      actual.filas += 1;
+
+      if (f.insumo && !actual.insumos.includes(String(f.insumo))) {
+        actual.insumos.push(String(f.insumo));
+      }
+
+      window.conciliaReporteProductivo.set(cuentaKey, actual);
+    }
+
+    pintarDerivadosDepoProductivos(filasProductivas);
+
+    if (solicitud !== solicitudReporteMaestro || fecha !== obtenerFechaReporteMaestro()) return;
+    if (datos.certificado !== false || datos.origen !== 'POSTGRESQL_DIAGNOSTICO') {
+      throw new Error('Respuesta no reconocida como diagnóstico PostgreSQL no certificado.');
+    }
+    // Render unico. No ejecutar los renderizadores diagnosticos que reescriben reconBody.
+    // Mantener trazabilidad Host sin insertar filas adicionales.
+    reporteFilasDetalle = [];
+    reporteHostDiagnostico = (Array.isArray(datos.resultados_host) ? datos.resultados_host : []).map(r => ({
+      fuente: String(r.fuente ?? r.tx_host ?? 'HOST'), cuenta:r.cuenta, concepto:r.concepto,
+      valor:r.valor_normalizado ?? r.valor, id_archivo:r.id_archivo,
+      sintetico:esPruebaSintetica(r)
+    }));
+    el('reconAbrirTrazabilidad').textContent = `Ver trazabilidad Host (${reporteHostDiagnostico.length})`;
+    pintarCoberturaContableHost(datos);
+    // CONCILIA_V72_APLICAR_ESTADOS_EN_TABLA_ORIGINAL
+    pintarEstadoCredibancoV72(datos, jornada.id_jornada, fecha);
+
+    // CONCILIA_REPORTE_PRODUCTIVO_EN_TABLA_PRINCIPAL_V2
+    // Sumatoria por cuenta:
+    //   VL TOTAL       <- suma de todos los vl_total no nulos
+    //   VALOR INTERCAMBIO <- suma de todos los vl_interc no nulos
+    // No modifica ninguna columna Host.
+    {
+      const acumulados = new Map();
+
+      for (const f of (Array.isArray(datosProductivo?.filas)
+        ? datosProductivo.filas
+        : [])) {
+
+        const cuenta = String(f?.cuenta ?? '').trim();
+
+        if (!cuenta) continue;
+
+        const actual = acumulados.get(cuenta) || {
+          total: 0,
+          tieneTotal: false,
+          interc: 0,
+          tieneInterc: false
+        };
+
+        if (
+          f.vl_total !== null &&
+          f.vl_total !== undefined &&
+          f.vl_total !== ''
+        ) {
+          const nTotal = Number(f.vl_total);
+
+          if (Number.isFinite(nTotal)) {
+            actual.total += nTotal;
+            actual.tieneTotal = true;
+          }
+        }
+
+        if (
+          f.vl_interc !== null &&
+          f.vl_interc !== undefined &&
+          f.vl_interc !== ''
+        ) {
+          const nInterc = Number(f.vl_interc);
+
+          if (Number.isFinite(nInterc)) {
+            actual.interc += nInterc;
+            actual.tieneInterc = true;
+          }
+        }
+
+        acumulados.set(cuenta, actual);
+      }
+
+      const moneda = v => {
+        if (v === null || v === undefined || v === '') return '—';
+
+        const n = Number(v);
+
+        if (!Number.isFinite(n)) return '—';
+
+        return '$ ' + n.toLocaleString('es-CO', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
+      };
+
+      const tbody = document.getElementById('reconBody');
+
+      if (tbody) {
+
+        const encabezados = Array.from(
+          tbody.closest('table')?.querySelectorAll('thead th') || []
+        ).map(th =>
+          th.textContent.trim().toUpperCase()
+        );
+
+        const idxCuenta =
+          encabezados.indexOf('CUENTA');
+
+        const idxVlTotal =
+          encabezados.indexOf('VL TOTAL');
+
+        const idxInterc =
+          encabezados.indexOf('VALOR INTERCAMBIO');
+
+        if (
+          idxCuenta >= 0 &&
+          idxVlTotal >= 0 &&
+          idxInterc >= 0
+        ) {
+
+          for (const tr of tbody.querySelectorAll('tr')) {
+
+            const cuenta = String(
+              tr.cells[idxCuenta]?.textContent || ''
+            ).trim();
+
+            const origen = acumulados.get(cuenta);
+
+            if (!origen) continue;
+
+            // VL TOTAL: suma productiva por cuenta.
+            if (
+              origen.tieneTotal &&
+              tr.cells[idxVlTotal]
+            ) {
+              tr.cells[idxVlTotal].textContent =
+                moneda(origen.total);
+            }
+
+            // VALOR INTERCAMBIO: suma productiva por cuenta.
+            if (tr.cells[idxInterc]) {
+              tr.cells[idxInterc].textContent =
+                origen.tieneInterc
+                  ? moneda(origen.interc)
+                  : '—';
+            }
+          }
+        } else {
+          throw new Error(
+            'No se encontraron CUENTA, VL TOTAL y VALOR INTERCAMBIO en la tabla.'
+          );
+        }
+      }
+    }    // CONCILIA_DEPO_DERIVADOS_PRODUCTIVOS_V1
+    // Panel exclusivamente diagnostico. No modifica reconBody ni homologa Host.
+    function pintarDerivadosDepoProductivos(filas) {
+      const existente = document.getElementById('conciliaDepoDerivadosV1');
+      if (existente) existente.remove();
+
+      const datos = Array.isArray(filas)
+        ? filas.filter(x => x && x.insumo === 'DEPO')
+        : [];
+
+      if (!datos.length) return;
+
+      const dinero = v => {
+        if (v === null || v === undefined || v === '') return '—';
+
+        const n = Number(v);
+
+        if (!Number.isFinite(n)) return escapar(String(v));
+
+        return '$ ' + n.toLocaleString('es-CO', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
+      };
+
+      const texto = v => {
+        if (v === null || v === undefined || v === '') return '—';
+
+        if (Array.isArray(v)) {
+          return v.length ? escapar(v.join(' · ')) : '—';
+        }
+
+        return escapar(String(v));
+      };
+
+      const filasHtml = datos.map(f => `
+        <tr>
+          <td>${texto(f.concepto)}</td>
+          <td>${texto(f.cuenta)}</td>
+          <td class="num">${texto(f.cantidad_operaciones)}</td>
+          <td class="num">${dinero(f.vl_total)}</td>
+          <td class="num">${dinero(f.vl_interc)}</td>
+          <td class="num">${dinero(f.tasa_intercambio_calculada_cruda)}</td>
+          <td>${texto(f.conceptos_tii)}</td>
+          <td>${texto(f.conceptos_tii_amex)}</td>
+          <td>${texto(f.conceptos_comision_atm)}</td>
+          <td>
+            <span class="tag info">
+              ${f.certificable === false ? 'No certificado' : 'Certificado'}
+            </span>
+          </td>
+        </tr>
+      `).join('');
+
+      const tabla = document.querySelector(
+        '#reconBody'
+      )?.closest('table');
+
+      if (!tabla) {
+        throw new Error(
+          'No se encontro la tabla principal para insertar diagnostico DEPO.'
+        );
+      }
+
+      const panel = document.createElement('div');
+      panel.id = 'conciliaDepoDerivadosV1';
+      panel.style.margin = '12px 0';
+      panel.innerHTML = `
+        <div style="
+          border:1px solid #d7dce5;
+          border-radius:8px;
+          padding:12px;
+          background:#f8fafc;
+        ">
+          <div style="
+            font-weight:600;
+            margin-bottom:6px;
+          ">
+            DEPO · derivados productivos
+          </div>
+
+          <div style="
+            font-size:11px;
+            color:#596579;
+            margin-bottom:10px;
+          ">
+            Diagnostico de reglas Fase 2. No representa homologacion ni
+            certificacion contable.
+          </div>
+
+          <div class="tableScroll">
+            <table class="reconTable">
+              <thead>
+                <tr>
+                  <th>Concepto</th>
+                  <th>Cuenta</th>
+                  <th>Cantidad</th>
+                  <th>VL TOTAL</th>
+                  <th>VL INTERC</th>
+                  <th>TASA INTERC.</th>
+                  <th>TII</th>
+                  <th>TII AMEX</th>
+                  <th>COMISION ATM</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>${filasHtml}</tbody>
+            </table>
+          </div>
+        </div>
+      `;
+
+      tabla.parentNode.insertBefore(panel, tabla);
+    }
+    // CONCILIA_V74_AUDITORIA_ORIGEN_CALL
+    pintarAuditoriaOrigenV74(datos, jornada.id_jornada, fecha);
+    // CONCILIA_V28_CONSULTA
+    try {
+      await incorporarCandidatosPersistidosV28(jornada.id_jornada, fecha, solicitud);
+    } catch (e) {
+      console.warn('V28: ' + e.message);
+      el('reconAviso').textContent += ' · Auditoría monetaria no disponible: ' + e.message;
+    }
+
+    // CONCILIA_V14_ORIGEN_EN_TABLA_PRINCIPAL
+    document.getElementById('conciliaOrigenV13')?.remove();
+    const origen = Array.isArray(datos.origen_monetario_credibanco) ? [...datos.origen_monetario_credibanco] : [];
+    const disponibles = (Array.isArray(datos.insumos_archivo_origen) ? datos.insumos_archivo_origen : []);
+    // Fallback por API de contenido: no se mezclan archivos de otras jornadas.
+    for (const tipo of ['CAET', 'CANT', 'DEPO']) {
+      if (origen.some(r => r.insumo === tipo && Number(r.registros) > 0)) continue;
+      const archivo = disponibles.find(r => r.tipo_insumo === tipo && r.id_archivo != null);
+      if (!archivo) continue;
+      try {
+        let pagina = 1, paginas = 1, total = 0, interc = 0, comision = 0;
+        let tieneTotal = false, tieneInterc = false, tieneComision = false, registros = 0;
+        do {
+          if (pagina > 100) throw new Error('Limite de paginacion');
+          const respuesta = await apiConcilia(`/api/v1/archivos/${encodeURIComponent(archivo.id_archivo)}/contenido?page=${pagina}&pageSize=100`);
+          if (solicitud !== solicitudReporteMaestro || fecha !== obtenerFechaReporteMaestro()) return;
+          const contenido = respuesta.contenido || {};
+          const items = Array.isArray(contenido.items) ? contenido.items : [];
+          paginas = Math.max(1, Number(contenido.totalPages) || 1);
+          registros += items.length;
+          for (const item of items) {
+            for (const [campo, sumar] of [['vl_total',0], ['vl_interc',1], ['comision_op_exitosas',2]]) {
+              const v = item[campo];
+              if (v === null || v === undefined || v === '') continue;
+              const n = Number(v);
+              if (!Number.isFinite(n)) continue;
+              if (sumar === 0) { total += n; tieneTotal = true; }
+              if (sumar === 1) { interc += n; tieneInterc = true; }
+              if (sumar === 2) { comision += n; tieneComision = true; }
+            }
+          }
+          pagina++;
+        } while (pagina <= paginas);
+        if (registros) {
+          const pos = origen.findIndex(r => r.insumo === tipo);
+          const fila = {insumo:tipo,id_archivo:archivo.id_archivo,registros,
+            vl_total:tieneTotal?total:null,vl_interc:tieneInterc?interc:null,
+            comisiones:tieneComision?comision:null,homologado:false,certificado:false};
+          if (pos >= 0) origen[pos] = fila; else origen.push(fila);
+        }
+      } catch (error) {
+        console.warn('Origen no disponible para ' + tipo + ': ' + error.message);
+      }
+    }
+    pintarTotalesGlobalesV67(origen, jornada.id_jornada, fecha);
+    // CONCILIA_V66_ORIGEN_SOLO_AUDITORIA
+    // CAET/CANT globales no son cuentas; no agregar filas a reconBody.
+    if (!origen.some(x => Number(x.registros) > 0)) {
+      el('reconAviso').textContent += ' No se encontraron importes externos en la consulta; revisar asociación de archivos.';
+    }
+    // CONCILIA_V75_QA_PREPARAR_EN_REPORTE_ORIGINAL
+    // CONCILIA_V76_QA_CALL
+    if (document.querySelectorAll('#reconBody tr').length !== 32) throw new Error('V66: catalogo no consolidado en 32 filas');
+    if (typeof filterReconRows === 'function') filterReconRows();
+    el('reconJornada').textContent = `Jornada ${jornada.id_jornada} · ${fecha} · ${datos.estado_jornada ?? jornada.estado} · No certificado`;
+    // Mantener aviso del render unico.
+  } catch (error) {
+    if (solicitud !== solicitudReporteMaestro || fecha !== obtenerFechaReporteMaestro()) return;
+    resetReporteMaestro();
+    el('reconAviso').textContent = `Error consultando Reporte Maestro: ${error.message}. No se mostrarán datos de demostración.`;
+  }
+}
+
+// CONCILIA - PRESENTACION FUNCIONAL DE ESTADOS Y ACCIONES
+function estadoConciliacionVisible(registro) {
+  const estado = String(
+    registro.estado_conciliacion ?? registro.estado ?? ''
+  ).toUpperCase();
+
+  const homologado = registro.cruce_homologado === true;
+  const calculado = registro.diferencia_calculada === true;
+
+  if (estado === 'NO_APLICA') {
+    return 'No aplica';
+  }
+
+  if (!homologado || !calculado) {
+    return 'Pendiente de conciliación';
+  }
+
+  const diferencia = Number(registro.diferencia);
+
+  if (!Number.isFinite(diferencia)) {
+    return 'Sin información suficiente';
+  }
+
+  return diferencia === 0 ? 'Conciliado' : 'Con diferencia';
+}
+
+function accionConciliacionVisible(registro) {
+  const estado = estadoConciliacionVisible(registro);
+
+  return estado === 'Con diferencia'
+    ? 'ANALIZAR_IA'
+    : 'DETALLE';
+}
+// FIN PRESENTACION FUNCIONAL
+
+
+// CONCILIA - ACCION DE ANALISIS DE DIFERENCIAS
+function abrirAnalisisIAConcilia(cuenta) {
+  const registro = window.conciliaDetallesCuenta?.get(String(cuenta));
+
+  if (!registro) {
+    alert('No se encontraron evidencias para esta partida.');
+    return;
+  }
+
+  if (accionConciliacionVisible(registro) !== 'ANALIZAR_IA') {
+    abrirDetalleCuentaConciliaV6(String(cuenta));
+    return;
+  }
+
+  // El analisis debe utilizar una integracion IA real.
+  // No mostrar hipotesis simuladas.
+  alert(
+    'Partida con diferencia identificada. ' +
+    'El servicio de analisis IA no esta conectado en esta version. ' +
+    'Consulte el detalle y las evidencias de la partida.'
+  );
+
+  abrirDetalleCuentaConciliaV6(String(cuenta));
+}
+// FIN ACCION DE ANALISIS DE DIFERENCIAS
 
 function filterReconRows() {
   const q = (el('reconQ').value || '').toLowerCase();
-  const fr = el('reconFr').value || '';
+  const fr = (el('reconFr').value || '').toUpperCase();
   const st = el('reconSt').value || '';
-  document.querySelectorAll('#recon tbody tr').forEach((r) => {
-    const okq = r.innerText.toLowerCase().includes(q);
+  document.querySelectorAll('#reconBody tr').forEach(r => {
+    const okq = (r.dataset.search || r.textContent.toLowerCase()).includes(q);
     const okfr = !fr || r.dataset.franchise === fr;
     const okst = !st || r.dataset.filterStatus === st;
     r.style.display = okq && okfr && okst ? 'table-row' : 'none';
   });
-}
-
-function verDetalleRecon(cta, tx, vf, vh) {
-  drawerContent.innerHTML = `<h2>Detalle de conciliación</h2><span class="badge info">${cta}</span>
-    <div class="explain"><b>Origen Host:</b> ${tx}</div>
-    <table><thead><tr><th>Lado</th><th>Valor</th></tr></thead><tbody>
-      <tr><td>Franquicia</td><td>${vf}</td></tr>
-      <tr><td>Host</td><td>${vh}</td></tr>
-      <tr><td>Resultado</td><td>${vf === vh ? 'Conciliado' : 'Diferencia'}</td></tr>
-    </tbody></table>`;
-  openDrawer();
 }
 
 // ---- Diagnostico IA (storyboard de UX) ----
@@ -1621,8 +3634,8 @@ function automateAndReprocess() {
       result.innerHTML =
         '<div class="title">Resultado del reproceso <span class="tag ok">Conciliado</span></div>' +
         '<div class="aiAutoFlow"><div class="aiAutoStep done">1<b>Regla propuesta</b></div><div class="aiAutoStep done">2<b>Regla aplicada</b></div><div class="aiAutoStep done">3<b>Caso reejecutado</b></div></div>' +
-        '<div class="friendlyNote"><b>Reporte Maestro actualizado (simulado).</b> La regla quedó aplicada y el caso fue reejecutado sin pasos adicionales para el usuario.</div>';
-      toast('Regla aplicada y caso conciliado');
+        '<div class="friendlyNote"><b>Simulación local: Reporte Maestro operativo NO actualizado.</b> La regla quedó aplicada y el caso fue reejecutado sin pasos adicionales para el usuario.</div>';
+      toast('Simulación finalizada; ningún resultado operativo fue modificado');
     }
   }, 110);
 }
@@ -1780,5 +3793,377 @@ actualizarFechaEjecucion();
 })();
 </script>
 
+
+<script>
+// CONCILIA_ESTADO_DETALLE_V5
+(function () {
+  const tbody = document.getElementById('reconBody');
+  if (!tbody) return;
+
+  const tabla = tbody.closest('table');
+  if (!tabla) return;
+
+  function normalizar(s) {
+    return String(s || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+      .toUpperCase();
+  }
+
+  function indicesColumnas() {
+    const ths = Array.from(
+      tabla.querySelectorAll('thead th')
+    );
+
+    return {
+      estado: ths.findIndex(th =>
+        normalizar(th.textContent).includes('ESTADO CONCILIACION')
+      ),
+      accion: ths.findIndex(th =>
+        normalizar(th.textContent) === 'ACCION'
+      )
+    };
+  }
+
+  function presentar() {
+    const indices = indicesColumnas();
+
+    if (indices.estado < 0 || indices.accion < 0) return;
+
+    for (const fila of tbody.rows) {
+      const estadoTd = fila.cells[indices.estado];
+      const accionTd = fila.cells[indices.accion];
+
+      if (!estadoTd || !accionTd) continue;
+
+      if (!estadoTd.querySelector('.conciliaEstadoBadge')) {
+        const codigo = normalizar(estadoTd.textContent);
+
+        const estados = {
+          SIN_MOVIMIENTOS: ['Sin movimientos', 'sin-movimientos'],
+          CONCILIADO: ['Conciliado', 'conciliado'],
+          DIFERENCIA: ['Diferencia', 'diferencia'],
+          PENDIENTE_HOMOLOGACION: ['Pendiente homologación', 'pendiente'],
+          PENDIENTE_FASE_2: ['Pendiente Fase 2', 'pendiente']
+        };
+
+        if (estados[codigo]) {
+          const [texto, clase] = estados[codigo];
+          const etiqueta = document.createElement('span');
+          etiqueta.className =
+            'conciliaEstadoBadge ' + clase;
+          etiqueta.textContent = texto;
+          etiqueta.title = codigo;
+          estadoTd.replaceChildren(etiqueta);
+        }
+      }
+
+      // Mantener la accion y sus manejadores existentes.
+      const boton = accionTd.querySelector('button');
+
+      if (boton) {
+        boton.classList.add('conciliaDetalleBtn');
+      }
+    }
+  }
+
+  const observador = new MutationObserver(() => {
+    observador.disconnect();
+    presentar();
+    observador.observe(tbody, { childList: true });
+  });
+
+  presentar();
+  observador.observe(tbody, { childList: true });
+})();
+</script>
+
+
+<script>
+function abrirDetalleCuentaConciliaV6(cuenta) {
+  const dato = window.conciliaDetallesCuenta?.get(String(cuenta));
+  if (!dato) return;
+
+  const destino = document.getElementById(
+    'contenidoDetalleCuentaV6'
+  );
+  if (!destino) return;
+
+  destino.replaceChildren();
+
+  const titulo = document.createElement('h2');
+  titulo.textContent = 'Detalle de conciliación · ' + dato.cuenta;
+
+  const subtitulo = document.createElement('p');
+  subtitulo.textContent =
+    dato.franquicia + ' · Centro 0017 · ' + dato.estado;
+
+  const contenido = document.createElement('div');
+  contenido.innerHTML = dato.html;
+
+  destino.append(titulo, subtitulo, contenido);
+
+  document.querySelectorAll('.panel').forEach(
+    p => p.classList.remove('active')
+  );
+
+  document.getElementById(
+    'detalleCuentaConciliaV6'
+  ).classList.add('active');
+
+  window.scrollTo(0, 0);
+}
+
+document.getElementById('volverDetalleCuentaV6')
+  ?.addEventListener('click', () => {
+    document.querySelectorAll('.panel').forEach(
+      p => p.classList.remove('active')
+    );
+    document.getElementById('conciliacion')
+      ?.classList.add('active');
+    window.scrollTo(0, 0);
+  });
+</script>
+
+<script>
+// CONCILIA_DETALLE_CONTABLE_V9
+(function () {
+  'use strict';
+  const anterior = window.abrirDetalleCuentaConciliaV6;
+  if (typeof anterior !== 'function') throw new Error('Detalle V6 no disponible');
+  const host = ['HA22','HA26','HA32'];
+  // CONCILIA_V72_1_ETIQUETAS_ESTADO
+  const etiquetasV721 = Object.freeze({
+    PENDIENTE_HOMOLOGACION: 'Pendiente homologación',
+    SIN_MOVIMIENTOS_HOST: 'Sin movimientos Host · no homologado',
+    HOST_INCOMPLETO: 'Host incompleto · no homologado',
+    FUERA_CATALOGO_HOST: 'Fuera del catálogo Host · no homologado'
+  });
+  const externos = {CREDIBANCO:['CAET','CANT','DEPO','CARTA_COMPENSACION'], REDEBAN:['PMD'], VISA:['VSS','VISA_SS_INTERNATIONAL']};
+  const sensibles = /(^|_)(pan|tarjeta|numero_tarjeta|nro_tarjeta|linea_cruda|raw|track|cvv|cvc|documento_identidad|numero_documento|num_documento)(_|$)/i;
+  let tokenActual = 0;
+  const elem = (etiqueta, texto, clase) => {const x=document.createElement(etiqueta);if(texto!==undefined)x.textContent=String(texto);if(clase)x.className=clase;return x;};
+  const txt = v => v===null || v===undefined || v==='' ? '—' : String(v);
+  const moneda = v => {if(v===null || v===undefined || v==='')return '—';const n=Number(v);return Number.isFinite(n)?'$ '+n.toLocaleString('es-CO',{minimumFractionDigits:2,maximumFractionDigits:2}):'—';};
+  const fechaActiva = () => typeof obtenerFechaReporteMaestro==='function' ? obtenerFechaReporteMaestro() : null;
+  function tabla(destino, columnas, filas) {
+    const scroll=elem('div',undefined,'tableScroll'), t=elem('table',undefined,'reconTable conciliaDetalleTablaV14'), th=elem('thead'), cab=elem('tr'), tb=elem('tbody');
+    columnas.forEach(c=>cab.appendChild(elem('th',c.label)));th.appendChild(cab);
+    filas.forEach(f=>{const tr=elem('tr');columnas.forEach(c=>{const td=elem('td',txt(f[c.key]));if(c.numero)td.className='num';tr.appendChild(td);});tb.appendChild(tr);});
+    t.append(th,tb);scroll.appendChild(t);destino.appendChild(scroll);
+  }
+  async function evidenciaArchivo(tipo,id,cuenta,pagina,zona,vigente) {
+    zona.replaceChildren(elem('p','Consultando evidencia...','muted'));
+    try {
+      const r=await apiConcilia(`/api/v1/archivos/${encodeURIComponent(id)}/contenido?page=${pagina}&pageSize=30`);
+      if(!vigente())return;
+      const c=r.contenido||{}, headers=Array.isArray(c.headers)?c.headers:[], items=Array.isArray(c.items)?c.items:[];
+      const esHost=host.includes(tipo), tieneCuenta=headers.some(h=>h.key==='cuenta');
+      const visibles=esHost&&tieneCuenta?items.filter(x=>String(x.cuenta??'')===String(cuenta)):items;
+      zona.replaceChildren(elem('p',esHost?'Evidencia Host de la cuenta en esta página.':'Evidencia externa de origen: no atribuida a la cuenta sin regla homologada.','friendlyNote'));
+      if(tipo==='CANT')zona.appendChild(elem('p','CANT: únicamente campos autorizados por el servidor; no se exponen líneas crudas ni PAN.','muted'));
+      const cols=headers.filter(h=>h&&typeof h.key==='string'&&!sensibles.test(h.key)).map(h=>({key:h.key,label:h.label||h.key}));
+      if(cols.length&&visibles.length)tabla(zona,cols,visibles);
+      else zona.appendChild(elem('p','Sin registros visibles en esta página.','muted'));
+      const total=Math.max(1,Number(c.totalPages)||1), barra=elem('div',undefined,'actionbar');
+      barra.appendChild(elem('span',`Página ${pagina} de ${total} · Total archivo: ${txt(c.total)}`));
+      const prev=elem('button','Anterior','btn'), next=elem('button','Siguiente','btn');prev.type=next.type='button';prev.disabled=pagina<=1;next.disabled=pagina>=total;
+      prev.addEventListener('click',()=>evidenciaArchivo(tipo,id,cuenta,pagina-1,zona,vigente));
+      next.addEventListener('click',()=>evidenciaArchivo(tipo,id,cuenta,pagina+1,zona,vigente));barra.append(prev,next);zona.appendChild(barra);
+    }catch(e){if(vigente())zona.replaceChildren(elem('p','Evidencia no disponible: '+e.message,'muted'));}
+  }
+  async function evidenciaCarta(zona,vigente) {
+    zona.replaceChildren(elem('p','Consultando Carta...','muted'));
+    try {
+      const r=await apiConcilia('/api/v1/jornadas/3976/carta-desglose');if(!vigente())return;
+      zona.replaceChildren(elem('p','Desglose GLOBAL de Carta; no atribuido a la cuenta ni certificado. No sumar campos del mismo registro.','friendlyNote'));
+      const nombres={valor_principal:'Principal',valor_proceso:'Proceso',valor_financiacion:'Financiación',valor_fotocopias:'Fotocopias',valor_red:'Red',valor_depositos_electronicos:'Depósitos electrónicos',valor_total:'Total informado',valor_outgoing:'Outgoing',valor_incoming:'Incoming',factor_compra:'Factor compra',factor_venta:'Factor venta'};
+      (r.filas||[]).forEach(f=>{zona.appendChild(elem('p',`${txt(f.seccion)} · ${txt(f.concepto)} · archivo ${txt(f.id_archivo)} · línea ${txt(f.linea_origen)}`));
+        const filas=Object.entries(f.importes||{}).filter(([,v])=>v!==null&&v!==undefined).map(([k,v])=>({campo:nombres[k]||k,valor:v}));
+        if(filas.length)tabla(zona,[{key:'campo',label:'Campo de origen'},{key:'valor',label:'Valor registrado',numero:true}],filas);
+      });
+      if(!(r.filas||[]).length)zona.appendChild(elem('p','Sin registros de Carta.','muted'));
+    }catch(e){if(vigente())zona.replaceChildren(elem('p','Carta no disponible: '+e.message,'muted'));}
+  }
+  window.abrirDetalleCuentaConciliaV6 = function(cuenta) {
+    const dato=window.conciliaDetallesCuenta?.get(String(cuenta));if(!dato)return anterior(cuenta);
+    const fecha=fechaActiva(), token=++tokenActual;
+    anterior(cuenta);
+    const destino=document.getElementById('contenidoDetalleCuentaV6');if(!destino)return;
+    // Sustituir solo el cuerpo generico de V6; no alterar el reporte maestro.
+    destino.replaceChildren();
+    destino.appendChild(elem('h2',`Detalle de conciliación · ${cuenta}`));
+    destino.appendChild(elem('p',`${dato.franquicia} · Centro 0017 · ${etiquetasV721[dato.estado] || (dato.estado==='SIN_MOVIMIENTOS'?'Sin movimientos':dato.estado)}`));
+    const cuerpo=elem('div');destino.appendChild(cuerpo);
+    const vigente=()=>token===tokenActual&&fecha===fechaActiva()&&cuerpo.isConnected&&document.getElementById('detalleCuentaConciliaV6')?.classList.contains('active');
+    cuerpo.appendChild(elem('p','Consultando contabilidad interna e insumos externos...','muted'));
+    (async()=>{
+      try {
+        if(!fecha)throw new Error('Seleccione fecha contable');
+        await consultarJornadas();if(!vigente())return;
+        const jornada=jornadasPorFecha.get(fecha);if(!jornada)throw new Error('No existe jornada para la fecha');
+        const [insumos,reporte]=await Promise.all([
+          apiConcilia(`/api/v1/jornadas/${encodeURIComponent(jornada.id_jornada)}/insumos`),
+          apiConcilia(`/api/v1/jornadas/${encodeURIComponent(jornada.id_jornada)}/reporte-maestro-diagnostico`)
+        ]);if(!vigente())return;
+        // CONCILIA_V72_1_DETALLE_V9_BEGIN
+        const diagV72=reporte?.diagnostico_credibanco_v72;
+        const esCredibancoV721=dato.franquicia==='CREDIBANCO';
+        let cuentaV721=null;
+        if(esCredibancoV721){
+          if(diagV72?.version!=='V72'||diagV72.tipo!=='DIAGNOSTICO_REAL_SOLO_LECTURA'||
+             diagV72.certificado!==false||diagV72.franquicia!=='CREDIBANCO'||
+             Number(diagV72.id_jornada)!==Number(jornada.id_jornada)||
+             String(diagV72.fecha_contable)!==String(fecha)||
+             !Array.isArray(diagV72.cuentas)||diagV72.cuentas.length!==13){
+            throw new Error('Detalle Credibanco V72 no corresponde a la jornada');
+          }
+          cuentaV721=diagV72.cuentas.find(x=>String(x.cuenta)===String(cuenta));
+          if(!cuentaV721||cuentaV721.franquicia!=='CREDIBANCO'||cuentaV721.certificado!==false||
+             cuentaV721.correspondencia_aprobada!==false||cuentaV721.procedencia_host_acreditada!==false||
+             cuentaV721.valor_franquicia_homologado!=null||cuentaV721.diferencia_homologada!=null||
+             !Object.hasOwn(etiquetasV721,cuentaV721.estado)||
+             !Number.isSafeInteger(cuentaV721.movimientos_host_observados)||
+             cuentaV721.movimientos_host_observados<0||!Array.isArray(cuentaV721.motivos)||
+             cuentaV721.estado!==dato.estado){
+            throw new Error('Detalle Credibanco V72 inconsistente con tabla y homologacion');
+          }
+        }
+        const cobertura=(reporte.cobertura_contable_host||[]).find(x=>String(x.cuenta)===String(cuenta));
+        const fueraV721=cuentaV721?.estado==='FUERA_CATALOGO_HOST';
+        if((!cobertura&&!fueraV721)||(cobertura&&fueraV721))
+          throw new Error('Cobertura Host incompatible con catalogo y diagnostico V72');
+        // Marcador estructural SOLO para mostrar netos indisponibles, nunca cero artificial.
+        const registro=cobertura||{estado:'SIN_HOST_EN_CATALOGO',monetario_host:{}};
+        // CONCILIA_V72_1_DETALLE_V9_END
+        const archivos=(insumos.insumos||[]).filter(i=>i.id_archivo!=null&&i.tipo_insumo!=='MEP');
+        const archivoDe=tipo=>archivos.find(i=>i.tipo_insumo===tipo);
+        cuerpo.replaceChildren(elem('p',`Jornada ${jornada.id_jornada} · ${fecha} · Diagnóstico no certificado.`, 'friendlyNote'));
+        cuerpo.appendChild(elem('h3','A. Contabilidad interna · Host'));
+        const filasHost=host.map(tipo=>{
+          const m=registro.monetario_host?.[tipo], a=archivoDe(tipo);
+          return {tipo,archivo:a?.id_archivo??'—',debe:m?moneda(m.debe):(registro.estado==='SIN_MOVIMIENTOS'?moneda(0):'—'),haber:m?moneda(m.haber):(registro.estado==='SIN_MOVIMIENTOS'?moneda(0):'—'),neto:m?moneda(m.neto):(registro.estado==='SIN_MOVIMIENTOS'?moneda(0):'—'),registros:m?.cantidad??(fueraV721?'—':0)};
+        });
+        tabla(cuerpo,[{key:'tipo',label:'Fuente Host'},{key:'archivo',label:'Archivo ID'},{key:'registros',label:'Movimientos',numero:true},{key:'debe',label:'Debe',numero:true},{key:'haber',label:'Haber',numero:true},{key:'neto',label:'Neto',numero:true}],filasHost);
+        cuerpo.appendChild(elem('p','Neto por fuente = Debe − Haber. HA22, HA26 y HA32 no se suman entre sí.','muted'));
+        // CONCILIA_V75_QA_DETALLE_SEPARADO
+        const qaVisibleV75=window.conciliaQaV75Estado;
+        if(qaVisibleV75?.activo && Number(qaVisibleV75.idJornada)===Number(jornada.id_jornada) &&
+           qaVisibleV75.fecha===fecha && qaVisibleV75.mapa?.has(String(cuenta))){
+          const qv=qaVisibleV75.mapa.get(String(cuenta));
+          cuerpo.appendChild(elem('p','Estos importes están en tablas QA SEPARADAS; fueron inventados. No son los saldos persistidos de CAET/CANT/DEPO/Carta ni de Host. No afectan las cifras anteriores.', 'friendlyNote'));
+          tabla(cuerpo,[{key:'campo',label:'Campo de prueba'},{key:'valor',label:'Valor exclusivamente QA'}],[
+            {campo:'Cuenta',valor:qv.cuenta},{campo:'Insumo de ensayo',valor:qv.insumo_qa},
+            {campo:'Fuente Host de ensayo',valor:qv.fuente_host_qa||'No disponible'},
+            {campo:'Valor total QA',valor:formatearNumeroQaV75(qv.vl_total_qa)},
+            {campo:'Valor franquicia QA',valor:formatearNumeroQaV75(qv.valor_franquicia_qa)},
+            {campo:'HA22 QA',valor:formatearNumeroQaV75(qv.ha22_neto_qa)},
+            {campo:'HA26 QA',valor:formatearNumeroQaV75(qv.ha26_neto_qa)},
+            {campo:'HA32 QA',valor:formatearNumeroQaV75(qv.ha32_neto_qa)},
+            {campo:'Rechazos QA (separados)',valor:formatearNumeroQaV75(qv.total_rechazos_qa)},
+            {campo:'Diferencia QA',valor:formatearNumeroQaV75(qv.diferencia_qa)},
+            {campo:'Estado QA',valor:ETIQUETAS_QA_V75[qv.estado_qa]||'No disponible'},
+            {campo:'Regla de prueba (no aprobada)',valor:qv.etiqueta_regla_qa}
+          ]);
+        }
+        // CONCILIA_CUADRO_B_VALORES_ORIGEN_V12
+        cuerpo.appendChild(elem('h3','B. Insumos externos · '+dato.franquicia));
+        const tipos=externos[dato.franquicia]||[];
+        const zonaExt=elem('div');
+        cuerpo.appendChild(zonaExt);
+        zonaExt.appendChild(elem('p','Consultando valores persistidos de los archivos externos...','muted'));
+        const camposPorTipo={
+          CAET:['vl_total','vl_interc','vl_descue','comision_op_exitosas'],
+          CANT:['vl_total','vl_interc','vl_descue','comision_op_exitosas'],
+          DEPO:['valor_total','valor_intercambio','valor_deposito_neto','tasa_de_intercambio'],
+          CARTA_COMPENSACION:['valor_principal','valor_proceso','valor_financiacion','valor_fotocopias','valor_red','valor_depositos_electronicos','valor_total','valor_outgoing','valor_incoming'],
+          PMD:['debito_valor','debito_comision_intercambio','debito_neto','credito_valor','credito_comision_intercambio','credito_neto'],
+          VISA_SS_INTERNATIONAL:['importe_neto'],
+          VSS:['importe_neto','valor_neto']
+        };
+        const datosExternos=await Promise.all(tipos.map(async tipo=>{
+          const archivo=archivoDe(tipo);
+          if(!archivo)return {tipo,archivo:'—',registros:0,valor:'—',interc:'—',comision:'—',estado:'Sin archivo asociado',detalle:[]};
+          const base={tipo,archivo:archivo.id_archivo,registros:0,valor:'—',interc:'—',comision:'—',estado:'',detalle:[]};
+          try {
+            const campos=camposPorTipo[tipo]||[];
+            const suma=new Map();let paginas=1,leidos=0,parcial=false;
+            for(let pagina=1;pagina<=paginas;pagina++){
+              if(pagina>100){parcial=true;break;}
+              const respuesta=await apiConcilia(`/api/v1/archivos/${encodeURIComponent(archivo.id_archivo)}/contenido?page=${pagina}&pageSize=100`);
+              if(!vigente())return base;
+              const contenido=respuesta.contenido||{};
+              const items=Array.isArray(contenido.items)?contenido.items:[];
+              paginas=Math.max(1,Number(contenido.totalPages)||1);
+              leidos+=items.length;
+              for(const item of items){
+                for(const campo of campos){
+                  const valor=item[campo];
+                  if(valor===null||valor===undefined||valor==='')continue;
+                  const n=Number(valor);
+                  if(!Number.isFinite(n))continue;
+                  suma.set(campo,(suma.get(campo)||0)+n);
+                }
+              }
+            }
+            const obtener=c=>suma.has(c)?moneda(suma.get(c)):'—';
+            base.registros=leidos;
+            base.valor=obtener(tipo==='VISA_SS_INTERNATIONAL'?'importe_neto':tipo==='PMD'?'debito_valor':'vl_total');
+            if(tipo==='CARTA_COMPENSACION')base.valor=obtener('valor_total');
+            if(tipo==='DEPO')base.valor=obtener('valor_total');
+            if(tipo==='VSS')base.valor=obtener('importe_neto');
+            base.interc=obtener('vl_interc');
+            if(tipo==='DEPO')base.interc=obtener('valor_intercambio');
+            base.comision=obtener('comision_op_exitosas');
+            base.detalle=[...suma].map(([campo,valor])=>({campo:campo.toUpperCase(),valor:moneda(valor)}));
+            base.estado=parcial?'Lectura parcial':
+              (leidos?'OK':'Sin registros');
+          }catch(error){base.estado='Error consultando origen: '+error.message;}
+          return base;
+        }));
+        if(!vigente())return;
+        zonaExt.replaceChildren();
+        tabla(zonaExt,[
+          {key:'tipo',label:'Insumo externo'},
+          {key:'archivo',label:'Archivo ID'},
+          {key:'registros',label:'Registros',numero:true},
+          {key:'valor',label:'Importe origen',numero:true},
+          {key:'interc',label:'VL interc',numero:true},
+          {key:'comision',label:'Comisión',numero:true}
+        ],datosExternos);
+        cuerpo.appendChild(elem('h3','C. Resultado de conciliación'));
+        const filasResultado = [
+          ...host.map(tipo => ({concepto:'Neto '+tipo+' observado (sin homologar)',valor:filasHost.find(x=>x.tipo===tipo)?.neto ?? '—'})),
+          ...datosExternos.map(x => ({concepto:x.tipo+' · importe global de origen (sin atribuir)',valor:x.valor})),
+          {concepto:'Valor externo homologado a esta cuenta',valor:'—'},
+          {concepto:'Neto Host aplicable según regla',valor:'—'},
+          {concepto:'Rechazos homologados',valor:'—'},
+          {concepto:'Diferencia conciliada',valor:'—'},
+          {concepto:'Estado',valor:cuentaV721?(etiquetasV721[cuentaV721.estado]):(registro.estado==='SIN_MOVIMIENTOS'?'Sin movimientos':'Pendiente homologación')}
+        ];
+        tabla(cuerpo,[{key:'concepto',label:'Concepto'},{key:'valor',label:'Valor'}],filasResultado);
+        cuerpo.appendChild(elem('p','Sin regla aprobada no se calcula diferencia ni se certifica conciliación.','friendlyNote'));
+        cuerpo.appendChild(elem('h3','Evidencias de origen (consulta bajo demanda)'));
+        const botones=elem('div',undefined,'actionbar'), zona=elem('div');zona.hidden=true;
+        [...host,...tipos].forEach(tipo=>{const a=archivoDe(tipo);if(!a)return;
+          const b=elem('button',`Ver ${tipo}`,'btn');b.type='button';
+          b.addEventListener('click',()=>{
+            zona.hidden=false;zona.replaceChildren(elem('h4',`${tipo} · Archivo ${a.id_archivo}`));
+            const cerrar=elem('button','Cerrar evidencia','btn');cerrar.type='button';cerrar.addEventListener('click',()=>{zona.hidden=true;zona.replaceChildren();});zona.appendChild(cerrar);
+            const destinoEvidencia=elem('div');zona.appendChild(destinoEvidencia);
+            if(tipo==='CARTA_COMPENSACION'&&Number(jornada.id_jornada)===3976)evidenciaCarta(destinoEvidencia,vigente);
+            else evidenciaArchivo(tipo,a.id_archivo,cuenta,1,destinoEvidencia,vigente);
+          });botones.appendChild(b);
+        });
+        if(!botones.children.length)cuerpo.appendChild(elem('p','Sin archivos para consultar.','muted'));
+        else cuerpo.append(botones,zona);
+      }catch(e){if(vigente())cuerpo.replaceChildren(elem('p','No fue posible cargar el detalle: '+e.message,'muted'));}
+    })();
+  };
+  document.getElementById('volverDetalleCuentaV6')?.addEventListener('click',()=>{tokenActual++;});
+})();
+</script>
 </body>
 </html>
+

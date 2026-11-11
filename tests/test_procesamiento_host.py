@@ -14,6 +14,8 @@ from fabricas_archivos import (
 
 from app.repositories.database import connection as real_connection
 from app.services import procesamiento_host
+from app.services import persistencia_detalle
+from app.services import procesamiento_host_completo
 
 
 @pytest.fixture
@@ -32,8 +34,21 @@ def entorno_host(monkeypatch, tmp_path):
                 with conn.transaction():
                     yield conn
 
+            # Todas las etapas comparten la transaccion del fixture.
+            # Asi las asociaciones no confirmadas son visibles durante
+            # las pruebas sin debilitar los controles de jornada.
             monkeypatch.setattr(
                 procesamiento_host,
+                "connection",
+                conexion_prueba,
+            )
+            monkeypatch.setattr(
+                persistencia_detalle,
+                "connection",
+                conexion_prueba,
+            )
+            monkeypatch.setattr(
+                procesamiento_host_completo,
                 "connection",
                 conexion_prueba,
             )

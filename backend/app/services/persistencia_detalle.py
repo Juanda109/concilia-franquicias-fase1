@@ -75,11 +75,6 @@ CAMPOS_PMD = (
 )
 
 
-CAMPOS_MEP = ('centro_de_costo', 'cuenta', 'divisa', 'contrato', 'referencia_de_cruce', 'importe', 'descripcion', 'fecha', 'tipo_de_documento', 'numero_de_documento', 'digito_de_verificacion', 'tipo_de_perdida', 'clase_riesgo', 'tipo_de_movimiento', 'producto', 'proceso', 'linea_operativa', 'valor_base')
-MAPEO_MEP = {'centro_de_costo': 'CENTRO DE COSTO', 'cuenta': 'CUENTA', 'divisa': 'DIVISA', 'contrato': 'CONTRATO', 'referencia_de_cruce': 'REFERENCIA DE CRUCE', 'importe': 'IMPORTE', 'descripcion': 'DESCRIPCION', 'fecha': 'FECHA', 'tipo_de_documento': 'TIPO DE DOCUMENTO', 'numero_de_documento': 'NUMERO DE DOCUMENTO', 'digito_de_verificacion': 'DIGITO DE VERIFICACION', 'tipo_de_perdida': 'TIPO DE PERDIDA', 'clase_riesgo': 'CLASE RIESGO', 'tipo_de_movimiento': 'TIPO DE MOVIMIENTO', 'producto': 'PRODUCTO', 'proceso': 'PROCESO', 'linea_operativa': 'LINEA OPERATIVA', 'valor_base': 'VALOR BASE'}
-NUMERICOS_MEP = frozenset(('importe', 'valor_base'))
-
-
 CAMPOS_VSS = ('reporte', 'pagina', 'moneda_liquidacion', 'moneda_compensacion', 'fecha_reporte', 'concepto', 'valores', 'signos', 'texto_original', 'es_control')
 MAPEO_VSS = {'reporte': 'REPORTE', 'pagina': 'PAGINA', 'moneda_liquidacion': 'MONEDA_LIQUIDACION', 'moneda_compensacion': 'MONEDA_COMPENSACION', 'fecha_reporte': 'FECHA_REPORTE', 'concepto': 'CONCEPTO', 'valores': 'VALORES', 'signos': 'SIGNOS', 'texto_original': 'TEXTO_ORIGINAL', 'es_control': 'ES_CONTROL'}
 
@@ -127,7 +122,7 @@ def persistir_detalle(id_archivo):
             if fila is None:
                 raise DetalleError('Archivo no asociado a jornada')
             tipo,ruta,nombre,checksum,fecha,corr,estado,insumo,estado_i,fecha_j=fila
-            if tipo not in ('CAET','CANT','DEPO','CARTA_COMPENSACION','PMD','MEP','VSS','VISA_SS_INTERNATIONAL',*HOST):
+            if tipo not in ('CAET','CANT','DEPO','CARTA_COMPENSACION','PMD','VSS','VISA_SS_INTERNATIONAL',*HOST):
                 raise DetalleError('Tipo no habilitado para detalle')
             if fecha != fecha_j or estado != estado_i or estado not in ('RECIBIDO','PROCESADO'):
                 raise DetalleError('Estados o fechas incompatibles')
@@ -139,7 +134,6 @@ def persistir_detalle(id_archivo):
                 'DEPO': 'con_depo_detalle',
                 'CARTA_COMPENSACION': 'con_carta_compensacion_detalle',
                 'PMD': 'con_pmd_detalle',
-                'MEP': 'con_mep_detalle',
                 'VSS': 'con_vss_detalle',
                 'VISA_SS_INTERNATIONAL': 'con_visa_ss_international_detalle',
             }
@@ -293,7 +287,6 @@ def persistir_detalle(id_archivo):
                         registro['TIPO_MOVIMIENTO'], registro['FECHA_VALOR'],
                         registro['FECHA_PROCESAMIENTO']))
             elif tipo == 'VSS':
-                from psycopg.types.json import Jsonb
 
                 columnas = [
                     'id_archivo',
@@ -334,49 +327,6 @@ def persistir_detalle(id_archivo):
 
                         elif campo == 'signos':
                             valor = Jsonb(list(valor))
-
-                        valores.append(valor)
-
-                    cur.execute(stmt, valores)
-
-            elif tipo == 'MEP':
-                from datetime import date
-
-                columnas = [
-                    'id_archivo', 'fecha_contable',
-                    'linea_origen', 'correlation_id',
-                    *CAMPOS_MEP,
-                ]
-
-                stmt = sql.SQL(
-                    'INSERT INTO {} ({}) VALUES ({})'
-                ).format(
-                    sql.Identifier(tabla),
-                    sql.SQL(',').join(map(sql.Identifier, columnas)),
-                    sql.SQL(',').join(
-                        sql.Placeholder() * len(columnas)
-                    ),
-                )
-
-                for registro in registros:
-                    valores = [
-                        id_archivo,
-                        fecha,
-                        registro['numero_linea'],
-                        corr,
-                    ]
-
-                    for campo in CAMPOS_MEP:
-                        valor = registro.get(MAPEO_MEP[campo])
-
-                        if valor == '':
-                            valor = None
-
-                        if campo == 'fecha' and valor is not None:
-                            valor = date.fromisoformat(str(valor))
-
-                        if campo in NUMERICOS_MEP and valor is not None:
-                            valor = Decimal(str(valor))
 
                         valores.append(valor)
 
@@ -537,7 +487,7 @@ def persistir_detalle(id_archivo):
                             corr,
                         )
                     )
-            if tipo in ('CAET','CANT','DEPO','CARTA_COMPENSACION','PMD','MEP','VSS','VISA_SS_INTERNATIONAL') and estado=='RECIBIDO':
+            if tipo in ('CAET','CANT','DEPO','CARTA_COMPENSACION','PMD','VSS','VISA_SS_INTERNATIONAL') and estado=='RECIBIDO':
                 cur.execute("UPDATE con_archivo_carga SET estado='PROCESADO',total_registros=%s WHERE id_archivo=%s AND estado='RECIBIDO'",(len(registros),id_archivo))
                 if cur.rowcount!=1: raise DetalleError('No se actualizo archivo')
                 cur.execute("UPDATE con_insumo_esperado SET estado='PROCESADO',fec_actualizacion=CURRENT_TIMESTAMP WHERE id_insumo_esperado=%s AND estado='RECIBIDO'",(insumo,))

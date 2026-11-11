@@ -74,8 +74,8 @@ def test_crear_consultar_y_rechazar_duplicado(cliente_transaccional):
 @pytest.mark.parametrize(
     "version,esperados,fecha",
     [
-        (1, 10, "2026-07-04"),
-        (2, 11, "2026-07-05"),
+        (1, 9, "2026-07-04"),
+        (2, 10, "2026-07-05"),
     ],
 )
 def test_inicializacion_catalogo_versionado(

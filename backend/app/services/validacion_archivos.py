@@ -13,7 +13,6 @@ PMD_NOMBRE = re.compile(r"^PMDGeneralEntidad(?:\d{6}|\d{8})(?:\s*\(\d+\))?\.(?:x
 EXTENSIONES_CONFIRMADAS = {
     "VISA_SS_INTERNATIONAL": {".pdf"},
     "PMD": {".xls", ".xlsx"},
-    "MEP": {".xlsx"},
     "CARTA_COMPENSACION": {".xlsx"},
 }
 

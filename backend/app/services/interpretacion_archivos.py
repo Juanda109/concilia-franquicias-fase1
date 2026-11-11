@@ -34,7 +34,7 @@ def archivo_con_nombre_original(fisico, nombre_original):
 def interpretar_archivo(tipo, fisico, nombre_original):
     """Interpreta sin modificar el archivo almacenado."""
 
-    if tipo in ("PMD", "MEP", "VISA_SS_INTERNATIONAL"):
+    if tipo in ("PMD", "VISA_SS_INTERNATIONAL"):
         with archivo_con_nombre_original(
             fisico, nombre_original
         ) as temporal:

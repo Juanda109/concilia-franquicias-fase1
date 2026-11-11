@@ -1,4 +1,5 @@
 """Incremento 15: diagnostico seguro, sin cruces contables ni escrituras."""
+from app.services.fase2.filtro_cuentas_conciliacion import seleccionar_movimientos_host, validar_cuenta_correspondencia
 import argparse
 import csv
 import json
@@ -28,6 +29,8 @@ def evaluar(host, canje, matriz):
         raise ValueError("Identificadores Host duplicados")
     if len({(r["id_archivo"], r["id_canje_detalle"]) for r in canje}) != len(canje):
         raise ValueError("Identificadores canje duplicados")
+    # CONCILIA_FILTRO_29_CUENTAS_V2
+    host = seleccionar_movimientos_host(host)
     conteo = Counter(clasificar_host(r) for r in host)
     return {"estado": "DIAGNOSTICO_SIN_CONCILIACION_CERTIFICADA", "filas_host": len(host),
             "filas_canje": len(canje), "host_estados": dict(conteo), "cruces_aprobados": 0,
@@ -66,6 +69,8 @@ def ejecutar(salida, matriz_ruta):
         raise RuntimeError("Archivos, estados o jornada no coinciden con caso autorizado")
     if any(str(r["fecha_contable"]) != "2026-10-21" for r in host + canje):
         raise RuntimeError("Fecha contable inesperada")
+    # Seleccion contable; los datos originales no se modifican.
+    host = seleccionar_movimientos_host(host)
     informe = evaluar(host, canje, matriz)
     informe.update({"jornada": 1377, "fecha": "2026-10-21", "ids_host": HOST_IDS, "ids_canje": CANJE_IDS})
     salida.mkdir(parents=True, exist_ok=False)

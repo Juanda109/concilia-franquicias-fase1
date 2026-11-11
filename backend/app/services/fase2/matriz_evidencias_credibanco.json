@@ -1,0 +1,234 @@
+{
+  "version": "F2-17-001",
+  "fase": 2,
+  "tipo": "MATRIZ_EVIDENCIAS_NO_OPERATIVA",
+  "base": "3d5a362",
+  "jornada_referencia": 1377,
+  "reglas": [
+    {
+      "id_regla": "F2-016-01",
+      "tipo_insumo": "CAET",
+      "tx": "36",
+      "tipo": "CREDITO",
+      "cuenta_franquicia": "017-REPRESENTACION  VENTA NAL (CENTRO 730)",
+      "cuenta_host_candidata": null,
+      "fuente_host_candidata": [],
+      "centro_host": null,
+      "campo_host": null,
+      "campo_franquicia": null,
+      "factor_signo": null,
+      "tolerancia": null,
+      "estado_regla": "PENDIENTE_VALIDACION",
+      "habilitada": false,
+      "evidencias": [],
+      "pendientes": [
+        "Homologación de concepto y cuenta completa",
+        "Centro y moneda",
+        "Fecha y referencia",
+        "Signo y naturaleza",
+        "Campo monetario y escala",
+        "Tolerancia aprobada",
+        "Muestra Host no sintética"
+      ]
+    },
+    {
+      "id_regla": "F2-016-02",
+      "tipo_insumo": "CANT",
+      "tx": "04",
+      "tipo": "CREDITO",
+      "cuenta_franquicia": "017-CANJE RECIBIDO TARJETA CREDITO PAGOS",
+      "cuenta_host_candidata": "299095302",
+      "fuente_host_candidata": [
+        "HA22",
+        "HA32"
+      ],
+      "centro_host": null,
+      "campo_host": null,
+      "campo_franquicia": null,
+      "factor_signo": null,
+      "tolerancia": null,
+      "estado_regla": "PENDIENTE_VALIDACION",
+      "habilitada": false,
+      "evidencias": [
+        {
+          "documento": "Especificacion_Conciliacion_Franquicias_F1_F2_Cuentas_Completas.docx",
+          "identificador": "TR-F2-001",
+          "detalle": "Reembolsos crédito/débito; total menos intercambio; ajuste TI; referencia a 299095302"
+        },
+        {
+          "documento": "Especificacion_Conciliacion_Franquicias_F1_F2_Cuentas_Completas.docx",
+          "identificador": "MC-F2-002 / CD-F2-002",
+          "detalle": "Compensación tarjeta crédito; HA22 y HA32; saldos, rechazos y partidas 221"
+        }
+      ],
+      "pendientes": [
+        "Homologación de concepto y cuenta completa",
+        "Centro y moneda",
+        "Fecha y referencia",
+        "Signo y naturaleza",
+        "Campo monetario y escala",
+        "Tolerancia aprobada",
+        "Muestra Host no sintética"
+      ]
+    },
+    {
+      "id_regla": "F2-016-03",
+      "tipo_insumo": "CANT",
+      "tx": "22",
+      "tipo": "DEBITO",
+      "cuenta_franquicia": "017-CANJE RECIBIDO TARJETA DEBITO REVERSIONES",
+      "cuenta_host_candidata": null,
+      "fuente_host_candidata": [],
+      "centro_host": null,
+      "campo_host": null,
+      "campo_franquicia": null,
+      "factor_signo": null,
+      "tolerancia": null,
+      "estado_regla": "PENDIENTE_VALIDACION",
+      "habilitada": false,
+      "evidencias": [],
+      "pendientes": [
+        "Homologación de concepto y cuenta completa",
+        "Centro y moneda",
+        "Fecha y referencia",
+        "Signo y naturaleza",
+        "Campo monetario y escala",
+        "Tolerancia aprobada",
+        "Muestra Host no sintética"
+      ]
+    },
+    {
+      "id_regla": "F2-016-04",
+      "tipo_insumo": "CANT",
+      "tx": "42",
+      "tipo": "DEBITO",
+      "cuenta_franquicia": "017-COMISIONES NO EXITOSAS TD Y TC IMPUTABLES BANCO",
+      "cuenta_host_candidata": null,
+      "fuente_host_candidata": [],
+      "centro_host": null,
+      "campo_host": null,
+      "campo_franquicia": null,
+      "factor_signo": null,
+      "tolerancia": null,
+      "estado_regla": "PENDIENTE_VALIDACION",
+      "habilitada": false,
+      "evidencias": [],
+      "pendientes": [
+        "Homologación de concepto y cuenta completa",
+        "Centro y moneda",
+        "Fecha y referencia",
+        "Signo y naturaleza",
+        "Campo monetario y escala",
+        "Tolerancia aprobada",
+        "Muestra Host no sintética"
+      ]
+    },
+    {
+      "id_regla": "F2-016-05",
+      "tipo_insumo": "CANT",
+      "tx": "08",
+      "tipo": "CREDITO",
+      "cuenta_franquicia": "017-ORIGINAL REEMBOLSOS CREDITO",
+      "cuenta_host_candidata": "299095302",
+      "fuente_host_candidata": [
+        "HA22",
+        "HA32"
+      ],
+      "centro_host": null,
+      "campo_host": null,
+      "campo_franquicia": null,
+      "factor_signo": null,
+      "tolerancia": null,
+      "estado_regla": "PENDIENTE_VALIDACION",
+      "habilitada": false,
+      "evidencias": [
+        {
+          "documento": "Especificacion_Conciliacion_Franquicias_F1_F2_Cuentas_Completas.docx",
+          "identificador": "TR-F2-001",
+          "detalle": "Reembolsos crédito/débito; total menos intercambio; ajuste TI; referencia a 299095302"
+        },
+        {
+          "documento": "Especificacion_Conciliacion_Franquicias_F1_F2_Cuentas_Completas.docx",
+          "identificador": "MC-F2-002 / CD-F2-002",
+          "detalle": "Compensación tarjeta crédito; HA22 y HA32; saldos, rechazos y partidas 221"
+        }
+      ],
+      "pendientes": [
+        "Homologación de concepto y cuenta completa",
+        "Centro y moneda",
+        "Fecha y referencia",
+        "Signo y naturaleza",
+        "Campo monetario y escala",
+        "Tolerancia aprobada",
+        "Muestra Host no sintética"
+      ]
+    },
+    {
+      "id_regla": "F2-016-06",
+      "tipo_insumo": "CANT",
+      "tx": "08",
+      "tipo": "DEBITO",
+      "cuenta_franquicia": "017-ORIGINAL REEMBOLSOS DEBITO",
+      "cuenta_host_candidata": "299095302",
+      "fuente_host_candidata": [
+        "HA22",
+        "HA32"
+      ],
+      "centro_host": null,
+      "campo_host": null,
+      "campo_franquicia": null,
+      "factor_signo": null,
+      "tolerancia": null,
+      "estado_regla": "PENDIENTE_VALIDACION",
+      "habilitada": false,
+      "evidencias": [
+        {
+          "documento": "Especificacion_Conciliacion_Franquicias_F1_F2_Cuentas_Completas.docx",
+          "identificador": "TR-F2-001",
+          "detalle": "Reembolsos crédito/débito; total menos intercambio; ajuste TI; referencia a 299095302"
+        },
+        {
+          "documento": "Especificacion_Conciliacion_Franquicias_F1_F2_Cuentas_Completas.docx",
+          "identificador": "MC-F2-002 / CD-F2-002",
+          "detalle": "Compensación tarjeta crédito; HA22 y HA32; saldos, rechazos y partidas 221"
+        }
+      ],
+      "pendientes": [
+        "Homologación de concepto y cuenta completa",
+        "Centro y moneda",
+        "Fecha y referencia",
+        "Signo y naturaleza",
+        "Campo monetario y escala",
+        "Tolerancia aprobada",
+        "Muestra Host no sintética"
+      ]
+    },
+    {
+      "id_regla": "F2-016-07",
+      "tipo_insumo": "CANT",
+      "tx": "36",
+      "tipo": "CREDITO",
+      "cuenta_franquicia": "017-REPRESENTACION  VENTA NAL (CENTRO 730)",
+      "cuenta_host_candidata": null,
+      "fuente_host_candidata": [],
+      "centro_host": null,
+      "campo_host": null,
+      "campo_franquicia": null,
+      "factor_signo": null,
+      "tolerancia": null,
+      "estado_regla": "PENDIENTE_VALIDACION",
+      "habilitada": false,
+      "evidencias": [],
+      "pendientes": [
+        "Homologación de concepto y cuenta completa",
+        "Centro y moneda",
+        "Fecha y referencia",
+        "Signo y naturaleza",
+        "Campo monetario y escala",
+        "Tolerancia aprobada",
+        "Muestra Host no sintética"
+      ]
+    }
+  ],
+  "advertencia": "Las cuentas candidatas son pistas documentales, no correspondencias validadas. No importar a matriz_correspondencias.json."
+}
