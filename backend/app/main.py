@@ -145,5 +145,7 @@ from app.api.reporte_credibanco_productivo import router as reporte_credibanco_p
 app.include_router(reporte_credibanco_productivo_router)
 
 # F2 5683: endpoint opt-in, aislado del catalogo productivo
-from app.api.credibanco_f2_prueba_5683 import router as f2_prueba_5683_router
-app.include_router(f2_prueba_5683_router)
+import os
+if os.getenv("CONCILIA_F2_DIAGNOSTICO_TEST") == "1":
+    from app.api.credibanco_f2_prueba_5683 import router as f2_prueba_5683_router
+    app.include_router(f2_prueba_5683_router)

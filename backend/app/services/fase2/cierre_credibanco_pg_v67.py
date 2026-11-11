@@ -1,4 +1,4 @@
-﻿"""Adaptador PostgreSQL para cierre diagnostico Credibanco F2.
+"""Adaptador PostgreSQL para cierre diagnostico Credibanco F2.
 
 Consulta agregados de F1 en transaccion consistente de solo lectura. No accede
 al sistema de archivos ni a plantillas XLSX durante la ejecucion.
@@ -79,6 +79,15 @@ def ejecutar(id_jornada: int, conexion_factory=None, *, reglas_diagnostico=None)
                                THEN BTRIM(d.valor_total)::numeric ELSE NULL END) AS valor_total_crudo,
                            SUM(CASE WHEN BTRIM(d.valor_intercambio) ~ '^[0-9]+(?:\.[0-9]+)?$' THEN BTRIM(d.valor_intercambio)::numeric ELSE NULL END) AS valor_intercambio_crudo,
                            COUNT(*) FILTER (WHERE d.valor_intercambio IS NULL OR BTRIM(d.valor_intercambio) !~ '^[0-9]+(?:\.[0-9]+)?$')::integer AS nulos_valor_intercambio,
+                           SUM(CASE
+                               WHEN BTRIM(d.valor_intercambio_2) ~ '^[0-9]+(?:\.[0-9]+)?$'
+                               THEN BTRIM(d.valor_intercambio_2)::numeric
+                               ELSE NULL
+                           END) AS valor_intercambio_2_crudo,
+                           COUNT(*) FILTER (
+                               WHERE d.valor_intercambio_2 IS NULL
+                                  OR BTRIM(d.valor_intercambio_2) !~ '^[0-9]+(?:\.[0-9]+)?$'
+                           )::integer AS nulos_valor_intercambio_2,
                            SUM(d.tasa_de_intercambio) AS tasa_intercambio_cruda,
                            COUNT(*) FILTER (WHERE d.tasa_de_intercambio IS NULL)::integer AS nulos_tasa
                     FROM public.con_depo_detalle d
