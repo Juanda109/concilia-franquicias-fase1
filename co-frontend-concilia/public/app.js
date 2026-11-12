@@ -429,14 +429,22 @@ async function eliminarArchivo(idArchivo) {
 }
 
 // ---- Vista dedicada de detalle de un insumo ----
+// Columnas que nunca se muestran en el visor de evidencia (PAN/tarjeta y
+// similares): el backend ya excluye ID_* y FECHA_CREACION, pero CAET/CANT
+// (TARJETA) y DEPO (NO_TARJETA) sí persisten estas columnas.
+const COLUMNAS_SENSIBLES_RE = /(^|_)(PAN|TARJETA|NUMERO_TARJETA|NRO_TARJETA|NO_TARJETA|CVV|CVC|DOCUMENTO_IDENTIDAD|NUMERO_DOCUMENTO|NUM_DOCUMENTO|TRACK|RAW)(_|$)/i;
 let detalleIdArchivo = null;
 let detallePagina = 0;
+let detalleOrigenPanel = 'insumos';
 const DETALLE_PAGE_SIZE = 30;
 
-function abrirDetalle(idArchivo) {
+function abrirDetalle(idArchivo, origen = 'insumos') {
   detalleIdArchivo = idArchivo;
   detallePagina = 0;
-  insumosScrollY = window.scrollY;
+  detalleOrigenPanel = origen;
+  if (origen === 'insumos') insumosScrollY = window.scrollY;
+  const link = el('btnVolverInsumos');
+  if (link) link.textContent = origen === 'conciliacion' ? '← Volver a Conciliación' : '← Volver a Insumos';
   document.querySelectorAll('.panel').forEach((p) => p.classList.remove('active'));
   el('detalleInsumo').classList.add('active');
   window.scrollTo(0, 0);
@@ -445,9 +453,12 @@ function abrirDetalle(idArchivo) {
 
 function volverAInsumos() {
   detalleIdArchivo = null;
+  const origen = detalleOrigenPanel;
+  detalleOrigenPanel = 'insumos';
   document.querySelectorAll('.panel').forEach((p) => p.classList.remove('active'));
-  el('insumos').classList.add('active');
-  requestAnimationFrame(() => window.scrollTo(0, insumosScrollY));
+  el(origen).classList.add('active');
+  if (origen === 'insumos') requestAnimationFrame(() => window.scrollTo(0, insumosScrollY));
+  else window.scrollTo(0, 0);
 }
 el('btnVolverInsumos').addEventListener('click', volverAInsumos);
 
@@ -501,11 +512,12 @@ function renderDetallePagina(d) {
   const start = totalItems ? page * pageSize + 1 : 0;
   const end = Math.min(page * pageSize + d.items.length, totalItems);
 
+  const headersVisibles = (d.headers || []).filter((c) => !COLUMNAS_SENSIBLES_RE.test(c.key));
   const contenidoHtml = !d.items.length
     ? '<div class="emptyDetail">El archivo no tiene contenido disponible para visualizar en esta página.</div>'
     : (() => {
-        const thead = `<tr>${d.headers.map((c) => `<th>${c.label}</th>`).join('')}</tr>`;
-        const tbody = d.items.map((row) => `<tr>${d.headers.map((c) => `<td>${row[c.key] ?? ''}</td>`).join('')}</tr>`).join('');
+        const thead = `<tr>${headersVisibles.map((c) => `<th>${c.label}</th>`).join('')}</tr>`;
+        const tbody = d.items.map((row) => `<tr>${headersVisibles.map((c) => `<td>${row[c.key] ?? ''}</td>`).join('')}</tr>`).join('');
         return `
           <div class="detailTableWrap" aria-label="Contenido paginado del archivo">
             <table class="detailDataTable"><thead>${thead}</thead><tbody>${tbody}</tbody></table>
@@ -710,9 +722,12 @@ async function cargarCierreCredibanco() {
     return;
   }
   cont.innerHTML = '<div class="emptyDetail">Cargando diagnóstico…</div>';
-  let r;
+  let r, rJornada;
   try {
-    r = await apiFetch(`${API}/jornadas/${idJornadaActiva}/cierre-credibanco`);
+    [r, rJornada] = await Promise.all([
+      apiFetch(`${API}/jornadas/${idJornadaActiva}/cierre-credibanco`),
+      apiFetch(`${API}/jornadas/${idJornadaActiva}`),
+    ]);
   } catch (e) {
     cont.innerHTML = `<div class="emptyDetail">No se pudo cargar el diagnóstico: ${esc(e.message || e)}</div>`;
     return;
@@ -722,6 +737,15 @@ async function cargarCierreCredibanco() {
     return;
   }
   const d = await r.json();
+  // Mapeo tipoInsumo -> idArchivo, solo para habilitar el enlace "Ver
+  // evidencia" por fila; si esta llamada falla no bloquea el diagnóstico.
+  const archivoPorInsumo = new Map();
+  if (rJornada.ok) {
+    const jornadaDetalle = await rJornada.json();
+    for (const i of jornadaDetalle.insumos || []) {
+      if (i.idArchivo != null) archivoPorInsumo.set(i.tipoInsumo, i.idArchivo);
+    }
+  }
   const cc = d.control_canje_carta || {};
   const l3 = cc.L3_comisiones_canje || {};
   const l5 = cc.L5_carta_componente_G || {};
@@ -729,7 +753,13 @@ async function cargarCierreCredibanco() {
   const neta = d.carta_posicion_neta || {};
 
   const insumosRows = (d.insumos || [])
-    .map((i) => `<tr><td>${esc(i.insumo)}</td><td>${i.cantidad_archivos}</td><td><span class="tag ${badgeFor(i.estado)}">${esc(i.estado)}</span></td></tr>`)
+    .map((i) => {
+      const idArchivo = archivoPorInsumo.get(i.insumo);
+      const accion = idArchivo != null
+        ? `<button type="button" class="btn" onclick="abrirDetalle(${Number(idArchivo)},'conciliacion')">Ver evidencia</button>`
+        : '<span class="muted">—</span>';
+      return `<tr><td>${esc(i.insumo)}</td><td>${i.cantidad_archivos}</td><td><span class="tag ${badgeFor(i.estado)}">${esc(i.estado)}</span></td><td>${accion}</td></tr>`;
+    })
     .join('');
 
   const pendRows = (d.pendientes || [])
@@ -746,8 +776,8 @@ async function cargarCierreCredibanco() {
     <div class="explain"><b>Diagnóstico, no certificación.</b> Estado general: <span class="tag ${badgeFor(d.estado)}">${esc(d.estado || '—')}</span>. Este resultado nunca certifica automáticamente una conciliación contable (<code>certificado:false</code> siempre); requiere revisión y aprobación de negocio.</div>
     <div class="card section">
       <div class="title">Insumos de la jornada</div>
-      <div class="tableScroll"><table><thead><tr><th>Insumo</th><th>Archivos</th><th>Estado</th></tr></thead>
-      <tbody>${insumosRows || '<tr><td colspan="3" class="muted">Sin insumos procesados.</td></tr>'}</tbody></table></div>
+      <div class="tableScroll"><table><thead><tr><th>Insumo</th><th>Archivos</th><th>Estado</th><th>Acción</th></tr></thead>
+      <tbody>${insumosRows || '<tr><td colspan="4" class="muted">Sin insumos procesados.</td></tr>'}</tbody></table></div>
     </div>
     <div class="card section">
       <div class="title">Pendientes (${(d.pendientes || []).length})</div>
