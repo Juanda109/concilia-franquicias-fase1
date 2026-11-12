@@ -720,9 +720,17 @@ def evaluar_reglas_cruce(reglas: Sequence[Mapping[str, Any]], *,
             tx=_texto(r.get("tipo_movimiento"))
             if not tx:
                 salidas.append({**base,"estado":"FILTRO_MOVIMIENTO_NO_APROBADO"});continue
+            # DEPO no persiste un "concepto" de negocio como columna propia
+            # (CON_DEPOSITO_RESULTADO no tiene esa columna; el adaptador solo
+            # reusa "cuenta", que para este insumo llega vacia) - el concepto
+            # se clasifica con la misma regla AU que usa agrupar_depo(), a
+            # partir de tipo_movimiento/cod_oficina/indicador_cash_back/
+            # amex_nacional, nunca de un campo que en la practica esta en blanco.
+            concepto_regla=_texto(r.get("concepto"))
             ff=[x for x in depo if x.get("id_archivo")==ids_validos[insumo] and
-                _texto(x.get("concepto"))==_texto(r.get("concepto")) and
-                _texto(x.get("tipo_movimiento"))==tx]
+                _texto(x.get("tipo_movimiento"))==tx and
+                clasificar_depo_au(_texto(x.get("tipo_movimiento")), _texto(x.get("cod_oficina")),
+                                    _texto(x.get("indicador_cash_back")), _texto(x.get("amex_nacional")))==concepto_regla]
             nulidad="valores_invalidos" if campo=="valor_total_crudo" else "nulos_tasa"
         else:
             motivo=_texto(r.get("motivo_codigo"))

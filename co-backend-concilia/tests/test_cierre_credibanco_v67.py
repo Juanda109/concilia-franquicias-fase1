@@ -305,6 +305,52 @@ def test_regla_aprobada_formalmente_marca_aprobada_true():
     assert r['cruces_host_credibanco_diagnosticos'][0]['aprobada'] is True
 
 
+def test_regla_depo_clasifica_concepto_con_regla_au_no_con_campo_vacio():
+    # CON_DEPOSITO_RESULTADO no persiste un "concepto" de negocio - la
+    # columna que el repositorio reusa como tal ("cuenta") llega vacia en la
+    # practica. El cruce debe clasificar con la misma regla AU que usa
+    # agrupar_depo(), no comparar contra un campo que nunca trae el texto
+    # esperado (si comparara contra x['concepto'] vacio, esto nunca matchea).
+    depo=[dict(id_archivo=3, concepto='', tipo_movimiento='06', cod_oficina='0080',
+                indicador_cash_back='', amex_nacional='', cantidad=2,
+                valores_invalidos=0, nulos_tasa=0,
+                valor_total_crudo=Decimal('500'), valor_intercambio_crudo=Decimal('500'))]
+    host=[dict(id_archivo=5, tx_host='HA22', cuenta='196095001838', centro='0017',
+               concepto='REAL', fecha_contable='2026-10-23', cantidad=1,
+               incompletos=0, debe=Decimal('500'), haber=Decimal('0'))]
+    regla = regla_aprobada(id_regla='CB-838-01', insumo='DEPO',
+        concepto='017-VR. DEPOSITOS ELECTRONICOS NAL CONSIGNADOS',
+        tipo_movimiento='06', campo_importe='valor_total_crudo',
+        cuenta_host='196095001838', escala_origen='1')
+    r=construir_cierre(jornada={'id_jornada':2590,'fecha_contable':'2026-10-23'},
+          archivos=metadata(), canje=[], depo=depo, carta=[], host=host,
+          reglas_cruce=[regla])
+    x=r['cruces_host_credibanco_diagnosticos'][0]
+    assert x['estado']=='COINCIDE_DIAGNOSTICO_NO_CERTIFICADO'
+    assert x['valor_franquicia']=='500'
+    assert x['valor_host']=='500'
+
+
+def test_regla_depo_no_mezcla_concepto_nacional_con_internacional():
+    # oficina='0090' clasifica como INTERNACIONAL, no NACIONAL - la regla de
+    # NACIONAL no debe tomar estas filas aunque el tipo_movimiento coincida.
+    depo=[dict(id_archivo=3, concepto='', tipo_movimiento='06', cod_oficina='0090',
+                indicador_cash_back='', amex_nacional='', cantidad=1,
+                valores_invalidos=0, nulos_tasa=0,
+                valor_total_crudo=Decimal('999'), valor_intercambio_crudo=Decimal('999'))]
+    host=[dict(id_archivo=5, tx_host='HA22', cuenta='196095001838', centro='0017',
+               concepto='REAL', fecha_contable='2026-10-23', cantidad=1,
+               incompletos=0, debe=Decimal('999'), haber=Decimal('0'))]
+    regla = regla_aprobada(id_regla='CB-838-01', insumo='DEPO',
+        concepto='017-VR. DEPOSITOS ELECTRONICOS NAL CONSIGNADOS',
+        tipo_movimiento='06', campo_importe='valor_total_crudo',
+        cuenta_host='196095001838', escala_origen='1')
+    r=construir_cierre(jornada={'id_jornada':2590,'fecha_contable':'2026-10-23'},
+          archivos=metadata(), canje=[], depo=depo, carta=[], host=host,
+          reglas_cruce=[regla])
+    assert r['cruces_host_credibanco_diagnosticos'][0]['estado']=='SIN_MOVIMIENTOS_FRANQUICIA'
+
+
 def test_regla_sin_campos_minimos_sigue_bloqueada_aunque_no_requiera_aprobacion():
     # Sin aprobacion no significa sin validar: si moneda/escala/signo/fechas
     # no estan definidos, el motor sigue sin poder calcular nada util.
