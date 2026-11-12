@@ -27,15 +27,16 @@ spec:
       containers:
         - name: minio
           # AIStor (MinIO comercial): sustituye al minio/minio@sha256:... de
-          # antes. TODO antes de desplegar: este digest/tag es un placeholder
-          # tomado tal cual del manifiesto de referencia (quay.io/minio/
-          # aistor/minio:latest) - hay que (1) espejarlo en el mismo
-          # Artifactory que usa el resto de imagenes de este cluster (quay.io
-          # directo ya dio "unauthorized" antes en esta red, ver comentario en
-          # docker-compose.yml) y (2) fijar un tag/digest concreto, nunca
-          # :latest.
-          image: artifactory.globaldevtools.bbva.com:443/co-genai-public-cloud-docker-local/minio/aistor-minio:REEMPLAZAR_TAG
-          imagePullPolicy: IfNotPresent
+          # antes. Imagen directo de quay.io (confirmado que si funciona el
+          # pull para esta imagen, a diferencia de minio/minio community que
+          # daba "unauthorized" - ver comentario en docker-compose.yml). Si
+          # quay.io/minio/aistor es un repo privado/con licencia, puede
+          # necesitar un imagePullSecret propio (no el de Artifactory de
+          # abajo, que es para otro registry) - agregarlo a imagePullSecrets
+          # si el pull falla por auth en vez de por timeout/DNS.
+          # TODO: fijar un tag/digest concreto en vez de :latest.
+          image: quay.io/minio/aistor/minio:latest
+          imagePullPolicy: Always
           args:
             - server
             - /data

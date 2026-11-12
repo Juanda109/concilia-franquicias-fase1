@@ -94,11 +94,13 @@ Tras crear o actualizar cualquiera de los dos Secrets, igual que con
 oc rollout restart statefulset/minio
 ```
 
-**Pendiente antes de aplicar `bucket/02-deployment.yaml`:** la imagen quedó
-con un tag placeholder (`REEMPLAZAR_TAG`) — hay que espejar la imagen de
-AIStor en el mismo Artifactory que usa el resto del clúster (igual que
-`minio/minio` hoy) y fijar un tag o digest concreto, nunca `:latest`. El PVC
-también subió de 20Gi a 50Gi: confirmar que `cephfs-sc` permite expansión de
+**Pendiente antes de aplicar `bucket/02-deployment.yaml`:** la imagen usa
+`quay.io/minio/aistor/minio:latest` directo (confirmado que el pull sí
+funciona para esta imagen puntual, a diferencia de `minio/minio` community) —
+falta fijar un tag o digest concreto en vez de `:latest`. Si el pull llegara
+a fallar por autenticación (no por timeout/DNS), puede necesitar un
+`imagePullSecret` propio para quay.io en `imagePullSecrets` del StatefulSet.
+El PVC también subió de 20Gi a 50Gi: confirmar que `cephfs-sc` permite expansión de
 volumen (`allowVolumeExpansion: true`) antes de aplicar, o la expansión del
 PVC existente puede fallar/requerir recrearlo.
 
