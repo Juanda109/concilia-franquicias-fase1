@@ -91,51 +91,11 @@
       <div class="head">
         <div>
           <h1>Conciliación y Reporte Maestro</h1>
-          <p>Cruce Franquicia ↔ Host y resultado del Reporte Maestro en un solo cuadro operativo.</p>
+          <p>Diagnóstico Credibanco F2 (CAET/CANT, DEPO, Carta de Compensación vs Host HA22/HA26/HA32) de la jornada seleccionada.</p>
         </div>
       </div>
-      <div class="explain"><b>Datos de ejemplo.</b> Este módulo todavía no está conectado al backend real (no existe motor de conciliación ni tablas CON_CRUCE/CON_CONCILIACION en este proyecto). Las cifras de abajo son ilustrativas, tomadas del mockup de referencia, para validar el diseño de la pantalla.</div>
-
-      <div class="flow summaryFlow">
-        <div class="fc"><small>CUENTAS / CRUCES</small><b>29</b></div>
-        <div class="fc"><small>CONCILIADOS</small><b>23</b></div>
-        <div class="fc"><small>DIFERENCIAS</small><b>6</b></div>
-        <div class="fc"><small>INCORPORADOS MAESTRO</small><b>23</b></div>
-      </div>
-
-      <div class="card section">
-        <div class="toolbar">
-          <input id="reconQ" class="search" onkeyup="filterReconRows()" placeholder="Buscar cuenta o concepto...">
-          <select id="reconFr" class="select" onchange="filterReconRows()">
-            <option value="">Todas las franquicias</option><option>Credibanco</option><option>Redeban</option><option>VISA</option>
-          </select>
-          <select id="reconSt" class="select" onchange="filterReconRows()">
-            <option value="">Todos los estados</option><option>Conciliado</option><option>Diferencia</option>
-          </select>
-        </div>
-        <div class="filterHint">Los filtros actúan localmente sobre los datos de ejemplo ya cargados.</div>
-        <div class="tableScroll">
-          <table id="recon" class="reconTable">
-            <thead><tr><th>Franquicia</th><th>Cuenta</th><th>Concepto</th><th>Valor franquicia</th><th>HA22</th><th>HA26</th><th>HA32</th><th>Total Host</th><th>Diferencia</th><th>Estado conciliación</th><th>Acción</th></tr></thead>
-            <tbody id="reconBody">
-<tr data-filter-status="Conciliado" data-franchise="Credibanco"><td>Credibanco</td><td>259095341</td><td><b>Movimientos cuenta</b></td><td class="num">$12.450.000</td><td class="num">$12.450.000</td><td class="num">—</td><td class="num">—</td><td class="num">$12.450.000</td><td class="num">$0</td><td><span class="badge ok">Conciliado</span></td><td><button class="btn" onclick="verDetalleRecon('259095341','HA22','$12.450.000','$12.450.000')">Detalle</button></td></tr>
-<tr data-filter-status="Conciliado" data-franchise="Credibanco"><td>Credibanco</td><td>299095109</td><td><b>Mayor diario</b></td><td class="num">$318.697.901</td><td class="num">—</td><td class="num">—</td><td class="num">$318.697.901</td><td class="num">$318.697.901</td><td class="num">$0</td><td><span class="badge ok">Conciliado</span></td><td><button class="btn" onclick="verDetalleRecon('299095109','HA32','$318.697.901','$318.697.901')">Detalle</button></td></tr>
-<tr data-filter-status="Conciliado" data-franchise="VISA"><td>VISA</td><td>299095302</td><td><b>Canje recibido VISA</b></td><td class="num">$15.059.792.833</td><td class="num">$4.216.265.259</td><td class="num">—</td><td class="num">$10.843.527.574</td><td class="num">$15.059.792.833</td><td class="num">$0</td><td><span class="badge ok">Conciliado</span></td><td><button class="btn" onclick="verDetalleRecon('299095302','HA32 + HA22','$15.059.792.833','$15.059.792.833')">Detalle</button></td></tr>
-<tr data-filter-status="Conciliado" data-franchise="Credibanco"><td>Credibanco</td><td>299095508</td><td><b>Movimientos cuenta</b></td><td class="num">$745.800</td><td class="num">$745.800</td><td class="num">—</td><td class="num">—</td><td class="num">$745.800</td><td class="num">$0</td><td><span class="badge ok">Conciliado</span></td><td><button class="btn" onclick="verDetalleRecon('299095508','HA22','$745.800','$745.800')">Detalle</button></td></tr>
-<tr data-filter-status="Conciliado" data-franchise="Redeban"><td>Redeban</td><td>299095870</td><td><b>Pendiente / referencia</b></td><td class="num">$416.383.471</td><td class="num">—</td><td class="num">$416.383.471</td><td class="num">—</td><td class="num">$416.383.471</td><td class="num">$0</td><td><span class="badge ok">Conciliado</span></td><td><button class="btn" onclick="verDetalleRecon('299095870','HA26','$416.383.471','$416.383.471')">Detalle</button></td></tr>
-<tr data-filter-status="Conciliado" data-franchise="Redeban"><td>Redeban</td><td>196095001215</td><td><b>Rechazo / referencia</b></td><td class="num">$56.000</td><td class="num">—</td><td class="num">$56.000</td><td class="num">—</td><td class="num">$56.000</td><td class="num">$0</td><td><span class="badge ok">Conciliado</span></td><td><button class="btn" onclick="verDetalleRecon('196095001215','HA26','$56.000','$56.000')">Detalle</button></td></tr>
-<tr data-filter-status="Conciliado" data-franchise="Redeban"><td>Redeban</td><td>196095001828</td><td><b>Depósitos electrónicos</b></td><td class="num">$327.450.800</td><td class="num">—</td><td class="num">—</td><td class="num">$327.450.800</td><td class="num">$327.450.800</td><td class="num">$0</td><td><span class="badge ok">Conciliado</span></td><td><button class="btn" onclick="verDetalleRecon('196095001828','HA32','$327.450.800','$327.450.800')">Detalle</button></td></tr>
-<tr data-filter-status="Conciliado" data-franchise="Credibanco"><td>Credibanco</td><td>196095001838</td><td><b>Movimientos + mayor</b></td><td class="num">$70.626</td><td class="num">$35.313</td><td class="num">—</td><td class="num">$35.313</td><td class="num">$70.626</td><td class="num">$0</td><td><span class="badge ok">Conciliado</span></td><td><button class="btn" onclick="verDetalleRecon('196095001838','HA22 + HA32','$70.626','$70.626')">Detalle</button></td></tr>
-<tr data-filter-status="Conciliado" data-franchise="VISA"><td>VISA</td><td>196095001845</td><td><b>Mayor diario</b></td><td class="num">$655.800.012</td><td class="num">—</td><td class="num">—</td><td class="num">$655.800.000</td><td class="num">$655.800.000</td><td class="num">$12</td><td><span class="badge ok">Conciliado</span></td><td><button class="btn" onclick="verDetalleRecon('196095001845','HA32','$655.800.012','$655.800.000')">Detalle</button></td></tr>
-<tr data-filter-status="Diferencia" data-franchise="VISA"><td>VISA</td><td>299095408</td><td><b>Canje internacional</b></td><td class="num">$18.420.000</td><td class="num">—</td><td class="num">—</td><td class="num">$18.590.000</td><td class="num">$18.590.000</td><td class="num">$170.000</td><td><span class="badge warn">Diferencia</span></td><td><button class="btn primary" onclick="verIA('299095408','$170.000')">Analizar IA</button></td></tr>
-<tr data-filter-status="Diferencia" data-franchise="VISA"><td>VISA</td><td>299095409</td><td><b>Comisión canje internacional</b></td><td class="num">$0</td><td class="num">—</td><td class="num">—</td><td class="num">$170.000</td><td class="num">$170.000</td><td class="num">$170.000</td><td><span class="badge warn">Diferencia</span></td><td><button class="btn primary" onclick="verIA('299095409','$170.000')">Analizar IA</button></td></tr>
-<tr data-filter-status="Diferencia" data-franchise="Redeban"><td>Redeban</td><td>196095001829</td><td><b>Afectación posterior</b></td><td class="num">$245.900.000</td><td class="num">—</td><td class="num">—</td><td class="num">$245.911.000</td><td class="num">$245.911.000</td><td class="num">$11.000</td><td><span class="badge warn">Diferencia</span></td><td><button class="btn primary" onclick="verIA('196095001829','$11.000')">Analizar IA</button></td></tr>
-<tr data-filter-status="Diferencia" data-franchise="Credibanco"><td>Credibanco</td><td>196095001839</td><td><b>Movimientos cuenta</b></td><td class="num">$285.971</td><td class="num">$70.626</td><td class="num">—</td><td class="num">—</td><td class="num">$70.626</td><td class="num">$215.345</td><td><span class="badge warn">Diferencia</span></td><td><button class="btn primary" onclick="verIA('196095001839','$215.345')">Analizar IA</button></td></tr>
-<tr data-filter-status="Diferencia" data-franchise="Credibanco"><td>Credibanco</td><td>196095001859</td><td><b>Devolución ventas</b></td><td class="num">$285.971</td><td class="num">$70.626</td><td class="num">—</td><td class="num">—</td><td class="num">$70.626</td><td class="num">$215.345</td><td><span class="badge warn">Diferencia</span></td><td><button class="btn primary" onclick="verIA('196095001859','$215.345')">Analizar IA</button></td></tr>
-<tr data-filter-status="Diferencia" data-franchise="Redeban"><td>Redeban</td><td>196095001918</td><td><b>Pendiente Host</b></td><td class="num">$9.420.500</td><td class="num">—</td><td class="num">$0</td><td class="num">—</td><td class="num">$0</td><td class="num">$9.420.500</td><td><span class="badge warn">Diferencia</span></td><td><button class="btn primary" onclick="verIA('196095001918','$9.420.500')">Analizar IA</button></td></tr>
-</tbody>
-          </table>
-        </div>
+      <div id="cierreCredibancoContent">
+        <div class="emptyDetail">Selecciona una fecha contable en Insumos para ver el diagnóstico de esta jornada.</div>
       </div>
     </section>
 
