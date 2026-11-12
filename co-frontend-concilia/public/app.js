@@ -1030,7 +1030,7 @@ function construirFilasResultado(d) {
     }
     const fuentes = hostPorCuenta.get(c.cuenta_host) || {};
     const idArchivo = (fuentes.HA22 || fuentes.HA26 || fuentes.HA32)?.archivos?.[0];
-    const cuentaJs = JSON.stringify(c.cuenta_host || '');
+    const cuentaJs = esc(JSON.stringify(c.cuenta_host || ''));
     const accion = idArchivo != null
       ? `<button type="button" class="btn" onclick="abrirDetalle(${Number(idArchivo)},'conciliacion')">Ver evidencia</button>`
       : `<button type="button" class="btn" onclick="abrirDetalleCuentaCredibanco(${cuentaJs})">Ver detalle</button>`;
