@@ -836,7 +836,7 @@ function construirFilasResultado(d) {
     const accion = idArchivo != null
       ? `<button type="button" class="btn" onclick="abrirDetalle(${Number(idArchivo)},'conciliacion')">Ver evidencia</button>`
       : `<button type="button" class="btn" onclick="abrirDetalleCuentaCredibanco(${cuentaJs})">Ver detalle</button>`;
-    return `<tr data-cuenta="${esc(c.cuenta_host || '')}" data-concepto="${esc(concepto)}" data-estado="${esc(c.estado || '')}">
+    return `<tr data-cuenta="${esc(c.cuenta_host || '')}" data-concepto="${esc(concepto)}" data-estado="${esc(c.estado || '')}" data-franquicia="CREDIBANCO">
       <td>CREDIBANCO</td>
       <td><a href="#" onclick="abrirDetalleCuentaCredibanco(${cuentaJs});return false;">${esc(c.cuenta_host || '—')}</a></td>
       <td>${esc(concepto)}</td>
@@ -863,11 +863,13 @@ function construirFilasResultado(d) {
 
 function filterResultadoRows() {
   const q = (el('reconQ')?.value || '').toLowerCase();
+  const fr = el('reconFr')?.value || '';
   const st = el('reconSt')?.value || '';
   document.querySelectorAll('#reconBody tr').forEach((r) => {
     const okq = !q || (r.dataset.cuenta || '').toLowerCase().includes(q) || (r.dataset.concepto || '').toLowerCase().includes(q);
+    const okfr = !fr || r.dataset.franquicia === fr;
     const okst = !st || r.dataset.estado === st;
-    r.style.display = okq && okst ? 'table-row' : 'none';
+    r.style.display = okq && okfr && okst ? 'table-row' : 'none';
   });
 }
 
@@ -1065,6 +1067,10 @@ async function cargarCierreCredibanco() {
     <div class="card section">
       <div class="toolbar">
         <input id="reconQ" class="search" onkeyup="filterResultadoRows()" placeholder="Buscar cuenta o concepto...">
+        <select id="reconFr" class="select" onchange="filterResultadoRows()">
+          <option value="">Todas las franquicias</option>
+          <option value="CREDIBANCO">Credibanco</option>
+        </select>
         <select id="reconSt" class="select" onchange="filterResultadoRows()">
           <option value="">Todos los estados</option>
           <option value="COINCIDE_DIAGNOSTICO_NO_CERTIFICADO">Conciliado</option>
