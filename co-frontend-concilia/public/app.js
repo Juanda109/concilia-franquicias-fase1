@@ -1055,7 +1055,7 @@ function construirFilasResultado(d) {
       <td class="num">${celdaFuente(fuentes, 'HA32', 'neto_debe_menos_haber')}</td>
       <td class="num">${c.valor_host != null ? fmtMoney(c.valor_host) : '—'}</td>
       <td class="num">${c.diferencia != null ? fmtMoney(c.diferencia) : '—'}</td>
-      <td><span class="tag ${badgeFor(c.estado)}" title="${esc(c.estado || '')}">${esc(labelEstadoConciliacion(c.estado))}</span></td>
+      <td><span class="tag ${badgeFor(c.estado)}" title="${esc(c.estado || '')}">${esc(labelEstadoConciliacion(c.estado))}</span>${c.diferencia != null && c.aprobada === false ? ' <span class="tag warn" title="La regla no tiene version+evidencia_aprobacion firmadas; este valor es un calculo provisional, no un resultado certificado.">⚠ sin aprobar</span>' : ''}</td>
       <td>${accion}</td>
     </tr>`;
   }).join('');
@@ -1136,7 +1136,7 @@ function renderDetalleCuentaCredibanco(cuenta) {
     .join('');
 
   const cruceHtml = cruce
-    ? `<div class="explain"><b>Regla de cruce:</b> ${esc(cruce.id_regla)} (${esc(cruce.insumo)}) · <span class="tag ${badgeFor(cruce.estado)}" title="${esc(cruce.estado || '')}">${esc(labelEstadoConciliacion(cruce.estado))}</span>${cruce.valor_franquicia != null ? ` · Franquicia: ${fmtMoney(cruce.valor_franquicia)} · Diferencia: ${fmtMoney(cruce.diferencia)}` : ''}</div>`
+    ? `<div class="explain"><b>Regla de cruce:</b> ${esc(cruce.id_regla)} (${esc(cruce.insumo)}) · <span class="tag ${badgeFor(cruce.estado)}" title="${esc(cruce.estado || '')}">${esc(labelEstadoConciliacion(cruce.estado))}</span>${cruce.valor_franquicia != null ? ` · Franquicia: ${fmtMoney(cruce.valor_franquicia)} · Diferencia: ${fmtMoney(cruce.diferencia)}` : ''}${cruce.diferencia != null && cruce.aprobada === false ? ' <span class="tag warn" title="La regla no tiene version+evidencia_aprobacion firmadas; este valor es un calculo provisional, no un resultado certificado.">⚠ sin aprobar</span>' : ''}</div>`
     : '<div class="explain">Sin regla de cruce aprobada para esta cuenta todavía.</div>';
 
   // Seccion B: nunca se filtra un total global de CAET/CANT por cuenta (el
@@ -1248,7 +1248,7 @@ async function cargarCierreCredibanco() {
         <td>${cruce ? esc(cruce.id_regla) : '<span class="muted">Sin regla</span>'}</td>
         <td class="num">${cruce && cruce.valor_franquicia != null ? fmtMoney(cruce.valor_franquicia) : '—'}</td>
         <td class="num">${cruce && cruce.diferencia != null ? fmtMoney(cruce.diferencia) : '—'}</td>
-        <td><span class="tag ${badgeFor(estadoFila)}" title="${esc(estadoFila || '')}">${esc(labelEstadoConciliacion(estadoFila))}</span></td>
+        <td><span class="tag ${badgeFor(estadoFila)}" title="${esc(estadoFila || '')}">${esc(labelEstadoConciliacion(estadoFila))}</span>${cruce && cruce.diferencia != null && cruce.aprobada === false ? ' <span class="tag warn" title="La regla no tiene version+evidencia_aprobacion firmadas; este valor es un calculo provisional, no un resultado certificado.">⚠ sin aprobar</span>' : ''}</td>
         <td>${accion}</td>
       </tr>`;
     })
