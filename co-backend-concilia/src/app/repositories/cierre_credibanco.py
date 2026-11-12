@@ -158,24 +158,24 @@ class CierreCredibancoRepository:
                 # explicitamente, asi que el chequeo solo se activa si el texto
                 # libre de DESCON llega a contener esas etiquetas literales.
                 cur.execute(
-                    """SELECT id_archivo, tx_host, cuenta, centro, concepto,
+                    """SELECT id_archivo, tx_host, cuenta, centro, concepto, fecha_contable,
                               COUNT(*)::integer AS cantidad,
                               COUNT(*) FILTER (WHERE debe IS NULL OR haber IS NULL)::integer AS incompletos,
                               SUM(debe) AS debe, SUM(haber) AS haber
                        FROM (
                            SELECT id_archivo, 'HA22' AS tx_host, nucta AS cuenta, cedestin AS centro,
-                                  descon AS concepto, debe, haber
+                                  descon AS concepto, fecon AS fecha_contable, debe, haber
                            FROM CON_HA22_RESULTADO WHERE id_archivo = ANY(%(ids)s)
                            UNION ALL
                            SELECT id_archivo, 'HA26' AS tx_host, nucta AS cuenta, cedestin AS centro,
-                                  descon AS concepto, debe, haber
+                                  descon AS concepto, fecon AS fecha_contable, debe, haber
                            FROM CON_HA26_RESULTADO WHERE id_archivo = ANY(%(ids)s)
                            UNION ALL
                            SELECT id_archivo, 'HA32' AS tx_host, nucta AS cuenta, cedestin AS centro,
-                                  NULL AS concepto, debe, haber
+                                  NULL AS concepto, fecont AS fecha_contable, debe, haber
                            FROM CON_HA32_RESULTADO WHERE id_archivo = ANY(%(ids)s)
                        ) h
-                       GROUP BY id_archivo, tx_host, cuenta, centro, concepto
+                       GROUP BY id_archivo, tx_host, cuenta, centro, concepto, fecha_contable
                        ORDER BY cuenta, tx_host, id_archivo""",
                     {"ids": h_ids},
                 )

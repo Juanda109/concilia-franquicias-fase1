@@ -267,12 +267,45 @@ def test_regla_fecha_host_pendiente_bloquea():
     assert r['cruces_host_credibanco_diagnosticos'][0]['estado']=='FECHA_HOST_NO_COINCIDE'
 
 
-def test_regla_no_aprobada_no_calcula():
+def test_regla_no_aprobada_calcula_pero_queda_marcada_sin_aprobar():
+    # A pedido explicito: el motor calcula igual sin aprobacion formal, pero
+    # el resultado nunca se confunde con uno aprobado/certificado - viaja
+    # "aprobada": False y certificado sigue False.
     c,h=insumos_cruce()
     r=construir_cierre(jornada={'id_jornada':2590,'fecha_contable':'2026-10-23'},
           archivos=metadata(),canje=c,depo=[],carta=[],host=h,
-          reglas_cruce=[regla_aprobada(estado='PENDIENTE_VALIDACION')])
-    assert r['cruces_host_credibanco_diagnosticos'][0]['estado']=='PENDIENTE_APROBACION_REGLA'
+          reglas_cruce=[regla_aprobada(estado='PENDIENTE_VALIDACION',
+                                        version=None,evidencia_aprobacion=None)])
+    x=r['cruces_host_credibanco_diagnosticos'][0]
+    assert x['estado']=='COINCIDE_DIAGNOSTICO_NO_CERTIFICADO'
+    assert x['diferencia']=='0'
+    assert x['aprobada'] is False
+    assert x['certificado'] is False
+    assert r['certificado'] is False
+    assert r['cruces_host_credibanco_certificados']==[]
+
+
+def test_regla_aprobada_formalmente_marca_aprobada_true():
+    c,h=insumos_cruce()
+    r=construir_cierre(jornada={'id_jornada':2590,'fecha_contable':'2026-10-23'},
+          archivos=metadata(),canje=c,depo=[],carta=[],host=h,
+          reglas_cruce=[regla_aprobada()])
+    assert r['cruces_host_credibanco_diagnosticos'][0]['aprobada'] is True
+
+
+def test_regla_sin_campos_minimos_sigue_bloqueada_aunque_no_requiera_aprobacion():
+    # Sin aprobacion no significa sin validar: si moneda/escala/signo/fechas
+    # no estan definidos, el motor sigue sin poder calcular nada util.
+    c,h=insumos_cruce()
+    r=construir_cierre(jornada={'id_jornada':2590,'fecha_contable':'2026-10-23'},
+          archivos=metadata(),canje=c,depo=[],carta=[],host=h,
+          reglas_cruce=[regla_aprobada(estado='PENDIENTE_VALIDACION',
+                                        version=None,evidencia_aprobacion=None,
+                                        moneda=None)])
+    x=r['cruces_host_credibanco_diagnosticos'][0]
+    assert x['estado']=='MONEDA_O_NATURALEZA_NO_APROBADA'
+    assert x['aprobada'] is False
+    assert x['diferencia'] is None
 
 
 def test_regla_falta_escala_falla_cerrado():

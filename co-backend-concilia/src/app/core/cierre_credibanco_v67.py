@@ -677,13 +677,16 @@ def evaluar_reglas_cruce(reglas: Sequence[Mapping[str, Any]], *,
         if not idr or idr in ids_reglas:
             raise ValueError("ID de regla vacio o duplicado")
         ids_reglas.add(idr)
+        aprobada = (r.get("estado")=="APROBADA" and bool(_texto(r.get("version")))
+                    and bool(_texto(r.get("evidencia_aprobacion"))))
         base={"id_regla":idr,"version":r.get("version"),"cuenta_host":r.get("cuenta_host"),
               "insumo":r.get("insumo"),"valor_franquicia":None,"valor_host":None,
-              "diferencia":None,"certificado":False}
-        if (r.get("estado")!="APROBADA" or not _texto(r.get("version")) or
-                not _texto(r.get("evidencia_aprobacion"))):
-            salidas.append({**base,"estado":"PENDIENTE_APROBACION_REGLA"})
-            continue
+              "diferencia":None,"certificado":False,"aprobada":aprobada}
+        # A pedido explicito: el calculo se intenta aunque la regla no este
+        # formalmente aprobada (sin version/evidencia firmada). "aprobada"
+        # viaja en cada salida para que nada aguas abajo confunda un
+        # resultado sin aprobar con uno certificado - certificado sigue
+        # False siempre, y cruces_host_credibanco_certificados sigue vacio.
         insumo=r.get("insumo")
         campo=r.get("campo_importe")
         if insumo not in CAMPOS_ORIGEN or campo not in CAMPOS_ORIGEN[insumo]:
