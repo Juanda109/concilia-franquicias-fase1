@@ -1185,7 +1185,11 @@ async function cargarCierreCredibanco() {
   const coincidencias = cruces.filter((c) => c.estado === 'COINCIDE_DIAGNOSTICO_NO_CERTIFICADO').length;
   const diferencias = cruces.filter((c) => c.estado === 'DIFERENCIA_DIAGNOSTICA_NO_CERTIFICADA').length;
 
-  const pendientesAprobacion = cruces.filter((c) => c.estado !== 'COINCIDE_DIAGNOSTICO_NO_CERTIFICADO' && c.estado !== 'DIFERENCIA_DIAGNOSTICA_NO_CERTIFICADA').length;
+  // "Incorporados maestro": cuentas con regla de cruce definida que ya
+  // tienen al menos un movimiento Host cargado para esta jornada (HA22/26/32)
+  // - es decir, con datos reales ya incorporados a este cuadro para poder
+  // compararse, independientemente de si la regla ya fue aprobada.
+  const incorporadosMaestro = filasHost.filter((f) => f.cruce && Object.keys(f.fuentes).length > 0).length;
   const filasResultado = construirFilasResultado(d);
 
   const cruceRows = filasHost
@@ -1229,7 +1233,7 @@ async function cargarCierreCredibanco() {
       <div class="fc"><small>CUENTAS / CRUCES</small><b>${cruces.length}</b></div>
       <div class="fc"><small>CONCILIADOS</small><b>${coincidencias}</b></div>
       <div class="fc"><small>DIFERENCIAS</small><b>${diferencias}</b></div>
-      <div class="fc"><small>PENDIENTES</small><b>${pendientesAprobacion}</b></div>
+      <div class="fc"><small>INCORPORADOS MAESTRO</small><b>${incorporadosMaestro}</b></div>
     </div>
     <div class="card section">
       <div class="toolbar">
