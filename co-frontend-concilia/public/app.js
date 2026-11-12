@@ -881,6 +881,74 @@ function badgeFor(estado) {
   return 'info';
 }
 
+let ultimoCierreCredibanco = null;
+
+function celdaFuente(fuentes, tx, campo) {
+  const f = fuentes[tx];
+  if (!f || f[campo] == null) return '—';
+  return fmtMoney(f[campo]);
+}
+
+// Una fila por cuenta Host, con HA22/HA26/HA32 lado a lado (Debe/Haber/Neto,
+// nunca sumados entre sí) y la regla de cruce asociada si existe. Mismo
+// diseño de tabla que ya traía gustavo-dev para esta pantalla, pero sobre
+// datos reales de cierre_credibanco_v67 (host_por_cuenta_y_fuente /
+// cruces_host_credibanco_diagnosticos), no sobre el endpoint v72 descartado.
+function construirFilasHost(hostPorCuenta, cruces) {
+  const porCuenta = new Map();
+  for (const h of hostPorCuenta || []) {
+    if (!porCuenta.has(h.cuenta)) porCuenta.set(h.cuenta, { cuenta: h.cuenta, fuentes: {} });
+    porCuenta.get(h.cuenta).fuentes[h.fuente] = h;
+  }
+  const cruceDeCuenta = new Map((cruces || []).map((c) => [c.cuenta_host, c]));
+  // Una regla del catálogo puede no tener todavía ningún movimiento Host
+  // observado para su cuenta en esta jornada; igual debe listarse (con las
+  // columnas HA22/26/32 en "—") para que no desaparezca de la vista.
+  for (const c of cruces || []) {
+    if (c.cuenta_host && !porCuenta.has(c.cuenta_host)) {
+      porCuenta.set(c.cuenta_host, { cuenta: c.cuenta_host, fuentes: {} });
+    }
+  }
+  return [...porCuenta.values()]
+    .sort((a, b) => a.cuenta.localeCompare(b.cuenta))
+    .map((row) => ({ ...row, cruce: cruceDeCuenta.get(row.cuenta) || null }));
+}
+
+function filterCruceRows() {
+  const q = (el('cruceQ')?.value || '').toLowerCase();
+  const st = el('cruceSt')?.value || '';
+  document.querySelectorAll('#cruceBody tr').forEach((r) => {
+    const okq = !q || (r.dataset.cuenta || '').toLowerCase().includes(q);
+    const okst = !st || r.dataset.estado === st;
+    r.style.display = okq && okst ? 'table-row' : 'none';
+  });
+}
+
+function verDetalleCuentaHost(cuenta) {
+  const d = ultimoCierreCredibanco;
+  if (!d) return;
+  const filas = (d.host_por_cuenta_y_fuente || []).filter((h) => h.cuenta === cuenta);
+  const cruce = (d.cruces_host_credibanco_diagnosticos || []).find((c) => c.cuenta_host === cuenta);
+  const filasHtml = filas
+    .map((f) => {
+      const idArchivo = (f.archivos || [])[0];
+      const accion = idArchivo != null
+        ? `<button type="button" class="btn" onclick="closeDrawer();abrirDetalle(${Number(idArchivo)},'conciliacion')">Ver evidencia</button>`
+        : '—';
+      return `<tr><td>${esc(f.fuente)}</td><td class="num">${fmtMoney(f.debe)}</td><td class="num">${fmtMoney(f.haber)}</td><td class="num">${fmtMoney(f.neto_debe_menos_haber)}</td><td><span class="tag ${badgeFor(f.estado)}">${esc(f.estado)}</span></td><td>${accion}</td></tr>`;
+    })
+    .join('');
+  const cruceHtml = cruce
+    ? `<div class="explain"><b>Regla de cruce:</b> ${esc(cruce.id_regla)} · <span class="tag ${badgeFor(cruce.estado)}">${esc(cruce.estado)}</span>${cruce.valor_franquicia != null ? ` · Franquicia: ${fmtMoney(cruce.valor_franquicia)} · Diferencia: ${fmtMoney(cruce.diferencia)}` : ''}</div>`
+    : '<div class="explain">Sin regla de cruce aprobada para esta cuenta todavía.</div>';
+  drawerContent.innerHTML = `
+    <h2>Cuenta ${esc(cuenta)}</h2>
+    ${cruceHtml}
+    <div class="tableScroll"><table class="reconTable"><thead><tr><th>Fuente</th><th>Debe</th><th>Haber</th><th>Neto</th><th>Estado</th><th>Acción</th></tr></thead>
+    <tbody>${filasHtml || '<tr><td colspan="6" class="muted">Sin movimientos Host.</td></tr>'}</tbody></table></div>`;
+  openDrawer();
+}
+
 async function cargarCierreCredibanco() {
   const cont = el('cierreCredibancoContent');
   if (!cont) return;
@@ -904,6 +972,7 @@ async function cargarCierreCredibanco() {
     return;
   }
   const d = await r.json();
+  ultimoCierreCredibanco = d;
   // Mapeo tipoInsumo -> idArchivo, solo para habilitar el enlace "Ver
   // evidencia" por fila; si esta llamada falla no bloquea el diagnóstico.
   const archivoPorInsumo = new Map();
@@ -933,6 +1002,41 @@ async function cargarCierreCredibanco() {
     .map((p) => `<tr><td>${esc(p.codigo || p.estado || '')}</td><td>${esc(p.detalle || p.mensaje || JSON.stringify(p))}</td></tr>`)
     .join('');
 
+  const cruces = d.cruces_host_credibanco_diagnosticos || [];
+  const filasHost = construirFilasHost(d.host_por_cuenta_y_fuente, cruces);
+  const coincidencias = cruces.filter((c) => c.estado === 'COINCIDE_DIAGNOSTICO_NO_CERTIFICADO').length;
+  const diferencias = cruces.filter((c) => c.estado === 'DIFERENCIA_DIAGNOSTICA_NO_CERTIFICADA').length;
+  const conRegla = filasHost.filter((f) => f.cruce).length;
+
+  const cruceRows = filasHost
+    .map((row) => {
+      const cruce = row.cruce;
+      const estadoFila = cruce ? cruce.estado : Object.values(row.fuentes)[0]?.estado;
+      const idArchivo = (row.fuentes.HA22 || row.fuentes.HA26 || row.fuentes.HA32)?.archivos?.[0];
+      const accion = idArchivo != null
+        ? `<button type="button" class="btn" onclick="abrirDetalle(${Number(idArchivo)},'conciliacion')">Ver evidencia</button>`
+        : '—';
+      const cuentaJs = JSON.stringify(row.cuenta);
+      return `<tr data-cuenta="${esc(row.cuenta)}" data-estado="${esc(estadoFila || '')}">
+        <td><a href="#" onclick="verDetalleCuentaHost(${esc(cuentaJs)});return false;">${esc(row.cuenta)}</a></td>
+        <td class="num">${celdaFuente(row.fuentes, 'HA22', 'debe')}</td>
+        <td class="num">${celdaFuente(row.fuentes, 'HA22', 'haber')}</td>
+        <td class="num">${celdaFuente(row.fuentes, 'HA22', 'neto_debe_menos_haber')}</td>
+        <td class="num">${celdaFuente(row.fuentes, 'HA26', 'debe')}</td>
+        <td class="num">${celdaFuente(row.fuentes, 'HA26', 'haber')}</td>
+        <td class="num">${celdaFuente(row.fuentes, 'HA26', 'neto_debe_menos_haber')}</td>
+        <td class="num">${celdaFuente(row.fuentes, 'HA32', 'debe')}</td>
+        <td class="num">${celdaFuente(row.fuentes, 'HA32', 'haber')}</td>
+        <td class="num">${celdaFuente(row.fuentes, 'HA32', 'neto_debe_menos_haber')}</td>
+        <td>${cruce ? esc(cruce.id_regla) : '<span class="muted">Sin regla</span>'}</td>
+        <td class="num">${cruce && cruce.valor_franquicia != null ? fmtMoney(cruce.valor_franquicia) : '—'}</td>
+        <td class="num">${cruce && cruce.diferencia != null ? fmtMoney(cruce.diferencia) : '—'}</td>
+        <td><span class="tag ${badgeFor(estadoFila)}">${esc(estadoFila || '—')}</span></td>
+        <td>${accion}</td>
+      </tr>`;
+    })
+    .join('');
+
   cont.innerHTML = `
     <div class="flow summaryFlow">
       <div class="fc"><small>POSICIÓN NETA CARTA</small><b class="tag ${badgeFor(neta.estado)}">${esc(neta.estado || '—')}</b></div>
@@ -941,10 +1045,38 @@ async function cargarCierreCredibanco() {
       <div class="fc"><small>L8 · DIFERENCIA (L5-L3-L6)</small><b>${l8.l8 !== undefined ? fmtMoney(l8.l8) : '—'}</b></div>
     </div>
     <div class="explain"><b>Diagnóstico, no certificación.</b> Estado general: <span class="tag ${badgeFor(d.estado)}">${esc(d.estado || '—')}</span>. Este resultado nunca certifica automáticamente una conciliación contable (<code>certificado:false</code> siempre); requiere revisión y aprobación de negocio.</div>
+    <div class="flow summaryFlow">
+      <div class="fc"><small>CUENTAS HOST</small><b>${filasHost.length}</b></div>
+      <div class="fc"><small>CON REGLA DEFINIDA</small><b>${conRegla}</b></div>
+      <div class="fc"><small>COINCIDENCIAS</small><b>${coincidencias}</b></div>
+      <div class="fc"><small>DIFERENCIAS</small><b>${diferencias}</b></div>
+    </div>
     <div class="card section">
       <div class="title">Insumos de la jornada</div>
       <div class="tableScroll"><table><thead><tr><th>Insumo</th><th>Archivos</th><th>Estado</th><th>Acción</th></tr></thead>
       <tbody>${insumosRows || '<tr><td colspan="4" class="muted">Sin insumos procesados.</td></tr>'}</tbody></table></div>
+    </div>
+    <div class="card section">
+      <div class="title">Cuentas Host observadas <span class="muted">(${filasHost.length})</span></div>
+      <div class="toolbar">
+        <input id="cruceQ" class="search" onkeyup="filterCruceRows()" placeholder="Buscar cuenta..." aria-label="Buscar cuenta Host">
+        <select id="cruceSt" class="select" onchange="filterCruceRows()" aria-label="Filtrar por estado">
+          <option value="">Todos los estados</option>
+          <option value="PENDIENTE_HOMOLOGACION_NATURALEZA_Y_FUENTE">Pendiente homologación</option>
+          <option value="PENDIENTE_APROBACION_REGLA">Pendiente aprobación regla</option>
+          <option value="BLOQUEADO_SINTETICO">Bloqueado sintético</option>
+          <option value="DATO_INCOMPLETO">Dato incompleto</option>
+          <option value="COINCIDE_DIAGNOSTICO_NO_CERTIFICADO">Coincide (no certificado)</option>
+          <option value="DIFERENCIA_DIAGNOSTICA_NO_CERTIFICADA">Diferencia (no certificada)</option>
+        </select>
+      </div>
+      <div class="filterHint">Diagnóstico por cuenta Host, nunca homologación contable. HA22/HA26/HA32 no se suman entre sí. "Sin regla" = cuenta observada en Host sin regla de cruce aprobada todavía.</div>
+      <div class="tableScroll"><table class="reconTable"><thead><tr>
+        <th>Cuenta</th><th>HA22 Debe</th><th>HA22 Haber</th><th>HA22 Neto</th>
+        <th>HA26 Debe</th><th>HA26 Haber</th><th>HA26 Neto</th>
+        <th>HA32 Debe</th><th>HA32 Haber</th><th>HA32 Neto</th>
+        <th>Regla</th><th>Valor Franquicia</th><th>Diferencia</th><th>Estado</th><th>Acción</th>
+      </tr></thead><tbody id="cruceBody">${cruceRows || '<tr><td colspan="15" class="muted">Sin cuentas Host observadas.</td></tr>'}</tbody></table></div>
     </div>
     <div class="card section">
       <div class="title">Pendientes (${(d.pendientes || []).length})</div>
