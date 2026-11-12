@@ -129,8 +129,16 @@ bloquea por seguridad referenciar archivos fuera de esta carpeta
 ```bash
 oc create configmap concilia-postgres-initdb \
   --from-file=../database/00_concilia_fase1_ddl_21_tablas.sql \
-  --from-file=../database/22_seed_insumos_esperados.sql
+  --from-file=../database/22_seed_insumos_esperados.sql \
+  --from-file=../database/23_seed_bines_canje.sql
 ```
+
+`23_seed_bines_canje.sql` es el catálogo BIN→TIPO_TARJETA (`CON_PARAMETRO_BIN_RED`)
+que usan `CAETParser`/`CANTParser` — sin él, **todas** las filas de CAET/CANT
+quedan sin clasificar (`TIPO=""`) y el filtro de persistencia las descarta
+todas, sin ningún error visible (0 registros procesados, estado "Procesado").
+Si ya tenés el ConfigMap creado sin este archivo, agregalo y corré el paso
+0.5 de abajo para el seed de BINES puntualmente.
 
 Si cambia el DDL, hay que recrear este ConfigMap (`oc create ... --dry-run=client -o yaml | oc apply -f -`)
 y reiniciar el pod de postgres para que un volumen ya inicializado no lo ignore.
@@ -156,6 +164,8 @@ oc exec deploy/co-db-concilia -- bash -c \
   'psql -U "$POSTGRESQL_USER" -d "$POSTGRESQL_DATABASE" -f /opt/app-root/src/postgresql-init/00_concilia_fase1_ddl_21_tablas.sql'
 oc exec deploy/co-db-concilia -- bash -c \
   'psql -U "$POSTGRESQL_USER" -d "$POSTGRESQL_DATABASE" -f /opt/app-root/src/postgresql-init/22_seed_insumos_esperados.sql'
+oc exec deploy/co-db-concilia -- bash -c \
+  'psql -U "$POSTGRESQL_USER" -d "$POSTGRESQL_DATABASE" -f /opt/app-root/src/postgresql-init/23_seed_bines_canje.sql'
 
 # Verificar (debe listar 21 tablas):
 oc exec deploy/co-db-concilia -- bash -c 'psql -U "$POSTGRESQL_USER" -d "$POSTGRESQL_DATABASE" -c "\dt"'
@@ -223,7 +233,8 @@ export SFTP_PASSWORD=...
 # 2. Crear el ConfigMap del DDL/seed (paso 0, no forma parte del kustomization)
 oc create configmap concilia-postgres-initdb \
   --from-file=database/00_concilia_fase1_ddl_21_tablas.sql \
-  --from-file=database/22_seed_insumos_esperados.sql
+  --from-file=database/22_seed_insumos_esperados.sql \
+  --from-file=database/23_seed_bines_canje.sql
 
 # 3. Construir con kustomize y resolver el resto de variables con envsubst
 kubectl kustomize IaC | envsubst | oc apply -f -
