@@ -883,6 +883,56 @@ function badgeFor(estado) {
 
 let ultimoCierreCredibanco = null;
 
+// Chips de "FECHAS CONTABLES" en Conciliación: misma idea visual que tenía
+// gustavo-dev (botones fecha/estado/jornada), pero sobre jornadasRango - el
+// mismo arreglo real que ya carga la vista de Insumos. No hay un segundo
+// calendario independiente ni un endpoint nuevo: seleccionar un chip aquí
+// mueve el mismo idJornadaActiva compartido con Insumos.
+function renderFechasConciliacion() {
+  const host = el('reconFechasContables');
+  if (!host) return;
+  const porId = new Map(jornadasRango.map((j) => [j.idJornada, j]));
+  let lista = [...jornadasRango].sort((a, b) => b.fechaContable.localeCompare(a.fechaContable)).slice(0, 5);
+  if (idJornadaActiva != null && porId.has(idJornadaActiva) && !lista.some((j) => j.idJornada === idJornadaActiva)) {
+    lista.push(porId.get(idJornadaActiva));
+  }
+  lista.sort((a, b) => b.fechaContable.localeCompare(a.fechaContable));
+  const input = el('reconFechaContable');
+  const activa = porId.get(idJornadaActiva);
+  if (input && activa) input.value = activa.fechaContable;
+  if (!lista.length) {
+    host.innerHTML = '<span class="reconDateEmpty">Sin jornadas en el rango seleccionado en Insumos.</span>';
+    return;
+  }
+  host.innerHTML = lista.map((j) => `
+    <button type="button" class="fechaChip reconDateChip${j.idJornada === idJornadaActiva ? ' active' : ''}" data-id="${j.idJornada}" aria-pressed="${j.idJornada === idJornadaActiva}">
+      <small>FECHA CONTABLE</small><b>${esc(j.fechaContable)}</b>
+      <span class="reconDateState">${esc(ESTADO_LABEL[j.estado] ?? j.estado)}</span>
+      <span class="reconDateId">Jornada ${j.idJornada}</span>
+    </button>`).join('');
+  host.querySelectorAll('.reconDateChip').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.id);
+      if (id === idJornadaActiva) return;
+      const jornada = porId.get(id);
+      if (jornada) seleccionarJornadaDelRango(jornada);
+      void cargarCierreCredibanco();
+    });
+  });
+}
+
+el('reconFechaContable')?.addEventListener('change', () => {
+  const iso = el('reconFechaContable').value;
+  const jornada = jornadasRango.find((j) => j.fechaContable === iso);
+  if (!jornada) {
+    toast('No hay jornada cargada para esa fecha en el rango de Insumos.', true);
+    renderFechasConciliacion();
+    return;
+  }
+  seleccionarJornadaDelRango(jornada);
+  void cargarCierreCredibanco();
+});
+
 function celdaFuente(fuentes, tx, campo) {
   const f = fuentes[tx];
   if (!f || f[campo] == null) return '—';
@@ -1128,7 +1178,9 @@ function renderDetalleCuentaCredibanco(cuenta) {
 async function cargarCierreCredibanco() {
   const cont = el('cierreCredibancoContent');
   if (!cont) return;
+  renderFechasConciliacion();
   if (!idJornadaActiva) {
+    el('reconJornada').textContent = 'Seleccione una fecha contable en Insumos.';
     cont.innerHTML = '<div class="emptyDetail">Selecciona una fecha contable en Insumos para ver el diagnóstico de esta jornada.</div>';
     return;
   }
@@ -1149,6 +1201,7 @@ async function cargarCierreCredibanco() {
   }
   const d = await r.json();
   ultimoCierreCredibanco = d;
+  el('reconJornada').textContent = `Fecha contable: ${d.fecha_contable} · Jornada ${d.id_jornada}`;
   // Mapeo tipoInsumo -> idArchivo, solo para habilitar el enlace "Ver
   // evidencia" por fila; si esta llamada falla no bloquea el diagnóstico.
   const archivoPorInsumo = new Map();
