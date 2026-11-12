@@ -924,29 +924,90 @@ function filterCruceRows() {
   });
 }
 
-function verDetalleCuentaHost(cuenta) {
+// Página completa de detalle por cuenta, con la misma estructura en dos
+// bloques que usaba gustavo-dev para esta vista ("A. Contabilidad interna ·
+// Host" / "B. Insumos externos"), pero construida solo con lo que
+// cierre_credibanco_v67 realmente calcula - nunca atribuye un total global
+// de CAET/CANT/DEPO a una cuenta sin que el motor mismo lo haya candidateado.
+let detalleCuentaOrigenScrollY = 0;
+
+function abrirDetalleCuentaCredibanco(cuenta) {
+  const cont = el('detalleCuentaCredibancoContent');
+  if (!cont) return;
+  detalleCuentaOrigenScrollY = window.scrollY;
+  document.querySelectorAll('.panel').forEach((p) => p.classList.remove('active'));
+  el('detalleCuentaCredibanco').classList.add('active');
+  window.scrollTo(0, 0);
+  renderDetalleCuentaCredibanco(cuenta);
+}
+
+function volverAConciliacion() {
+  document.querySelectorAll('.panel').forEach((p) => p.classList.remove('active'));
+  el('conciliacion').classList.add('active');
+  requestAnimationFrame(() => window.scrollTo(0, detalleCuentaOrigenScrollY));
+}
+el('btnVolverConciliacion')?.addEventListener('click', volverAConciliacion);
+
+function renderDetalleCuentaCredibanco(cuenta) {
+  const cont = el('detalleCuentaCredibancoContent');
   const d = ultimoCierreCredibanco;
-  if (!d) return;
-  const filas = (d.host_por_cuenta_y_fuente || []).filter((h) => h.cuenta === cuenta);
-  const cruce = (d.cruces_host_credibanco_diagnosticos || []).find((c) => c.cuenta_host === cuenta);
-  const filasHtml = filas
+  if (!cont || !d) return;
+
+  const filasHost = (d.host_por_cuenta_y_fuente || []).filter((h) => h.cuenta === cuenta);
+  const cruce = (d.cruces_host_credibanco_diagnosticos || []).find((c) => c.cuenta_host === cuenta) || null;
+
+  const filasHostHtml = filasHost
     .map((f) => {
       const idArchivo = (f.archivos || [])[0];
       const accion = idArchivo != null
-        ? `<button type="button" class="btn" onclick="closeDrawer();abrirDetalle(${Number(idArchivo)},'conciliacion')">Ver evidencia</button>`
+        ? `<button type="button" class="btn" onclick="abrirDetalle(${Number(idArchivo)},'conciliacion')">Ver evidencia</button>`
         : '—';
-      return `<tr><td>${esc(f.fuente)}</td><td class="num">${fmtMoney(f.debe)}</td><td class="num">${fmtMoney(f.haber)}</td><td class="num">${fmtMoney(f.neto_debe_menos_haber)}</td><td><span class="tag ${badgeFor(f.estado)}">${esc(f.estado)}</span></td><td>${accion}</td></tr>`;
+      return `<tr><td>${esc(f.fuente)}</td><td>${idArchivo ?? '—'}</td><td class="num">${f.cantidad ?? '—'}</td><td class="num">${fmtMoney(f.debe)}</td><td class="num">${fmtMoney(f.haber)}</td><td class="num">${fmtMoney(f.neto_debe_menos_haber)}</td><td><span class="tag ${badgeFor(f.estado)}">${esc(f.estado)}</span></td><td>${accion}</td></tr>`;
     })
     .join('');
+
   const cruceHtml = cruce
-    ? `<div class="explain"><b>Regla de cruce:</b> ${esc(cruce.id_regla)} · <span class="tag ${badgeFor(cruce.estado)}">${esc(cruce.estado)}</span>${cruce.valor_franquicia != null ? ` · Franquicia: ${fmtMoney(cruce.valor_franquicia)} · Diferencia: ${fmtMoney(cruce.diferencia)}` : ''}</div>`
+    ? `<div class="explain"><b>Regla de cruce:</b> ${esc(cruce.id_regla)} (${esc(cruce.insumo)}) · <span class="tag ${badgeFor(cruce.estado)}">${esc(cruce.estado)}</span>${cruce.valor_franquicia != null ? ` · Franquicia: ${fmtMoney(cruce.valor_franquicia)} · Diferencia: ${fmtMoney(cruce.diferencia)}` : ''}</div>`
     : '<div class="explain">Sin regla de cruce aprobada para esta cuenta todavía.</div>';
-  drawerContent.innerHTML = `
-    <h2>Cuenta ${esc(cuenta)}</h2>
+
+  // Seccion B: nunca se filtra un total global de CAET/CANT por cuenta (el
+  // motor no hace esa atribucion sin regla aprobada), salvo DEPO, donde
+  // agrupar_depo() ya calcula una cuenta_host_candidata explicita por fila.
+  let seccionB;
+  if (cruce && (cruce.insumo === 'CAET' || cruce.insumo === 'CANT')) {
+    const filas = d.totales_diagnosticos || [];
+    const filasHtml = filas
+      .map((t) => `<tr><td>${esc(t.A)}</td><td>${esc((t.insumos || []).join(', '))}</td><td class="num">${t.B ?? '—'}</td><td class="num">${t.C != null ? fmtMoney(t.C) : '—'}</td><td class="num">${t.D != null ? fmtMoney(t.D) : '—'}</td></tr>`)
+      .join('');
+    seccionB = `
+      <h3>B. Insumos externos · CAET/CANT</h3>
+      <p class="friendlyNote">Totales globales de origen por concepto persistido (ver "Totales diagnósticos"). No atribuidos automáticamente a esta cuenta: la regla de cruce arriba es la única atribución aprobable, y sigue pendiente. No sumar CAET y CANT entre sí.</p>
+      <div class="tableScroll"><table class="reconTable"><thead><tr><th>Concepto</th><th>Insumo</th><th>Cantidad</th><th>VL Interc</th><th>VL Total</th></tr></thead>
+      <tbody>${filasHtml || '<tr><td colspan="5" class="muted">Sin totales disponibles.</td></tr>'}</tbody></table></div>`;
+  } else if (cruce && cruce.insumo === 'DEPO') {
+    const filas = (d.depo_agregados_crudos || []).filter((x) => x.cuenta_host_candidata === cuenta);
+    const filasHtml = filas
+      .map((x) => `<tr><td>${esc(x.concepto || x.concepto_persistido || '—')}</td><td class="num">${x.cantidad ?? '—'}</td><td class="num">${x.valor_total_crudo != null ? fmtMoney(x.valor_total_crudo) : '—'}</td><td class="num">${x.valor_intercambio_crudo != null ? fmtMoney(x.valor_intercambio_crudo) : '—'}</td><td><span class="tag ${badgeFor(x.estado)}">${esc(x.estado)}</span></td></tr>`)
+      .join('');
+    seccionB = `
+      <h3>B. Insumos externos · DEPO</h3>
+      <p class="friendlyNote">Filas de DEPO cuya cuenta candidata (calculada por el motor a partir del concepto AU) coincide con esta cuenta. Candidato, no homologación aprobada.</p>
+      <div class="tableScroll"><table class="reconTable"><thead><tr><th>Concepto</th><th>Cantidad</th><th>Valor total crudo</th><th>Valor intercambio crudo</th><th>Estado</th></tr></thead>
+      <tbody>${filasHtml || '<tr><td colspan="5" class="muted">Sin filas DEPO candidateadas a esta cuenta.</td></tr>'}</tbody></table></div>`;
+  } else {
+    seccionB = '<h3>B. Insumos externos</h3><p class="muted">Sin regla de cruce asociada a esta cuenta; no hay insumo externo que mostrar aquí todavía.</p>';
+  }
+
+  cont.innerHTML = `
+    <div class="head"><div><h1>Detalle de conciliación · ${esc(cuenta)}</h1></div></div>
     ${cruceHtml}
-    <div class="tableScroll"><table class="reconTable"><thead><tr><th>Fuente</th><th>Debe</th><th>Haber</th><th>Neto</th><th>Estado</th><th>Acción</th></tr></thead>
-    <tbody>${filasHtml || '<tr><td colspan="6" class="muted">Sin movimientos Host.</td></tr>'}</tbody></table></div>`;
-  openDrawer();
+    <div class="card section">
+      <h3>A. Contabilidad interna · Host</h3>
+      <p class="friendlyNote">Neto por fuente = Debe − Haber. HA22, HA26 y HA32 no se suman entre sí.</p>
+      <div class="tableScroll"><table class="reconTable"><thead><tr><th>Fuente</th><th>Archivo ID</th><th>Movimientos</th><th>Debe</th><th>Haber</th><th>Neto</th><th>Estado</th><th>Acción</th></tr></thead>
+      <tbody>${filasHostHtml || '<tr><td colspan="8" class="muted">Sin movimientos Host para esta cuenta.</td></tr>'}</tbody></table></div>
+    </div>
+    <div class="card section">${seccionB}</div>`;
 }
 
 async function cargarCierreCredibanco() {
@@ -1018,7 +1079,7 @@ async function cargarCierreCredibanco() {
         : '—';
       const cuentaJs = JSON.stringify(row.cuenta);
       return `<tr data-cuenta="${esc(row.cuenta)}" data-estado="${esc(estadoFila || '')}">
-        <td><a href="#" onclick="verDetalleCuentaHost(${esc(cuentaJs)});return false;">${esc(row.cuenta)}</a></td>
+        <td><a href="#" onclick="abrirDetalleCuentaCredibanco(${esc(cuentaJs)});return false;">${esc(row.cuenta)}</a></td>
         <td class="num">${celdaFuente(row.fuentes, 'HA22', 'debe')}</td>
         <td class="num">${celdaFuente(row.fuentes, 'HA22', 'haber')}</td>
         <td class="num">${celdaFuente(row.fuentes, 'HA22', 'neto_debe_menos_haber')}</td>
