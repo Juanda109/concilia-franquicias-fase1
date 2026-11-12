@@ -21,6 +21,7 @@ from app.repositories.jornada import JornadaRepository
 from app.repositories.archivo import ArchivoRepository as ArchivoRepo
 from app.repositories.content import ContentRepository
 from app.repositories.trazabilidad import TrazabilidadRepository
+from app.repositories.cierre_credibanco import CierreCredibancoRepository
 from app.clients import minio_client
 from app.clients.parseo_client import parsear
 app=FastAPI(title="Concilia Franquicias Fase 1 - Back",version="2.4.0")
@@ -101,6 +102,17 @@ def jornada_detalle(id_jornada:int):
         if not resumen: raise HTTPException(404,'JORNADA_NO_ENCONTRADA')
         _,fecha_contable=resumen
         return _detalle_jornada(c,id_jornada,fecha_contable)
+
+@app.get('/api/v1/jornadas/{id_jornada}/cierre-credibanco')
+def cierre_credibanco(id_jornada:int):
+    """Diagnostico trazable F2 Credibanco (CAET/CANT, DEPO, CARTA_COMPENSACION
+    vs HA22/HA26/HA32) - ver app.core.cierre_credibanco_v67.construir_cierre.
+    Nunca certifica una conciliacion contable por si mismo: requiere reglas de
+    cruce aprobadas por negocio en app/catalogos/cierre_credibanco_v67.json."""
+    with connection() as c:
+        resultado=CierreCredibancoRepository(c).ejecutar(id_jornada)
+        if resultado is None: raise HTTPException(404,'JORNADA_NO_ENCONTRADA')
+        return resultado
 
 @app.get('/api/v1/archivos/{id_archivo}/errores')
 def archivo_errores(id_archivo:int):
