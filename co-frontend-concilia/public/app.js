@@ -751,19 +751,20 @@ let ultimoCierreCredibanco = null;
 
 // Tarjeta "FECHA CONTABLE" en Conciliación: solo muestra la jornada activa
 // (idJornadaActiva, compartida con Insumos) - no se selecciona desde acá,
-// la fecha se elige en Insumos y esta vista solo la refleja.
-function renderFechasConciliacion() {
+// la fecha se elige en Insumos y esta vista solo la refleja. No depende de
+// ningun arreglo de jornadas cargado por Insumos (esa pantalla puede ser el
+// selector simple de fecha o el de rango, segun la rama) - solo usa lo que
+// cargarCierreCredibanco() ya trae en la respuesta de cierre-credibanco.
+function renderFechasConciliacion(activa) {
   const host = el('reconFechasContables');
   if (!host) return;
-  const activa = jornadasRango.find((j) => j.idJornada === idJornadaActiva);
   if (!activa) {
     host.innerHTML = '<span class="reconDateEmpty">Sin fecha contable seleccionada en Insumos.</span>';
     return;
   }
   host.innerHTML = `
     <span class="fechaChip reconDateChip active" aria-disabled="true">
-      <small>FECHA CONTABLE</small><b>${esc(activa.fechaContable)}</b>
-      <span class="reconDateState">${esc(ESTADO_LABEL[activa.estado] ?? activa.estado)}</span>
+      <small>FECHA CONTABLE</small><b>${esc(activa.fecha)}</b>
       <span class="reconDateId">Jornada ${activa.idJornada}</span>
     </span>`;
 }
@@ -1015,8 +1016,8 @@ function renderDetalleCuentaCredibanco(cuenta) {
 async function cargarCierreCredibanco() {
   const cont = el('cierreCredibancoContent');
   if (!cont) return;
-  renderFechasConciliacion();
   if (!idJornadaActiva) {
+    renderFechasConciliacion(null);
     el('reconJornada').textContent = 'Seleccione una fecha contable en Insumos.';
     cont.innerHTML = '<div class="emptyDetail">Selecciona una fecha contable en Insumos para ver el diagnóstico de esta jornada.</div>';
     return;
@@ -1035,6 +1036,7 @@ async function cargarCierreCredibanco() {
   }
   const d = await r.json();
   ultimoCierreCredibanco = d;
+  renderFechasConciliacion({ fecha: d.fecha_contable, idJornada: d.id_jornada });
   el('reconJornada').textContent = `Fecha contable: ${d.fecha_contable} · Jornada ${d.id_jornada}`;
   const cc = d.control_canje_carta || {};
   const l3 = cc.L3_comisiones_canje || {};
