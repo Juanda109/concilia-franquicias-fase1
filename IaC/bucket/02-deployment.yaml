@@ -26,13 +26,23 @@ spec:
           type: RuntimeDefault
       containers:
         - name: minio
-          image: artifactory.globaldevtools.bbva.com:443/co-genai-public-cloud-docker-local/minio/minio@sha256:5e277e67ee7109a74942717e574062facf89bc78b66464a653a8a4cb0f75803b
+          # AIStor (MinIO comercial): sustituye al minio/minio@sha256:... de
+          # antes. TODO antes de desplegar: este digest/tag es un placeholder
+          # tomado tal cual del manifiesto de referencia (quay.io/minio/
+          # aistor/minio:latest) - hay que (1) espejarlo en el mismo
+          # Artifactory que usa el resto de imagenes de este cluster (quay.io
+          # directo ya dio "unauthorized" antes en esta red, ver comentario en
+          # docker-compose.yml) y (2) fijar un tag/digest concreto, nunca
+          # :latest.
+          image: artifactory.globaldevtools.bbva.com:443/co-genai-public-cloud-docker-local/minio/aistor-minio:REEMPLAZAR_TAG
           imagePullPolicy: IfNotPresent
           args:
             - server
             - /data
             - --console-address
             - :9001
+            - --license
+            - /minio.license
           env:
             # El Secret "minio-secret" se crea directamente en OKD (seccion
             # Secrets), no se versiona en este repo.
@@ -46,6 +56,8 @@ spec:
                 secretKeyRef:
                   name: minio-secret
                   key: MINIO_ROOT_PASSWORD
+            - name: MINIO_BROWSER_REDIRECT
+              value: "false"
           ports:
             - name: s3-api
               containerPort: 9000
@@ -53,6 +65,26 @@ spec:
             - name: console
               containerPort: 9001
               protocol: TCP
+          startupProbe:
+            httpGet:
+              path: /minio/health/live
+              port: s3-api
+            periodSeconds: 10
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /minio/health/ready
+              port: s3-api
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /minio/health/live
+              port: s3-api
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
@@ -60,15 +92,24 @@ spec:
                 - ALL
           resources:
             requests:
-              cpu: 250m
-              memory: 512Mi
+              cpu: 500m
+              memory: 1Gi
             limits:
-              cpu: "1"
-              memory: 2Gi
+              cpu: "1500m"
+              memory: 4Gi
           volumeMounts:
             - name: minio-data
               mountPath: /data
+            # El Secret "minio-license" se crea directamente en OKD (igual
+            # que minio-secret), no se versiona en este repo - ver IaC/README.md.
+            - name: minio-license
+              mountPath: /minio.license
+              subPath: minio.license
+              readOnly: true
       volumes:
         - name: minio-data
           persistentVolumeClaim:
             claimName: minio-data-pvc
+        - name: minio-license
+          secret:
+            secretName: minio-license

@@ -63,6 +63,45 @@ Tras crear o actualizar el Secret, forzar que el Deployment lo recoja
 oc rollout restart deployment/co-backend-concilia
 ```
 
+## MinIO / AIStor (Secrets `minio-secret` y `minio-license`)
+
+`bucket/02-deployment.yaml` pasó de MinIO Community a **AIStor** (MinIO
+comercial, requiere licencia). Ninguna de las dos credenciales se versiona
+con valores reales — se crean directo en OKD, igual que `concilia-oidc`.
+
+```
+oc create secret generic minio-secret \
+  --from-literal=MINIO_ROOT_USER='<usuario real>' \
+  --from-literal=MINIO_ROOT_PASSWORD='<password real>'
+
+oc create secret generic minio-license \
+  --from-file=minio.license='<ruta al archivo .license/.jwt entregado por MinIO/AIStor>'
+```
+
+**Importante:** la contraseña y el JWT de licencia que se compartieron para
+armar este cambio llegaron pegados en texto plano en una conversación (no en
+un canal de secretos) — hay que tratarlos como comprometidos. No los uses
+tal cual en los Secrets de arriba: generá una contraseña nueva, y si la
+licencia de AIStor está atada a una cuenta/persona específica (el JWT
+compartido traía un email embebido), pedí al equipo de MinIO/Subnet que
+emita una licencia nueva o confirmá que esa sigue siendo válida para
+reutilizarse antes de cargarla en el clúster.
+
+Tras crear o actualizar cualquiera de los dos Secrets, igual que con
+`concilia-oidc`:
+
+```
+oc rollout restart statefulset/minio
+```
+
+**Pendiente antes de aplicar `bucket/02-deployment.yaml`:** la imagen quedó
+con un tag placeholder (`REEMPLAZAR_TAG`) — hay que espejar la imagen de
+AIStor en el mismo Artifactory que usa el resto del clúster (igual que
+`minio/minio` hoy) y fijar un tag o digest concreto, nunca `:latest`. El PVC
+también subió de 20Gi a 50Gi: confirmar que `cephfs-sc` permite expansión de
+volumen (`allowVolumeExpansion: true`) antes de aplicar, o la expansión del
+PVC existente puede fallar/requerir recrearlo.
+
 ## Estado
 
 Estructura lista (`kustomization.yaml` anidado por categoría,
