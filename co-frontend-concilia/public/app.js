@@ -1,5 +1,6 @@
 const API = '/api/v1';
 const el = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 // ---- Autenticación Nauthilus (OIDC) ----
 // window.AppConfig lo define config.js (real, con endpoint/clientId de
@@ -428,14 +429,22 @@ async function eliminarArchivo(idArchivo) {
 }
 
 // ---- Vista dedicada de detalle de un insumo ----
+// Columnas que nunca se muestran en el visor de evidencia (PAN/tarjeta y
+// similares): el backend ya excluye ID_* y FECHA_CREACION, pero CAET/CANT
+// (TARJETA) y DEPO (NO_TARJETA) sí persisten estas columnas.
+const COLUMNAS_SENSIBLES_RE = /(^|_)(PAN|TARJETA|NUMERO_TARJETA|NRO_TARJETA|NO_TARJETA|CVV|CVC|DOCUMENTO_IDENTIDAD|NUMERO_DOCUMENTO|NUM_DOCUMENTO|TRACK|RAW)(_|$)/i;
 let detalleIdArchivo = null;
 let detallePagina = 0;
+let detalleOrigenPanel = 'insumos';
 const DETALLE_PAGE_SIZE = 30;
 
-function abrirDetalle(idArchivo) {
+function abrirDetalle(idArchivo, origen = 'insumos') {
   detalleIdArchivo = idArchivo;
   detallePagina = 0;
-  insumosScrollY = window.scrollY;
+  detalleOrigenPanel = origen;
+  if (origen === 'insumos') insumosScrollY = window.scrollY;
+  const link = el('btnVolverInsumos');
+  if (link) link.textContent = origen === 'conciliacion' ? '← Volver a Conciliación' : '← Volver a Insumos';
   document.querySelectorAll('.panel').forEach((p) => p.classList.remove('active'));
   el('detalleInsumo').classList.add('active');
   window.scrollTo(0, 0);
@@ -444,9 +453,12 @@ function abrirDetalle(idArchivo) {
 
 function volverAInsumos() {
   detalleIdArchivo = null;
+  const origen = detalleOrigenPanel;
+  detalleOrigenPanel = 'insumos';
   document.querySelectorAll('.panel').forEach((p) => p.classList.remove('active'));
-  el('insumos').classList.add('active');
-  requestAnimationFrame(() => window.scrollTo(0, insumosScrollY));
+  el(origen).classList.add('active');
+  if (origen === 'insumos') requestAnimationFrame(() => window.scrollTo(0, insumosScrollY));
+  else window.scrollTo(0, 0);
 }
 el('btnVolverInsumos').addEventListener('click', volverAInsumos);
 
@@ -500,11 +512,12 @@ function renderDetallePagina(d) {
   const start = totalItems ? page * pageSize + 1 : 0;
   const end = Math.min(page * pageSize + d.items.length, totalItems);
 
+  const headersVisibles = (d.headers || []).filter((c) => !COLUMNAS_SENSIBLES_RE.test(c.key));
   const contenidoHtml = !d.items.length
     ? '<div class="emptyDetail">El archivo no tiene contenido disponible para visualizar en esta página.</div>'
     : (() => {
-        const thead = `<tr>${d.headers.map((c) => `<th>${c.label}</th>`).join('')}</tr>`;
-        const tbody = d.items.map((row) => `<tr>${d.headers.map((c) => `<td>${row[c.key] ?? ''}</td>`).join('')}</tr>`).join('');
+        const thead = `<tr>${headersVisibles.map((c) => `<th>${c.label}</th>`).join('')}</tr>`;
+        const tbody = d.items.map((row) => `<tr>${headersVisibles.map((c) => `<td>${row[c.key] ?? ''}</td>`).join('')}</tr>`).join('');
         return `
           <div class="detailTableWrap" aria-label="Contenido paginado del archivo">
             <table class="detailDataTable"><thead>${thead}</thead><tbody>${tbody}</tbody></table>
@@ -682,30 +695,464 @@ function go(id, btn) {
   document.querySelectorAll('.nav button').forEach((b) => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
   window.scrollTo(0, 0);
+  if (id === 'conciliacion') void cargarCierreCredibanco();
 }
 
-// ---- Conciliación (datos de ejemplo, ver aviso en la pantalla) ----
-function filterReconRows() {
-  const q = (el('reconQ').value || '').toLowerCase();
-  const fr = el('reconFr').value || '';
-  const st = el('reconSt').value || '';
-  document.querySelectorAll('#recon tbody tr').forEach((r) => {
-    const okq = r.innerText.toLowerCase().includes(q);
-    const okfr = !fr || r.dataset.franchise === fr;
-    const okst = !st || r.dataset.filterStatus === st;
+// ---- Conciliación: diagnóstico real Credibanco F2 (ver cierre-credibanco) ----
+function fmtMoney(v) {
+  if (v === null || v === undefined) return '—';
+  const n = Number(v);
+  if (Number.isNaN(n)) return '—';
+  return n.toLocaleString('es-CO', { maximumFractionDigits: 0 });
+}
+
+function badgeFor(estado) {
+  const e = String(estado || '');
+  if (/^(CUADRA|COINCIDE|CALCULADO|PROCESADO)/.test(e)) return 'ok';
+  if (/^(PENDIENTE|BLOQUEADO|DATO_INCOMPLETO)/.test(e)) return 'warn';
+  if (e) return 'info';
+  return 'info';
+}
+
+// Traducción legible de los códigos de estado de cierre_credibanco_v67 (ver
+// evaluar_reglas_cruce/agrupar_host en el backend) - el motor siempre habla
+// en código técnico explícito (nunca "OK"/"ERROR" genéricos) para que cada
+// estado sea accionable; acá solo se traduce a español para la analista,
+// sin perder el código (queda como title/tooltip).
+const ESTADO_CONCILIACION_LABEL = {
+  COINCIDE_DIAGNOSTICO_NO_CERTIFICADO: 'Conciliado (no certificado)',
+  DIFERENCIA_DIAGNOSTICA_NO_CERTIFICADA: 'Con diferencia (no certificada)',
+  PENDIENTE_APROBACION_REGLA: 'Pendiente de aprobación de la regla',
+  CAMPO_ORIGEN_NO_PERMITIDO: 'Campo de origen no permitido',
+  FUENTES_NO_DISPONIBLES: 'Fuentes no disponibles',
+  CUENTA_CENTRO_INCORRECTOS: 'Cuenta/centro incorrectos',
+  MONEDA_O_NATURALEZA_NO_APROBADA: 'Moneda o naturaleza no aprobada',
+  SIGNO_NO_APROBADO: 'Signo no aprobado',
+  FECHAS_HOST_NO_HOMOLOGADAS: 'Fechas Host no homologadas',
+  FILTRO_TX_NO_APROBADO: 'Filtro TX no aprobado',
+  FILTRO_MOVIMIENTO_NO_APROBADO: 'Filtro de movimiento no aprobado',
+  MOTIVO_CARTA_NO_APROBADO: 'Motivo de Carta no aprobado',
+  SIN_MOVIMIENTOS_FRANQUICIA: 'Sin movimientos de Franquicia',
+  IMPORTES_FRANQUICIA_INCOMPLETOS: 'Importes de Franquicia incompletos',
+  CARTA_CONTROL_MULTIPLE: 'Control de Carta múltiple',
+  CRUDO_DEPO_NEGATIVO: 'Valor crudo DEPO negativo',
+  HOST_NO_VALIDADO_O_SINTETICO: 'Host no validado o sintético',
+  FECHA_HOST_NO_COINCIDE: 'Fecha Host no coincide',
+  PENDIENTE_HOMOLOGACION_NATURALEZA_Y_FUENTE: 'Pendiente de homologación (naturaleza y fuente)',
+  BLOQUEADO_SINTETICO: 'Bloqueado (movimiento sintético)',
+  DATO_INCOMPLETO: 'Dato incompleto',
+};
+function labelEstadoConciliacion(estado) {
+  if (!estado) return '—';
+  return ESTADO_CONCILIACION_LABEL[estado] ?? estado;
+}
+
+let ultimoCierreCredibanco = null;
+
+// Tarjeta "FECHA CONTABLE" en Conciliación: solo muestra la jornada activa
+// (idJornadaActiva, compartida con Insumos) - no se selecciona desde acá,
+// la fecha se elige en Insumos y esta vista solo la refleja.
+function renderFechasConciliacion() {
+  const host = el('reconFechasContables');
+  if (!host) return;
+  const activa = jornadasRango.find((j) => j.idJornada === idJornadaActiva);
+  if (!activa) {
+    host.innerHTML = '<span class="reconDateEmpty">Sin fecha contable seleccionada en Insumos.</span>';
+    return;
+  }
+  host.innerHTML = `
+    <span class="fechaChip reconDateChip active" aria-disabled="true">
+      <small>FECHA CONTABLE</small><b>${esc(activa.fechaContable)}</b>
+      <span class="reconDateState">${esc(ESTADO_LABEL[activa.estado] ?? activa.estado)}</span>
+      <span class="reconDateId">Jornada ${activa.idJornada}</span>
+    </span>`;
+}
+
+function celdaFuente(fuentes, tx, campo) {
+  const f = fuentes[tx];
+  if (!f || f[campo] == null) return '—';
+  return fmtMoney(f[campo]);
+}
+
+// Una fila por cuenta Host, con HA22/HA26/HA32 lado a lado (Debe/Haber/Neto,
+// nunca sumados entre sí) y la regla de cruce asociada si existe. Mismo
+// diseño de tabla que ya traía gustavo-dev para esta pantalla, pero sobre
+// datos reales de cierre_credibanco_v67 (host_por_cuenta_y_fuente /
+// cruces_host_credibanco_diagnosticos), no sobre el endpoint v72 descartado.
+function construirFilasHost(hostPorCuenta, cruces) {
+  const porCuenta = new Map();
+  for (const h of hostPorCuenta || []) {
+    if (!porCuenta.has(h.cuenta)) porCuenta.set(h.cuenta, { cuenta: h.cuenta, fuentes: {} });
+    porCuenta.get(h.cuenta).fuentes[h.fuente] = h;
+  }
+  const cruceDeCuenta = new Map((cruces || []).map((c) => [c.cuenta_host, c]));
+  // Una regla del catálogo puede no tener todavía ningún movimiento Host
+  // observado para su cuenta en esta jornada; igual debe listarse (con las
+  // columnas HA22/26/32 en "—") para que no desaparezca de la vista.
+  for (const c of cruces || []) {
+    if (c.cuenta_host && !porCuenta.has(c.cuenta_host)) {
+      porCuenta.set(c.cuenta_host, { cuenta: c.cuenta_host, fuentes: {} });
+    }
+  }
+  return [...porCuenta.values()]
+    .sort((a, b) => a.cuenta.localeCompare(b.cuenta))
+    .map((row) => ({ ...row, cruce: cruceDeCuenta.get(row.cuenta) || null }));
+}
+
+// Concepto de origen de cada regla de cruce del catálogo
+// (cierre_credibanco_v67.json), para poder mostrarlo en la tabla plana
+// "Resultados de conciliación" sin que el backend tenga que exponerlo
+// (el catálogo ya lo usa internamente para filtrar canje/depo por fila).
+const CONCEPTO_REGLA = {
+  'CB-F2-302-CANJE-CREDITO': '017-CANJE RECIBIDO TARJETA CREDITO PAGOS',
+  'CB-F2-838-DEPO-NACIONAL': '017-VR. DEPOSITOS ELECTRONICOS NAL CONSIGNADOS',
+  'CB-F2-839-DEPO-INTERNACIONAL': '017-VR. DEPOSITOS ELECTRONICOS INTERNACIONAL CONSIGNADOS',
+};
+
+// totales_diagnosticos ya viene agrupado por concepto (una fila por A).
+function totalPorConceptoCanje(totales, concepto) {
+  return (totales || []).find((t) => t.A === concepto) || null;
+}
+
+// depo_agregados_crudos es por fila (no agrupado) - se suma aquí por
+// concepto para poder mostrar un solo número, igual que hace el backend
+// para CAET/CANT en construir_totales_diagnosticos_canje.
+function totalPorConceptoDepo(depo, concepto) {
+  let cantidad = 0; let interc = 0; let total = 0; let huboInterc = false; let huboTotal = false; let filas = 0;
+  for (const x of depo || []) {
+    if (x.concepto !== concepto) continue;
+    filas += 1;
+    cantidad += x.cantidad || 0;
+    if (x.valor_intercambio_crudo != null) { interc += Number(x.valor_intercambio_crudo); huboInterc = true; }
+    if (x.valor_total_crudo != null) { total += Number(x.valor_total_crudo); huboTotal = true; }
+  }
+  if (!filas) return null;
+  return { cantidad, interc: huboInterc ? interc : null, total: huboTotal ? total : null };
+}
+
+// Una fila por regla de cruce del catálogo (Franquicia/Cuenta/Concepto +
+// HA22/HA26/HA32 + Total Host/Diferencia/Estado) - mismo diseño de columnas
+// que traía gustavo-dev para "Resultados de conciliación", pero cada celda
+// sale de un campo que cierre_credibanco_v67 realmente calcula (nunca de un
+// endpoint v72/reporte-maestro-diagnostico descartado ni de datos QA
+// inventados).
+function construirFilasResultado(d) {
+  const cruces = d.cruces_host_credibanco_diagnosticos || [];
+  const hostPorCuenta = new Map();
+  for (const h of d.host_por_cuenta_y_fuente || []) {
+    if (!hostPorCuenta.has(h.cuenta)) hostPorCuenta.set(h.cuenta, {});
+    hostPorCuenta.get(h.cuenta)[h.fuente] = h;
+  }
+  return cruces.map((c) => {
+    const concepto = CONCEPTO_REGLA[c.id_regla] || '—';
+    let cantidad = '—';
+    let interc = '—';
+    let total = '—';
+    if (c.insumo === 'CANT' || c.insumo === 'CAET') {
+      const t = totalPorConceptoCanje(d.totales_diagnosticos, concepto);
+      if (t) {
+        cantidad = t.B;
+        interc = t.C != null ? fmtMoney(t.C) : '—';
+        total = t.D != null ? fmtMoney(t.D) : '—';
+      }
+    } else if (c.insumo === 'DEPO') {
+      const t = totalPorConceptoDepo(d.depo_agregados_crudos, concepto);
+      if (t) {
+        cantidad = t.cantidad;
+        interc = t.interc != null ? fmtMoney(t.interc) : '—';
+        total = t.total != null ? fmtMoney(t.total) : '—';
+      }
+    }
+    const fuentes = hostPorCuenta.get(c.cuenta_host) || {};
+    const idArchivo = (fuentes.HA22 || fuentes.HA26 || fuentes.HA32)?.archivos?.[0];
+    const cuentaJs = esc(JSON.stringify(c.cuenta_host || ''));
+    const accion = idArchivo != null
+      ? `<button type="button" class="btn" onclick="abrirDetalle(${Number(idArchivo)},'conciliacion')">Ver evidencia</button>`
+      : `<button type="button" class="btn" onclick="abrirDetalleCuentaCredibanco(${cuentaJs})">Ver detalle</button>`;
+    return `<tr data-cuenta="${esc(c.cuenta_host || '')}" data-concepto="${esc(concepto)}" data-estado="${esc(c.estado || '')}" data-franquicia="CREDIBANCO">
+      <td>CREDIBANCO</td>
+      <td><a href="#" onclick="abrirDetalleCuentaCredibanco(${cuentaJs});return false;">${esc(c.cuenta_host || '—')}</a></td>
+      <td>${esc(concepto)}</td>
+      <td class="num">${cantidad}</td>
+      <td class="num">${interc}</td>
+      <td class="num">${total}</td>
+      <td class="num">${c.valor_franquicia != null ? fmtMoney(c.valor_franquicia) : '—'}</td>
+      <td class="num">${celdaFuente(fuentes, 'HA22', 'debe')}</td>
+      <td class="num">${celdaFuente(fuentes, 'HA22', 'haber')}</td>
+      <td class="num">${celdaFuente(fuentes, 'HA22', 'neto_debe_menos_haber')}</td>
+      <td class="num">${celdaFuente(fuentes, 'HA26', 'debe')}</td>
+      <td class="num">${celdaFuente(fuentes, 'HA26', 'haber')}</td>
+      <td class="num">${celdaFuente(fuentes, 'HA26', 'neto_debe_menos_haber')}</td>
+      <td class="num">${celdaFuente(fuentes, 'HA32', 'debe')}</td>
+      <td class="num">${celdaFuente(fuentes, 'HA32', 'haber')}</td>
+      <td class="num">${celdaFuente(fuentes, 'HA32', 'neto_debe_menos_haber')}</td>
+      <td class="num">${c.valor_host != null ? fmtMoney(c.valor_host) : '—'}</td>
+      <td class="num">${c.diferencia != null ? fmtMoney(c.diferencia) : '—'}</td>
+      <td><span class="tag ${badgeFor(c.estado)}" title="${esc(c.estado || '')}">${esc(labelEstadoConciliacion(c.estado))}</span>${c.diferencia != null && c.aprobada === false ? ' <span class="tag warn" title="La regla no tiene version+evidencia_aprobacion firmadas; este valor es un calculo provisional, no un resultado certificado.">⚠ sin aprobar</span>' : ''}</td>
+      <td>${accion}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterResultadoRows() {
+  const q = (el('reconQ')?.value || '').toLowerCase();
+  const fr = el('reconFr')?.value || '';
+  const st = el('reconSt')?.value || '';
+  document.querySelectorAll('#reconBody tr').forEach((r) => {
+    const okq = !q || (r.dataset.cuenta || '').toLowerCase().includes(q) || (r.dataset.concepto || '').toLowerCase().includes(q);
+    const okfr = !fr || r.dataset.franquicia === fr;
+    const okst = !st || r.dataset.estado === st;
     r.style.display = okq && okfr && okst ? 'table-row' : 'none';
   });
 }
 
-function verDetalleRecon(cta, tx, vf, vh) {
-  drawerContent.innerHTML = `<h2>Detalle de conciliación (ejemplo)</h2><span class="badge info">${cta}</span>
-    <div class="explain"><b>Origen Host:</b> ${tx} · dato de ejemplo, no consultado del backend real.</div>
-    <table><thead><tr><th>Lado</th><th>Valor</th></tr></thead><tbody>
-      <tr><td>Franquicia</td><td>${vf}</td></tr>
-      <tr><td>Host</td><td>${vh}</td></tr>
-      <tr><td>Resultado</td><td>${vf === vh ? 'Conciliado' : 'Diferencia'}</td></tr>
-    </tbody></table>`;
-  openDrawer();
+function toggleTrazabilidadHost() {
+  const card = el('trazabilidadHostCard');
+  const btn = el('btnTrazabilidadHost');
+  if (!card || !btn) return;
+  const mostrar = card.style.display === 'none';
+  card.style.display = mostrar ? '' : 'none';
+  btn.textContent = btn.textContent.replace(mostrar ? 'Ver' : 'Ocultar', mostrar ? 'Ocultar' : 'Ver');
+  if (mostrar) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function filterCruceRows() {
+  const q = (el('cruceQ')?.value || '').toLowerCase();
+  const st = el('cruceSt')?.value || '';
+  document.querySelectorAll('#cruceBody tr').forEach((r) => {
+    const okq = !q || (r.dataset.cuenta || '').toLowerCase().includes(q);
+    const okst = !st || r.dataset.estado === st;
+    r.style.display = okq && okst ? 'table-row' : 'none';
+  });
+}
+
+// Página completa de detalle por cuenta, con la misma estructura en dos
+// bloques que usaba gustavo-dev para esta vista ("A. Contabilidad interna ·
+// Host" / "B. Insumos externos"), pero construida solo con lo que
+// cierre_credibanco_v67 realmente calcula - nunca atribuye un total global
+// de CAET/CANT/DEPO a una cuenta sin que el motor mismo lo haya candidateado.
+let detalleCuentaOrigenScrollY = 0;
+
+function abrirDetalleCuentaCredibanco(cuenta) {
+  const cont = el('detalleCuentaCredibancoContent');
+  if (!cont) return;
+  detalleCuentaOrigenScrollY = window.scrollY;
+  document.querySelectorAll('.panel').forEach((p) => p.classList.remove('active'));
+  el('detalleCuentaCredibanco').classList.add('active');
+  window.scrollTo(0, 0);
+  renderDetalleCuentaCredibanco(cuenta);
+}
+
+function volverAConciliacion() {
+  document.querySelectorAll('.panel').forEach((p) => p.classList.remove('active'));
+  el('conciliacion').classList.add('active');
+  requestAnimationFrame(() => window.scrollTo(0, detalleCuentaOrigenScrollY));
+}
+el('btnVolverConciliacion')?.addEventListener('click', volverAConciliacion);
+
+function renderDetalleCuentaCredibanco(cuenta) {
+  const cont = el('detalleCuentaCredibancoContent');
+  const d = ultimoCierreCredibanco;
+  if (!cont || !d) return;
+
+  const filasHost = (d.host_por_cuenta_y_fuente || []).filter((h) => h.cuenta === cuenta);
+  const cruce = (d.cruces_host_credibanco_diagnosticos || []).find((c) => c.cuenta_host === cuenta) || null;
+
+  const filasHostHtml = filasHost
+    .map((f) => {
+      const idArchivo = (f.archivos || [])[0];
+      const accion = idArchivo != null
+        ? `<button type="button" class="btn" onclick="abrirDetalle(${Number(idArchivo)},'conciliacion')">Ver evidencia</button>`
+        : '—';
+      return `<tr><td>${esc(f.fuente)}</td><td>${idArchivo ?? '—'}</td><td class="num">${f.cantidad ?? '—'}</td><td class="num">${fmtMoney(f.debe)}</td><td class="num">${fmtMoney(f.haber)}</td><td class="num">${fmtMoney(f.neto_debe_menos_haber)}</td><td><span class="tag ${badgeFor(f.estado)}">${esc(f.estado)}</span></td><td>${accion}</td></tr>`;
+    })
+    .join('');
+
+  const cruceHtml = cruce
+    ? `<div class="explain"><b>Regla de cruce:</b> ${esc(cruce.id_regla)} (${esc(cruce.insumo)}) · <span class="tag ${badgeFor(cruce.estado)}" title="${esc(cruce.estado || '')}">${esc(labelEstadoConciliacion(cruce.estado))}</span>${cruce.valor_franquicia != null ? ` · Franquicia: ${fmtMoney(cruce.valor_franquicia)} · Diferencia: ${fmtMoney(cruce.diferencia)}` : ''}${cruce.diferencia != null && cruce.aprobada === false ? ' <span class="tag warn" title="La regla no tiene version+evidencia_aprobacion firmadas; este valor es un calculo provisional, no un resultado certificado.">⚠ sin aprobar</span>' : ''}</div>`
+    : '<div class="explain">Sin regla de cruce aprobada para esta cuenta todavía.</div>';
+
+  // Seccion B: nunca se filtra un total global de CAET/CANT por cuenta (el
+  // motor no hace esa atribucion sin regla aprobada), salvo DEPO, donde
+  // agrupar_depo() ya calcula una cuenta_host_candidata explicita por fila.
+  let seccionB;
+  if (cruce && (cruce.insumo === 'CAET' || cruce.insumo === 'CANT')) {
+    const filas = d.totales_diagnosticos || [];
+    const filasHtml = filas
+      .map((t) => `<tr><td>${esc(t.A)}</td><td>${esc((t.insumos || []).join(', '))}</td><td class="num">${t.B ?? '—'}</td><td class="num">${t.C != null ? fmtMoney(t.C) : '—'}</td><td class="num">${t.D != null ? fmtMoney(t.D) : '—'}</td></tr>`)
+      .join('');
+    seccionB = `
+      <h3>B. Insumos externos · CAET/CANT</h3>
+      <p class="friendlyNote">Totales globales de origen por concepto persistido (ver "Totales diagnósticos"). No atribuidos automáticamente a esta cuenta: la regla de cruce arriba es la única atribución aprobable, y sigue pendiente. No sumar CAET y CANT entre sí.</p>
+      <div class="tableScroll"><table class="reconTable"><thead><tr><th>Concepto</th><th>Insumo</th><th>Cantidad</th><th>VL Interc</th><th>VL Total</th></tr></thead>
+      <tbody>${filasHtml || '<tr><td colspan="5" class="muted">Sin totales disponibles.</td></tr>'}</tbody></table></div>`;
+  } else if (cruce && cruce.insumo === 'DEPO') {
+    const filas = (d.depo_agregados_crudos || []).filter((x) => x.cuenta_host_candidata === cuenta);
+    const filasHtml = filas
+      .map((x) => `<tr><td>${esc(x.concepto || x.concepto_persistido || '—')}</td><td class="num">${x.cantidad ?? '—'}</td><td class="num">${x.valor_total_crudo != null ? fmtMoney(x.valor_total_crudo) : '—'}</td><td class="num">${x.valor_intercambio_crudo != null ? fmtMoney(x.valor_intercambio_crudo) : '—'}</td><td><span class="tag ${badgeFor(x.estado)}">${esc(x.estado)}</span></td></tr>`)
+      .join('');
+    seccionB = `
+      <h3>B. Insumos externos · DEPO</h3>
+      <p class="friendlyNote">Filas de DEPO cuya cuenta candidata (calculada por el motor a partir del concepto AU) coincide con esta cuenta. Candidato, no homologación aprobada.</p>
+      <div class="tableScroll"><table class="reconTable"><thead><tr><th>Concepto</th><th>Cantidad</th><th>Valor total crudo</th><th>Valor intercambio crudo</th><th>Estado</th></tr></thead>
+      <tbody>${filasHtml || '<tr><td colspan="5" class="muted">Sin filas DEPO candidateadas a esta cuenta.</td></tr>'}</tbody></table></div>`;
+  } else {
+    seccionB = '<h3>B. Insumos externos</h3><p class="muted">Sin regla de cruce asociada a esta cuenta; no hay insumo externo que mostrar aquí todavía.</p>';
+  }
+
+  cont.innerHTML = `
+    <div class="head"><div><h1>Detalle de conciliación · ${esc(cuenta)}</h1></div></div>
+    ${cruceHtml}
+    <div class="card section">
+      <h3>A. Contabilidad interna · Host</h3>
+      <p class="friendlyNote">Neto por fuente = Debe − Haber. HA22, HA26 y HA32 no se suman entre sí.</p>
+      <div class="tableScroll"><table class="reconTable"><thead><tr><th>Fuente</th><th>Archivo ID</th><th>Movimientos</th><th>Debe</th><th>Haber</th><th>Neto</th><th>Estado</th><th>Acción</th></tr></thead>
+      <tbody>${filasHostHtml || '<tr><td colspan="8" class="muted">Sin movimientos Host para esta cuenta.</td></tr>'}</tbody></table></div>
+    </div>
+    <div class="card section">${seccionB}</div>`;
+}
+
+async function cargarCierreCredibanco() {
+  const cont = el('cierreCredibancoContent');
+  if (!cont) return;
+  renderFechasConciliacion();
+  if (!idJornadaActiva) {
+    el('reconJornada').textContent = 'Seleccione una fecha contable en Insumos.';
+    cont.innerHTML = '<div class="emptyDetail">Selecciona una fecha contable en Insumos para ver el diagnóstico de esta jornada.</div>';
+    return;
+  }
+  cont.innerHTML = '<div class="emptyDetail">Cargando diagnóstico…</div>';
+  let r;
+  try {
+    r = await apiFetch(`${API}/jornadas/${idJornadaActiva}/cierre-credibanco`);
+  } catch (e) {
+    cont.innerHTML = `<div class="emptyDetail">No se pudo cargar el diagnóstico: ${esc(e.message || e)}</div>`;
+    return;
+  }
+  if (!r.ok) {
+    cont.innerHTML = `<div class="emptyDetail">No se pudo cargar el diagnóstico (HTTP ${r.status}).</div>`;
+    return;
+  }
+  const d = await r.json();
+  ultimoCierreCredibanco = d;
+  el('reconJornada').textContent = `Fecha contable: ${d.fecha_contable} · Jornada ${d.id_jornada}`;
+  const cc = d.control_canje_carta || {};
+  const l3 = cc.L3_comisiones_canje || {};
+  const l5 = cc.L5_carta_componente_G || {};
+  const l8 = cc.L8_diferencia || {};
+  const neta = d.carta_posicion_neta || {};
+
+  const pendRows = (d.pendientes || [])
+    .map((p) => `<tr><td>${esc(p.codigo || p.estado || '')}</td><td>${esc(p.detalle || p.mensaje || JSON.stringify(p))}</td></tr>`)
+    .join('');
+
+  const cruces = d.cruces_host_credibanco_diagnosticos || [];
+  const filasHost = construirFilasHost(d.host_por_cuenta_y_fuente, cruces);
+  const coincidencias = cruces.filter((c) => c.estado === 'COINCIDE_DIAGNOSTICO_NO_CERTIFICADO').length;
+  const diferencias = cruces.filter((c) => c.estado === 'DIFERENCIA_DIAGNOSTICA_NO_CERTIFICADA').length;
+
+  // "Incorporados maestro": cuentas con regla de cruce definida que ya
+  // tienen al menos un movimiento Host cargado para esta jornada (HA22/26/32)
+  // - es decir, con datos reales ya incorporados a este cuadro para poder
+  // compararse, independientemente de si la regla ya fue aprobada.
+  const incorporadosMaestro = filasHost.filter((f) => f.cruce && Object.keys(f.fuentes).length > 0).length;
+  const filasResultado = construirFilasResultado(d);
+
+  const cruceRows = filasHost
+    .map((row) => {
+      const cruce = row.cruce;
+      const estadoFila = cruce ? cruce.estado : Object.values(row.fuentes)[0]?.estado;
+      const idArchivo = (row.fuentes.HA22 || row.fuentes.HA26 || row.fuentes.HA32)?.archivos?.[0];
+      const accion = idArchivo != null
+        ? `<button type="button" class="btn" onclick="abrirDetalle(${Number(idArchivo)},'conciliacion')">Ver evidencia</button>`
+        : '—';
+      const cuentaJs = JSON.stringify(row.cuenta);
+      return `<tr data-cuenta="${esc(row.cuenta)}" data-estado="${esc(estadoFila || '')}">
+        <td><a href="#" onclick="abrirDetalleCuentaCredibanco(${esc(cuentaJs)});return false;">${esc(row.cuenta)}</a></td>
+        <td class="num">${celdaFuente(row.fuentes, 'HA22', 'debe')}</td>
+        <td class="num">${celdaFuente(row.fuentes, 'HA22', 'haber')}</td>
+        <td class="num">${celdaFuente(row.fuentes, 'HA22', 'neto_debe_menos_haber')}</td>
+        <td class="num">${celdaFuente(row.fuentes, 'HA26', 'debe')}</td>
+        <td class="num">${celdaFuente(row.fuentes, 'HA26', 'haber')}</td>
+        <td class="num">${celdaFuente(row.fuentes, 'HA26', 'neto_debe_menos_haber')}</td>
+        <td class="num">${celdaFuente(row.fuentes, 'HA32', 'debe')}</td>
+        <td class="num">${celdaFuente(row.fuentes, 'HA32', 'haber')}</td>
+        <td class="num">${celdaFuente(row.fuentes, 'HA32', 'neto_debe_menos_haber')}</td>
+        <td>${cruce ? esc(cruce.id_regla) : '<span class="muted">Sin regla</span>'}</td>
+        <td class="num">${cruce && cruce.valor_franquicia != null ? fmtMoney(cruce.valor_franquicia) : '—'}</td>
+        <td class="num">${cruce && cruce.diferencia != null ? fmtMoney(cruce.diferencia) : '—'}</td>
+        <td><span class="tag ${badgeFor(estadoFila)}" title="${esc(estadoFila || '')}">${esc(labelEstadoConciliacion(estadoFila))}</span>${cruce && cruce.diferencia != null && cruce.aprobada === false ? ' <span class="tag warn" title="La regla no tiene version+evidencia_aprobacion firmadas; este valor es un calculo provisional, no un resultado certificado.">⚠ sin aprobar</span>' : ''}</td>
+        <td>${accion}</td>
+      </tr>`;
+    })
+    .join('');
+
+  cont.innerHTML = `
+    <div class="flow summaryFlow">
+      <div class="fc"><small>POSICIÓN NETA CARTA</small><b class="tag ${badgeFor(neta.estado)}">${esc(neta.estado || '—')}</b></div>
+      <div class="fc"><small>L3 · COMISIONES CANJE</small><b>${fmtMoney(l3.valor)}</b></div>
+      <div class="fc"><small>L5 · CARTA (COMPONENTE G)</small><b>${fmtMoney(l5.valor)}</b></div>
+      <div class="fc"><small>L8 · DIFERENCIA (L5-L3-L6)</small><b>${l8.l8 !== undefined ? fmtMoney(l8.l8) : '—'}</b></div>
+    </div>
+    <div class="explain"><b>Diagnóstico, no certificación.</b> Estado general: <span class="tag ${badgeFor(d.estado)}">${esc(d.estado || '—')}</span>. Este resultado nunca certifica automáticamente una conciliación contable (<code>certificado:false</code> siempre); requiere revisión y aprobación de negocio.</div>
+    <div class="flow summaryFlow">
+      <div class="fc"><small>CUENTAS / CRUCES</small><b>${cruces.length}</b></div>
+      <div class="fc"><small>CONCILIADOS</small><b>${coincidencias}</b></div>
+      <div class="fc"><small>DIFERENCIAS</small><b>${diferencias}</b></div>
+      <div class="fc"><small>INCORPORADOS MAESTRO</small><b>${incorporadosMaestro}</b></div>
+    </div>
+    <div class="card section">
+      <div class="toolbar">
+        <input id="reconQ" class="search" onkeyup="filterResultadoRows()" placeholder="Buscar cuenta o concepto...">
+        <select id="reconFr" class="select" onchange="filterResultadoRows()">
+          <option value="">Todas las franquicias</option>
+          <option value="CREDIBANCO">Credibanco</option>
+        </select>
+        <select id="reconSt" class="select" onchange="filterResultadoRows()">
+          <option value="">Todos los estados</option>
+          <option value="COINCIDE_DIAGNOSTICO_NO_CERTIFICADO">Conciliado</option>
+          <option value="DIFERENCIA_DIAGNOSTICA_NO_CERTIFICADA">Con diferencia</option>
+          <option value="PENDIENTE_APROBACION_REGLA">Pendiente de aprobación</option>
+        </select>
+      </div>
+      <div class="title">Resultados de conciliación <span class="muted">(${cruces.length} registros)</span></div>
+      <div class="tableScroll"><table class="reconTable"><thead><tr>
+        <th>Franquicia</th><th>Cuenta</th><th>Concepto</th><th>Cantidad*</th><th>VL Interc*</th><th>VL Total*</th><th>Valor intercambio</th>
+        <th>HA22 Debe</th><th>HA22 Haber</th><th>HA22 Neto*</th>
+        <th>HA26 Debe</th><th>HA26 Haber</th><th>HA26 Neto*</th>
+        <th>HA32 Debe</th><th>HA32 Haber</th><th>HA32 Neto*</th>
+        <th>Total Host</th><th>Diferencia</th><th>Estado conciliación</th><th>Acción</th>
+      </tr></thead><tbody id="reconBody">${filasResultado || '<tr><td colspan="20" class="muted">Sin resultados consultados.</td></tr>'}</tbody></table></div>
+      <p class="filterHint">*: diagnóstico no homologado, puede repetirse entre conceptos de una misma cuenta. —: no disponible / sin cruce homologado. Los resultados Host sin correspondencia se consultan en trazabilidad separada; no se inventan cruces ni totales.</p>
+      <div class="actionbar" style="justify-content:flex-end;margin-top:12px"><button type="button" class="btn" id="btnTrazabilidadHost" onclick="toggleTrazabilidadHost()">Ver trazabilidad Host (${filasHost.length})</button></div>
+    </div>
+    <div class="card section" id="trazabilidadHostCard" style="display:none">
+      <div class="title">Cuentas Host observadas <span class="muted">(${filasHost.length})</span></div>
+      <div class="toolbar">
+        <input id="cruceQ" class="search" onkeyup="filterCruceRows()" placeholder="Buscar cuenta..." aria-label="Buscar cuenta Host">
+        <select id="cruceSt" class="select" onchange="filterCruceRows()" aria-label="Filtrar por estado">
+          <option value="">Todos los estados</option>
+          <option value="PENDIENTE_HOMOLOGACION_NATURALEZA_Y_FUENTE">Pendiente homologación</option>
+          <option value="PENDIENTE_APROBACION_REGLA">Pendiente aprobación regla</option>
+          <option value="BLOQUEADO_SINTETICO">Bloqueado sintético</option>
+          <option value="DATO_INCOMPLETO">Dato incompleto</option>
+          <option value="COINCIDE_DIAGNOSTICO_NO_CERTIFICADO">Coincide (no certificado)</option>
+          <option value="DIFERENCIA_DIAGNOSTICA_NO_CERTIFICADA">Diferencia (no certificada)</option>
+        </select>
+      </div>
+      <div class="filterHint">Diagnóstico por cuenta Host, nunca homologación contable. HA22/HA26/HA32 no se suman entre sí. "Sin regla" = cuenta observada en Host sin regla de cruce aprobada todavía.</div>
+      <div class="tableScroll"><table class="reconTable"><thead><tr>
+        <th>Cuenta</th><th>HA22 Debe</th><th>HA22 Haber</th><th>HA22 Neto</th>
+        <th>HA26 Debe</th><th>HA26 Haber</th><th>HA26 Neto</th>
+        <th>HA32 Debe</th><th>HA32 Haber</th><th>HA32 Neto</th>
+        <th>Regla</th><th>Valor Franquicia</th><th>Diferencia</th><th>Estado</th><th>Acción</th>
+      </tr></thead><tbody id="cruceBody">${cruceRows || '<tr><td colspan="15" class="muted">Sin cuentas Host observadas.</td></tr>'}</tbody></table></div>
+    </div>
+    <div class="card section">
+      <div class="title">Pendientes (${(d.pendientes || []).length})</div>
+      <div class="tableScroll"><table><thead><tr><th>Código</th><th>Detalle</th></tr></thead>
+      <tbody>${pendRows || '<tr><td colspan="2" class="muted">Sin pendientes.</td></tr>'}</tbody></table></div>
+    </div>`;
 }
 
 // ---- Agente IA (storyboard de UX, ver aviso en la pantalla — no hay IA real conectada) ----
