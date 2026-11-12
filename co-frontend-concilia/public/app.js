@@ -1,5 +1,6 @@
 const API = '/api/v1';
 const el = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 // ---- Autenticación Nauthilus (OIDC) ----
 // window.AppConfig lo define config.js (real, con endpoint/clientId de
@@ -849,30 +850,77 @@ function go(id, btn) {
   document.querySelectorAll('.nav button').forEach((b) => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
   window.scrollTo(0, 0);
+  if (id === 'conciliacion') void cargarCierreCredibanco();
 }
 
-// ---- Conciliación (datos de ejemplo, ver aviso en la pantalla) ----
-function filterReconRows() {
-  const q = (el('reconQ').value || '').toLowerCase();
-  const fr = el('reconFr').value || '';
-  const st = el('reconSt').value || '';
-  document.querySelectorAll('#recon tbody tr').forEach((r) => {
-    const okq = r.innerText.toLowerCase().includes(q);
-    const okfr = !fr || r.dataset.franchise === fr;
-    const okst = !st || r.dataset.filterStatus === st;
-    r.style.display = okq && okfr && okst ? 'table-row' : 'none';
-  });
+// ---- Conciliación: diagnóstico real Credibanco F2 (ver cierre-credibanco) ----
+function fmtMoney(v) {
+  if (v === null || v === undefined) return '—';
+  const n = Number(v);
+  if (Number.isNaN(n)) return '—';
+  return n.toLocaleString('es-CO', { maximumFractionDigits: 0 });
 }
 
-function verDetalleRecon(cta, tx, vf, vh) {
-  drawerContent.innerHTML = `<h2>Detalle de conciliación (ejemplo)</h2><span class="badge info">${cta}</span>
-    <div class="explain"><b>Origen Host:</b> ${tx} · dato de ejemplo, no consultado del backend real.</div>
-    <table><thead><tr><th>Lado</th><th>Valor</th></tr></thead><tbody>
-      <tr><td>Franquicia</td><td>${vf}</td></tr>
-      <tr><td>Host</td><td>${vh}</td></tr>
-      <tr><td>Resultado</td><td>${vf === vh ? 'Conciliado' : 'Diferencia'}</td></tr>
-    </tbody></table>`;
-  openDrawer();
+function badgeFor(estado) {
+  const e = String(estado || '');
+  if (/^(CUADRA|COINCIDE|CALCULADO|PROCESADO)/.test(e)) return 'ok';
+  if (/^(PENDIENTE|BLOQUEADO|DATO_INCOMPLETO)/.test(e)) return 'warn';
+  if (e) return 'info';
+  return 'info';
+}
+
+async function cargarCierreCredibanco() {
+  const cont = el('cierreCredibancoContent');
+  if (!cont) return;
+  if (!idJornadaActiva) {
+    cont.innerHTML = '<div class="emptyDetail">Selecciona una fecha contable en Insumos para ver el diagnóstico de esta jornada.</div>';
+    return;
+  }
+  cont.innerHTML = '<div class="emptyDetail">Cargando diagnóstico…</div>';
+  let r;
+  try {
+    r = await apiFetch(`${API}/jornadas/${idJornadaActiva}/cierre-credibanco`);
+  } catch (e) {
+    cont.innerHTML = `<div class="emptyDetail">No se pudo cargar el diagnóstico: ${esc(e.message || e)}</div>`;
+    return;
+  }
+  if (!r.ok) {
+    cont.innerHTML = `<div class="emptyDetail">No se pudo cargar el diagnóstico (HTTP ${r.status}).</div>`;
+    return;
+  }
+  const d = await r.json();
+  const cc = d.control_canje_carta || {};
+  const l3 = cc.L3_comisiones_canje || {};
+  const l5 = cc.L5_carta_componente_G || {};
+  const l8 = cc.L8_diferencia || {};
+  const neta = d.carta_posicion_neta || {};
+
+  const insumosRows = (d.insumos || [])
+    .map((i) => `<tr><td>${esc(i.insumo)}</td><td>${i.cantidad_archivos}</td><td><span class="tag ${badgeFor(i.estado)}">${esc(i.estado)}</span></td></tr>`)
+    .join('');
+
+  const pendRows = (d.pendientes || [])
+    .map((p) => `<tr><td>${esc(p.codigo || p.estado || '')}</td><td>${esc(p.detalle || p.mensaje || JSON.stringify(p))}</td></tr>`)
+    .join('');
+
+  cont.innerHTML = `
+    <div class="flow summaryFlow">
+      <div class="fc"><small>POSICIÓN NETA CARTA</small><b class="tag ${badgeFor(neta.estado)}">${esc(neta.estado || '—')}</b></div>
+      <div class="fc"><small>L3 · COMISIONES CANJE</small><b>${fmtMoney(l3.valor)}</b></div>
+      <div class="fc"><small>L5 · CARTA (COMPONENTE G)</small><b>${fmtMoney(l5.valor)}</b></div>
+      <div class="fc"><small>L8 · DIFERENCIA (L5-L3-L6)</small><b>${l8.l8 !== undefined ? fmtMoney(l8.l8) : '—'}</b></div>
+    </div>
+    <div class="explain"><b>Diagnóstico, no certificación.</b> Estado general: <span class="tag ${badgeFor(d.estado)}">${esc(d.estado || '—')}</span>. Este resultado nunca certifica automáticamente una conciliación contable (<code>certificado:false</code> siempre); requiere revisión y aprobación de negocio.</div>
+    <div class="card section">
+      <div class="title">Insumos de la jornada</div>
+      <div class="tableScroll"><table><thead><tr><th>Insumo</th><th>Archivos</th><th>Estado</th></tr></thead>
+      <tbody>${insumosRows || '<tr><td colspan="3" class="muted">Sin insumos procesados.</td></tr>'}</tbody></table></div>
+    </div>
+    <div class="card section">
+      <div class="title">Pendientes (${(d.pendientes || []).length})</div>
+      <div class="tableScroll"><table><thead><tr><th>Código</th><th>Detalle</th></tr></thead>
+      <tbody>${pendRows || '<tr><td colspan="2" class="muted">Sin pendientes.</td></tr>'}</tbody></table></div>
+    </div>`;
 }
 
 // ---- Agente IA (storyboard de UX, ver aviso en la pantalla — no hay IA real conectada) ----
