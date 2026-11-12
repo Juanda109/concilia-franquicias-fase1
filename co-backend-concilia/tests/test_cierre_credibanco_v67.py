@@ -154,6 +154,18 @@ def test_host_no_suma_fuentes_y_bloquea_sinteticos():
     assert all(r['estado']=='BLOQUEADO_SINTETICO' for r in x)
 
 
+def test_host_centro_con_punto_final_normaliza_igual_que_17():
+    # CEDESTIN llega con un punto final en los HA22/26/32 observados
+    # ("17." en vez de "17") - debe agruparse con la misma cuenta/centro,
+    # no quedar como un centro distinto.
+    h=[{'id_archivo':5,'tx_host':'HA22','cuenta':'299095302','centro':'17.',
+        'concepto':'INTERFAZ MP2','fecha_contable':'2026-10-23',
+        'cantidad':1,'incompletos':0,'debe':Decimal('100'),'haber':Decimal(0)}]
+    r=agrupar_host(h,{5})
+    assert len(r)==1
+    assert r[0]['centro']=='0017'
+
+
 def test_host_neto_no_calcula_con_nulos():
     h=[{'id_archivo':5,'tx_host':'HA22','cuenta':'299095302','centro':'0017',
         'concepto':None,'fecha_contable':'2026-10-23','cantidad':1,'incompletos':1,
