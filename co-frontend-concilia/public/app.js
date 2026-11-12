@@ -1018,12 +1018,9 @@ async function cargarCierreCredibanco() {
     return;
   }
   cont.innerHTML = '<div class="emptyDetail">Cargando diagnóstico…</div>';
-  let r, rJornada;
+  let r;
   try {
-    [r, rJornada] = await Promise.all([
-      apiFetch(`${API}/jornadas/${idJornadaActiva}/cierre-credibanco`),
-      apiFetch(`${API}/jornadas/${idJornadaActiva}`),
-    ]);
+    r = await apiFetch(`${API}/jornadas/${idJornadaActiva}/cierre-credibanco`);
   } catch (e) {
     cont.innerHTML = `<div class="emptyDetail">No se pudo cargar el diagnóstico: ${esc(e.message || e)}</div>`;
     return;
@@ -1035,30 +1032,11 @@ async function cargarCierreCredibanco() {
   const d = await r.json();
   ultimoCierreCredibanco = d;
   el('reconJornada').textContent = `Fecha contable: ${d.fecha_contable} · Jornada ${d.id_jornada}`;
-  // Mapeo tipoInsumo -> idArchivo, solo para habilitar el enlace "Ver
-  // evidencia" por fila; si esta llamada falla no bloquea el diagnóstico.
-  const archivoPorInsumo = new Map();
-  if (rJornada.ok) {
-    const jornadaDetalle = await rJornada.json();
-    for (const i of jornadaDetalle.insumos || []) {
-      if (i.idArchivo != null) archivoPorInsumo.set(i.tipoInsumo, i.idArchivo);
-    }
-  }
   const cc = d.control_canje_carta || {};
   const l3 = cc.L3_comisiones_canje || {};
   const l5 = cc.L5_carta_componente_G || {};
   const l8 = cc.L8_diferencia || {};
   const neta = d.carta_posicion_neta || {};
-
-  const insumosRows = (d.insumos || [])
-    .map((i) => {
-      const idArchivo = archivoPorInsumo.get(i.insumo);
-      const accion = idArchivo != null
-        ? `<button type="button" class="btn" onclick="abrirDetalle(${Number(idArchivo)},'conciliacion')">Ver evidencia</button>`
-        : '<span class="muted">—</span>';
-      return `<tr><td>${esc(i.insumo)}</td><td>${i.cantidad_archivos}</td><td><span class="tag ${badgeFor(i.estado)}">${esc(i.estado)}</span></td><td>${accion}</td></tr>`;
-    })
-    .join('');
 
   const pendRows = (d.pendientes || [])
     .map((p) => `<tr><td>${esc(p.codigo || p.estado || '')}</td><td>${esc(p.detalle || p.mensaje || JSON.stringify(p))}</td></tr>`)
@@ -1114,11 +1092,6 @@ async function cargarCierreCredibanco() {
       <div class="fc"><small>CONCILIADOS</small><b>${coincidencias}</b></div>
       <div class="fc"><small>DIFERENCIAS</small><b>${diferencias}</b></div>
       <div class="fc"><small>PENDIENTES</small><b>${pendientesAprobacion}</b></div>
-    </div>
-    <div class="card section">
-      <div class="title">Insumos de la jornada</div>
-      <div class="tableScroll"><table><thead><tr><th>Insumo</th><th>Archivos</th><th>Estado</th><th>Acción</th></tr></thead>
-      <tbody>${insumosRows || '<tr><td colspan="4" class="muted">Sin insumos procesados.</td></tr>'}</tbody></table></div>
     </div>
     <div class="card section">
       <div class="toolbar">
