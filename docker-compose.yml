@@ -8,6 +8,7 @@ services:
     volumes:
       - ./database/00_concilia_fase1_ddl_21_tablas.sql:/docker-entrypoint-initdb.d/00_ddl.sql:ro
       - ./database/22_seed_insumos_esperados.sql:/docker-entrypoint-initdb.d/22_seed.sql:ro
+      - ./database/23_seed_bines_canje.sql:/docker-entrypoint-initdb.d/23_seed.sql:ro
       - concilia_pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
