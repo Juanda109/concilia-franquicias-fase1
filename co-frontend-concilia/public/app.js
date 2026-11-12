@@ -881,6 +881,39 @@ function badgeFor(estado) {
   return 'info';
 }
 
+// Traducción legible de los códigos de estado de cierre_credibanco_v67 (ver
+// evaluar_reglas_cruce/agrupar_host en el backend) - el motor siempre habla
+// en código técnico explícito (nunca "OK"/"ERROR" genéricos) para que cada
+// estado sea accionable; acá solo se traduce a español para la analista,
+// sin perder el código (queda como title/tooltip).
+const ESTADO_CONCILIACION_LABEL = {
+  COINCIDE_DIAGNOSTICO_NO_CERTIFICADO: 'Conciliado (no certificado)',
+  DIFERENCIA_DIAGNOSTICA_NO_CERTIFICADA: 'Con diferencia (no certificada)',
+  PENDIENTE_APROBACION_REGLA: 'Pendiente de aprobación de la regla',
+  CAMPO_ORIGEN_NO_PERMITIDO: 'Campo de origen no permitido',
+  FUENTES_NO_DISPONIBLES: 'Fuentes no disponibles',
+  CUENTA_CENTRO_INCORRECTOS: 'Cuenta/centro incorrectos',
+  MONEDA_O_NATURALEZA_NO_APROBADA: 'Moneda o naturaleza no aprobada',
+  SIGNO_NO_APROBADO: 'Signo no aprobado',
+  FECHAS_HOST_NO_HOMOLOGADAS: 'Fechas Host no homologadas',
+  FILTRO_TX_NO_APROBADO: 'Filtro TX no aprobado',
+  FILTRO_MOVIMIENTO_NO_APROBADO: 'Filtro de movimiento no aprobado',
+  MOTIVO_CARTA_NO_APROBADO: 'Motivo de Carta no aprobado',
+  SIN_MOVIMIENTOS_FRANQUICIA: 'Sin movimientos de Franquicia',
+  IMPORTES_FRANQUICIA_INCOMPLETOS: 'Importes de Franquicia incompletos',
+  CARTA_CONTROL_MULTIPLE: 'Control de Carta múltiple',
+  CRUDO_DEPO_NEGATIVO: 'Valor crudo DEPO negativo',
+  HOST_NO_VALIDADO_O_SINTETICO: 'Host no validado o sintético',
+  FECHA_HOST_NO_COINCIDE: 'Fecha Host no coincide',
+  PENDIENTE_HOMOLOGACION_NATURALEZA_Y_FUENTE: 'Pendiente de homologación (naturaleza y fuente)',
+  BLOQUEADO_SINTETICO: 'Bloqueado (movimiento sintético)',
+  DATO_INCOMPLETO: 'Dato incompleto',
+};
+function labelEstadoConciliacion(estado) {
+  if (!estado) return '—';
+  return ESTADO_CONCILIACION_LABEL[estado] ?? estado;
+}
+
 let ultimoCierreCredibanco = null;
 
 // Tarjeta "FECHA CONTABLE" en Conciliación: solo muestra la jornada activa
@@ -1022,7 +1055,7 @@ function construirFilasResultado(d) {
       <td class="num">${celdaFuente(fuentes, 'HA32', 'neto_debe_menos_haber')}</td>
       <td class="num">${c.valor_host != null ? fmtMoney(c.valor_host) : '—'}</td>
       <td class="num">${c.diferencia != null ? fmtMoney(c.diferencia) : '—'}</td>
-      <td><span class="tag ${badgeFor(c.estado)}">${esc(c.estado || '—')}</span></td>
+      <td><span class="tag ${badgeFor(c.estado)}" title="${esc(c.estado || '')}">${esc(labelEstadoConciliacion(c.estado))}</span></td>
       <td>${accion}</td>
     </tr>`;
   }).join('');
@@ -1103,7 +1136,7 @@ function renderDetalleCuentaCredibanco(cuenta) {
     .join('');
 
   const cruceHtml = cruce
-    ? `<div class="explain"><b>Regla de cruce:</b> ${esc(cruce.id_regla)} (${esc(cruce.insumo)}) · <span class="tag ${badgeFor(cruce.estado)}">${esc(cruce.estado)}</span>${cruce.valor_franquicia != null ? ` · Franquicia: ${fmtMoney(cruce.valor_franquicia)} · Diferencia: ${fmtMoney(cruce.diferencia)}` : ''}</div>`
+    ? `<div class="explain"><b>Regla de cruce:</b> ${esc(cruce.id_regla)} (${esc(cruce.insumo)}) · <span class="tag ${badgeFor(cruce.estado)}" title="${esc(cruce.estado || '')}">${esc(labelEstadoConciliacion(cruce.estado))}</span>${cruce.valor_franquicia != null ? ` · Franquicia: ${fmtMoney(cruce.valor_franquicia)} · Diferencia: ${fmtMoney(cruce.diferencia)}` : ''}</div>`
     : '<div class="explain">Sin regla de cruce aprobada para esta cuenta todavía.</div>';
 
   // Seccion B: nunca se filtra un total global de CAET/CANT por cuenta (el
@@ -1215,7 +1248,7 @@ async function cargarCierreCredibanco() {
         <td>${cruce ? esc(cruce.id_regla) : '<span class="muted">Sin regla</span>'}</td>
         <td class="num">${cruce && cruce.valor_franquicia != null ? fmtMoney(cruce.valor_franquicia) : '—'}</td>
         <td class="num">${cruce && cruce.diferencia != null ? fmtMoney(cruce.diferencia) : '—'}</td>
-        <td><span class="tag ${badgeFor(estadoFila)}">${esc(estadoFila || '—')}</span></td>
+        <td><span class="tag ${badgeFor(estadoFila)}" title="${esc(estadoFila || '')}">${esc(labelEstadoConciliacion(estadoFila))}</span></td>
         <td>${accion}</td>
       </tr>`;
     })
