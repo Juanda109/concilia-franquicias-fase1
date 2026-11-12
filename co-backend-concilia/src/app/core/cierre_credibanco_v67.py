@@ -431,6 +431,10 @@ def agrupar_host(filas: Sequence[Mapping[str, Any]], archivos_validos: set[int])
             continue
         cuenta = _texto(f.get("cuenta"))
         centro = _texto(f.get("centro"))
+        # CEDESTIN llega con un punto final en los HA22/26/32 observados
+        # ("17." en vez de "17") - mismo valor, variante textual distinta.
+        if centro.endswith("."):
+            centro = centro[:-1]
         if centro in ("17", "0017"):
             centro = "0017"
         clave = (cuenta, centro, fuente)
