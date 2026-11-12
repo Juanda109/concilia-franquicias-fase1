@@ -747,6 +747,121 @@ function construirFilasHost(hostPorCuenta, cruces) {
     .map((row) => ({ ...row, cruce: cruceDeCuenta.get(row.cuenta) || null }));
 }
 
+// Concepto de origen de cada regla de cruce del catálogo
+// (cierre_credibanco_v67.json), para poder mostrarlo en la tabla plana
+// "Resultados de conciliación" sin que el backend tenga que exponerlo
+// (el catálogo ya lo usa internamente para filtrar canje/depo por fila).
+const CONCEPTO_REGLA = {
+  'CB-F2-302-CANJE-CREDITO': '017-CANJE RECIBIDO TARJETA CREDITO PAGOS',
+  'CB-F2-838-DEPO-NACIONAL': '017-VR. DEPOSITOS ELECTRONICOS NAL CONSIGNADOS',
+  'CB-F2-839-DEPO-INTERNACIONAL': '017-VR. DEPOSITOS ELECTRONICOS INTERNACIONAL CONSIGNADOS',
+};
+
+// totales_diagnosticos ya viene agrupado por concepto (una fila por A).
+function totalPorConceptoCanje(totales, concepto) {
+  return (totales || []).find((t) => t.A === concepto) || null;
+}
+
+// depo_agregados_crudos es por fila (no agrupado) - se suma aquí por
+// concepto para poder mostrar un solo número, igual que hace el backend
+// para CAET/CANT en construir_totales_diagnosticos_canje.
+function totalPorConceptoDepo(depo, concepto) {
+  let cantidad = 0; let interc = 0; let total = 0; let huboInterc = false; let huboTotal = false; let filas = 0;
+  for (const x of depo || []) {
+    if (x.concepto !== concepto) continue;
+    filas += 1;
+    cantidad += x.cantidad || 0;
+    if (x.valor_intercambio_crudo != null) { interc += Number(x.valor_intercambio_crudo); huboInterc = true; }
+    if (x.valor_total_crudo != null) { total += Number(x.valor_total_crudo); huboTotal = true; }
+  }
+  if (!filas) return null;
+  return { cantidad, interc: huboInterc ? interc : null, total: huboTotal ? total : null };
+}
+
+// Una fila por regla de cruce del catálogo (Franquicia/Cuenta/Concepto +
+// HA22/HA26/HA32 + Total Host/Diferencia/Estado) - mismo diseño de columnas
+// que traía gustavo-dev para "Resultados de conciliación", pero cada celda
+// sale de un campo que cierre_credibanco_v67 realmente calcula (nunca de un
+// endpoint v72/reporte-maestro-diagnostico descartado ni de datos QA
+// inventados).
+function construirFilasResultado(d) {
+  const cruces = d.cruces_host_credibanco_diagnosticos || [];
+  const hostPorCuenta = new Map();
+  for (const h of d.host_por_cuenta_y_fuente || []) {
+    if (!hostPorCuenta.has(h.cuenta)) hostPorCuenta.set(h.cuenta, {});
+    hostPorCuenta.get(h.cuenta)[h.fuente] = h;
+  }
+  return cruces.map((c) => {
+    const concepto = CONCEPTO_REGLA[c.id_regla] || '—';
+    let cantidad = '—';
+    let interc = '—';
+    let total = '—';
+    if (c.insumo === 'CANT' || c.insumo === 'CAET') {
+      const t = totalPorConceptoCanje(d.totales_diagnosticos, concepto);
+      if (t) {
+        cantidad = t.B;
+        interc = t.C != null ? fmtMoney(t.C) : '—';
+        total = t.D != null ? fmtMoney(t.D) : '—';
+      }
+    } else if (c.insumo === 'DEPO') {
+      const t = totalPorConceptoDepo(d.depo_agregados_crudos, concepto);
+      if (t) {
+        cantidad = t.cantidad;
+        interc = t.interc != null ? fmtMoney(t.interc) : '—';
+        total = t.total != null ? fmtMoney(t.total) : '—';
+      }
+    }
+    const fuentes = hostPorCuenta.get(c.cuenta_host) || {};
+    const idArchivo = (fuentes.HA22 || fuentes.HA26 || fuentes.HA32)?.archivos?.[0];
+    const cuentaJs = JSON.stringify(c.cuenta_host || '');
+    const accion = idArchivo != null
+      ? `<button type="button" class="btn" onclick="abrirDetalle(${Number(idArchivo)},'conciliacion')">Ver evidencia</button>`
+      : `<button type="button" class="btn" onclick="abrirDetalleCuentaCredibanco(${cuentaJs})">Ver detalle</button>`;
+    return `<tr data-cuenta="${esc(c.cuenta_host || '')}" data-concepto="${esc(concepto)}" data-estado="${esc(c.estado || '')}">
+      <td>CREDIBANCO</td>
+      <td><a href="#" onclick="abrirDetalleCuentaCredibanco(${cuentaJs});return false;">${esc(c.cuenta_host || '—')}</a></td>
+      <td>${esc(concepto)}</td>
+      <td class="num">${cantidad}</td>
+      <td class="num">${interc}</td>
+      <td class="num">${total}</td>
+      <td class="num">${c.valor_franquicia != null ? fmtMoney(c.valor_franquicia) : '—'}</td>
+      <td class="num">${celdaFuente(fuentes, 'HA22', 'debe')}</td>
+      <td class="num">${celdaFuente(fuentes, 'HA22', 'haber')}</td>
+      <td class="num">${celdaFuente(fuentes, 'HA22', 'neto_debe_menos_haber')}</td>
+      <td class="num">${celdaFuente(fuentes, 'HA26', 'debe')}</td>
+      <td class="num">${celdaFuente(fuentes, 'HA26', 'haber')}</td>
+      <td class="num">${celdaFuente(fuentes, 'HA26', 'neto_debe_menos_haber')}</td>
+      <td class="num">${celdaFuente(fuentes, 'HA32', 'debe')}</td>
+      <td class="num">${celdaFuente(fuentes, 'HA32', 'haber')}</td>
+      <td class="num">${celdaFuente(fuentes, 'HA32', 'neto_debe_menos_haber')}</td>
+      <td class="num">${c.valor_host != null ? fmtMoney(c.valor_host) : '—'}</td>
+      <td class="num">${c.diferencia != null ? fmtMoney(c.diferencia) : '—'}</td>
+      <td><span class="tag ${badgeFor(c.estado)}">${esc(c.estado || '—')}</span></td>
+      <td>${accion}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterResultadoRows() {
+  const q = (el('reconQ')?.value || '').toLowerCase();
+  const st = el('reconSt')?.value || '';
+  document.querySelectorAll('#reconBody tr').forEach((r) => {
+    const okq = !q || (r.dataset.cuenta || '').toLowerCase().includes(q) || (r.dataset.concepto || '').toLowerCase().includes(q);
+    const okst = !st || r.dataset.estado === st;
+    r.style.display = okq && okst ? 'table-row' : 'none';
+  });
+}
+
+function toggleTrazabilidadHost() {
+  const card = el('trazabilidadHostCard');
+  const btn = el('btnTrazabilidadHost');
+  if (!card || !btn) return;
+  const mostrar = card.style.display === 'none';
+  card.style.display = mostrar ? '' : 'none';
+  btn.textContent = btn.textContent.replace(mostrar ? 'Ver' : 'Ocultar', mostrar ? 'Ocultar' : 'Ver');
+  if (mostrar) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 function filterCruceRows() {
   const q = (el('cruceQ')?.value || '').toLowerCase();
   const st = el('cruceSt')?.value || '';
@@ -900,7 +1015,9 @@ async function cargarCierreCredibanco() {
   const filasHost = construirFilasHost(d.host_por_cuenta_y_fuente, cruces);
   const coincidencias = cruces.filter((c) => c.estado === 'COINCIDE_DIAGNOSTICO_NO_CERTIFICADO').length;
   const diferencias = cruces.filter((c) => c.estado === 'DIFERENCIA_DIAGNOSTICA_NO_CERTIFICADA').length;
-  const conRegla = filasHost.filter((f) => f.cruce).length;
+
+  const pendientesAprobacion = cruces.filter((c) => c.estado !== 'COINCIDE_DIAGNOSTICO_NO_CERTIFICADO' && c.estado !== 'DIFERENCIA_DIAGNOSTICA_NO_CERTIFICADA').length;
+  const filasResultado = construirFilasResultado(d);
 
   const cruceRows = filasHost
     .map((row) => {
@@ -940,10 +1057,10 @@ async function cargarCierreCredibanco() {
     </div>
     <div class="explain"><b>Diagnóstico, no certificación.</b> Estado general: <span class="tag ${badgeFor(d.estado)}">${esc(d.estado || '—')}</span>. Este resultado nunca certifica automáticamente una conciliación contable (<code>certificado:false</code> siempre); requiere revisión y aprobación de negocio.</div>
     <div class="flow summaryFlow">
-      <div class="fc"><small>CUENTAS HOST</small><b>${filasHost.length}</b></div>
-      <div class="fc"><small>CON REGLA DEFINIDA</small><b>${conRegla}</b></div>
-      <div class="fc"><small>COINCIDENCIAS</small><b>${coincidencias}</b></div>
+      <div class="fc"><small>CUENTAS / CRUCES</small><b>${cruces.length}</b></div>
+      <div class="fc"><small>CONCILIADOS</small><b>${coincidencias}</b></div>
       <div class="fc"><small>DIFERENCIAS</small><b>${diferencias}</b></div>
+      <div class="fc"><small>PENDIENTES</small><b>${pendientesAprobacion}</b></div>
     </div>
     <div class="card section">
       <div class="title">Insumos de la jornada</div>
@@ -951,6 +1068,27 @@ async function cargarCierreCredibanco() {
       <tbody>${insumosRows || '<tr><td colspan="4" class="muted">Sin insumos procesados.</td></tr>'}</tbody></table></div>
     </div>
     <div class="card section">
+      <div class="toolbar">
+        <input id="reconQ" class="search" onkeyup="filterResultadoRows()" placeholder="Buscar cuenta o concepto...">
+        <select id="reconSt" class="select" onchange="filterResultadoRows()">
+          <option value="">Todos los estados</option>
+          <option value="COINCIDE_DIAGNOSTICO_NO_CERTIFICADO">Conciliado</option>
+          <option value="DIFERENCIA_DIAGNOSTICA_NO_CERTIFICADA">Con diferencia</option>
+          <option value="PENDIENTE_APROBACION_REGLA">Pendiente de aprobación</option>
+        </select>
+      </div>
+      <div class="title">Resultados de conciliación <span class="muted">(${cruces.length} registros)</span></div>
+      <div class="tableScroll"><table class="reconTable"><thead><tr>
+        <th>Franquicia</th><th>Cuenta</th><th>Concepto</th><th>Cantidad*</th><th>VL Interc*</th><th>VL Total*</th><th>Valor intercambio</th>
+        <th>HA22 Debe</th><th>HA22 Haber</th><th>HA22 Neto*</th>
+        <th>HA26 Debe</th><th>HA26 Haber</th><th>HA26 Neto*</th>
+        <th>HA32 Debe</th><th>HA32 Haber</th><th>HA32 Neto*</th>
+        <th>Total Host</th><th>Diferencia</th><th>Estado conciliación</th><th>Acción</th>
+      </tr></thead><tbody id="reconBody">${filasResultado || '<tr><td colspan="20" class="muted">Sin resultados consultados.</td></tr>'}</tbody></table></div>
+      <p class="filterHint">*: diagnóstico no homologado, puede repetirse entre conceptos de una misma cuenta. —: no disponible / sin cruce homologado. Los resultados Host sin correspondencia se consultan en trazabilidad separada; no se inventan cruces ni totales.</p>
+      <div class="actionbar" style="justify-content:flex-end;margin-top:12px"><button type="button" class="btn" id="btnTrazabilidadHost" onclick="toggleTrazabilidadHost()">Ver trazabilidad Host (${filasHost.length})</button></div>
+    </div>
+    <div class="card section" id="trazabilidadHostCard" style="display:none">
       <div class="title">Cuentas Host observadas <span class="muted">(${filasHost.length})</span></div>
       <div class="toolbar">
         <input id="cruceQ" class="search" onkeyup="filterCruceRows()" placeholder="Buscar cuenta..." aria-label="Buscar cuenta Host">
