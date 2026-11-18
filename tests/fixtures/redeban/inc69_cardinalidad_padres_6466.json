@@ -1,0 +1,1395 @@
+{
+  "total_analizado": 364,
+  "filas_con_padre": 356,
+  "padres_distintos": 46,
+  "padres_compartidos": 40,
+  "filas_padre_compartido": 350,
+  "filas_padre_unico": 6,
+  "sin_candidato": [
+    {
+      "fila_excel": 650,
+      "cuenta_contable": "196095001828",
+      "codigo_operacion": "5.1.1.8.110",
+      "categoria": "A",
+      "estado_original": "OPERANDOS_NO_RESUELTOS",
+      "tipo_candidato": "SIN_CANDIDATO_JERARQUICO",
+      "niveles_candidatos": [],
+      "lineas_pmd_candidatas": [],
+      "regla_homologada": false,
+      "neto_homologado": null,
+      "decision": "PENDIENTE_VALIDACION_FUNCIONAL",
+      "certificado": false
+    },
+    {
+      "fila_excel": 651,
+      "cuenta_contable": "196095001828",
+      "codigo_operacion": "5.1.1.14.835",
+      "categoria": "A",
+      "estado_original": "OPERANDOS_NO_RESUELTOS",
+      "tipo_candidato": "SIN_CANDIDATO_JERARQUICO",
+      "niveles_candidatos": [],
+      "lineas_pmd_candidatas": [],
+      "regla_homologada": false,
+      "neto_homologado": null,
+      "decision": "PENDIENTE_VALIDACION_FUNCIONAL",
+      "certificado": false
+    },
+    {
+      "fila_excel": 652,
+      "cuenta_contable": "196095001828",
+      "codigo_operacion": "5.1.1.38.835",
+      "categoria": "A",
+      "estado_original": "OPERANDOS_NO_RESUELTOS",
+      "tipo_candidato": "SIN_CANDIDATO_JERARQUICO",
+      "niveles_candidatos": [],
+      "lineas_pmd_candidatas": [],
+      "regla_homologada": false,
+      "neto_homologado": null,
+      "decision": "PENDIENTE_VALIDACION_FUNCIONAL",
+      "certificado": false
+    },
+    {
+      "fila_excel": 656,
+      "cuenta_contable": "196095001828",
+      "codigo_operacion": "5.1.1.9.835",
+      "categoria": "A",
+      "estado_original": "OPERANDOS_NO_RESUELTOS",
+      "tipo_candidato": "SIN_CANDIDATO_JERARQUICO",
+      "niveles_candidatos": [],
+      "lineas_pmd_candidatas": [],
+      "regla_homologada": false,
+      "neto_homologado": null,
+      "decision": "PENDIENTE_VALIDACION_FUNCIONAL",
+      "certificado": false
+    },
+    {
+      "fila_excel": 1801,
+      "cuenta_contable": "299095883",
+      "codigo_operacion": "5.1.1.8.110",
+      "categoria": "B",
+      "estado_original": "OPERANDOS_NO_RESUELTOS",
+      "tipo_candidato": "SIN_CANDIDATO_JERARQUICO",
+      "niveles_candidatos": [],
+      "lineas_pmd_candidatas": [],
+      "regla_homologada": false,
+      "neto_homologado": null,
+      "decision": "PENDIENTE_VALIDACION_FUNCIONAL",
+      "certificado": false
+    },
+    {
+      "fila_excel": 1802,
+      "cuenta_contable": "299095883",
+      "codigo_operacion": "5.1.1.14.835",
+      "categoria": "B",
+      "estado_original": "OPERANDOS_NO_RESUELTOS",
+      "tipo_candidato": "SIN_CANDIDATO_JERARQUICO",
+      "niveles_candidatos": [],
+      "lineas_pmd_candidatas": [],
+      "regla_homologada": false,
+      "neto_homologado": null,
+      "decision": "PENDIENTE_VALIDACION_FUNCIONAL",
+      "certificado": false
+    },
+    {
+      "fila_excel": 1803,
+      "cuenta_contable": "299095883",
+      "codigo_operacion": "5.1.1.38.835",
+      "categoria": "B",
+      "estado_original": "OPERANDOS_NO_RESUELTOS",
+      "tipo_candidato": "SIN_CANDIDATO_JERARQUICO",
+      "niveles_candidatos": [],
+      "lineas_pmd_candidatas": [],
+      "regla_homologada": false,
+      "neto_homologado": null,
+      "decision": "PENDIENTE_VALIDACION_FUNCIONAL",
+      "certificado": false
+    },
+    {
+      "fila_excel": 1807,
+      "cuenta_contable": "299095883",
+      "codigo_operacion": "5.1.1.9.835",
+      "categoria": "B",
+      "estado_original": "OPERANDOS_NO_RESUELTOS",
+      "tipo_candidato": "SIN_CANDIDATO_JERARQUICO",
+      "niveles_candidatos": [],
+      "lineas_pmd_candidatas": [],
+      "regla_homologada": false,
+      "neto_homologado": null,
+      "decision": "PENDIENTE_VALIDACION_FUNCIONAL",
+      "certificado": false
+    }
+  ],
+  "otros_candidatos": [],
+  "grupos": [
+    {
+      "nivel_padre": "1.1.1",
+      "operaciones_hijas": 37,
+      "codigos_hijos_distintos": 24,
+      "cuentas": [
+        "196095001828",
+        "196095001845",
+        "196095001919",
+        "299095883"
+      ],
+      "filas_excel": [
+        24,
+        25,
+        26,
+        27,
+        29,
+        30,
+        31,
+        32,
+        39,
+        40,
+        42,
+        43,
+        45,
+        46,
+        47,
+        59,
+        60,
+        62,
+        64,
+        65,
+        66,
+        67,
+        73,
+        1268,
+        1270,
+        1271,
+        1273,
+        1286,
+        1287,
+        1288,
+        1289,
+        1301,
+        1306,
+        1307,
+        1308,
+        1314,
+        1315
+      ],
+      "lineas_pmd_candidatas": [
+        "3",
+        "4",
+        "5"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "1.1.1.10",
+      "operaciones_hijas": 10,
+      "codigos_hijos_distintos": 6,
+      "cuentas": [
+        "196095001828",
+        "196095001919",
+        "299095883"
+      ],
+      "filas_excel": [
+        9,
+        11,
+        14,
+        15,
+        17,
+        19,
+        1250,
+        1255,
+        1258,
+        1260
+      ],
+      "lineas_pmd_candidatas": [
+        "27",
+        "3",
+        "4",
+        "5"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "1.1.1.14",
+      "operaciones_hijas": 3,
+      "codigos_hijos_distintos": 3,
+      "cuentas": [
+        "196095001828"
+      ],
+      "filas_excel": [
+        33,
+        34,
+        36
+      ],
+      "lineas_pmd_candidatas": [
+        "3",
+        "37",
+        "4",
+        "5"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "1.1.1.17",
+      "operaciones_hijas": 4,
+      "codigos_hijos_distintos": 2,
+      "cuentas": [
+        "196095001828",
+        "196095001919"
+      ],
+      "filas_excel": [
+        50,
+        53,
+        1292,
+        1295
+      ],
+      "lineas_pmd_candidatas": [
+        "3",
+        "39",
+        "4",
+        "5"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "1.1.1.19",
+      "operaciones_hijas": 2,
+      "codigos_hijos_distintos": 1,
+      "cuentas": [
+        "196095001828",
+        "299095883"
+      ],
+      "filas_excel": [
+        23,
+        1264
+      ],
+      "lineas_pmd_candidatas": [
+        "3",
+        "4",
+        "44",
+        "5"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "1.1.1.22",
+      "operaciones_hijas": 2,
+      "codigos_hijos_distintos": 2,
+      "cuentas": [
+        "196095001828"
+      ],
+      "filas_excel": [
+        57,
+        58
+      ],
+      "lineas_pmd_candidatas": [
+        "3",
+        "4",
+        "47",
+        "5"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "1.1.1.7",
+      "operaciones_hijas": 8,
+      "codigos_hijos_distintos": 7,
+      "cuentas": [
+        "196095001828",
+        "196095001845",
+        "299095870",
+        "299095883"
+      ],
+      "filas_excel": [
+        80,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        1329
+      ],
+      "lineas_pmd_candidatas": [
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "1.1.1.8",
+      "operaciones_hijas": 31,
+      "codigos_hijos_distintos": 18,
+      "cuentas": [
+        "196095001828",
+        "196095001919",
+        "299095508",
+        "299095870",
+        "299095883"
+      ],
+      "filas_excel": [
+        90,
+        91,
+        94,
+        95,
+        96,
+        100,
+        108,
+        109,
+        110,
+        112,
+        115,
+        117,
+        119,
+        120,
+        121,
+        122,
+        136,
+        137,
+        1332,
+        1334,
+        1335,
+        1336,
+        1354,
+        1355,
+        1357,
+        1359,
+        1364,
+        1366,
+        1368,
+        1369,
+        1370
+      ],
+      "lineas_pmd_candidatas": [
+        "3",
+        "4",
+        "5",
+        "8"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "1.1.1.82",
+      "operaciones_hijas": 1,
+      "codigos_hijos_distintos": 1,
+      "cuentas": [
+        "299095883"
+      ],
+      "filas_excel": [
+        1313
+      ],
+      "lineas_pmd_candidatas": [
+        "3",
+        "4",
+        "49",
+        "5"
+      ],
+      "cardinalidad": "UNO_A_UNO_CANDIDATO",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "1.1.1.9",
+      "operaciones_hijas": 4,
+      "codigos_hijos_distintos": 4,
+      "cuentas": [
+        "196095001828"
+      ],
+      "filas_excel": [
+        138,
+        141,
+        142,
+        144
+      ],
+      "lineas_pmd_candidatas": [
+        "23",
+        "3",
+        "4",
+        "5"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "1.1.2",
+      "operaciones_hijas": 3,
+      "codigos_hijos_distintos": 3,
+      "cuentas": [
+        "196095001919"
+      ],
+      "filas_excel": [
+        1846,
+        1847,
+        1848
+      ],
+      "lineas_pmd_candidatas": [
+        "3",
+        "4",
+        "54"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "1.1.2.10",
+      "operaciones_hijas": 2,
+      "codigos_hijos_distintos": 2,
+      "cuentas": [
+        "299095883"
+      ],
+      "filas_excel": [
+        1829,
+        1836
+      ],
+      "lineas_pmd_candidatas": [
+        "3",
+        "4",
+        "54",
+        "75"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "1.1.2.40",
+      "operaciones_hijas": 2,
+      "codigos_hijos_distintos": 2,
+      "cuentas": [
+        "196095001919"
+      ],
+      "filas_excel": [
+        1884,
+        1885
+      ],
+      "lineas_pmd_candidatas": [
+        "3",
+        "4",
+        "54",
+        "96"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "1.1.2.8",
+      "operaciones_hijas": 4,
+      "codigos_hijos_distintos": 4,
+      "cuentas": [
+        "196095001919",
+        "299095508"
+      ],
+      "filas_excel": [
+        806,
+        808,
+        1945,
+        1946
+      ],
+      "lineas_pmd_candidatas": [
+        "3",
+        "4",
+        "54",
+        "57"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "1.2.1",
+      "operaciones_hijas": 8,
+      "codigos_hijos_distintos": 7,
+      "cuentas": [
+        "196095001828",
+        "196095001829",
+        "196095001845",
+        "299095883"
+      ],
+      "filas_excel": [
+        148,
+        156,
+        157,
+        158,
+        159,
+        160,
+        165,
+        1398
+      ],
+      "lineas_pmd_candidatas": [
+        "112",
+        "113",
+        "3"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "1.2.1.10",
+      "operaciones_hijas": 2,
+      "codigos_hijos_distintos": 2,
+      "cuentas": [
+        "196095001828"
+      ],
+      "filas_excel": [
+        153,
+        155
+      ],
+      "lineas_pmd_candidatas": [
+        "112",
+        "113",
+        "136",
+        "3"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "1.2.1.8",
+      "operaciones_hijas": 9,
+      "codigos_hijos_distintos": 8,
+      "cuentas": [
+        "196095001828",
+        "196095001829",
+        "299095883"
+      ],
+      "filas_excel": [
+        171,
+        172,
+        173,
+        181,
+        182,
+        183,
+        185,
+        225,
+        1417
+      ],
+      "lineas_pmd_candidatas": [
+        "112",
+        "113",
+        "114",
+        "3"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "1.2.2.8",
+      "operaciones_hijas": 1,
+      "codigos_hijos_distintos": 1,
+      "cuentas": [
+        "299095508"
+      ],
+      "filas_excel": [
+        842
+      ],
+      "lineas_pmd_candidatas": [
+        "112",
+        "157",
+        "158",
+        "3"
+      ],
+      "cardinalidad": "UNO_A_UNO_CANDIDATO",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "1.2.2.9",
+      "operaciones_hijas": 3,
+      "codigos_hijos_distintos": 3,
+      "cuentas": [
+        "299095508",
+        "299095883"
+      ],
+      "filas_excel": [
+        898,
+        900,
+        2045
+      ],
+      "lineas_pmd_candidatas": [
+        "112",
+        "157",
+        "166",
+        "3"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "2.1.1",
+      "operaciones_hijas": 67,
+      "codigos_hijos_distintos": 44,
+      "cuentas": [
+        "196095001828",
+        "196095001919",
+        "299095883"
+      ],
+      "filas_excel": [
+        4,
+        278,
+        279,
+        280,
+        282,
+        283,
+        284,
+        285,
+        286,
+        287,
+        288,
+        289,
+        291,
+        292,
+        294,
+        295,
+        296,
+        297,
+        298,
+        300,
+        301,
+        303,
+        304,
+        305,
+        306,
+        307,
+        308,
+        309,
+        310,
+        311,
+        313,
+        314,
+        315,
+        316,
+        317,
+        318,
+        320,
+        321,
+        322,
+        323,
+        324,
+        325,
+        326,
+        327,
+        1513,
+        1515,
+        1516,
+        1517,
+        1518,
+        1520,
+        1521,
+        1525,
+        1527,
+        1528,
+        1529,
+        1534,
+        1536,
+        1541,
+        1548,
+        1551,
+        1553,
+        1554,
+        1556,
+        1557,
+        1558,
+        1559,
+        1560
+      ],
+      "lineas_pmd_candidatas": [
+        "170",
+        "171",
+        "172"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "2.1.1.10",
+      "operaciones_hijas": 6,
+      "codigos_hijos_distintos": 4,
+      "cuentas": [
+        "196095001828",
+        "196095001919",
+        "299095883"
+      ],
+      "filas_excel": [
+        257,
+        260,
+        262,
+        264,
+        1495,
+        1497
+      ],
+      "lineas_pmd_candidatas": [
+        "170",
+        "171",
+        "172",
+        "186"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "2.1.1.17",
+      "operaciones_hijas": 2,
+      "codigos_hijos_distintos": 1,
+      "cuentas": [
+        "196095001828",
+        "196095001919"
+      ],
+      "filas_excel": [
+        273,
+        1506
+      ],
+      "lineas_pmd_candidatas": [
+        "170",
+        "171",
+        "172",
+        "197"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "2.1.1.19",
+      "operaciones_hijas": 4,
+      "codigos_hijos_distintos": 2,
+      "cuentas": [
+        "196095001828",
+        "196095001919"
+      ],
+      "filas_excel": [
+        275,
+        276,
+        1508,
+        1509
+      ],
+      "lineas_pmd_candidatas": [
+        "170",
+        "171",
+        "172",
+        "203"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "2.1.1.8",
+      "operaciones_hijas": 19,
+      "codigos_hijos_distintos": 10,
+      "cuentas": [
+        "196095001828",
+        "196095001919",
+        "299095883"
+      ],
+      "filas_excel": [
+        328,
+        335,
+        336,
+        338,
+        340,
+        341,
+        346,
+        347,
+        349,
+        350,
+        1562,
+        1568,
+        1572,
+        1573,
+        1574,
+        1579,
+        1580,
+        1582,
+        1583
+      ],
+      "lineas_pmd_candidatas": [
+        "170",
+        "171",
+        "172",
+        "173"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "2.1.1.9",
+      "operaciones_hijas": 9,
+      "codigos_hijos_distintos": 7,
+      "cuentas": [
+        "196095001828",
+        "299095883"
+      ],
+      "filas_excel": [
+        351,
+        352,
+        355,
+        356,
+        357,
+        359,
+        361,
+        1585,
+        1589
+      ],
+      "lineas_pmd_candidatas": [
+        "170",
+        "171",
+        "172",
+        "182"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "2.1.2",
+      "operaciones_hijas": 11,
+      "codigos_hijos_distintos": 11,
+      "cuentas": [
+        "196095001919",
+        "299095883"
+      ],
+      "filas_excel": [
+        2063,
+        2064,
+        2065,
+        2067,
+        2123,
+        2125,
+        2126,
+        2149,
+        2156,
+        2157,
+        2158
+      ],
+      "lineas_pmd_candidatas": [
+        "170",
+        "171",
+        "211"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "2.1.2.10",
+      "operaciones_hijas": 2,
+      "codigos_hijos_distintos": 2,
+      "cuentas": [
+        "196095001919"
+      ],
+      "filas_excel": [
+        2053,
+        2059
+      ],
+      "lineas_pmd_candidatas": [
+        "170",
+        "171",
+        "211",
+        "219"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "2.1.2.14",
+      "operaciones_hijas": 1,
+      "codigos_hijos_distintos": 1,
+      "cuentas": [
+        "299095883"
+      ],
+      "filas_excel": [
+        2150
+      ],
+      "lineas_pmd_candidatas": [
+        "170",
+        "171",
+        "211",
+        "221"
+      ],
+      "cardinalidad": "UNO_A_UNO_CANDIDATO",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "2.1.2.17",
+      "operaciones_hijas": 3,
+      "codigos_hijos_distintos": 3,
+      "cuentas": [
+        "299095883"
+      ],
+      "filas_excel": [
+        2153,
+        2154,
+        2155
+      ],
+      "lineas_pmd_candidatas": [
+        "170",
+        "171",
+        "211",
+        "223"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "2.1.2.40",
+      "operaciones_hijas": 3,
+      "codigos_hijos_distintos": 3,
+      "cuentas": [
+        "196095001919"
+      ],
+      "filas_excel": [
+        2096,
+        2098,
+        2099
+      ],
+      "lineas_pmd_candidatas": [
+        "170",
+        "171",
+        "211",
+        "225"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "2.1.2.8",
+      "operaciones_hijas": 7,
+      "codigos_hijos_distintos": 7,
+      "cuentas": [
+        "196095001919",
+        "299095883"
+      ],
+      "filas_excel": [
+        2137,
+        2138,
+        2143,
+        2145,
+        2146,
+        2147,
+        2148
+      ],
+      "lineas_pmd_candidatas": [
+        "170",
+        "171",
+        "211",
+        "212"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "2.1.2.9",
+      "operaciones_hijas": 4,
+      "codigos_hijos_distintos": 4,
+      "cuentas": [
+        "299095867",
+        "299095883"
+      ],
+      "filas_excel": [
+        1012,
+        1017,
+        1020,
+        2161
+      ],
+      "lineas_pmd_candidatas": [
+        "170",
+        "171",
+        "211",
+        "217"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "2.2",
+      "operaciones_hijas": 4,
+      "codigos_hijos_distintos": 4,
+      "cuentas": [
+        "196095001919",
+        "299095866"
+      ],
+      "filas_excel": [
+        1035,
+        1036,
+        1039,
+        2176
+      ],
+      "lineas_pmd_candidatas": [
+        "170",
+        "229"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "2.2.1",
+      "operaciones_hijas": 6,
+      "codigos_hijos_distintos": 5,
+      "cuentas": [
+        "196095001828",
+        "196095001829",
+        "299095883"
+      ],
+      "filas_excel": [
+        376,
+        377,
+        378,
+        379,
+        380,
+        1611
+      ],
+      "lineas_pmd_candidatas": [
+        "170",
+        "229",
+        "230"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "2.2.1.10",
+      "operaciones_hijas": 1,
+      "codigos_hijos_distintos": 1,
+      "cuentas": [
+        "196095001828"
+      ],
+      "filas_excel": [
+        366
+      ],
+      "lineas_pmd_candidatas": [
+        "170",
+        "229",
+        "230",
+        "243"
+      ],
+      "cardinalidad": "UNO_A_UNO_CANDIDATO",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "2.2.1.17",
+      "operaciones_hijas": 4,
+      "codigos_hijos_distintos": 2,
+      "cuentas": [
+        "196095001829",
+        "299095883"
+      ],
+      "filas_excel": [
+        371,
+        373,
+        1604,
+        1606
+      ],
+      "lineas_pmd_candidatas": [
+        "170",
+        "229",
+        "230",
+        "249"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "2.2.1.19",
+      "operaciones_hijas": 2,
+      "codigos_hijos_distintos": 1,
+      "cuentas": [
+        "196095001829",
+        "299095883"
+      ],
+      "filas_excel": [
+        375,
+        1608
+      ],
+      "lineas_pmd_candidatas": [
+        "170",
+        "229",
+        "230",
+        "252"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "2.2.1.8",
+      "operaciones_hijas": 12,
+      "codigos_hijos_distintos": 8,
+      "cuentas": [
+        "196095001828",
+        "196095001829",
+        "299095883"
+      ],
+      "filas_excel": [
+        385,
+        386,
+        388,
+        389,
+        391,
+        392,
+        393,
+        395,
+        1617,
+        1621,
+        1622,
+        1623
+      ],
+      "lineas_pmd_candidatas": [
+        "170",
+        "229",
+        "230",
+        "231"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "2.2.1.9",
+      "operaciones_hijas": 1,
+      "codigos_hijos_distintos": 1,
+      "cuentas": [
+        "196095001828"
+      ],
+      "filas_excel": [
+        399
+      ],
+      "lineas_pmd_candidatas": [
+        "170",
+        "229",
+        "230",
+        "239"
+      ],
+      "cardinalidad": "UNO_A_UNO_CANDIDATO",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "3.1",
+      "operaciones_hijas": 10,
+      "codigos_hijos_distintos": 7,
+      "cuentas": [
+        "196095001828",
+        "299095883"
+      ],
+      "filas_excel": [
+        402,
+        404,
+        405,
+        406,
+        407,
+        408,
+        409,
+        1630,
+        1632,
+        1633
+      ],
+      "lineas_pmd_candidatas": [
+        "254",
+        "255"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "4.1.1",
+      "operaciones_hijas": 21,
+      "codigos_hijos_distintos": 13,
+      "cuentas": [
+        "196095001828",
+        "196095001919",
+        "299095883"
+      ],
+      "filas_excel": [
+        413,
+        414,
+        415,
+        417,
+        418,
+        419,
+        420,
+        421,
+        422,
+        423,
+        424,
+        429,
+        430,
+        1644,
+        1646,
+        1647,
+        1648,
+        1651,
+        1652,
+        1657,
+        1658
+      ],
+      "lineas_pmd_candidatas": [
+        "260",
+        "261",
+        "262"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "4.1.1.10",
+      "operaciones_hijas": 5,
+      "codigos_hijos_distintos": 3,
+      "cuentas": [
+        "196095001828",
+        "299095883"
+      ],
+      "filas_excel": [
+        411,
+        412,
+        1639,
+        1640,
+        1641
+      ],
+      "lineas_pmd_candidatas": [
+        "260",
+        "261",
+        "262",
+        "268"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "4.1.1.8",
+      "operaciones_hijas": 11,
+      "codigos_hijos_distintos": 6,
+      "cuentas": [
+        "196095001828",
+        "196095001919",
+        "299095883"
+      ],
+      "filas_excel": [
+        426,
+        427,
+        428,
+        431,
+        432,
+        434,
+        1655,
+        1656,
+        1659,
+        1660,
+        1662
+      ],
+      "lineas_pmd_candidatas": [
+        "260",
+        "261",
+        "262",
+        "263"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "6.1.1.60",
+      "operaciones_hijas": 2,
+      "codigos_hijos_distintos": 2,
+      "cuentas": [
+        "196095001828",
+        "299095870"
+      ],
+      "filas_excel": [
+        490,
+        524
+      ],
+      "lineas_pmd_candidatas": [
+        "270",
+        "271",
+        "272",
+        "273"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "6.1.2.60",
+      "operaciones_hijas": 1,
+      "codigos_hijos_distintos": 1,
+      "cuentas": [
+        "196095001828"
+      ],
+      "filas_excel": [
+        1059
+      ],
+      "lineas_pmd_candidatas": [
+        "270",
+        "271",
+        "290",
+        "291"
+      ],
+      "cardinalidad": "UNO_A_UNO_CANDIDATO",
+      "homologado": false,
+      "neto_homologado": null
+    },
+    {
+      "nivel_padre": "6.2.1.60",
+      "operaciones_hijas": 2,
+      "codigos_hijos_distintos": 1,
+      "cuentas": [
+        "196095001828",
+        "299095883"
+      ],
+      "filas_excel": [
+        7,
+        1248
+      ],
+      "lineas_pmd_candidatas": [
+        "270",
+        "301",
+        "302",
+        "303"
+      ],
+      "cardinalidad": "UNO_A_MUCHOS_NO_DISTRIBUIR",
+      "homologado": false,
+      "neto_homologado": null
+    }
+  ],
+  "certificado": false,
+  "advertencia": "Padre candidato no implica distribucion ni homologacion monetaria.",
+  "id_jornada": 6466
+}
