@@ -25,6 +25,7 @@ from app.repositories.archivo import ArchivoRepository as ArchivoRepo
 from app.repositories.content import ContentRepository
 from app.repositories.trazabilidad import TrazabilidadRepository
 from app.repositories.cierre_credibanco import CierreCredibancoRepository
+from app.repositories.cierre_redeban import CierreRedebanRepository
 from app.clients import minio_client
 from app.clients.parseo_client import parsear
 
@@ -136,6 +137,16 @@ def cierre_credibanco(id_jornada:int):
     cruce aprobadas por negocio en app/catalogos/cierre_credibanco_v67.json."""
     with connection() as c:
         resultado=CierreCredibancoRepository(c).ejecutar(id_jornada)
+        if resultado is None: raise HTTPException(404,'JORNADA_NO_ENCONTRADA')
+        return resultado
+
+@app.get('/api/v1/jornadas/{id_jornada}/cierre-redeban')
+def cierre_redeban(id_jornada:int):
+    """Cuadre Redeban: PMD homologado a cuenta con la hoja ESTRUCTURA de la
+    plantilla de cuadre, comparado contra HA22/HA26/HA32 por separado - ver
+    app.core.cuadre_redeban_estructura."""
+    with connection() as c:
+        resultado=CierreRedebanRepository(c).ejecutar(id_jornada)
         if resultado is None: raise HTTPException(404,'JORNADA_NO_ENCONTRADA')
         return resultado
 

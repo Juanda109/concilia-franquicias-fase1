@@ -44,7 +44,7 @@
           <button type="button" id="rangoTrigger" class="rangoTrigger" aria-haspopup="dialog" aria-expanded="false">
             <span id="rangoTexto">—</span>
           </button>
-          <div id="rangoPopover" class="rangoPopover" hidden role="dialog" aria-label="Seleccionar rango de fechas contables">
+          <div id="rangoPopover" class="rangoPopover" hidden role="dialog" aria-label="Seleccionar fecha contable">
             <div class="rangoCalHead">
               <button type="button" id="rangoMesAnterior" class="iconBtn" aria-label="Mes anterior">‹</button>
               <span id="rangoMesLabel"></span>
@@ -53,22 +53,10 @@
             <div id="rangoDiasLabel" class="rangoDiasLabel" aria-hidden="true"></div>
             <div class="rangoGrid" id="rangoGrid"></div>
             <div class="rangoFooter">
-              <span id="rangoAyuda" class="muted">Selecciona el día inicial y el final.</span>
+              <span id="rangoAyuda" class="muted">Selecciona una fecha.</span>
               <button type="button" id="rangoHoy" class="btn">Hoy</button>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div class="card section">
-        <div class="title">Jornadas del rango <span id="jornadasRangoMeta"></span></div>
-        <div class="tableScroll">
-          <table>
-            <thead>
-              <tr><th>Fecha</th><th>Estado</th><th>Avance</th><th>Esperados</th><th>Recibidos</th><th>Procesados</th><th>Con error</th></tr>
-            </thead>
-            <tbody id="tblJornadas"><tr><td colspan="7" class="muted">Selecciona un rango de fechas.</td></tr></tbody>
-          </table>
         </div>
       </div>
 
@@ -115,21 +103,30 @@
     </section>
 
     <section id="conciliacion" class="panel">
-      <div class="head">
-        <div>
-          <h1>Conciliación y Reporte Maestro</h1>
-          <p>Diagnóstico Credibanco F2 (CAET/CANT, DEPO, Carta de Compensación vs Host HA22/HA26/HA32) de la jornada seleccionada.</p>
-          <p id="reconJornada" role="status" aria-live="polite">Seleccione una fecha contable en Insumos.</p>
-        </div>
-      </div>
       <div class="card section reconDateSection">
         <div class="reconDateTop">
           <div><div class="reconDateEyebrow">FECHA CONTABLE</div><div class="reconDateSubtitle">Sincronizada con la fecha seleccionada en Insumos</div></div>
         </div>
         <div id="reconFechasContables" class="fechaChips reconDateChips" aria-label="Jornada contable activa"></div>
       </div>
+      <div class="head">
+        <div>
+          <h1>Conciliación y Reporte Maestro (Credibanco)</h1>
+          <p>Diagnóstico Credibanco F2 (CAET/CANT, DEPO, Carta de Compensación vs Host HA22/HA26/HA32) de la jornada seleccionada.</p>
+          <p id="reconJornada" role="status" aria-live="polite">Seleccione una fecha contable en Insumos.</p>
+        </div>
+      </div>
       <div id="cierreCredibancoContent">
         <div class="emptyDetail">Selecciona una fecha contable en Insumos para ver el diagnóstico de esta jornada.</div>
+      </div>
+      <div class="head" style="margin-top:28px">
+        <div>
+          <h1>Conciliación Redeban (PMD)</h1>
+          <p>Cuadre por cuenta contable: cada operación PMD se asigna a su cuenta con la hoja ESTRUCTURA de la plantilla de cuadre Redeban y se compara contra HA22, HA26 y HA32 por separado.</p>
+        </div>
+      </div>
+      <div id="cierreRedebanContent">
+        <div class="emptyDetail">Selecciona una fecha contable en Insumos para ver el diagnóstico Redeban de esta jornada.</div>
       </div>
     </section>
 

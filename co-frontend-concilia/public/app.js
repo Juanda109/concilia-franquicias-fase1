@@ -145,7 +145,7 @@ function showApplication(user) {
   if (appStarted) return;
   appStarted = true;
   void checkHealth();
-  void cargarPorRango();
+  void cargarPorFecha();
 }
 
 el('authRetry').addEventListener('click', () => { void redirectToLogin(); });
@@ -172,8 +172,6 @@ el('logoutButton').addEventListener('click', async () => {
 
 const tblArchivos = el('tblArchivos');
 const tblMeta = el('tblMeta');
-const tblJornadas = el('tblJornadas');
-const jornadasRangoMeta = el('jornadasRangoMeta');
 const rangoTrigger = el('rangoTrigger');
 const rangoTexto = el('rangoTexto');
 const rangoPopover = el('rangoPopover');
@@ -323,14 +321,12 @@ async function checkHealth() {
   }
 }
 
-// ---- Insumos: rango de fechas contables -> jornadas (backend) ----
-// Cada día del rango sigue siendo 1:1 con una jornada (GET /jornadas ahora
-// recibe fechaDesde/fechaHasta y devuelve una jornada por día). La tabla
-// "Jornadas del rango" lista ese resumen día por día; al hacer click en una
-// fila se muestra el detalle completo de esa jornada (hero + insumos) abajo,
-// igual que antes cuando solo existía un selector de un día.
+// ---- Insumos: una sola fecha contable -> jornada (backend) ----
+// El backend sigue exponiendo GET /jornadas?fechaDesde&fechaHasta (acepta
+// un rango), pero el frontend ya solo permite elegir un día: se consulta
+// siempre con fechaDesde == fechaHasta == fechaContableSel.
 let idJornadaActiva = null;
-let jornadasRango = [];
+let jornadaActual = null;
 
 function _renderJornada(d) {
   tblMeta.textContent = `${d.archivosRecibidos} de ${d.archivosEsperados} insumos recibidos`;
@@ -338,52 +334,22 @@ function _renderJornada(d) {
   renderTablaInsumos(d.insumos);
 }
 
-function renderTablaJornadas(jornadas) {
-  jornadasRangoMeta.textContent = `${jornadas.length} día${jornadas.length === 1 ? '' : 's'}`;
-  if (!jornadas.length) {
-    tblJornadas.innerHTML = `<tr><td colspan="7" class="muted">Sin jornadas en el rango.</td></tr>`;
-    return;
-  }
-  tblJornadas.innerHTML = jornadas.map((j) => `
-    <tr data-id-jornada="${j.idJornada}" class="${j.idJornada === idJornadaActiva ? 'active' : ''}">
-      <td>${j.fechaContable}</td>
-      <td>${badge(j.estado)}</td>
-      <td>${j.archivosEsperados ? Math.round((100 * j.archivosProcesados) / j.archivosEsperados) : 0}%</td>
-      <td>${j.archivosEsperados}</td>
-      <td>${j.archivosRecibidos}</td>
-      <td>${j.archivosProcesados}</td>
-      <td>${j.archivosConError}</td>
-    </tr>`).join('');
-  tblJornadas.querySelectorAll('tr[data-id-jornada]').forEach((tr) => {
-    tr.addEventListener('click', () => {
-      const jornada = jornadas.find((j) => j.idJornada === Number(tr.dataset.idJornada));
-      if (jornada) seleccionarJornadaDelRango(jornada);
-    });
-  });
-}
-
-function seleccionarJornadaDelRango(jornada) {
-  idJornadaActiva = jornada.idJornada;
-  _renderJornada(jornada);
-  tblJornadas.querySelectorAll('tr[data-id-jornada]').forEach((tr) => {
-    tr.classList.toggle('active', Number(tr.dataset.idJornada) === idJornadaActiva);
-  });
-}
-
-async function cargarPorRango() {
+async function cargarPorFecha() {
   try {
-    const r = await apiFetch(`${API}/jornadas?fechaDesde=${encodeURIComponent(rangoFechaDesde)}&fechaHasta=${encodeURIComponent(rangoFechaHasta)}`);
+    const r = await apiFetch(`${API}/jornadas?fechaDesde=${encodeURIComponent(fechaContableSel)}&fechaHasta=${encodeURIComponent(fechaContableSel)}`);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const d = await r.json();
-    jornadasRango = d.jornadas;
-    renderTablaJornadas(jornadasRango);
-    const seleccionada = jornadasRango.find((j) => j.fechaContable === rangoFechaHasta) ?? jornadasRango[jornadasRango.length - 1];
-    if (seleccionada) seleccionarJornadaDelRango(seleccionada);
+    jornadaActual = d.jornadas[0] ?? null;
+    idJornadaActiva = jornadaActual ? jornadaActual.idJornada : null;
+    if (jornadaActual) _renderJornada(jornadaActual);
+    else {
+      tblArchivos.innerHTML = `<tr><td colspan="8" class="muted">Sin jornada para esta fecha.</td></tr>`;
+      actualizarHero(null);
+    }
   } catch (e) {
-    jornadasRango = [];
+    jornadaActual = null;
     idJornadaActiva = null;
-    tblJornadas.innerHTML = `<tr><td colspan="7" class="muted">Error consultando el rango: ${e.message}</td></tr>`;
-    tblArchivos.innerHTML = `<tr><td colspan="8" class="muted">Error consultando el rango: ${e.message}</td></tr>`;
+    tblArchivos.innerHTML = `<tr><td colspan="8" class="muted">Error consultando la fecha: ${e.message}</td></tr>`;
     actualizarHero(null);
   }
 }
@@ -414,8 +380,7 @@ async function cargarJornada() {
     const r = await apiFetch(`${API}/jornadas/${idJornadaActiva}`);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const d = await r.json();
-    const idx = jornadasRango.findIndex((j) => j.idJornada === idJornadaActiva);
-    if (idx !== -1) { jornadasRango[idx] = d; renderTablaJornadas(jornadasRango); }
+    jornadaActual = d;
     _renderJornada(d);
     return d;
   } catch (e) {
@@ -730,18 +695,14 @@ el('uploadFileHidden').addEventListener('change', (e) => {
   pendingIdArchivoUpload = null;
 });
 
-// Se puede elegir cualquier rango de fechas contables para CONSULTAR y
-// tambien para CARGAR/ELIMINAR archivos (dias anteriores incluidos, sin
-// restriccion) - lo unico que sigue bloqueado es seleccionar una fecha
-// futura, tanto en el calendario propio (sin dependencias externas) como
-// antes en el selector nativo.
+// Se puede elegir cualquier fecha contable (un solo día, no un rango) para
+// CONSULTAR y tambien para CARGAR/ELIMINAR archivos (dias anteriores
+// incluidos, sin restriccion) - lo unico que sigue bloqueado es seleccionar
+// una fecha futura, en el calendario propio (sin dependencias externas).
 const HOY_ISO = toISO(new Date());
-let rangoFechaDesde = HOY_ISO;
-let rangoFechaHasta = HOY_ISO;
+let fechaContableSel = HOY_ISO;
 let rangoMesVista = fromISO(HOY_ISO);
 rangoMesVista.setDate(1);
-let rangoSeleccionando = false;
-let rangoSeleccionInicio = null;
 
 function fromISO(iso) {
   const [y, m, d] = iso.split('-').map(Number);
@@ -753,9 +714,7 @@ function formatoFechaCorta(iso) {
 }
 
 function actualizarTextoRango() {
-  rangoTexto.textContent = rangoFechaDesde === rangoFechaHasta
-    ? formatoFechaCorta(rangoFechaDesde)
-    : `${formatoFechaCorta(rangoFechaDesde)} – ${formatoFechaCorta(rangoFechaHasta)}`;
+  rangoTexto.textContent = formatoFechaCorta(fechaContableSel);
 }
 
 function diasDelMes(mesVista) {
@@ -772,51 +731,30 @@ function diasDelMes(mesVista) {
 
 function renderRangoCalendario() {
   rangoMesLabel.textContent = rangoMesVista.toLocaleDateString('es-CO', { month: 'long', year: 'numeric' });
-  const inicioActivo = rangoSeleccionando ? rangoSeleccionInicio : rangoFechaDesde;
-  const finActivo = rangoSeleccionando ? rangoSeleccionInicio : rangoFechaHasta;
   rangoGrid.innerHTML = diasDelMes(rangoMesVista).map((d) => {
     const iso = toISO(d);
     const futura = iso > HOY_ISO;
-    const esExtremo = iso === inicioActivo || iso === finActivo;
-    const enRango = !esExtremo && iso > inicioActivo && iso < finActivo;
     const clases = ['rangoDia'];
     if (d.getMonth() !== rangoMesVista.getMonth()) clases.push('fueraDeMes');
-    if (esExtremo) clases.push('extremo');
-    else if (enRango) clases.push('enRango');
+    if (iso === fechaContableSel) clases.push('extremo');
     return `<button type="button" class="${clases.join(' ')}" data-iso="${iso}" ${futura ? 'disabled' : ''}>${d.getDate()}</button>`;
   }).join('');
   rangoGrid.querySelectorAll('.rangoDia').forEach((btn) => {
-    btn.addEventListener('click', () => onDiaRangoClick(btn.dataset.iso));
+    btn.addEventListener('click', () => seleccionarFechaContable(btn.dataset.iso));
   });
 }
 
-function aplicarRango(desde, hasta) {
-  rangoFechaDesde = desde;
-  rangoFechaHasta = hasta;
-  rangoAyuda.textContent = 'Selecciona el día inicial y el final.';
+function seleccionarFechaContable(iso) {
+  if (iso > HOY_ISO) return; // ya viene disabled; verificación extra por si acaso
+  fechaContableSel = iso;
   actualizarTextoRango();
   cerrarRangoPopover();
-  void cargarPorRango();
-}
-
-function onDiaRangoClick(iso) {
-  if (iso > HOY_ISO) return; // ya viene disabled; verificación extra por si acaso
-  if (!rangoSeleccionando) {
-    rangoSeleccionando = true;
-    rangoSeleccionInicio = iso;
-    rangoAyuda.textContent = 'Selecciona el día final.';
-    renderRangoCalendario();
-    return;
-  }
-  rangoSeleccionando = false;
-  aplicarRango(...(iso < rangoSeleccionInicio ? [iso, rangoSeleccionInicio] : [rangoSeleccionInicio, iso]));
+  void cargarPorFecha();
 }
 
 function abrirRangoPopover() {
-  rangoMesVista = fromISO(rangoFechaHasta);
+  rangoMesVista = fromISO(fechaContableSel);
   rangoMesVista.setDate(1);
-  rangoSeleccionando = false;
-  rangoAyuda.textContent = 'Selecciona el día inicial y el final.';
   renderRangoCalendario();
   rangoPopover.hidden = false;
   rangoTrigger.setAttribute('aria-expanded', 'true');
@@ -832,16 +770,9 @@ actualizarTextoRango();
 rangoTrigger.addEventListener('click', () => {
   if (rangoPopover.hidden) abrirRangoPopover(); else cerrarRangoPopover();
 });
-// Captura (no burbuja): un click en un día del calendario repinta rangoGrid
-// en el propio handler (ver onDiaRangoClick -> renderRangoCalendario), lo
-// que destruye el botón clickeado. En fase de burbuja, para cuando este
-// listener llegaría a dispatch, ese botón ya no está en el DOM y
-// rangoPopover.contains(e.target) daría false aunque el click fue adentro -
-// cerrando el popover antes de poder hacer el segundo click del rango. En
-// fase de captura corremos antes de esa mutación, con el árbol intacto.
 document.addEventListener('click', (e) => {
   if (!rangoPopover.hidden && !rangoPopover.contains(e.target) && !rangoTrigger.contains(e.target)) cerrarRangoPopover();
-}, true);
+});
 rangoMesAnterior.addEventListener('click', () => {
   rangoMesVista.setMonth(rangoMesVista.getMonth() - 1);
   renderRangoCalendario();
@@ -851,8 +782,7 @@ rangoMesSiguiente.addEventListener('click', () => {
   renderRangoCalendario();
 });
 rangoHoy.addEventListener('click', () => {
-  rangoSeleccionando = false;
-  aplicarRango(HOY_ISO, HOY_ISO);
+  seleccionarFechaContable(HOY_ISO);
 });
 
 // ---- Navegación de pestañas (Insumos / Conciliación / Agente IA) ----
@@ -862,7 +792,7 @@ function go(id, btn) {
   document.querySelectorAll('.nav button').forEach((b) => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
   window.scrollTo(0, 0);
-  if (id === 'conciliacion') void cargarCierreCredibanco();
+  if (id === 'conciliacion') { void cargarCierreCredibanco(); void cargarCierreRedeban(); }
 }
 
 // ---- Conciliación: diagnóstico real Credibanco F2 (ver cierre-credibanco) ----
@@ -887,8 +817,9 @@ function badgeFor(estado) {
 // estado sea accionable; acá solo se traduce a español para la analista,
 // sin perder el código (queda como title/tooltip).
 const ESTADO_CONCILIACION_LABEL = {
-  COINCIDE_DIAGNOSTICO_NO_CERTIFICADO: 'Conciliado (no certificado)',
-  DIFERENCIA_DIAGNOSTICA_NO_CERTIFICADA: 'Con diferencia (no certificada)',
+  COINCIDE: 'Conciliado',
+  CON_DIFERENCIA: 'Con diferencia',
+  PLANTILLA_SIN_VALOR: 'Plantilla sin valor',
   PENDIENTE_APROBACION_REGLA: 'Pendiente de aprobación de la regla',
   CAMPO_ORIGEN_NO_PERMITIDO: 'Campo de origen no permitido',
   FUENTES_NO_DISPONIBLES: 'Fuentes no disponibles',
@@ -922,7 +853,7 @@ let ultimoCierreCredibanco = null;
 function renderFechasConciliacion() {
   const host = el('reconFechasContables');
   if (!host) return;
-  const activa = jornadasRango.find((j) => j.idJornada === idJornadaActiva);
+  const activa = jornadaActual && jornadaActual.idJornada === idJornadaActiva ? jornadaActual : null;
   if (!activa) {
     host.innerHTML = '<span class="reconDateEmpty">Sin fecha contable seleccionada en Insumos.</span>';
     return;
@@ -971,9 +902,11 @@ function construirFilasHost(hostPorCuenta, cruces) {
 // "Resultados de conciliación" sin que el backend tenga que exponerlo
 // (el catálogo ya lo usa internamente para filtrar canje/depo por fila).
 const CONCEPTO_REGLA = {
-  'CB-F2-302-CANJE-CREDITO': '017-CANJE RECIBIDO TARJETA CREDITO PAGOS',
-  'CB-F2-838-DEPO-NACIONAL': '017-VR. DEPOSITOS ELECTRONICOS NAL CONSIGNADOS',
-  'CB-F2-839-DEPO-INTERNACIONAL': '017-VR. DEPOSITOS ELECTRONICOS INTERNACIONAL CONSIGNADOS',
+  'CB-F2-302-CANJE-CREDITO': '017-CANJE RECIBIDO TARJETA CREDITO (neto I57, filas 57-62)',
+  'CB-F2-838-DEPO-NAL-CONSIGNADOS': '017-VR. DEPOSITOS ELECTRONICOS NAL CONSIGNADOS',
+  'CB-F2-838-DEPO-NAL-REVERSIONES': '017-VR. REVERSIONES D.E. NACIONAL',
+  'CB-F2-839-DEPO-INT-CONSIGNADOS': '017-VR. DEPOSITOS ELECTRONICOS INTERNACIONAL CONSIGNADOS',
+  'CB-F2-839-DEPO-INT-REVERSIONES': '017-VR. REVERSIONES D.E. INTERNACIONAL',
 };
 
 // totales_diagnosticos ya viene agrupado por concepto (una fila por A).
@@ -1055,7 +988,7 @@ function construirFilasResultado(d) {
       <td class="num">${celdaFuente(fuentes, 'HA32', 'neto_debe_menos_haber')}</td>
       <td class="num">${c.valor_host != null ? fmtMoney(c.valor_host) : '—'}</td>
       <td class="num">${c.diferencia != null ? fmtMoney(c.diferencia) : '—'}</td>
-      <td><span class="tag ${badgeFor(c.estado)}" title="${esc(c.estado || '')}">${esc(labelEstadoConciliacion(c.estado))}</span>${c.diferencia != null && c.aprobada === false ? ' <span class="tag warn" title="La regla no tiene version+evidencia_aprobacion firmadas; este valor es un calculo provisional, no un resultado certificado.">⚠ sin aprobar</span>' : ''}</td>
+      <td><span class="tag ${badgeFor(c.estado)}" title="${esc(c.estado || '')}">${esc(labelEstadoConciliacion(c.estado))}</span>${c.diferencia != null && c.aprobada === false ? ' <span class="tag warn" title="La regla no tiene version+evidencia_aprobacion firmadas; este valor es un calculo provisional.">⚠ sin aprobar</span>' : ''}</td>
       <td>${accion}</td>
     </tr>`;
   }).join('');
@@ -1123,7 +1056,9 @@ function renderDetalleCuentaCredibanco(cuenta) {
   if (!cont || !d) return;
 
   const filasHost = (d.host_por_cuenta_y_fuente || []).filter((h) => h.cuenta === cuenta);
-  const cruce = (d.cruces_host_credibanco_diagnosticos || []).find((c) => c.cuenta_host === cuenta) || null;
+  // Una cuenta puede tener varias reglas (p. ej. 838: consignados vs Debe y reversiones vs Haber).
+  const crucesCuenta = (d.cruces_host_credibanco_diagnosticos || []).filter((c) => c.cuenta_host === cuenta);
+  const cruce = crucesCuenta[0] || null;
 
   const filasHostHtml = filasHost
     .map((f) => {
@@ -1135,8 +1070,8 @@ function renderDetalleCuentaCredibanco(cuenta) {
     })
     .join('');
 
-  const cruceHtml = cruce
-    ? `<div class="explain"><b>Regla de cruce:</b> ${esc(cruce.id_regla)} (${esc(cruce.insumo)}) · <span class="tag ${badgeFor(cruce.estado)}" title="${esc(cruce.estado || '')}">${esc(labelEstadoConciliacion(cruce.estado))}</span>${cruce.valor_franquicia != null ? ` · Franquicia: ${fmtMoney(cruce.valor_franquicia)} · Diferencia: ${fmtMoney(cruce.diferencia)}` : ''}${cruce.diferencia != null && cruce.aprobada === false ? ' <span class="tag warn" title="La regla no tiene version+evidencia_aprobacion firmadas; este valor es un calculo provisional, no un resultado certificado.">⚠ sin aprobar</span>' : ''}</div>`
+  const cruceHtml = crucesCuenta.length
+    ? crucesCuenta.map((c) => `<div class="explain"><b>Regla de cruce:</b> ${esc(c.id_regla)} (${esc(c.insumo)}) · <span class="tag ${badgeFor(c.estado)}" title="${esc(c.estado || '')}">${esc(labelEstadoConciliacion(c.estado))}</span>${c.valor_franquicia != null ? ` · Franquicia: ${fmtMoney(c.valor_franquicia)} · Diferencia: ${fmtMoney(c.diferencia)}` : ''}${c.diferencia != null && c.aprobada === false ? ' <span class="tag warn" title="La regla no tiene version+evidencia_aprobacion firmadas; este valor es un calculo provisional.">⚠ sin aprobar</span>' : ''}</div>`).join('')
     : '<div class="explain">Sin regla de cruce aprobada para esta cuenta todavía.</div>';
 
   // Seccion B: nunca se filtra un total global de CAET/CANT por cuenta (el
@@ -1153,6 +1088,19 @@ function renderDetalleCuentaCredibanco(cuenta) {
       <p class="friendlyNote">Totales globales de origen por concepto persistido (ver "Totales diagnósticos"). No atribuidos automáticamente a esta cuenta: la regla de cruce arriba es la única atribución aprobable, y sigue pendiente. No sumar CAET y CANT entre sí.</p>
       <div class="tableScroll"><table class="reconTable"><thead><tr><th>Concepto</th><th>Insumo</th><th>Cantidad</th><th>VL Interc</th><th>VL Total</th></tr></thead>
       <tbody>${filasHtml || '<tr><td colspan="5" class="muted">Sin totales disponibles.</td></tr>'}</tbody></table></div>`;
+  } else if (cruce && cruce.insumo === 'PLANTILLA') {
+    const p = d.plantilla_maestra || {};
+    const recibido = (p.bloques || []).find((b) => b.codigo === 'TOTAL_CANJE_RECIBIDO') || { filas: [] };
+    const i57 = (p.controles || {}).I57_CUENTA_302 || {};
+    const filasHtml = recibido.filas
+      .filter((f) => f.fila >= 57 && f.fila <= 62)
+      .map((f) => `<tr><td class="num">${f.fila}</td><td>${esc(f.concepto)}</td><td class="num">${f.debito != null ? fmtMoney(f.debito) : '—'}</td><td class="num">${f.credito != null ? fmtMoney(f.credito) : '—'}</td><td><span class="tag ${badgeForPlantilla(f.estado)}" title="${esc(f.formula_excel || '')}">${esc(f.estado)}</span></td></tr>`)
+      .join('');
+    seccionB = `
+      <h3>B. Plantilla Maestra · filas 57 a 62</h3>
+      <p class="friendlyNote">Neto I57 = F57 − G58 − G59 − G61 − G60 + F62 = <b>${i57.valor != null ? fmtMoney(i57.valor) : '—'}</b>. Es el valor de franquicia que se compara contra HA32 de esta cuenta (nota de la Plantilla: "VALI CTA 302 HA 32").</p>
+      <div class="tableScroll"><table class="reconTable"><thead><tr><th>Fila</th><th>Concepto</th><th>Débito</th><th>Crédito</th><th>Estado</th></tr></thead>
+      <tbody>${filasHtml || '<tr><td colspan="5" class="muted">Sin filas de la Plantilla.</td></tr>'}</tbody></table></div>`;
   } else if (cruce && cruce.insumo === 'DEPO') {
     const filas = (d.depo_agregados_crudos || []).filter((x) => x.cuenta_host_candidata === cuenta);
     const filasHtml = filas
@@ -1215,8 +1163,8 @@ async function cargarCierreCredibanco() {
 
   const cruces = d.cruces_host_credibanco_diagnosticos || [];
   const filasHost = construirFilasHost(d.host_por_cuenta_y_fuente, cruces);
-  const coincidencias = cruces.filter((c) => c.estado === 'COINCIDE_DIAGNOSTICO_NO_CERTIFICADO').length;
-  const diferencias = cruces.filter((c) => c.estado === 'DIFERENCIA_DIAGNOSTICA_NO_CERTIFICADA').length;
+  const coincidencias = cruces.filter((c) => c.estado === 'COINCIDE').length;
+  const diferencias = cruces.filter((c) => c.estado === 'CON_DIFERENCIA').length;
 
   // "Incorporados maestro": cuentas con regla de cruce definida que ya
   // tienen al menos un movimiento Host cargado para esta jornada (HA22/26/32)
@@ -1248,7 +1196,7 @@ async function cargarCierreCredibanco() {
         <td>${cruce ? esc(cruce.id_regla) : '<span class="muted">Sin regla</span>'}</td>
         <td class="num">${cruce && cruce.valor_franquicia != null ? fmtMoney(cruce.valor_franquicia) : '—'}</td>
         <td class="num">${cruce && cruce.diferencia != null ? fmtMoney(cruce.diferencia) : '—'}</td>
-        <td><span class="tag ${badgeFor(estadoFila)}" title="${esc(estadoFila || '')}">${esc(labelEstadoConciliacion(estadoFila))}</span>${cruce && cruce.diferencia != null && cruce.aprobada === false ? ' <span class="tag warn" title="La regla no tiene version+evidencia_aprobacion firmadas; este valor es un calculo provisional, no un resultado certificado.">⚠ sin aprobar</span>' : ''}</td>
+        <td><span class="tag ${badgeFor(estadoFila)}" title="${esc(estadoFila || '')}">${esc(labelEstadoConciliacion(estadoFila))}</span>${cruce && cruce.diferencia != null && cruce.aprobada === false ? ' <span class="tag warn" title="La regla no tiene version+evidencia_aprobacion firmadas; este valor es un calculo provisional.">⚠ sin aprobar</span>' : ''}</td>
         <td>${accion}</td>
       </tr>`;
     })
@@ -1261,7 +1209,7 @@ async function cargarCierreCredibanco() {
       <div class="fc"><small>L5 · CARTA (COMPONENTE G)</small><b>${fmtMoney(l5.valor)}</b></div>
       <div class="fc"><small>L8 · DIFERENCIA (L5-L3-L6)</small><b>${l8.l8 !== undefined ? fmtMoney(l8.l8) : '—'}</b></div>
     </div>
-    <div class="explain"><b>Diagnóstico, no certificación.</b> Estado general: <span class="tag ${badgeFor(d.estado)}">${esc(d.estado || '—')}</span>. Este resultado nunca certifica automáticamente una conciliación contable (<code>certificado:false</code> siempre); requiere revisión y aprobación de negocio.</div>
+    <div class="explain">Estado general: <span class="tag ${badgeFor(d.estado)}">${esc(d.estado || '—')}</span>. Las reglas de cruce y L8 se aplican según el catálogo aprobado; una diferencia no genera asientos contables automáticos.</div>
     <div class="flow summaryFlow">
       <div class="fc"><small>CUENTAS / CRUCES</small><b>${cruces.length}</b></div>
       <div class="fc"><small>CONCILIADOS</small><b>${coincidencias}</b></div>
@@ -1277,8 +1225,8 @@ async function cargarCierreCredibanco() {
         </select>
         <select id="reconSt" class="select" onchange="filterResultadoRows()">
           <option value="">Todos los estados</option>
-          <option value="COINCIDE_DIAGNOSTICO_NO_CERTIFICADO">Conciliado</option>
-          <option value="DIFERENCIA_DIAGNOSTICA_NO_CERTIFICADA">Con diferencia</option>
+          <option value="COINCIDE">Conciliado</option>
+          <option value="CON_DIFERENCIA">Con diferencia</option>
           <option value="PENDIENTE_APROBACION_REGLA">Pendiente de aprobación</option>
         </select>
       </div>
@@ -1303,8 +1251,8 @@ async function cargarCierreCredibanco() {
           <option value="PENDIENTE_APROBACION_REGLA">Pendiente aprobación regla</option>
           <option value="BLOQUEADO_SINTETICO">Bloqueado sintético</option>
           <option value="DATO_INCOMPLETO">Dato incompleto</option>
-          <option value="COINCIDE_DIAGNOSTICO_NO_CERTIFICADO">Coincide (no certificado)</option>
-          <option value="DIFERENCIA_DIAGNOSTICA_NO_CERTIFICADA">Diferencia (no certificada)</option>
+          <option value="COINCIDE">Coincide</option>
+          <option value="CON_DIFERENCIA">Con diferencia</option>
         </select>
       </div>
       <div class="filterHint">Diagnóstico por cuenta Host, nunca homologación contable. HA22/HA26/HA32 no se suman entre sí. "Sin regla" = cuenta observada en Host sin regla de cruce aprobada todavía.</div>
@@ -1315,11 +1263,286 @@ async function cargarCierreCredibanco() {
         <th>Regla</th><th>Valor Franquicia</th><th>Diferencia</th><th>Estado</th><th>Acción</th>
       </tr></thead><tbody id="cruceBody">${cruceRows || '<tr><td colspan="15" class="muted">Sin cuentas Host observadas.</td></tr>'}</tbody></table></div>
     </div>
+    ${renderPlantillaMaestra(d.plantilla_maestra)}
     <div class="card section">
       <div class="title">Pendientes (${(d.pendientes || []).length})</div>
       <div class="tableScroll"><table><thead><tr><th>Código</th><th>Detalle</th></tr></thead>
       <tbody>${pendRows || '<tr><td colspan="2" class="muted">Sin pendientes.</td></tr>'}</tbody></table></div>
     </div>`;
+}
+
+// ---- Plantilla Maestra (hoja PLANTILLA (2)) reproducida por el backend ----
+// Cada bloque corresponde a un subtotal de la Plantilla (filas 42, 56, 98, 122).
+// Las filas de captura manual se listan aparte: en Excel las llena Operaciones
+// y aquí cuentan como vacías, igual que en los SUM de la Plantilla.
+function badgeForPlantilla(estado) {
+  const e = String(estado || '');
+  if (e === 'CALCULADO') return 'ok';
+  if (/^(SIN_DATO_EXCEL|VALOR_FIJO_EXCEL|CELDA_MANUAL_VACIA|SIN_MOVIMIENTO_HOST)/.test(e)) return 'info';
+  return 'warn';
+}
+
+function renderPlantillaMaestra(p) {
+  if (!p) return '';
+  const bloques = (p.bloques || []).map((b) => {
+    const filas = (b.filas || [])
+      .map((f) => `<tr>
+          <td class="num">${f.fila}</td>
+          <td>${esc(f.cuenta)}</td>
+          <td>${esc(f.concepto)}</td>
+          <td class="num">${f.debito != null ? fmtMoney(f.debito) : '—'}</td>
+          <td class="num">${f.credito != null ? fmtMoney(f.credito) : '—'}</td>
+          <td><span class="tag ${badgeForPlantilla(f.estado)}" title="${esc(f.nota ? `${f.nota} · ${f.formula_excel}` : f.formula_excel || '')}">${esc(f.estado)}</span></td>
+        </tr>`)
+      .join('');
+    const manuales = (b.filas_captura_manual || [])
+      .map((m) => `<tr><td class="num">${m.fila}</td><td>${esc(m.cuenta)}</td><td>${esc(m.concepto)}</td></tr>`)
+      .join('');
+    const aviso = b.subtotal_completo
+      ? ''
+      : `<p class="filterHint">⚠ Subtotal parcial: las filas ${esc((b.filas_sin_valor || []).join(', '))} no tienen valor y no entran en la suma.</p>`;
+    return `<details class="section">
+        <summary style="cursor:pointer"><b>${esc(b.titulo)}</b> <span class="muted">· subtotal fila ${b.fila_subtotal}: Débito ${fmtMoney(b.subtotal_debito)} · Crédito ${fmtMoney(b.subtotal_credito)}</span></summary>
+        <div class="tableScroll"><table class="reconTable"><thead><tr>
+          <th>Fila</th><th>Cuenta</th><th>Concepto</th><th>Débito</th><th>Crédito</th><th>Estado</th>
+        </tr></thead><tbody>${filas}
+          <tr><td></td><td></td><td><b>Subtotal (fila ${b.fila_subtotal})</b></td><td class="num"><b>${fmtMoney(b.subtotal_debito)}</b></td><td class="num"><b>${fmtMoney(b.subtotal_credito)}</b></td><td></td></tr>
+        </tbody></table></div>
+        ${aviso}
+        ${manuales ? `<details><summary style="cursor:pointer" class="muted">Filas de captura manual (${(b.filas_captura_manual || []).length})</summary>
+          <div class="tableScroll"><table><thead><tr><th>Fila</th><th>Cuenta</th><th>Concepto</th></tr></thead><tbody>${manuales}</tbody></table></div></details>` : ''}
+      </details>`;
+  }).join('');
+  const controles = Object.entries(p.controles || {})
+    .map(([codigo, c]) => {
+      const valor = c.valor != null ? fmtMoney(c.valor) : (c.debito != null ? `D ${fmtMoney(c.debito)} · C ${fmtMoney(c.credito)}` : '—');
+      return `<tr><td>${esc(codigo)}</td><td class="num">${valor}</td><td>${c.estado ? `<span class="tag ${badgeForPlantilla(c.estado)}">${esc(c.estado)}</span>` : '—'}</td><td class="muted">${esc(c.nota || c.formula_excel || '')}</td></tr>`;
+    })
+    .join('');
+  const avisos = (p.advertencias || []).map((a) => `<p class="filterHint">⚠ ${esc(a)}</p>`).join('');
+  return `<div class="card section">
+      <div class="title">Plantilla Maestra (diagnóstico) <span class="muted">· ${esc(p.estado || '')}</span></div>
+      <p class="filterHint">Filas de la hoja PLANTILLA (2) con fuente en Carta, TOTALES (CAET/CANT) y td cuadre (DEPO + HA22), con las mismas fórmulas que la Excel. Pasa el cursor sobre el estado para ver la fórmula. Fuera de alcance: ${esc((p.fuera_de_alcance || []).join('; '))}.</p>
+      ${avisos}
+      ${bloques}
+      <details class="section"><summary style="cursor:pointer"><b>Controles de la Plantilla</b></summary>
+        <div class="tableScroll"><table><thead><tr><th>Control</th><th>Valor</th><th>Estado</th><th>Detalle</th></tr></thead><tbody>${controles}</tbody></table></div>
+      </details>
+    </div>`;
+}
+
+// ---- Conciliación Redeban: cuadre con la hoja ESTRUCTURA (ver cierre-redeban) ----
+// Cada código de operación PMD se asigna a una cuenta con la homologación de la
+// plantilla de cuadre Redeban; cada cuenta se compara contra HA22, HA26 y HA32
+// por separado (nunca se suman). "*" marca las fuentes que se consultan para la cuenta.
+let ultimoCierreRedeban = null;
+let redebanCuentasPagina = 0;
+let redebanValidadorPagina = 0;
+let redebanCuentaSel = null;
+const REDEBAN_PAGE_SIZE = 10;
+const FUENTES_REDEBAN = ['HA22', 'HA26', 'HA32'];
+
+const ESTADO_REDEBAN_LABEL = {
+  CONCILIADO: 'Conciliado',
+  CON_DIFERENCIA: 'Con diferencia',
+  PENDIENTE_CONCILIACION: 'Pendiente (falta fuente Host)',
+  SIN_INFORMACION: 'Sin información PMD',
+  SIN_CONSULTA_HOST: 'Sin consulta Host definida',
+  CUADRA: 'Cuadra',
+  DESCUADRE: 'Descuadre',
+  SIN_FILAS_ESTRUCTURA: 'Sin filas en ESTRUCTURA',
+};
+
+function badgeForRedeban(estado) {
+  const e = String(estado || '');
+  if (/^(CONCILIADO|CUADRA|COINCIDE|CALCULADO)$/.test(e)) return 'ok';
+  if (/^(SIN_CONSULTA_HOST|SIN_MOVIMIENTO)/.test(e)) return 'info';
+  return 'warn';
+}
+
+function tagRedeban(estado) {
+  return `<span class="tag ${badgeForRedeban(estado)}" title="${esc(estado || '')}">${esc(ESTADO_REDEBAN_LABEL[estado] || estado || '—')}</span>`;
+}
+
+function paginarRedeban(lista, pagina) {
+  const total = lista.length;
+  const paginas = Math.max(1, Math.ceil(total / REDEBAN_PAGE_SIZE));
+  const p = Math.min(Math.max(pagina, 0), paginas - 1);
+  const inicio = p * REDEBAN_PAGE_SIZE;
+  return { p, paginas, total, inicio, items: lista.slice(inicio, inicio + REDEBAN_PAGE_SIZE) };
+}
+
+function pagerRedeban(pg, etiqueta, idPrev, idNext) {
+  return `<div class="detailPager">
+      <span class="pagerInfo">${etiqueta} ${pg.total ? pg.inicio + 1 : 0}-${pg.inicio + pg.items.length} de ${pg.total} · ${REDEBAN_PAGE_SIZE} por página</span>
+      <div class="pager">
+        <button class="btn" id="${idPrev}" ${pg.p === 0 ? 'disabled' : ''}>‹ Anterior</button>
+        <span class="muted">Página ${pg.p + 1} de ${pg.paginas}</span>
+        <button class="btn" id="${idNext}" ${pg.p >= pg.paginas - 1 ? 'disabled' : ''}>Siguiente ›</button>
+      </div>
+    </div>`;
+}
+
+const montoRedeban = (v) => (v != null ? fmtMoney(v) : '—');
+
+function alertasRedeban(d) {
+  const bloques = [
+    ['Operaciones PMD sin fila en ESTRUCTURA', d.codigos_pmd_sin_estructura, ['Código PMD', 'Producto / servicio', 'Débito neto', 'Crédito neto'],
+      (x) => [esc(x.codigo_pmd), esc(x.producto_servicio || ''), montoRedeban(x.debito_neto), montoRedeban(x.credito_neto)]],
+    ['Operaciones con cobertura parcial (falta algún tipo A/B/C)', d.codigos_pmd_cobertura_parcial, ['Código PMD', 'Tipos en ESTRUCTURA', 'Neto PMD', 'Neto ESTRUCTURA', 'Diferencia'],
+      (x) => [esc(x.codigo_pmd), esc((x.tipos_en_estructura || []).join(', ')), montoRedeban(x.neto_pmd), montoRedeban(x.neto_estructura), montoRedeban(x.diferencia)]],
+    ['Movimientos PMD en filas sin cuenta contable', d.movimientos_pmd_sin_cuenta, ['Fila', 'Código PMD', 'Tipo', 'Neto', 'Estado'],
+      (x) => [x.fila, esc(x.codigo_pmd), esc(x.tipo), montoRedeban(x.neto), esc(x.estado)]],
+    ['Filas de ESTRUCTURA cuyo tipo no coincide con sus índices', d.filas_tipo_inconsistente, ['Fila', 'Cuenta', 'Código PMD', 'Tipo', 'Neto'],
+      (x) => [x.fila, esc(x.cuenta), esc(x.codigo_pmd), esc(x.tipo), montoRedeban(x.neto)]],
+  ].filter(([, lista]) => (lista || []).length);
+  const avisos = (d.advertencias || []).map((a) => `<p class="filterHint">⚠ ${esc(a)}</p>`).join('');
+  if (!bloques.length && !avisos) return '';
+  const detalles = bloques.map(([titulo, lista, cabeceras, fila]) => `<details class="section">
+      <summary style="cursor:pointer"><b>${esc(titulo)}</b> <span class="tag warn">${lista.length}</span></summary>
+      <div class="tableScroll"><table class="reconTable"><thead><tr>${cabeceras.map((c) => `<th>${c}</th>`).join('')}</tr></thead>
+      <tbody>${lista.map((x) => `<tr>${fila(x).map((v) => `<td>${v}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+    </details>`).join('');
+  return `<div class="card section"><div class="title">Alertas del cuadre</div>${avisos}${detalles}</div>`;
+}
+
+async function cargarCierreRedeban() {
+  const cont = el('cierreRedebanContent');
+  if (!cont) return;
+  if (!idJornadaActiva) {
+    cont.innerHTML = '<div class="emptyDetail">Selecciona una fecha contable en Insumos para ver el cuadre Redeban de esta jornada.</div>';
+    return;
+  }
+  cont.innerHTML = '<div class="emptyDetail">Cargando cuadre Redeban…</div>';
+  let r;
+  try {
+    r = await apiFetch(`${API}/jornadas/${idJornadaActiva}/cierre-redeban`);
+  } catch (e) {
+    cont.innerHTML = `<div class="emptyDetail">No se pudo cargar el cuadre Redeban: ${esc(e.message || e)}</div>`;
+    return;
+  }
+  if (!r.ok) {
+    cont.innerHTML = `<div class="emptyDetail">No se pudo cargar el cuadre Redeban (HTTP ${r.status}).</div>`;
+    return;
+  }
+  const d = await r.json();
+  ultimoCierreRedeban = d;
+  redebanCuentasPagina = 0;
+  redebanValidadorPagina = 0;
+  redebanCuentaSel = null;
+
+  if (d.estado === 'INSUMO_PMD_FALTANTE') {
+    cont.innerHTML = '<div class="explain"><b>Sin archivo PMD procesado.</b> Carga el insumo PMD de esta jornada en Insumos para ver el cuadre Redeban.</div>';
+    return;
+  }
+
+  const res = d.resumen || {};
+  const cat = d.catalogo || {};
+  cont.innerHTML = `
+    <div class="explain">Homologación PMD → cuenta: hoja ESTRUCTURA de <b>${esc(cat.archivo || '')}</b> (${cat.filas ?? 0} filas, ${esc(cat.version || '')}). Fuentes Host procesadas: ${esc((d.fuentes_host_procesadas || []).join(', ') || 'ninguna')}. Cada cuenta se compara contra HA22, HA26 y HA32 por separado: diferencia = neto PMD − (debe − haber). <b>*</b> marca la fuente que se consulta para esa cuenta.</div>
+    <div class="flow summaryFlow">
+      <div class="fc"><small>CUENTAS</small><b>${res.cuentas ?? 0}</b></div>
+      <div class="fc"><small>CONCILIADAS</small><b>${res.CONCILIADO ?? 0}</b></div>
+      <div class="fc"><small>CON DIFERENCIA</small><b>${res.CON_DIFERENCIA ?? 0}</b></div>
+      <div class="fc"><small>PENDIENTES</small><b>${res.PENDIENTE_CONCILIACION ?? 0}</b></div>
+      <div class="fc"><small>SIN CONSULTA HOST</small><b>${res.SIN_CONSULTA_HOST ?? 0}</b></div>
+      <div class="fc"><small>SIN INFORMACIÓN</small><b>${res.SIN_INFORMACION ?? 0}</b></div>
+    </div>
+    ${alertasRedeban(d)}
+    <div class="card section">
+      <div class="title">Cuadre por cuenta <span class="muted">(clic en la cuenta para ver sus operaciones)</span></div>
+      <div id="redebanCuentasWrap"></div>
+    </div>
+    <div id="redebanOperacionesWrap"></div>
+    <div class="card section">
+      <div class="title">VALIDADOR · ESTRUCTURA vs PMD por nivel 1</div>
+      <div id="redebanValidadorWrap"></div>
+      <p class="filterHint">Control = neto de ESTRUCTURA + total PMD del nivel. Debe dar 0: si no, hay operaciones PMD que ESTRUCTURA no asigna completas (ver Alertas).</p>
+    </div>`;
+  renderRedebanCuentas();
+  renderRedebanValidador();
+}
+
+function celdasHostRedeban(c) {
+  return FUENTES_REDEBAN.map((f) => {
+    const h = (c.host || {})[f] || {};
+    const marca = h.obligatoria ? ' <b title="Fuente que se consulta para esta cuenta">*</b>' : '';
+    return `<td class="num" title="${esc(h.estado || '')}">${montoRedeban(h.neto)}${marca}</td><td class="num">${montoRedeban(h.diferencia)}</td>`;
+  }).join('');
+}
+
+function renderRedebanCuentas() {
+  const wrap = el('redebanCuentasWrap');
+  const d = ultimoCierreRedeban;
+  if (!wrap || !d) return;
+  const pg = paginarRedeban(d.cuentas || [], redebanCuentasPagina);
+  redebanCuentasPagina = pg.p;
+  const filas = pg.items.map((c) => `<tr>
+      <td><a href="#" class="redebanCuentaLink" data-cuenta="${esc(c.cuenta)}">${esc(c.cuenta)}</a></td>
+      <td class="num">${montoRedeban(c.neto_pmd)}</td>
+      ${celdasHostRedeban(c)}
+      <td>${tagRedeban(c.estado)}</td>
+    </tr>`).join('');
+  wrap.innerHTML = `
+    <div class="tableScroll"><table class="reconTable"><thead><tr>
+      <th>Cuenta</th><th>Neto PMD</th><th>HA22 Neto</th><th>HA22 Dif.</th><th>HA26 Neto</th><th>HA26 Dif.</th><th>HA32 Neto</th><th>HA32 Dif.</th><th>Estado</th>
+    </tr></thead><tbody>${filas || '<tr><td colspan="9" class="muted">Sin cuentas en ESTRUCTURA.</td></tr>'}</tbody></table></div>
+    ${pagerRedeban(pg, 'Cuentas', 'btnRedebanCuentasAnterior', 'btnRedebanCuentasSiguiente')}`;
+  el('btnRedebanCuentasAnterior')?.addEventListener('click', () => { redebanCuentasPagina -= 1; renderRedebanCuentas(); });
+  el('btnRedebanCuentasSiguiente')?.addEventListener('click', () => { redebanCuentasPagina += 1; renderRedebanCuentas(); });
+  wrap.querySelectorAll('.redebanCuentaLink').forEach((a) => a.addEventListener('click', (e) => {
+    e.preventDefault();
+    redebanCuentaSel = a.dataset.cuenta;
+    renderRedebanOperaciones();
+  }));
+}
+
+function renderRedebanOperaciones() {
+  const wrap = el('redebanOperacionesWrap');
+  const d = ultimoCierreRedeban;
+  if (!wrap || !d) return;
+  const c = (d.cuentas || []).find((x) => x.cuenta === redebanCuentaSel);
+  if (!c) { wrap.innerHTML = ''; return; }
+  const ops = (c.operaciones || []).map((o) => `<tr>
+      <td class="num">${o.fila}</td><td>${esc(o.codigo_pmd)}</td><td>${esc(o.nombre_operacion || '')}</td><td>${esc(o.tipo)}</td>
+      <td class="num">${montoRedeban(o.debito)}</td><td class="num">${montoRedeban(o.credito)}</td><td class="num">${montoRedeban(o.neto)}</td>
+      <td><span class="tag ${badgeForRedeban(o.estado)}">${esc(o.estado)}</span></td></tr>`).join('');
+  const host = FUENTES_REDEBAN.map((f) => {
+    const h = (c.host || {})[f] || {};
+    return `<tr><td>${f}${h.obligatoria ? ' *' : ''}</td><td class="num">${h.movimientos ?? '—'}</td><td class="num">${montoRedeban(h.debe)}</td><td class="num">${montoRedeban(h.haber)}</td><td class="num">${montoRedeban(h.neto)}</td><td class="num">${montoRedeban(h.diferencia)}</td><td><span class="tag ${badgeForRedeban(h.estado)}">${esc(h.estado || '—')}</span></td></tr>`;
+  }).join('');
+  const manuales = (c.filas_captura_manual || []).length
+    ? `<p class="filterHint">Filas de captura manual en ESTRUCTURA (no entran en el neto): ${c.filas_captura_manual.join(', ')}.</p>` : '';
+  wrap.innerHTML = `<div class="card section">
+      <div class="title">Cuenta ${esc(c.cuenta)} · ${tagRedeban(c.estado)} <button type="button" class="btn" id="btnCerrarOperacionesRedeban" style="float:right">Cerrar</button></div>
+      <h3>A. Host (fuentes separadas)</h3>
+      <div class="tableScroll"><table class="reconTable"><thead><tr><th>Fuente</th><th>Movimientos</th><th>Debe</th><th>Haber</th><th>Neto</th><th>Diferencia</th><th>Estado</th></tr></thead><tbody>${host}</tbody></table></div>
+      <h3>B. Operaciones PMD asignadas (${(c.operaciones || []).length})</h3>
+      <div class="tableScroll"><table class="reconTable"><thead><tr><th>Fila</th><th>Código PMD</th><th>Operación</th><th>Tipo</th><th>Débito (N)</th><th>Crédito (O)</th><th>Neto (P)</th><th>Estado</th></tr></thead>
+      <tbody>${ops || '<tr><td colspan="8" class="muted">Sin movimiento PMD para esta cuenta en la jornada.</td></tr>'}</tbody></table></div>
+      ${manuales}
+    </div>`;
+  el('btnCerrarOperacionesRedeban')?.addEventListener('click', () => { redebanCuentaSel = null; renderRedebanOperaciones(); });
+  wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderRedebanValidador() {
+  const wrap = el('redebanValidadorWrap');
+  const d = ultimoCierreRedeban;
+  if (!wrap || !d) return;
+  const pg = paginarRedeban(d.validador || [], redebanValidadorPagina);
+  redebanValidadorPagina = pg.p;
+  const filas = pg.items.map((v) => `<tr>
+      <td>${esc(v.nivel_1)}</td><td class="num">${v.filas_estructura}</td>
+      <td class="num">${montoRedeban(v.neto_estructura)}</td><td class="num">${montoRedeban(v.total_pmd)}</td>
+      <td class="num">${montoRedeban(v.control)}</td><td>${tagRedeban(v.estado)}</td></tr>`).join('');
+  wrap.innerHTML = `
+    <div class="tableScroll"><table class="reconTable"><thead><tr>
+      <th>Nivel 1</th><th>Filas ESTRUCTURA</th><th>Neto ESTRUCTURA</th><th>Total PMD</th><th>Control</th><th>Estado</th>
+    </tr></thead><tbody>${filas || '<tr><td colspan="6" class="muted">Sin niveles.</td></tr>'}</tbody></table></div>
+    ${pagerRedeban(pg, 'Niveles', 'btnRedebanValidadorAnterior', 'btnRedebanValidadorSiguiente')}`;
+  el('btnRedebanValidadorAnterior')?.addEventListener('click', () => { redebanValidadorPagina -= 1; renderRedebanValidador(); });
+  el('btnRedebanValidadorSiguiente')?.addEventListener('click', () => { redebanValidadorPagina += 1; renderRedebanValidador(); });
 }
 
 // ---- Agente IA (storyboard de UX, ver aviso en la pantalla — no hay IA real conectada) ----

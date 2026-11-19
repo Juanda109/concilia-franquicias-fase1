@@ -122,11 +122,11 @@ class CartaCompensacionParser(Parser):
 
    if RE_TOTALES_FAVOR.search(line):
     vals=_tokens(line)
-    self._emitir_total_canje(r,n,"CAI0224A","A_FAVOR","TOTAL_CANJE_ENVIADO",vals)
+    self._emitir_total_canje(r,n,"CAI0224A","A_FAVOR","TOTAL_CANJE_ENVIADO",vals,line[:1])
     modo=None; continue
    if RE_TOTALES_CARGO.search(line):
     vals=_tokens(line)
-    self._emitir_total_canje(r,n,"CAI0224A","A_CARGO","TOTAL_CANJE_RECIBIDO",vals)
+    self._emitir_total_canje(r,n,"CAI0224A","A_CARGO","TOTAL_CANJE_RECIBIDO",vals,line[:1])
     modo=None; continue
 
    up=norm.upper()
@@ -173,10 +173,14 @@ class CartaCompensacionParser(Parser):
    if _es_presentacion(norm): continue
    _descarta("SIN_REGLA_FUNCIONAL_CARTA")
 
- def _emitir_total_canje(self,r,n,seccion,lado,motivo,vals):
+ def _emitir_total_canje(self,r,n,seccion,lado,motivo,vals,control_impresion=" "):
+  """control_impresion: primer caracter de la linea (control de carro ASA
+  del reporte: ' ', '0', '1'). La Plantilla Maestra distingue esas variantes
+  en sus SUMIF, asi que se conserva en el concepto como "[CC=x]"."""
   nums=[_num(v) for v in vals]
+  cc=control_impresion.strip()
   fila={"numero_linea":n,"seccion":seccion,"motivo_codigo":motivo,"es_control":True,"lado":lado,
-   "concepto":f"TOTALES {lado.replace('_',' ')}"}
+   "concepto":f"TOTALES {lado.replace('_',' ')}"+(f" [CC={cc}]" if cc else "")}
   if lado=='A_FAVOR' and len(nums)>=7:
    fila.update(valor_principal=nums[0],valor_proceso=nums[1],valor_financiacion=nums[2],valor_fotocopias=nums[3],
     valor_red=nums[4],valor_depositos_electronicos=nums[5],valor_total=nums[6])
