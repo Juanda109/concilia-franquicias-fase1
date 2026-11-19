@@ -206,3 +206,48 @@ if os.getenv("CONCILIA_F2_DIAGNOSTICO_TEST") == "1":
 # INC59 - Reporte Maestro PMD diagnostico
 from app.api.reporte_pmd_inc59 import router as reporte_pmd_inc59_router
 app.include_router(reporte_pmd_inc59_router)
+
+# RECON_F2_013_API_VISA
+from app.api.evidencia_visa_vss_inc013 import router as evidencia_visa_router
+app.include_router(evidencia_visa_router)
+
+# RECON_F2_017_API_TRM_SOLO_LECTURA
+from app.api.trm_visa_inc017 import router as trm_visa_router
+app.include_router(trm_visa_router)
+
+# RECON_F2_017_LOTE8_PROPUESTA_TRM
+from app.api.propuesta_trm_visa_inc017 import (
+    router as propuesta_trm_visa_router,
+)
+app.include_router(propuesta_trm_visa_router)
+
+
+# RECON_F2_018_API_DOCUMENTAL
+from app.api.visa_documental_inc018 import (
+    router as visa_documental_inc018_router,
+)
+app.include_router(visa_documental_inc018_router)
+
+
+# RECON_F2_018_DIAGNOSTICO_VISA_OPT_IN
+import os as _visa_e2e_os
+if (
+    _visa_e2e_os.getenv("CONCILIA_VISA_E2E_DIAGNOSTICO") == "1"
+    and _visa_e2e_os.getenv("DB_NAME") == "concilia_test"
+):
+    from app.api.diagnostico_visa_e2e_inc018 import (
+        router as diagnostico_visa_e2e_router,
+    )
+    app.include_router(diagnostico_visa_e2e_router)
+
+
+# RECON_F2_020_DIAGNOSTICO_VISA_HOST
+from app.api.diagnostico_visa_host_inc020 import (
+    router as diagnostico_visa_host_inc020_router,
+)
+app.include_router(diagnostico_visa_host_inc020_router)
+
+
+# RECON_F2_017 - Confirmacion TRM protegida
+from app.api import confirmar_trm_visa_inc017
+app.include_router(confirmar_trm_visa_inc017.router)

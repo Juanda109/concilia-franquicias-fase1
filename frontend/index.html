@@ -719,6 +719,54 @@ td{padding:9px 8px;border-bottom:1px solid #edf0f2;white-space:nowrap}
 }
 </style>
 
+
+<style>
+/* VISA_F2_ESTILO_ACORDEONES_008 */
+.visa-acordeon-f2 {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    background: #ffffff !important;
+    color: #172b4d !important;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    margin: 4px 0 8px;
+    padding: 6px 10px;
+    box-shadow: none !important;
+}
+
+.visa-acordeon-f2 > summary {
+    background: #ffffff !important;
+    color: #172b4d !important;
+    cursor: pointer;
+    font-weight: 500;
+    padding: 4px;
+}
+
+.visa-acordeon-f2[open] {
+    padding-bottom: 12px;
+}
+
+.visa-acordeon-f2 table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.visa-acordeon-f2 th {
+    background: #eaf2f8;
+    color: #172b4d;
+}
+
+.visa-acordeon-f2 td {
+    background: #ffffff;
+    color: #172b4d;
+}
+</style>
+
+<style>
+/* TRM_F2_MANUAL_012: ocultar diagnosticos tecnicos solo en Reporte Maestro */
+#reconAviso, #reconAuditoriaV74 { display:none !important; }
+</style>
 </head>
 <body>
 <div class="app">
@@ -2585,17 +2633,23 @@ function pintarCoberturaContableHost(datos) {
       const sinHost = c.estado === 'SIN_HOST_EN_CATALOGO';
       const sin = c.estado === 'SIN_MOVIMIENTOS' && !tiene;
       const host = c.monetario_host || {};
+      // RECON_F2_012_HOST_CERO_REAL
       const neto = f => {
         const m = host[f];
-        if (m && m.neto != null) return money(m.neto);
-        return sin ? money(0) : '—';
+        if (!m || m.estado !== 'CON_MOVIMIENTOS' ||
+            Number(m.cantidad || 0) <= 0 || m.neto == null) {
+          return '—';
+        }
+        return money(m.neto);
       };
       const candidatosCuenta = franquicia === 'CREDIBANCO' ? (candidatos.get(cuenta) || []) : [];
       const candidatoHtml = candidatosCuenta.length
         ? `<span title="Componentes monetarios NO homologados; no son valor franquicia ni diferencia">${candidatosCuenta.map(x => safe(x.celda)+': '+money(x.valor_monetario_candidato)).join(' · ')}*</span>`
         : '—';
       const estado = sinHost || sin ? 'SIN_INFORMACION' : 'PENDIENTE_CONCILIACION';
-      const ref = sin ? money(0) : '—';
+      // RECON_F2_009_CERO_VS_AUSENCIA
+      // Sin evidencia monetaria no equivale a cero.
+      const ref = '—';
       const detalleHost = sources.map(f => {
         const m = host[f];
         return `<tr><td>${f}</td><td class="num">${money(m?.debe)}</td><td class="num">${money(m?.haber)}</td><td class="num">${neto(f)}</td></tr>`;
@@ -3138,9 +3192,300 @@ async function incorporarCandidatosPersistidosV28(idJornada, fecha, solicitud) {
   if (aviso) aviso.textContent += ' · V28: importes candidatos de Credibanco incorporados como filas NO HOMOLOGADAS; no son cruces ni afectan indicadores.';
 }
 
+
+// RECON_F2_013_PANEL_VISA
+async function pintarEvidenciaVisaVSS(idJornada, fecha, solicitud) {
+  document.getElementById('reconVisaVSS013')?.remove();
+  const respuesta = await apiConcilia(
+    `/api/v1/jornadas/${encodeURIComponent(idJornada)}/visa/documental-integral`
+  );
+  if (solicitud !== solicitudReporteMaestro || fecha !== obtenerFechaReporteMaestro()) return;
+  if (Number(respuesta.id_jornada) !== Number(idJornada) ||
+      respuesta.fecha_contable !== fecha ||
+      respuesta.certificado !== false || respuesta.conciliado_host !== false ||
+      respuesta.homologado_contablemente !== false ||
+      respuesta.paridad_110_115 !== true) {
+    throw Error('Contrato Visa documental integral inconsistente');
+  }
+  const resumen = respuesta.resumen_monetario;
+  if (!resumen || typeof resumen !== 'object') throw Error('Resumen Visa ausente');
+  // Candidato documental retenido solo para esta renderizacion; no altera indicadores.
+  window.conciliaVisaCandidatoF2 = {idJornada: Number(idJornada), fecha, solicitud, respuesta};
+  // La evidencia queda en memoria para el detalle de la cuenta candidata.
+  // No crear un panel independiente en el Reporte Maestro.
+
+}
+
+
+
+// VISA-F2-VSS120-001 — evidencia candidata, NO homologacion contable.
+// Limitada a la jornada sintetica 6961: no extrapolar cuenta a otras jornadas.
+function aplicarCandidatoVisaVSS120F2(idJornada, fecha, solicitud) {
+  if (Number(idJornada) !== 6961 || fecha !== '2026-11-19') return;
+  const contexto = window.conciliaVisaCandidatoF2;
+  if (!contexto || contexto.solicitud !== solicitud ||
+      contexto.idJornada !== Number(idJornada) || contexto.fecha !== fecha ||
+      solicitud !== solicitudReporteMaestro || fecha !== obtenerFechaReporteMaestro()) return;
+  const r = contexto.respuesta;
+  if (Number(r.id_jornada) !== Number(idJornada) || r.fecha_contable !== fecha ||
+      !Number.isSafeInteger(Number(r.id_archivo)) || Number(r.id_archivo) <= 0 ||
+      r.certificado !== false || r.conciliado_host !== false ||
+      r.homologado_contablemente !== false || r.paridad_110_115 !== true) return;
+  const detalles = Array.isArray(r.detalle_vss120) ? r.detalle_vss120 : [];
+  const candidatos = detalles.filter(d => d.reporte === 'VSS-120' &&
+    d.concepto === 'TOTAL_ORIGINAL_SALE' && d.moneda_clearing === 'COP');
+  if (candidatos.length !== 1) return; // ambiguo o ausente: no inventar cruce
+  const d = candidatos[0];
+  const n = Number(d.clearing?.valor_firmado);
+  const total = Number(r.resumen_monetario?.clearing_ventas_cop);
+  if (!Number.isFinite(n) || !Number.isFinite(total) || n !== total ||
+      !Number.isSafeInteger(Number(d.linea_origen)) || Number(d.linea_origen) <= 0) return;
+  const tbody = document.getElementById('reconBody');
+  const tabla = tbody?.closest('table');
+  if (!tabla) return;
+  const titulos = [...tabla.querySelectorAll('thead th')]
+    .map(th => th.textContent.trim().toUpperCase());
+  const idx = nombre => titulos.indexOf(nombre);
+  const iCuenta = idx('CUENTA'), iTotal = idx('VL TOTAL'),
+        iHA22 = idx('HA22 NETO'), iDif = idx('DIFERENCIA');
+  if ([iCuenta,iTotal,iHA22,iDif].some(i => i < 0)) return;
+  const filas = [...tbody.querySelectorAll('tr')].filter(tr =>
+    tr.dataset.franchise === 'VISA' &&
+    tr.cells[iCuenta]?.textContent.trim() === '259095341');
+  if (filas.length !== 1) return;
+  const tr = filas[0];
+  if (tr.dataset.visaF2Vss120 === '1') return;
+  if (!['', '—', '-'].includes(tr.cells[iTotal].textContent.trim())) return;
+  const fmt = valor => '$ ' + valor.toLocaleString('es-CO',
+    {minimumFractionDigits:2, maximumFractionDigits:2});
+  tr.cells[iTotal].textContent = fmt(n) + '*';
+  tr.cells[iTotal].title = 'VSS-120 TOTAL_ORIGINAL_SALE, clearing COP, archivo ' +
+    r.id_archivo + ', linea ' + d.linea_origen + '. Candidato NO HOMOLOGADO.';
+  tr.dataset.visaF2Vss120 = '1';
+  // Diferencia solo orientativa: leer el HA22 que ya se muestra, sin modificarlo.
+  // No se recalculan indicadores ni se cambia el estado de conciliacion.
+  const hostTexto = tr.cells[iHA22]?.textContent.trim() || '';
+  const hostNormalizado = hostTexto.replace(/\s|\$/g, '').replace(/\./g, '').replace(',', '.');
+  if (/^-?\d+(?:\.\d{1,2})?$/.test(hostNormalizado) &&
+      ['', '—', '-'].includes(tr.cells[iDif].textContent.trim())) {
+    const host = Number(hostNormalizado);
+    if (Number.isFinite(host)) {
+      tr.cells[iDif].textContent = fmt(n - host) + '*';
+      tr.cells[iDif].title = 'Diferencia candidata Visa VSS-120 menos HA22 visible; NO HOMOLOGADA, NO CERTIFICADA.';
+    }
+  }
+  const aviso = document.getElementById('reconAviso');
+  if (aviso) aviso.textContent += ' · Visa F2: VL TOTAL candidato VSS-120 para 259095341 (* no homologado).';
+}
+
+// RECON_F2_014_PARIDAD_OPCIONAL
+async function consultarParidadSintetica6606() {
+  // Solo para pruebas autorizadas explicitamente en la interfaz.
+  if (window.CONCILIA_ENABLE_TEST_ENDPOINTS !== true) {
+    return null;
+  }
+
+  return apiConcilia(
+    '/api/v1/jornadas/6606/paridad-detalle-prueba'
+  );
+}
+
+
+// RECON_F2_017_TRM_PRINCIPAL
+window.conciliaTrmJornada017 = null;
+
+function limpiarTrmPrincipal017() {
+  document.getElementById('reconTrmPrincipal017')?.remove();
+  document.getElementById('reconVisaTRM017')?.remove();
+  window.conciliaTrmJornada017 = null;
+}
+
+async function pintarTrmPrincipal017(idJornada, fecha, solicitud) {
+  limpiarTrmPrincipal017();
+
+  const tabla = document.getElementById('reconBody')?.closest('table');
+  if (!tabla) return;
+
+  const destino = tabla.closest('.tableScroll') || tabla;
+  const panel = document.createElement('section');
+
+  panel.id = 'reconTrmPrincipal017';
+  panel.className = 'card section';
+  panel.style.marginTop = '12px';
+
+  const titulo = document.createElement('h3');
+  titulo.textContent = 'TRM de la jornada';
+
+  const estado = document.createElement('p');
+  estado.className = 'friendlyNote';
+  estado.textContent = 'Consultando TRM...';
+
+  const contenido = document.createElement('div');
+  panel.append(titulo, estado, contenido);
+  destino.parentNode.insertBefore(panel, destino);
+
+  const vigente = () =>
+    solicitud === solicitudReporteMaestro &&
+    fecha === obtenerFechaReporteMaestro() &&
+    panel.isConnected &&
+    document.getElementById('reconTrmPrincipal017') === panel;
+
+  const texto = valor => {
+    const p = document.createElement('p');
+    p.textContent = valor;
+    contenido.appendChild(p);
+    return p;
+  };
+
+  try {
+    const estadoActual = await apiConcilia(
+      `/api/v1/jornadas/${encodeURIComponent(idJornada)}/trm-visa`
+    );
+    if (!vigente()) return;
+    if (Number(estadoActual.id_jornada) !== Number(idJornada) ||
+        estadoActual.fecha_contable !== fecha) {
+      throw Error('Estado TRM de otra jornada');
+    }
+    if (estadoActual.estado === 'TRM_CONFIRMADA') {
+      const t = estadoActual.trm;
+      if (!t || t.fecha_referencia !== fecha ||
+          !Number.isSafeInteger(Number(t.version)) || Number(t.version) <= 0 ||
+          !/^\d+(?:\.\d{1,4})?$/.test(String(t.trm_aplicada)) ||
+          Number(t.trm_aplicada) <= 0) {
+        throw Error('Confirmacion TRM persistida inconsistente');
+      }
+      contenido.replaceChildren();
+      estado.textContent = 'TRM confirmada - versión ' + t.version;
+      texto(`Jornada ${idJornada} | Fecha contable ${fecha}`);
+      const valorConfirmado = texto(Number(t.trm_aplicada).toLocaleString('es-CO', {
+        minimumFractionDigits: 4, maximumFractionDigits: 4
+      }) + ' COP/USD');
+      valorConfirmado.style.cssText = 'font-size:24px;font-weight:700;color:#004481';
+      texto('Origen del registro historico: ' + String(t.fuente || 'No disponible'));
+      const boton = document.createElement('button');
+      boton.type = 'button';
+      boton.className = 'btn';
+      boton.textContent = 'TRM confirmada';
+      boton.disabled = true;
+      contenido.appendChild(boton);
+      texto('TRM registrada anteriormente. Para jornadas sin TRM confirmada, el usuario ingresa la tasa manualmente. Conversion documental no certificada.');
+      window.conciliaTrmJornada017 = Object.freeze({
+        id_jornada: Number(idJornada), fecha_contable: fecha,
+        confirmada: true, version: Number(t.version),
+        trm_aplicada: String(t.trm_aplicada)
+      });
+      return;
+    }
+    if (estadoActual.estado !== 'SIN_TRM_CONFIRMADA') {
+      throw Error('Estado TRM no reconocido');
+    }
+    // TRM_F2_MANUAL_010: solo ingreso manual, sin consulta HTTP externa.
+    contenido.replaceChildren();
+    estado.textContent = 'TRM pendiente de ingreso manual';
+    texto(`Jornada ${idJornada} | Fecha contable ${fecha}`);
+    const etiquetaTasa = texto('TRM COP/USD (hasta cuatro decimales):');
+    const nuevaTasa = document.createElement('input');
+    nuevaTasa.className = 'input';
+    nuevaTasa.type = 'text';
+    nuevaTasa.inputMode = 'decimal';
+    nuevaTasa.placeholder = 'Ejemplo: 3326.9600';
+    nuevaTasa.setAttribute('aria-label', 'TRM manual');
+    const nota = texto('Ingrese la TRM para confirmar.');
+    nota.className = 'friendlyNote';
+    const confirmar = document.createElement('button');
+    confirmar.type = 'button';
+    confirmar.className = 'btn';
+    confirmar.textContent = 'Confirmar TRM';
+    let enviando = false;
+    let confirmada = false;
+    const tasaValida = () => {
+      const v = nuevaTasa.value.trim().replace(',', '.');
+      return /^\d+(?:\.\d{1,4})?$/.test(v) && Number(v) > 0 && Number.isFinite(Number(v));
+    };
+    const actualizar = () => {
+      confirmar.disabled = enviando || confirmada || !tasaValida();
+    };
+    nuevaTasa.addEventListener('input', actualizar);
+    confirmar.addEventListener('click', async () => {
+      if (confirmar.disabled || enviando || confirmada || !vigente()) return;
+      enviando = true;
+      actualizar();
+      confirmar.textContent = 'Confirmando...';
+      try {
+        const respuesta = await apiConcilia(
+          `/api/v1/jornadas/${encodeURIComponent(idJornada)}/trm-visa/confirmar`,
+          {method:'POST', headers:{'Content-Type':'application/json'},
+           body:JSON.stringify({modo:'manual',
+             trm_aplicada:nuevaTasa.value.trim().replace(',', '.')})}
+        );
+        if (!vigente()) return;
+        if (Number(respuesta.id_jornada) !== Number(idJornada) ||
+            respuesta.estado !== 'TRM_CONFIRMADA' ||
+            !Number.isSafeInteger(Number(respuesta.version)) || Number(respuesta.version) <= 0) {
+          throw new Error('Respuesta de confirmación inconsistente');
+        }
+        confirmada = true;
+        confirmar.disabled = true;
+        confirmar.textContent = 'TRM confirmada';
+        estado.textContent = 'TRM confirmada - versión ' + respuesta.version;
+        nota.textContent = 'Confirmación manual registrada. Sin certificación contable.';
+        nuevaTasa.disabled = true;
+        window.conciliaTrmJornada017 = Object.freeze({
+          id_jornada:Number(idJornada), fecha_contable:fecha,
+          confirmada:true, version:Number(respuesta.version),
+          trm_aplicada:String(respuesta.trm_aplicada)
+        });
+        await cargarReporteMaestro();
+      } catch (error) {
+        if (!vigente()) return;
+        nota.textContent = 'No se confirmó la TRM: ' + error.message;
+        toast(error.message, true);
+        // Si el servidor ya la guardó pero se perdió la respuesta, refrescar
+        // el estado antes de ofrecer otra confirmación.
+        try {
+          const actual = await apiConcilia(
+            `/api/v1/jornadas/${encodeURIComponent(idJornada)}/trm-visa`
+          );
+          if (vigente() && actual.estado === 'TRM_CONFIRMADA') {
+            confirmada = true;
+            await cargarReporteMaestro();
+          }
+        } catch (_) { /* Mantener el error visible. */ }
+      } finally {
+        enviando = false;
+        if (vigente() && !confirmada) {
+          confirmar.textContent = 'Confirmar TRM';
+          actualizar();
+        }
+      }
+    });
+    contenido.append(nuevaTasa, confirmar);
+    window.conciliaTrmJornada017 = Object.freeze({
+      id_jornada:Number(idJornada), fecha_contable:fecha,
+      confirmada:false, version:null
+    });
+    actualizar();
+
+  } catch (error) {
+    if (!vigente()) return;
+
+    window.conciliaTrmJornada017 = null;
+    contenido.replaceChildren();
+    estado.textContent = 'TRM no disponible';
+
+    texto(
+      'No se aplicara una tasa de reemplazo ni ' +
+      'una conversion automatica.'
+    );
+
+    console.warn('TRM principal:', error.message);
+  }
+}
+
 async function cargarReporteMaestro() {
   renderFechasReporteMaestro();
   const solicitud = ++solicitudReporteMaestro;
+  limpiarTrmPrincipal017();
   const fecha = obtenerFechaReporteMaestro();
   const fuenteHostDePoSeleccionada = el('reconFuenteHost')?.value || '';
   resetReporteMaestro();
@@ -3234,6 +3579,21 @@ async function cargarReporteMaestro() {
     }));
     el('reconAbrirTrazabilidad').textContent = `Ver trazabilidad Host (${reporteHostDiagnostico.length})`;
     pintarCoberturaContableHost(datos);
+    await pintarTrmPrincipal017(
+      jornada.id_jornada, fecha, solicitud
+    );
+    if (
+      solicitud !== solicitudReporteMaestro ||
+      fecha !== obtenerFechaReporteMaestro()
+    ) return;
+    window.conciliaVisaCandidatoF2 = null;
+    // RECON_F2_013_VSS_CALL
+    try {
+      await pintarEvidenciaVisaVSS(jornada.id_jornada, fecha, solicitud);
+    } catch (error) {
+      console.warn('Evidencia Visa:', error.message);
+    }
+
     // CONCILIA_V72_APLICAR_ESTADOS_EN_TABLA_ORIGINAL
     pintarEstadoCredibancoV72(datos, jornada.id_jornada, fecha);
 
@@ -3535,9 +3895,11 @@ async function cargarReporteMaestro() {
       el('reconAviso').textContent += ' No se encontraron importes externos en la consulta; revisar asociación de archivos.';
     }
     // CONCILIA_6606_PARIDAD_UNICA_V4: datos del backend, solo prueba, no certifica.
-    if (Number(jornada.id_jornada) === 6606 && fecha === '2026-11-12') {
+    // RECON_F2_014_FIX_RETORNO
+    if (window.CONCILIA_ENABLE_TEST_ENDPOINTS === true && Number(jornada.id_jornada) === 6606 && fecha === '2026-11-12') {
       try {
-        const prueba = await apiConcilia('/api/v1/jornadas/6606/paridad-detalle-prueba');
+        const prueba = await consultarParidadSintetica6606();
+
         if (solicitud !== solicitudReporteMaestro || fecha !== obtenerFechaReporteMaestro()) return;
         if (Number(prueba.id_jornada) !== 6606 || prueba.fecha_contable !== fecha ||
             prueba.modo !== 'SOLO_PRUEBAS' || prueba.certificado !== false ||
@@ -3632,6 +3994,9 @@ async function cargarReporteMaestro() {
         el('reconAviso').textContent += ' · Paridad de prueba no disponible: '+error.message;
       }
     }
+
+    // VISA-F2-VSS120-001: candidato de prueba, aplicado tras el render final.
+    aplicarCandidatoVisaVSS120F2(jornada.id_jornada, fecha, solicitud);
 
     // CONCILIA_V75_QA_PREPARAR_EN_REPORTE_ORIGINAL
     // CONCILIA_V76_QA_CALL
@@ -4087,6 +4452,61 @@ function abrirDetalleCuentaConciliaV6(cuenta) {
 
   destino.append(titulo, subtitulo, contenido);
 
+  // VISA-F2-VSS120-001: mostrar evidencia documental solo en el detalle
+  // de la cuenta candidata de la jornada sintetica, sin homologar importes.
+  const ctx = window.conciliaVisaCandidatoF2;
+  if (String(cuenta) === '259095341' && dato.franquicia === 'VISA' &&
+      ctx && ctx.idJornada === 6961 && ctx.fecha === '2026-11-19' &&
+      ctx.solicitud === solicitudReporteMaestro &&
+      ctx.fecha === obtenerFechaReporteMaestro()) {
+    const r = ctx.respuesta;
+    const m = r?.resumen_monetario;
+    const detalles = Array.isArray(r?.detalle_vss120) ? r.detalle_vss120 : [];
+    const ventas = detalles.filter(d => d.reporte === 'VSS-120' &&
+      d.concepto === 'TOTAL_ORIGINAL_SALE' && d.moneda_clearing === 'COP');
+    if (Number(r?.id_jornada) === 6961 && r?.fecha_contable === ctx.fecha &&
+        r?.certificado === false && r?.conciliado_host === false &&
+        r?.homologado_contablemente === false && r?.paridad_110_115 === true &&
+        ventas.length === 1 && m &&
+        Number.isFinite(Number(ventas[0].clearing?.valor_firmado)) &&
+        Number(ventas[0].clearing.valor_firmado) === Number(m.clearing_ventas_cop)) {
+      const seccion = document.createElement('section');
+      seccion.className = 'card section';
+      seccion.style.marginTop = '12px';
+      const encabezado = document.createElement('h3');
+      encabezado.textContent = 'Evidencia documental Visa · VSS-120';
+      seccion.appendChild(encabezado);
+      const campos = [
+        ['Clearing ventas', 'clearing_ventas_cop', 'COP'],
+        ['Interchange neto', 'interchange_neto_usd', 'USD'],
+        ['Liquidación neta', 'liquidacion_neta_usd', 'USD'],
+        ['Liquidación convertida', 'liquidacion_neta_cop', 'COP']
+      ];
+      for (const [nombre, clave, moneda] of campos) {
+        const datoMonetario = m[clave];
+        if (datoMonetario == null || datoMonetario === '') continue;
+        const numero = Number(datoMonetario);
+        if (!Number.isFinite(numero)) continue;
+        const p = document.createElement('p');
+        p.textContent = nombre + ': ' + numero.toLocaleString('es-CO',
+          {minimumFractionDigits:2, maximumFractionDigits:2}) + ' ' + moneda;
+        seccion.appendChild(p);
+      }
+      const trm = document.createElement('p');
+      trm.textContent = 'TRM aplicada: ' + String(m.trm_aplicada ?? 'No disponible') +
+        ' · Versión: ' + String(m.trm_version ?? 'No disponible') +
+        ' · Archivo: ' + String(r.id_archivo) +
+        ' · Línea VSS-120: ' + String(ventas[0].linea_origen);
+      const nota = document.createElement('p');
+      nota.className = 'friendlyNote';
+      nota.textContent = 'Evidencia documental candidata, no homologada ni certificada. ' +
+        'Los importes USD y la liquidación convertida no se imputan a esta cuenta.';
+      seccion.append(trm, nota);
+      destino.appendChild(seccion);
+    }
+  }
+
+
   document.querySelectorAll('.panel').forEach(
     p => p.classList.remove('active')
   );
@@ -4298,8 +4718,9 @@ const cuerpo=elem('div');destino.appendChild(cuerpo);
           ]);
         }
         // CONCILIA_6606_DETALLE_BC_COMPARATIVO_V1
-        if (Number(jornada.id_jornada) === 6606 && fecha === '2026-11-12' && dato.franquicia === 'REDEBAN') {
-          const prueba = await apiConcilia('/api/v1/jornadas/6606/paridad-detalle-prueba');
+        // RECON_F2_014_DETALLES_PROTEGIDOS
+        if (window.CONCILIA_ENABLE_TEST_ENDPOINTS === true && Number(jornada.id_jornada) === 6606 && fecha === '2026-11-12' && dato.franquicia === 'REDEBAN') {
+          const prueba = await consultarParidadSintetica6606();
           if (!vigente()) return;
           if (Number(prueba.id_jornada) !== 6606 || prueba.fecha_contable !== fecha ||
               prueba.modo !== 'SOLO_PRUEBAS' || prueba.certificado !== false ||
@@ -4468,6 +4889,111 @@ const cuerpo=elem('div');destino.appendChild(cuerpo);
           return base;
         }));
         if(!vigente())return;
+
+        let acordeonVSS004 = null;
+        // VISA_F2_DETALLE_VSS120_002
+        if (dato.franquicia === 'VISA' &&
+            String(cuenta) === '259095341') {
+
+          const vss = await apiConcilia(
+            `/api/v1/jornadas/${encodeURIComponent(jornada.id_jornada)}/visa/documental-integral`
+          );
+
+          if (!vigente()) return;
+
+          if (Number(vss.id_jornada) !== Number(jornada.id_jornada) ||
+              vss.fecha_contable !== fecha ||
+              vss.certificado !== false ||
+              vss.conciliado_host !== false ||
+              vss.homologado_contablemente !== false) {
+            throw new Error('Evidencia documental Visa inconsistente');
+          }
+
+          const candidatos = (vss.detalle_vss120 || []).filter(x =>
+            x.reporte === 'VSS-120' &&
+            x.concepto === 'TOTAL_ORIGINAL_SALE' &&
+            x.moneda_clearing === 'COP'
+          );
+
+          if (candidatos.length !== 1) {
+            throw new Error('Clearing VSS-120 ausente o ambiguo');
+          }
+
+          const clearing = Number(
+            candidatos[0].clearing?.valor_firmado
+          );
+
+          if (!Number.isFinite(clearing)) {
+            throw new Error('Clearing Visa invalido');
+          }
+
+          const filaVss = datosExternos.find(x => x.tipo === 'VSS');
+
+          if (!filaVss ||
+              Number(filaVss.archivo) !== Number(vss.id_archivo)) {
+            throw new Error('Archivo VSS no corresponde al detalle');
+          }
+
+          filaVss.valor = moneda(clearing) + ' *';
+          filaVss.estado = 'Evidencia documental no homologada';
+
+          const resumen = vss.resumen_monetario || {};
+
+          const documental = elem('details');
+          const cabecera = elem(
+            'summary',
+            'VSS - Clearing, interchange y conversion COP'
+          );
+          documental.appendChild(cabecera);
+
+          const filas = [
+            {concepto:'Clearing ventas COP',
+             valor:moneda(clearing)},
+            {concepto:'Interchange neto USD (global)',
+             valor:resumen.interchange_neto_usd ?? '?'},
+            {concepto:'Liquidacion neta USD (global)',
+             valor:resumen.liquidacion_neta_usd ?? '?'},
+            {concepto:'Liquidacion convertida COP (global)',
+             valor:resumen.liquidacion_neta_cop ?? '?'},
+            {concepto:'TRM aplicada',
+             valor:resumen.trm_aplicada ?? '?'},
+            {concepto:'Version TRM',
+             valor:resumen.trm_version ?? '?'},
+            {concepto:'Archivo VSS',
+             valor:vss.id_archivo}
+          ];
+
+          tabla(documental,[
+            {key:'concepto',label:'Concepto documental'},
+            {key:'valor',label:'Valor'}
+          ],filas);
+
+          documental.appendChild(elem(
+            'p',
+            'Importes globales del documento. Clearing candidato ' +
+            'para esta cuenta, sin homologacion ni certificacion.',
+            'friendlyNote'
+          ));
+
+          documental.classList.add('visa-acordeon-f2');
+          acordeonVSS004 = documental;
+
+          const hostHa22 = registro.monetario_host?.HA22;
+          if (hostHa22?.neto != null) {
+            const neto = Number(hostHa22.neto);
+            if (Number.isFinite(neto)) {
+              const diferencia = clearing - neto;
+              documental.appendChild(elem(
+                'p',
+                'Comparacion candidata VSS-120 vs HA22: ' +
+                moneda(diferencia) +
+                ' COP. No es diferencia conciliada.',
+                'friendlyNote'
+              ));
+            }
+          }
+        }
+
         zonaExt.replaceChildren();
         tabla(zonaExt,[
           {key:'tipo',label:'Insumo externo'},
@@ -4477,10 +5003,106 @@ const cuerpo=elem('div');destino.appendChild(cuerpo);
           {key:'interc',label:'VL interc',numero:true},
           {key:'comision',label:'Comisión',numero:true}
         ],datosExternos);
+        // VISA_F2_VSS_ACORDEON_INTEGRADO_004
+        if (acordeonVSS004) {
+          zonaExt.appendChild(acordeonVSS004);
+        }
+
+        // VISA_F2_SS_SIGNOS_COP_003 - desglose documental, nunca homologacion.
+        if (dato.franquicia === 'VISA') {
+          const ss = datosExternos.find(x => x.tipo === 'VISA_SS_INTERNATIONAL');
+          const archivoSS = archivoDe('VISA_SS_INTERNATIONAL');
+          if (ss && archivoSS && Number(ss.archivo) === Number(archivoSS.id_archivo)) {
+            const desglose = elem('details');
+            desglose.appendChild(elem('summary', 'International SS - creditos, debitos y conversion COP'));
+            const avisoSS = elem('p', 'Consultando movimientos y TRM confirmada...', 'muted');
+            desglose.appendChild(avisoSS);
+            desglose.classList.add('visa-acordeon-f2');
+            zonaExt.appendChild(desglose);
+            try {
+              const estadoTRM = await apiConcilia(
+                `/api/v1/jornadas/${encodeURIComponent(jornada.id_jornada)}/trm-visa`
+              );
+              if (!vigente()) return;
+              if (Number(estadoTRM.id_jornada) !== Number(jornada.id_jornada) ||
+                  estadoTRM.fecha_contable !== fecha ||
+                  estadoTRM.estado !== 'TRM_CONFIRMADA' ||
+                  estadoTRM.trm?.fecha_referencia !== fecha ||
+                  !Number.isSafeInteger(Number(estadoTRM.trm?.version)) ||
+                  Number(estadoTRM.trm.version) < 1 ||
+                  estadoTRM.certificado !== false || estadoTRM.conciliado_host !== false) {
+                throw Error('TRM confirmada no disponible para esta jornada');
+              }
+              const tasaTexto = String(estadoTRM.trm.trm_aplicada ?? '');
+              if (!/^\d+(?:\.\d{1,4})?$/.test(tasaTexto) || Number(tasaTexto) <= 0) {
+                throw Error('TRM aplicada invalida');
+              }
+              const tasa = Number(tasaTexto);
+              let paginaSS = 1, totalPaginasSS = 1, totalLeidosSS = 0;
+              let crCentavos = 0, dbCentavos = 0;
+              do {
+                if (paginaSS > 100) throw Error('Paginacion International SS excedida');
+                const pagina = await apiConcilia(
+                  `/api/v1/archivos/${encodeURIComponent(archivoSS.id_archivo)}/contenido?page=${paginaSS}&pageSize=100`
+                );
+                if (!vigente()) return;
+                const c = pagina.contenido || {};
+                const items = c.items;
+                if (!Array.isArray(items)) throw Error('Contenido International SS invalido');
+                totalPaginasSS = Number(c.totalPages);
+                if (!Number.isSafeInteger(totalPaginasSS) || totalPaginasSS < 1 || totalPaginasSS > 100)
+                  throw Error('Paginacion International SS invalida');
+                for (const item of items) {
+                  if (item.moneda !== 'USD' || item.fecha_valor !== fecha ||
+                      !['CR', 'DB'].includes(item.tipo_movimiento))
+                    throw Error('Moneda, fecha o signo International SS incompatible');
+                  const valor = Number(item.importe_neto);
+                  const centavos = Math.round(valor * 100);
+                  if (!Number.isSafeInteger(centavos) || centavos < 0 ||
+                      Math.abs(centavos / 100 - valor) > 0.000001)
+                    throw Error('Importe International SS invalido');
+                  if (item.tipo_movimiento === 'CR') crCentavos += centavos;
+                  else dbCentavos += centavos;
+                  if (!Number.isSafeInteger(crCentavos) || !Number.isSafeInteger(dbCentavos))
+                    throw Error('Acumulado International SS invalido');
+                  totalLeidosSS++;
+                }
+                paginaSS++;
+              } while (paginaSS <= totalPaginasSS);
+              if (!totalLeidosSS || totalLeidosSS !== Number(ss.registros))
+                throw Error('Lectura International SS incompleta o inconsistente');
+              const usd = centavos => (centavos / 100).toLocaleString('es-CO',
+                {minimumFractionDigits:2, maximumFractionDigits:2}) + ' USD';
+              const cop = centavos => (Math.round(centavos * tasa) / 100).toLocaleString('es-CO',
+                {minimumFractionDigits:2, maximumFractionDigits:2}) + ' COP';
+              const netoCentavos = crCentavos - dbCentavos;
+              ss.valor = usd(netoCentavos) + ' (neto firmado; global)';
+              ss.estado = 'Documento global sin atribucion contable';
+              avisoSS.textContent = 'Archivo ' + archivoSS.id_archivo + ' · ' + totalLeidosSS +
+                ' movimientos · TRM ' + tasaTexto + ' · version ' + estadoTRM.trm.version +
+                '. CR positivo y DB negativo. Sin homologacion ni certificacion.';
+              tabla(desglose, [
+                {key:'concepto',label:'Concepto'},
+                {key:'original',label:'Original USD'},
+                {key:'convertido',label:'Equivalente COP'}
+              ], [
+                {concepto:'Creditos (CR)',original:usd(crCentavos),convertido:cop(crCentavos)},
+                {concepto:'Debitos (DB)',original:usd(dbCentavos),convertido:cop(dbCentavos)},
+                {concepto:'Total bruto',original:usd(crCentavos + dbCentavos),convertido:cop(crCentavos + dbCentavos)},
+                {concepto:'Neto firmado (CR - DB)',original:usd(netoCentavos),convertido:cop(netoCentavos)}
+              ]);
+            } catch (error) {
+              if (!vigente()) return;
+              avisoSS.textContent = 'Desglose International SS no disponible: ' + error.message;
+              ss.valor = '—';
+              ss.estado = 'Sin neto firmado validado';
+            }
+          }
+        }
         cuerpo.appendChild(elem('h3','C. Resultado de conciliación'));
         const filasResultado = [
           ...host.map(tipo => ({concepto:'Neto '+tipo+' observado (sin homologar)',valor:filasHost.find(x=>x.tipo===tipo)?.neto ?? '—'})),
-          ...datosExternos.map(x => ({concepto:x.tipo+' · importe global de origen (sin atribuir)',valor:x.valor})),
+          ...datosExternos.map(x => ({concepto:x.tipo+(x.tipo==='VISA_SS_INTERNATIONAL'?' · neto firmado global (sin atribuir)':' · importe global de origen (sin atribuir)'),valor:x.valor})),
           {concepto:'Valor externo homologado a esta cuenta',valor:'—'},
           {concepto:'Neto Host aplicable según regla',valor:'—'},
           {concepto:'Rechazos homologados',valor:'—'},
@@ -4507,7 +5129,15 @@ const cuerpo=elem('div');destino.appendChild(cuerpo);
               zona.hidden=false;
               zona.replaceChildren(elem('p','Consultando '+tipo+' de la cuenta seleccionada...','muted'));
               try {
-                const prueba=await apiConcilia('/api/v1/jornadas/6606/paridad-detalle-prueba');
+                if (window.CONCILIA_ENABLE_TEST_ENDPOINTS !== true) {
+                  zona.replaceChildren(elem(
+                    'p',
+                    'La correspondencia sintetica de prueba no esta habilitada.',
+                    'friendlyNote'
+                  ));
+                  return;
+                }
+                const prueba=await consultarParidadSintetica6606();
                 if (!vigente()) return;
                 if (Number(prueba.id_jornada)!==6606 || prueba.modo!=='SOLO_PRUEBAS' ||
                     prueba.certificado!==false || !Array.isArray(prueba.detalle)) {
