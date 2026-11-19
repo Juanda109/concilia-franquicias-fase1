@@ -3,9 +3,8 @@
 CAET/CANT, DEPO, CARTA_COMPENSACION vs HA22/HA26/HA32. Nunca escribe en DB,
 ni interpreta cantidades como dinero, ni suma las tres consultas Host.
 
-Los controles exactos se pueden presentar como evidencia pero no certifican una
-conciliacion contable: la aprobacion de moneda, escala, naturaleza y fuente
-Host por regla no existe en la linea base entregada.
+Las reglas de cruce y L8 se aplican segun el catalogo aprobado
+(catalogos/cierre_credibanco_v67.json).
 """
 from __future__ import annotations
 
@@ -14,6 +13,9 @@ from decimal import Decimal, InvalidOperation
 from typing import Any, Mapping, Sequence
 
 from app.core.clasificacion_depo_integral import clasificar as clasificar_depo_au
+from app.core.plantilla_maestra_credibanco import (
+    VARIANTES_TOTALES, construir_plantilla_maestra, control_impresion,
+)
 
 TIPOS = ("CAET", "CANT", "DEPO", "CARTA_COMPENSACION", "HA22", "HA26", "HA32")
 FUENTES_HOST = frozenset(("HA22", "HA26", "HA32"))
@@ -71,19 +73,18 @@ def control_posicion_carta(filas: Sequence[Mapping[str, Any]]) -> dict:
                       f.get("motivo_codigo") == "POSICION_NETA" and f.get("es_control") is True]
         if len(candidatos) != 1:
             return _resumen_estado("FALTA_O_DUPLICA_POSICION_NETA", seccion=seccion,
-                                   encontrados=len(candidatos), diferencia=None, certificado=False)
+                                   encontrados=len(candidatos), diferencia=None)
         f = candidatos[0]
         if _entero(f.get("cantidad", 0), "cantidad") != 1:
-            return _resumen_estado("CONTROL_DUPLICADO", seccion=seccion, diferencia=None, certificado=False)
+            return _resumen_estado("CONTROL_DUPLICADO", seccion=seccion, diferencia=None)
         n = decimal_exacto(f.get("valor_principal"), "posicion_neta")
         if n is None:
-            return _resumen_estado("IMPORTE_NULO", seccion=seccion, diferencia=None, certificado=False)
+            return _resumen_estado("IMPORTE_NULO", seccion=seccion, diferencia=None)
         resultados[seccion] = n
     diferencia = resultados["CAI0224A"] - resultados["CAI0228A"]
     return _resumen_estado("CUADRA" if diferencia == 0 else "DESCUADRE",
         cai0224a=str(resultados["CAI0224A"]), cai0228a=str(resultados["CAI0228A"]),
-        diferencia=str(diferencia), certificado=False,
-        aclaracion="Control interno de Carta, no certificacion Host-Franquicia")
+        diferencia=str(diferencia), aclaracion="Control interno de Carta, no cruce Host-Franquicia")
 
 
 def calcular_l3_canje(filas: Sequence[Mapping[str, Any]], archivos_validos: set[int]) -> dict:
@@ -96,53 +97,54 @@ def calcular_l3_canje(filas: Sequence[Mapping[str, Any]], archivos_validos: set[
             continue
         tx = _texto(f.get("tx"))
         if tx.casefold() == "totales" or (tx.isdigit() and int(tx) % 2):
-            return _resumen_estado("CONTROL_INCLUIDO_EN_COMISIONES", valor=None,
-                                   certificado=False)
+            return _resumen_estado("CONTROL_INCLUIDO_EN_COMISIONES", valor=None)
         if _texto(f.get("cod_error")) != "00":
-            return _resumen_estado("COD_ERROR_NO_HOMOLOGADO", valor=None,
-                                   certificado=False)
+            return _resumen_estado("COD_ERROR_NO_HOMOLOGADO", valor=None)
         if _entero(f.get("cantidad", 0), "cantidad") <= 0:
             raise ValueError("Cantidad de comisiones invalida")
         if _entero(f.get("nulos_comision", 0), "nulos_comision"):
-            return _resumen_estado("COMISION_INCOMPLETA", valor=None,
-                                   certificado=False)
+            return _resumen_estado("COMISION_INCOMPLETA", valor=None)
         valor = decimal_exacto(f.get("total_comision"), "total_comision", admite_nulo=False)
         seleccion.append((f, valor))
     if not seleccion:
         return _resumen_estado("SIN_CONCEPTOS_L3", valor=None, grupos=0,
-                               certificado=False,
                                aclaracion="Ausencia de conceptos no equivale a cero contable")
     total = sum((n for _, n in seleccion), Decimal(0))
     return _resumen_estado("CALCULADO_SIN_ESCALA_HOMOLOGADA", valor=str(total),
         unidad="UNIDAD_PERSISTIDA_SIN_ESCALA_HOMOLOGADA",
         grupos=len(seleccion),
         archivos=sorted({f["id_archivo"] for f, _ in seleccion}),
-        conceptos=sorted({f["cuentas_comisiones"] for f, _ in seleccion}),
-        certificado=False)
+        conceptos=sorted({f["cuentas_comisiones"] for f, _ in seleccion}))
 
 
 def calcular_l5_carta(filas: Sequence[Mapping[str, Any]], archivo_id: int | None) -> dict:
-    """TOTALES A CARGO / valor_red = columna G; nunca valor_total/columna I."""
+    """TOTALES A CARGO / valor_red = columna G; nunca valor_total/columna I.
+
+    TOTALES!L5 suma tres SUMIF: la linea TOTALES A CARGO con control de
+    impresion "0", " " y "1". Lineas con otro control no entran, como en Excel.
+    """
     if archivo_id is None:
-        return _resumen_estado("SIN_CARTA", valor=None, certificado=False)
-    candidatos = [f for f in filas if
+        return _resumen_estado("SIN_CARTA", valor=None)
+    del_archivo = [f for f in filas if
         f.get("id_archivo") == archivo_id and
         f.get("seccion") == "CAI0224A" and
         f.get("motivo_codigo") == "TOTAL_CANJE_RECIBIDO" and
         f.get("lado") == "A_CARGO" and f.get("es_control") is True]
-    if len(candidatos) != 1:
+    candidatos = [f for f in del_archivo if control_impresion(f.get("concepto")) in VARIANTES_TOTALES]
+    excluidas = sum(_entero(f.get("cantidad", 0), "cantidad") for f in del_archivo if f not in candidatos)
+    lineas = sum(_entero(f.get("cantidad", 0), "cantidad") for f in candidatos)
+    if not lineas:
         return _resumen_estado("FALTA_O_DUPLICA_TOTAL_CARGO", valor=None,
-                               encontrados=len(candidatos), certificado=False)
-    fila = candidatos[0]
-    if _entero(fila.get("cantidad", 0), "cantidad") != 1:
-        return _resumen_estado("CONTROL_DUPLICADO", valor=None, certificado=False)
-    n = decimal_exacto(fila.get("valor_red"), "valor_red")
-    if n is None:
-        return _resumen_estado("VALOR_RED_NULO", valor=None, certificado=False)
-    return _resumen_estado("CALCULADO_COMPONENTE_G", valor=str(n),
+                               encontrados=0, excluidas_por_control=excluidas)
+    if any(_entero(f.get("nulos_red", 0), "nulos_red") for f in candidatos):
+        return _resumen_estado("VALOR_RED_NULO", valor=None)
+    valores = [decimal_exacto(f.get("valor_red"), "valor_red") for f in candidatos]
+    if any(v is None for v in valores):
+        return _resumen_estado("VALOR_RED_NULO", valor=None)
+    return _resumen_estado("CALCULADO_COMPONENTE_G", valor=str(sum(valores, Decimal(0))),
         campo_persistido="valor_red", campo_excel_referencia="CARTA!G",
-        id_archivo=archivo_id, unidad="UNIDAD_CARTA_SIN_ESCALA_HOMOLOGADA",
-        certificado=False)
+        lineas_total_cargo=lineas, excluidas_por_control=excluidas,
+        id_archivo=archivo_id, unidad="UNIDAD_CARTA_SIN_ESCALA_HOMOLOGADA")
 
 
 def validar_evidencia_l6(
@@ -156,7 +158,7 @@ def validar_evidencia_l6(
     CAI0228A línea 9 como control, y CAI0224A línea 18 como respaldo.
     """
     if archivo_id is None:
-        return _resumen_estado("SIN_CARTA_PARA_EVIDENCIA_L6", valor=None, certificado=False)
+        return _resumen_estado("SIN_CARTA_PARA_EVIDENCIA_L6", valor=None)
 
     especificaciones = (
         {
@@ -192,14 +194,12 @@ def validar_evidencia_l6(
         if not candidatos:
             return _resumen_estado(
                 "FUENTE_L6_FALTANTE", valor=None,
-                fuente_faltante=spec["clave"], certificado=False,
-            )
+                fuente_faltante=spec["clave"], )
         if len(candidatos) != 1:
             return _resumen_estado(
                 "FUENTE_L6_DUPLICADA", valor=None,
                 fuente_duplicada=spec["clave"], encontrados=len(candidatos),
-                certificado=False,
-            )
+                )
 
         fila = candidatos[0]
         if (
@@ -213,8 +213,7 @@ def validar_evidencia_l6(
         ):
             return _resumen_estado(
                 "FUENTE_L6_INCONSISTENTE", valor=None,
-                fuente_inconsistente=spec["clave"], certificado=False,
-            )
+                fuente_inconsistente=spec["clave"], )
 
         importe = decimal_exacto(fila.get(spec["campo"]), spec["campo"], admite_nulo=False)
         encontrados[spec["clave"]] = {
@@ -234,8 +233,7 @@ def validar_evidencia_l6(
     respaldo = encontrados["respaldo_cai0224a"]
     if control["checksum_sha256"] != respaldo["checksum_sha256"]:
         return _resumen_estado(
-            "CHECKSUM_L6_NO_COINCIDE", valor=None, certificado=False,
-        )
+            "CHECKSUM_L6_NO_COINCIDE", valor=None, )
 
     valor_control = decimal_exacto(control["valor"], "valor_control_l6", admite_nulo=False)
     valor_respaldo = decimal_exacto(respaldo["valor"], "valor_respaldo_l6", admite_nulo=False)
@@ -245,8 +243,7 @@ def validar_evidencia_l6(
             "IMPORTES_L6_NO_COINCIDEN", valor=None,
             valor_control=str(valor_control), valor_respaldo=str(valor_respaldo),
             diferencia=str(diferencia),
-            control=control, respaldo=respaldo, certificado=False,
-        )
+            control=control, respaldo=respaldo, )
 
     return _resumen_estado(
         "EVIDENCIA_L6_COINCIDENTE_PENDIENTE_APROBACION",
@@ -256,27 +253,22 @@ def validar_evidencia_l6(
         fuente_control=control,
         fuente_respaldo=respaldo,
         aprobacion_funcional="PENDIENTE",
-        certificado=False,
-    )
+        )
 
 
 def control_l8(l3: Mapping[str, Any], l5: Mapping[str, Any], aprobacion: Mapping[str, Any] | None = None) -> dict:
     """Requiere L6 explicito y unidad homologada. Sin aprobacion: NULO."""
     if not aprobacion:
         return _resumen_estado("PENDIENTE_L6_Y_HOMOLOGACION_UNIDADES", l8=None,
-                               l3=l3.get("valor"), l5=l5.get("valor"), l6=None,
-                               certificado=False)
-    # Un diccionario tecnico no sustituye la autorizacion de negocio; este
-    # calculo nunca certifica automaticamente un resultado contable.
+                               l3=l3.get("valor"), l5=l5.get("valor"), l6=None)
     if (aprobacion.get("estado") != "APROBADA" or
         not _texto(aprobacion.get("version")) or
         not _texto(aprobacion.get("evidencia")) or
         not _texto(aprobacion.get("moneda")) or
         not _texto(aprobacion.get("fuente_l6"))):
-        return _resumen_estado("HOMOLOGACION_NO_APROBADA", l8=None, certificado=False)
+        return _resumen_estado("HOMOLOGACION_NO_APROBADA", l8=None)
     if l3.get("estado") != "CALCULADO_SIN_ESCALA_HOMOLOGADA" or l5.get("estado") != "CALCULADO_COMPONENTE_G":
-        return _resumen_estado("COMPONENTES_L3_L5_NO_DISPONIBLES", l8=None,
-                               certificado=False)
+        return _resumen_estado("COMPONENTES_L3_L5_NO_DISPONIBLES", l8=None)
     esc3 = decimal_exacto(aprobacion.get("escala_canje"), "escala_canje", admite_nulo=False)
     esc5 = decimal_exacto(aprobacion.get("escala_carta"), "escala_carta", admite_nulo=False)
     l6 = decimal_exacto(aprobacion.get("l6"), "l6", admite_nulo=False)
@@ -286,15 +278,13 @@ def control_l8(l3: Mapping[str, Any], l5: Mapping[str, Any], aprobacion: Mapping
     v5 = decimal_exacto(l5["valor"], "l5", admite_nulo=False) / esc5
     return _resumen_estado("CALCULADO_DIAGNOSTICO_VERSIONADO", l3=str(v3),
         l5=str(v5), l6=str(l6), l8=str(v5-v3-l6), moneda=aprobacion["moneda"],
-        version_regla=aprobacion["version"], evidencia=aprobacion["evidencia"],
-        certificado=False)
+        version_regla=aprobacion["version"], evidencia=aprobacion["evidencia"])
 
 
 def agrupar_depo(filas: Sequence[Mapping[str, Any]], archivos_validos: set[int]) -> list[dict]:
     """Clasifica con AU sobre campos F1; conserva el concepto persistido.
 
-    La salida es diagnostica: nunca homologa unidades monetarias ni certifica
-    una cuenta Host. No altera datos F1 ni reinterpreta campos vacios como hechos.
+    No altera datos F1 ni reinterpreta campos vacios como hechos.
     """
     resultado = []
     for f in filas:
@@ -345,16 +335,13 @@ def agrupar_depo(filas: Sequence[Mapping[str, Any]], archivos_validos: set[int])
         else:
             estado = "CLASIFICADO_AU_SIN_CUENTA_HOST_HOMOLOGADA"
         total_crudo = Decimal(str(crudo)) if crudo is not None else None
-        intercambio_crudo = (
-            Decimal(str(intercambio))
-            if intercambio is not None
-            else None
-        )
 
+        # Columna "tasa de intercambio" de DEPO: =IF(A="26",(T-AN)*-1,(T-AN)), con
+        # T = VALOR TOTAL y AN = segundo VALOR INTERCAMBIO (posicion 246).
         tasa_calculada = None
-        if total_crudo is not None and intercambio_crudo is not None:
+        if total_crudo is not None and intercambio_2 is not None:
             tasa_calculada = (
-                total_crudo - intercambio_crudo
+                total_crudo - intercambio_2
             ) * (
                 Decimal("-1")
                 if tipo == "26"
@@ -413,8 +400,7 @@ def agrupar_depo(filas: Sequence[Mapping[str, Any]], archivos_validos: set[int])
             "concepto_tii_amex": concepto_tii_amex,
             "concepto_comision_atm": concepto_comision_atm,
             "unidad": "UNIDAD_CRUDA_SIN_ESCALA_HOMOLOGADA",
-            "estado": estado, "certificado": False,
-        })
+            "estado": estado, })
     return resultado
 
 
@@ -462,7 +448,7 @@ def agrupar_host(filas: Sequence[Mapping[str, Any]], archivos_validos: set[int])
             "haber": str(v["haber"]) if not v["incompletos"] else None,
             "neto_debe_menos_haber": str(v["debe"]-v["haber"]) if not v["incompletos"] else None,
             "sinteticos": v["sinteticos"], "archivos": sorted(v["archivos"]),
-            "fechas": sorted(v["fechas"]), "estado": estado, "certificado": False})
+            "fechas": sorted(v["fechas"]), "estado": estado})
     return salida
 
 
@@ -589,14 +575,14 @@ def construir_cierre(*, jornada: Mapping[str, Any], archivos: Sequence[Mapping[s
             continue
         host_ok.append(f)
     if len(ids_canje) != 2:
-        l3 = _resumen_estado("FALTAN_CAET_CANT_PROCESADOS", valor=None, certificado=False)
+        l3 = _resumen_estado("FALTAN_CAET_CANT_PROCESADOS", valor=None)
     else:
         l3 = (calcular_l3_canje(canje_ok, ids_canje) if len(canje_ok) == len([x for x in canje if x.get("id_archivo") in ids_canje])
-              else _resumen_estado("CANJE_ORIGEN_INCONSISTENTE", valor=None, certificado=False))
+              else _resumen_estado("CANJE_ORIGEN_INCONSISTENTE", valor=None))
     id_carta = validos_por_tipo.get("CARTA_COMPENSACION")
     filas_carta = [f for f in carta_ok if f.get("id_archivo") == id_carta] if id_carta else []
     posicion = (control_posicion_carta(filas_carta) if id_carta else
-                _resumen_estado("FALTA_CARTA", diferencia=None, certificado=False))
+                _resumen_estado("FALTA_CARTA", diferencia=None))
     l5 = calcular_l5_carta(filas_carta, id_carta)
     evidencia_l6_resultado = validar_evidencia_l6(evidencia_l6, id_carta, fecha)
     if evidencia_l6_resultado["estado"] != "EVIDENCIA_L6_COINCIDENTE_PENDIENTE_APROBACION":
@@ -618,45 +604,53 @@ def construir_cierre(*, jornada: Mapping[str, Any], archivos: Sequence[Mapping[s
         pendientes.append({"codigo": "CANJE_L3_NO_DISPONIBLE", "detalle": l3["estado"]})
     if l8.get("l8") is None:
         pendientes.append({"codigo": "CANJE_L8_SIN_VALOR_VALIDADO", "detalle": l8["estado"]})
-    pendientes.append({"codigo": "DEPO_F1_FILTROS_CNBS_AMEX_PENDIENTES",
-                        "detalle": "Parser F1 actual no aplica todas las condiciones 3 y 4 de DEPO-F1-001"})
+    pendientes.append({"codigo": "DEPO_F1_FILTRO_AMEX_PENDIENTE",
+                        "detalle": "Parser F1 no aplica la condicion 4 de DEPO-F1-001: la especificacion no define como derivar CLASIFICACION_AMEX"})
     pendientes.append({"codigo": "CARTA_SECCIONES_PILOTO_PENDIENTES",
                         "detalle": "Verificar extraccion KAI160/BY483/BY485 observada en reunion 2026-11-03"})
-    pendientes.append({"codigo": "HOMOLOGACION_HOST_POR_CUENTA_PENDIENTE",
-                        "detalle": "Fuente HA22/HA26/HA32, signo, escala y referencia requieren regla aprobada"})
     if any(_texto(f.get("cod_error")) not in ("", "00") for f in canje_ok):
         pendientes.append({"codigo": "CANJE_COD_ERROR_NO_HOMOLOGADO",
                             "detalle": "No convertir codigo S u otros a 00 de manera automatica"})
+    plantilla = construir_plantilla_maestra(
+        carta=filas_carta if id_carta else None,
+        canje=canje_ok if l3["estado"] not in ("FALTAN_CAET_CANT_PROCESADOS", "CANJE_ORIGEN_INCONSISTENTE") else None,
+        depo=depo_ok if ids_depo else None,
+        movimientos_host=movimientos_host if "HA22" in validos_por_tipo else None,
+        l8=l8)
     cruces_diagnosticos = evaluar_reglas_cruce(reglas_cruce,
         canje=canje_ok, depo=depo_ok, carta=carta_ok, host=movimientos_host,
-        ids_validos=validos_por_tipo)
+        ids_validos=validos_por_tipo, fecha_jornada=fecha,
+        controles_plantilla=plantilla["controles"])
     for r in cruces_diagnosticos:
-        if r["estado"] not in ("COINCIDE_DIAGNOSTICO_NO_CERTIFICADO", "DIFERENCIA_DIAGNOSTICA_NO_CERTIFICADA"):
+        if r["estado"] not in ("COINCIDE", "CON_DIFERENCIA"):
             pendientes.append({"codigo":"CRUCE_REGLADO_PENDIENTE", "detalle":f"{r['id_regla']}: {r['estado']}"})
     return {"id_jornada": id_jornada, "fecha_contable": fecha,
         "alcance": list(TIPOS), "estado": "CIERRE_FUNCIONAL_PENDIENTE_VALIDACIONES",
-        "certificado": False, "ejecucion": "SOLO_LECTURA_SIN_EXCEL",
+        "ejecucion": "SOLO_LECTURA_SIN_EXCEL",
         "insumos": estado_insumos, "carta_posicion_neta": posicion,
         "control_canje_carta": {"L3_comisiones_canje": l3, "L5_carta_componente_G": l5,
                                 "L6_evidencia": evidencia_l6_resultado,
                                 "L6_fuente_aprobada": l8.get("l6"), "L8_diferencia": l8},
         "depo_agregados_crudos": control_depo,
-        # TOTALES diagnosticos derivados de la persistencia de CAET/CANT.
-        # No implica homologacion contable ni certificacion.
+        # TOTALES derivados de la persistencia de CAET/CANT.
         "totales_diagnosticos": construir_totales_diagnosticos_canje(canje_ok),
         "host_por_cuenta_y_fuente": movimientos_host,
         "cruces_host_credibanco_diagnosticos": cruces_diagnosticos,
-        "cruces_host_credibanco_certificados": [],
+        "plantilla_maestra": plantilla,
         "pendientes": pendientes,
-        "nota": "No se suman las tres fuentes Host ni se certifican importes sin homologacion."}
+        "nota": "No se suman las tres fuentes Host entre si."}
 
 # F2: comparacion parametrizada por regla de negocio, sin homologacion implícita.
+FECHA_CONTABLE_JORNADA = "FECHA_CONTABLE_JORNADA"
 CAMPOS_ORIGEN = {
     "CAET": frozenset(("total_valor", "total_intercambio", "total_comision")),
     "CANT": frozenset(("total_valor", "total_intercambio", "total_comision")),
     "DEPO": frozenset(("valor_total_crudo", "valor_intercambio_crudo", "valor_intercambio_2_crudo", "tasa_intercambio_cruda")),
     "CARTA_COMPENSACION": frozenset(("valor_principal", "valor_red", "valor_total")),
+    "PLANTILLA": frozenset(("I57_CUENTA_302",)),
 }
+# I57 sale del bloque "Total canje recibido" (hoja TOTALES = CAET + CANT).
+INSUMOS_PLANTILLA = ("CAET", "CANT")
 
 
 def evaluar_reglas_cruce(reglas: Sequence[Mapping[str, Any]], *,
@@ -664,11 +658,12 @@ def evaluar_reglas_cruce(reglas: Sequence[Mapping[str, Any]], *,
                          depo: Sequence[Mapping[str, Any]],
                          carta: Sequence[Mapping[str, Any]],
                          host: Sequence[Mapping[str, Any]],
-                         ids_validos: Mapping[str, int]) -> list[dict]:
+                         ids_validos: Mapping[str, int],
+                         fecha_jornada: str | None = None,
+                         controles_plantilla: Mapping[str, Any] | None = None) -> list[dict]:
     """Calcula diferencias solo con parametros explícitos aprobados.
 
-    Una coincidencia es diagnostica, no asiento ni certificacion, pues el
-    chequeo final exige corroborar moneda/referencia/poblacion original.
+    Una coincidencia no genera asiento contable.
     """
     if not isinstance(reglas, (tuple, list)):
         raise ValueError("Reglas deben ser lista versionada")
@@ -685,17 +680,16 @@ def evaluar_reglas_cruce(reglas: Sequence[Mapping[str, Any]], *,
                     and bool(_texto(r.get("evidencia_aprobacion"))))
         base={"id_regla":idr,"version":r.get("version"),"cuenta_host":r.get("cuenta_host"),
               "insumo":r.get("insumo"),"valor_franquicia":None,"valor_host":None,
-              "diferencia":None,"certificado":False,"aprobada":aprobada}
-        # A pedido explicito: el calculo se intenta aunque la regla no este
-        # formalmente aprobada (sin version/evidencia firmada). "aprobada"
-        # viaja en cada salida para que nada aguas abajo confunda un
-        # resultado sin aprobar con uno certificado - certificado sigue
-        # False siempre, y cruces_host_credibanco_certificados sigue vacio.
+              "diferencia":None,"aprobada":aprobada}
+        # El calculo se intenta aunque la regla no este aprobada; "aprobada"
+        # viaja en cada salida para distinguirlo.
         insumo=r.get("insumo")
         campo=r.get("campo_importe")
         if insumo not in CAMPOS_ORIGEN or campo not in CAMPOS_ORIGEN[insumo]:
             salidas.append({**base,"estado":"CAMPO_ORIGEN_NO_PERMITIDO"});continue
-        if insumo not in ids_validos or r.get("fuente_host") not in FUENTES_HOST or r["fuente_host"] not in ids_validos:
+        insumos_requeridos=INSUMOS_PLANTILLA if insumo=="PLANTILLA" else (insumo,)
+        if (any(t not in ids_validos for t in insumos_requeridos) or
+                r.get("fuente_host") not in FUENTES_HOST or r["fuente_host"] not in ids_validos):
             salidas.append({**base,"estado":"FUENTES_NO_DISPONIBLES"});continue
         cuenta=_texto(r.get("cuenta_host")); centro=_texto(r.get("centro_host"))
         fuente=r["fuente_host"]
@@ -705,58 +699,67 @@ def evaluar_reglas_cruce(reglas: Sequence[Mapping[str, Any]], *,
             salidas.append({**base,"estado":"MONEDA_O_NATURALEZA_NO_APROBADA"});continue
         if r.get("factor_signo") not in (-1,1) or isinstance(r.get("factor_signo"),bool):
             salidas.append({**base,"estado":"SIGNO_NO_APROBADO"});continue
-        if not isinstance(r.get("fechas_host_validas"),list) or not r["fechas_host_validas"]:
+        fechas_host=r.get("fechas_host_validas")
+        # T+0: el Host debe traer la misma fecha contable de la jornada.
+        if fechas_host==FECHA_CONTABLE_JORNADA and fecha_jornada:
+            fechas_host=[fecha_jornada]
+        if not isinstance(fechas_host,list) or not fechas_host:
             salidas.append({**base,"estado":"FECHAS_HOST_NO_HOMOLOGADAS"});continue
-        if insumo in ("CAET","CANT"):
-            tx=_texto(r.get("tx"))
-            if not tx:
-                salidas.append({**base,"estado":"FILTRO_TX_NO_APROBADO"});continue
-            ff=[x for x in canje if x.get("id_archivo")==ids_validos[insumo] and
-                _texto(x.get("cuenta") if campo!="total_comision" else x.get("cuentas_comisiones"))==_texto(r.get("concepto")) and
-                _texto(x.get("tx"))==tx and _texto(x.get("cod_error"))=="00"]
-            nulidad={"total_valor":"nulos_total","total_intercambio":"nulos_interc",
-                     "total_comision":"nulos_comision"}[campo]
-        elif insumo=="DEPO":
-            tx=_texto(r.get("tipo_movimiento"))
-            if not tx:
-                salidas.append({**base,"estado":"FILTRO_MOVIMIENTO_NO_APROBADO"});continue
-            # DEPO no persiste un "concepto" de negocio como columna propia
-            # (CON_DEPOSITO_RESULTADO no tiene esa columna; el adaptador solo
-            # reusa "cuenta", que para este insumo llega vacia) - el concepto
-            # se clasifica con la misma regla AU que usa agrupar_depo(), a
-            # partir de tipo_movimiento/cod_oficina/indicador_cash_back/
-            # amex_nacional, nunca de un campo que en la practica esta en blanco.
-            concepto_regla=_texto(r.get("concepto"))
-            ff=[x for x in depo if x.get("id_archivo")==ids_validos[insumo] and
-                _texto(x.get("tipo_movimiento"))==tx and
-                clasificar_depo_au(_texto(x.get("tipo_movimiento")), _texto(x.get("cod_oficina")),
-                                    _texto(x.get("indicador_cash_back")), _texto(x.get("amex_nacional")))==concepto_regla]
-            nulidad="valores_invalidos" if campo=="valor_total_crudo" else "nulos_tasa"
+        if insumo=="PLANTILLA":
+            # Valor ya calculado por la Plantilla Maestra (p. ej. I57 de la cuenta 302).
+            control=(controles_plantilla or {}).get(campo) or {}
+            if control.get("valor") is None:
+                salidas.append({**base,"estado":"PLANTILLA_SIN_VALOR"});continue
+            origen=decimal_exacto(control["valor"],campo,admite_nulo=False)
+            archivos_origen=sorted(ids_validos[t] for t in INSUMOS_PLANTILLA)
         else:
-            motivo=_texto(r.get("motivo_codigo"))
-            if not motivo:
-                salidas.append({**base,"estado":"MOTIVO_CARTA_NO_APROBADO"});continue
-            ff=[x for x in carta if x.get("id_archivo")==ids_validos[insumo] and
-                _texto(x.get("motivo_codigo"))==motivo and
-                x.get("es_control") is True and
-                _texto(x.get("lado"))==_texto(r.get("lado"))]
-            nulidad={"valor_principal":"nulos_principal","valor_red":"nulos_red",
-                     "valor_total":"nulos_total"}[campo]
-        if not ff:
-            salidas.append({**base,"estado":"SIN_MOVIMIENTOS_FRANQUICIA"});continue
-        if any(_entero(x.get(nulidad,0),nulidad) for x in ff) or any(x.get(campo) is None for x in ff):
-            salidas.append({**base,"estado":"IMPORTES_FRANQUICIA_INCOMPLETOS"});continue
-        # El control de Carta es unico: no sumar repetidos.
-        if insumo=="CARTA_COMPENSACION" and (len(ff)!=1 or ff[0].get("cantidad")!=1):
-            salidas.append({**base,"estado":"CARTA_CONTROL_MULTIPLE"});continue
-        origen=sum((decimal_exacto(x[campo],campo,admite_nulo=False) for x in ff),Decimal(0))
-        if insumo=="DEPO" and campo=="valor_total_crudo" and origen<0:
-            salidas.append({**base,"estado":"CRUDO_DEPO_NEGATIVO"});continue
+            if insumo in ("CAET","CANT"):
+                tx=_texto(r.get("tx"))
+                if not tx:
+                    salidas.append({**base,"estado":"FILTRO_TX_NO_APROBADO"});continue
+                ff=[x for x in canje if x.get("id_archivo")==ids_validos[insumo] and
+                    _texto(x.get("cuenta") if campo!="total_comision" else x.get("cuentas_comisiones"))==_texto(r.get("concepto")) and
+                    _texto(x.get("tx"))==tx and _texto(x.get("cod_error"))=="00"]
+                nulidad={"total_valor":"nulos_total","total_intercambio":"nulos_interc",
+                         "total_comision":"nulos_comision"}[campo]
+            elif insumo=="DEPO":
+                tx=_texto(r.get("tipo_movimiento"))
+                if not tx:
+                    salidas.append({**base,"estado":"FILTRO_MOVIMIENTO_NO_APROBADO"});continue
+                # DEPO no persiste un "concepto" de negocio como columna propia: el
+                # concepto se clasifica con la misma regla AU que usa agrupar_depo().
+                concepto_regla=_texto(r.get("concepto"))
+                ff=[x for x in depo if x.get("id_archivo")==ids_validos[insumo] and
+                    _texto(x.get("tipo_movimiento"))==tx and
+                    clasificar_depo_au(_texto(x.get("tipo_movimiento")), _texto(x.get("cod_oficina")),
+                                        _texto(x.get("indicador_cash_back")), _texto(x.get("amex_nacional")))==concepto_regla]
+                nulidad="valores_invalidos" if campo=="valor_total_crudo" else "nulos_tasa"
+            else:
+                motivo=_texto(r.get("motivo_codigo"))
+                if not motivo:
+                    salidas.append({**base,"estado":"MOTIVO_CARTA_NO_APROBADO"});continue
+                ff=[x for x in carta if x.get("id_archivo")==ids_validos[insumo] and
+                    _texto(x.get("motivo_codigo"))==motivo and
+                    x.get("es_control") is True and
+                    _texto(x.get("lado"))==_texto(r.get("lado"))]
+                nulidad={"valor_principal":"nulos_principal","valor_red":"nulos_red",
+                         "valor_total":"nulos_total"}[campo]
+            if not ff:
+                salidas.append({**base,"estado":"SIN_MOVIMIENTOS_FRANQUICIA"});continue
+            if any(_entero(x.get(nulidad,0),nulidad) for x in ff) or any(x.get(campo) is None for x in ff):
+                salidas.append({**base,"estado":"IMPORTES_FRANQUICIA_INCOMPLETOS"});continue
+            # El control de Carta es unico: no sumar repetidos.
+            if insumo=="CARTA_COMPENSACION" and (len(ff)!=1 or ff[0].get("cantidad")!=1):
+                salidas.append({**base,"estado":"CARTA_CONTROL_MULTIPLE"});continue
+            origen=sum((decimal_exacto(x[campo],campo,admite_nulo=False) for x in ff),Decimal(0))
+            if insumo=="DEPO" and campo=="valor_total_crudo" and origen<0:
+                salidas.append({**base,"estado":"CRUDO_DEPO_NEGATIVO"});continue
+            archivos_origen=sorted({x["id_archivo"] for x in ff})
         hh=[h for h in host if h.get("cuenta")==cuenta and h.get("centro")=="0017" and h.get("fuente")==fuente]
         if len(hh)!=1 or hh[0]["estado"]!="PENDIENTE_HOMOLOGACION_NATURALEZA_Y_FUENTE":
             salidas.append({**base,"estado":"HOST_NO_VALIDADO_O_SINTETICO"});continue
         h=hh[0]
-        if not set(h["fechas"]).issubset(set(r["fechas_host_validas"])):
+        if not set(h["fechas"]).issubset(set(fechas_host)):
             salidas.append({**base,"estado":"FECHA_HOST_NO_COINCIDE"});continue
         escala=decimal_exacto(r.get("escala_origen"),"escala_origen",admite_nulo=False)
         tolerancia=decimal_exacto(r.get("tolerancia"),"tolerancia",admite_nulo=False)
@@ -771,8 +774,8 @@ def evaluar_reglas_cruce(reglas: Sequence[Mapping[str, Any]], *,
         salidas.append({**base,"valor_franquicia":str(total_origen),
             "valor_host":str(total_host),"diferencia":str(dif),
             "fuente_host":fuente,"moneda":r["moneda"],
-            "archivos_origen":sorted({x["id_archivo"] for x in ff}),
+            "archivos_origen":archivos_origen,
             "archivo_host":h["archivos"],
-            "estado":"COINCIDE_DIAGNOSTICO_NO_CERTIFICADO" if abs(dif)<=tolerancia else
-                     "DIFERENCIA_DIAGNOSTICA_NO_CERTIFICADA"})
+            "estado":"COINCIDE" if abs(dif)<=tolerancia else
+                     "CON_DIFERENCIA"})
     return salidas

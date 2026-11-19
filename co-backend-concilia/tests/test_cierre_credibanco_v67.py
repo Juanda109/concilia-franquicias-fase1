@@ -11,10 +11,10 @@ from app.core.cierre_credibanco_v67 import (
 
 
 def carta(seccion, motivo, *, principal=None, red=None, lado=None, control=True,
-          archivo=4, cantidad=1):
+          archivo=4, cantidad=1, concepto=None):
     return dict(id_archivo=archivo, seccion=seccion, motivo_codigo=motivo,
                 valor_principal=principal, valor_red=red, lado=lado,
-                es_control=control, cantidad=cantidad)
+                es_control=control, cantidad=cantidad, concepto=concepto)
 
 
 def canje(comision, *, concepto=None, cod_error="00", tx="02", cantidad=1, id_archivo=2,
@@ -44,10 +44,10 @@ def reporte(*, archivos=None, cartas=None, canjes=None, depos=None, hosts=None, 
         aprobacion_l8=regla)
 
 
-def test_carta_neta_igual_control_no_certifica():
+def test_carta_neta_igual_control_cuadra():
     r=control_posicion_carta([carta('CAI0224A','POSICION_NETA',principal='27497216407'),
          carta('CAI0228A','POSICION_NETA',principal='27497216407')])
-    assert r['estado']=='CUADRA' and r['diferencia']=='0' and not r['certificado']
+    assert r['estado']=='CUADRA' and r['diferencia']=='0'
 
 
 def test_carta_neta_diferencia_no_cuadra():
@@ -71,13 +71,36 @@ def test_carta_l5_usa_g_no_i():
     r=calcular_l5_carta([carta('CAI0224A','TOTAL_CANJE_RECIBIDO',lado='A_CARGO',
                        principal='3787450675',red='52777008')],4)
     assert r['valor']=='52777008'
-    assert r['campo_persistido']=='valor_red' and not r['certificado']
+    assert r['campo_persistido']=='valor_red'
 
 
-def test_carta_l5_control_duplicado_y_faltante_bloquea():
-    a=carta('CAI0224A','TOTAL_CANJE_RECIBIDO',lado='A_CARGO',red='5')
-    assert calcular_l5_carta([a,a],4)['estado']=='FALTA_O_DUPLICA_TOTAL_CARGO'
+def test_carta_l5_suma_variantes_de_control_como_excel():
+    a=carta('CAI0224A','TOTAL_CANJE_RECIBIDO',lado='A_CARGO',red='5',concepto='TOTALES A CARGO')
+    r=calcular_l5_carta([a,{**a,'valor_red':'7','concepto':'TOTALES A CARGO [CC=0]'},
+                         {**a,'valor_red':'-2','concepto':'TOTALES A CARGO [CC=1]'}],4)
+    assert r['estado']=='CALCULADO_COMPONENTE_G' and r['valor']=='10'
+    assert r['lineas_total_cargo']==3 and r['excluidas_por_control']==0
+    agrupada=calcular_l5_carta([{**a,'valor_red':'12','cantidad':2}],4)
+    assert agrupada['valor']=='12' and agrupada['lineas_total_cargo']==2
+
+
+def test_carta_l5_excluye_otro_control_de_impresion():
+    a=carta('CAI0224A','TOTAL_CANJE_RECIBIDO',lado='A_CARGO',red='5',concepto='TOTALES A CARGO')
+    r=calcular_l5_carta([a,{**a,'valor_red':'100','concepto':'TOTALES A CARGO [CC=2]'}],4)
+    assert r['valor']=='5' and r['excluidas_por_control']==1
+    solo_otro=calcular_l5_carta([{**a,'concepto':'TOTALES A CARGO [CC=2]'}],4)
+    assert solo_otro['estado']=='FALTA_O_DUPLICA_TOTAL_CARGO' and solo_otro['excluidas_por_control']==1
+
+
+def test_carta_l5_faltante_bloquea():
+    assert calcular_l5_carta([],4)['estado']=='FALTA_O_DUPLICA_TOTAL_CARGO'
     assert calcular_l5_carta([carta('CAI0224A','TOTAL_CANJE_RECIBIDO',lado='A_CARGO',red='5',control=False)],4)['valor'] is None
+
+
+def test_carta_l5_valor_red_nulo_bloquea():
+    a=carta('CAI0224A','TOTAL_CANJE_RECIBIDO',lado='A_CARGO',red='5')
+    assert calcular_l5_carta([a,{**a,'valor_red':None}],4)['estado']=='VALOR_RED_NULO'
+    assert calcular_l5_carta([{**a,'cantidad':2,'nulos_red':1}],4)['estado']=='VALOR_RED_NULO'
 
 
 def test_l3_suma_solo_dos_conceptos_y_no_total():
@@ -106,13 +129,13 @@ def test_l8_sin_l6_no_calcula():
     assert control_l8(l3,l5,{'estado':'PENDIENTE'})['l8'] is None
 
 
-def test_l8_con_evidencia_homologada_calcula_sin_certificar():
+def test_l8_con_evidencia_homologada_calcula():
     l3={'estado':'CALCULADO_SIN_ESCALA_HOMOLOGADA','valor':'10000'}
     l5={'estado':'CALCULADO_COMPONENTE_G','valor':'200'}
     params={'estado':'APROBADA','version':'F2-CANJE-001','evidencia':'acta','moneda':'COP',
             'fuente_l6':'carta_224','escala_canje':'100','escala_carta':'1','l6':'50'}
     r=control_l8(l3,l5,params)
-    assert r['l8']=='50' and r['certificado'] is False
+    assert r['l8']=='50'
 
 
 def test_l8_escala_no_validada_no_inferida():
@@ -173,7 +196,7 @@ def test_host_neto_no_calcula_con_nulos():
     assert agrupar_host(h,{5})[0]['neto_debe_menos_haber'] is None
 
 
-def test_reporte_control_carta_cuadra_pero_no_certifica():
+def test_reporte_control_carta_cuadra():
     c=[carta('CAI0224A','POSICION_NETA',principal='100'),
        carta('CAI0228A','POSICION_NETA',principal='100'),
        carta('CAI0224A','TOTAL_CANJE_RECIBIDO',lado='A_CARGO',red='50')]
@@ -181,14 +204,12 @@ def test_reporte_control_carta_cuadra_pero_no_certifica():
     assert r['carta_posicion_neta']['estado']=='CUADRA'
     assert r['control_canje_carta']['L5_carta_componente_G']['valor']=='50'
     assert r['control_canje_carta']['L8_diferencia']['l8'] is None
-    assert r['cruces_host_credibanco_certificados']==[] and r['certificado'] is False
 
 
 def test_reporte_faltan_depo_carta_no_crea_cruces():
     r=reporte(archivos=metadata(faltantes=('DEPO','CARTA_COMPENSACION')))
     assert any(p['codigo']=='INSUMO_DEPO_FALTANTE' for p in r['pendientes'])
     assert r['control_canje_carta']['L5_carta_componente_G']['valor'] is None
-    assert r['certificado'] is False
 
 
 def test_reporte_rechaza_fecha_inconsistente_y_archivos_duplicados():
@@ -235,7 +256,7 @@ def insumos_cruce():
     return canjes,hosts
 
 
-def test_regla_aprobada_calcula_diferencia_no_certificada():
+def test_regla_aprobada_calcula_diferencia():
     c,h=insumos_cruce()
     r=reporte(canjes=c,hosts=h,regla=None)  # sin reglas: solo evidencia
     assert r['cruces_host_credibanco_diagnosticos']==[]
@@ -246,8 +267,7 @@ def test_regla_aprobada_calcula_diferencia_no_certificada():
     assert x['valor_franquicia']=='100'
     assert x['valor_host']=='100'
     assert x['diferencia']=='0'
-    assert x['estado']=='COINCIDE_DIAGNOSTICO_NO_CERTIFICADO'
-    assert r['certificado'] is False
+    assert x['estado']=='COINCIDE'
 
 
 def test_regla_diferencia_en_monto_versionado():
@@ -258,7 +278,7 @@ def test_regla_diferencia_en_monto_versionado():
           reglas_cruce=[regla_aprobada()])
     x=r['cruces_host_credibanco_diagnosticos'][0]
     assert x['diferencia']=='-5'
-    assert x['estado']=='DIFERENCIA_DIAGNOSTICA_NO_CERTIFICADA'
+    assert x['estado']=='CON_DIFERENCIA'
 
 
 def test_regla_sintetica_bloquea_cruce():
@@ -281,20 +301,16 @@ def test_regla_fecha_host_pendiente_bloquea():
 
 def test_regla_no_aprobada_calcula_pero_queda_marcada_sin_aprobar():
     # A pedido explicito: el motor calcula igual sin aprobacion formal, pero
-    # el resultado nunca se confunde con uno aprobado/certificado - viaja
-    # "aprobada": False y certificado sigue False.
+    # el resultado viaja con "aprobada": False.
     c,h=insumos_cruce()
     r=construir_cierre(jornada={'id_jornada':2590,'fecha_contable':'2026-10-23'},
           archivos=metadata(),canje=c,depo=[],carta=[],host=h,
           reglas_cruce=[regla_aprobada(estado='PENDIENTE_VALIDACION',
                                         version=None,evidencia_aprobacion=None)])
     x=r['cruces_host_credibanco_diagnosticos'][0]
-    assert x['estado']=='COINCIDE_DIAGNOSTICO_NO_CERTIFICADO'
+    assert x['estado']=='COINCIDE'
     assert x['diferencia']=='0'
     assert x['aprobada'] is False
-    assert x['certificado'] is False
-    assert r['certificado'] is False
-    assert r['cruces_host_credibanco_certificados']==[]
 
 
 def test_regla_aprobada_formalmente_marca_aprobada_true():
@@ -326,7 +342,7 @@ def test_regla_depo_clasifica_concepto_con_regla_au_no_con_campo_vacio():
           archivos=metadata(), canje=[], depo=depo, carta=[], host=host,
           reglas_cruce=[regla])
     x=r['cruces_host_credibanco_diagnosticos'][0]
-    assert x['estado']=='COINCIDE_DIAGNOSTICO_NO_CERTIFICADO'
+    assert x['estado']=='COINCIDE'
     assert x['valor_franquicia']=='500'
     assert x['valor_host']=='500'
 
@@ -382,7 +398,6 @@ def test_regla_no_suma_host_ha22_con_ha26():
           archivos=metadata(),canje=c,depo=[],carta=[],host=h,
           reglas_cruce=[regla_aprobada()])
     assert r['cruces_host_credibanco_diagnosticos'][0]['valor_host']=='100'
-    assert r['certificado'] is False
 
 
 def test_no_se_acepta_identidad_archivo_tipo_incorrecta():
@@ -440,14 +455,13 @@ def _filas_evidencia_l6():
     ]
 
 
-def test_l6_evidencia_coincidente_no_aprueba_ni_certifica():
+def test_l6_evidencia_coincidente_no_aprueba():
     from app.core.cierre_credibanco_v67 import validar_evidencia_l6
     r = validar_evidencia_l6(_filas_evidencia_l6(), 4572, "2026-11-09")
     assert r["estado"] == "EVIDENCIA_L6_COINCIDENTE_PENDIENTE_APROBACION"
     assert r["valor"] == "2963074106"
     assert r["diferencia"] == "0"
     assert r["aprobacion_funcional"] == "PENDIENTE"
-    assert r["certificado"] is False
 
 
 def test_l6_evidencia_faltante_bloquea():
@@ -534,3 +548,66 @@ def test_totales_diagnosticos_canje_provienen_de_persistencia_y_separan_importes
     assert total['D'] == '400'
     assert set(total['insumos']) == {'CAET', 'CANT'}
     assert set(total['archivos']) == {1, 2}
+
+
+def test_cierre_incluye_plantilla_maestra():
+    r=reporte(archivos=metadata(faltantes=('CARTA_COMPENSACION','HA22')))
+    p=r['plantilla_maestra']
+    assert [b['codigo'] for b in p['bloques']]==['CUADRE_CANJE_MANUAL','CUADRE_CANJE_ELECTRONICO',
+                                                  'TOTAL_CANJE_RECIBIDO','TOTAL_DEPOSITOS_ELECTRONICOS']
+    f38=next(f for f in p['bloques'][0]['filas'] if f['fila']==38)
+    assert f38['estado']=='INSUMO_CARTA_FALTANTE'
+    f100=next(f for f in p['bloques'][3]['filas'] if f['fila']==100)
+    assert f100['estado']=='INSUMO_HA22_FALTANTE'
+
+
+def test_regla_fecha_contable_jornada_usa_t_mas_0():
+    c,h=insumos_cruce()
+    jornada={'id_jornada':2590,'fecha_contable':'2026-10-23'}
+    r=construir_cierre(jornada=jornada,archivos=metadata(),canje=c,depo=[],carta=[],host=h,
+          reglas_cruce=[regla_aprobada(fechas_host_validas='FECHA_CONTABLE_JORNADA')])
+    assert r['cruces_host_credibanco_diagnosticos'][0]['estado']=='COINCIDE'
+    h[0]['fecha_contable']='2026-10-22'
+    r=construir_cierre(jornada=jornada,archivos=metadata(),canje=c,depo=[],carta=[],host=h,
+          reglas_cruce=[regla_aprobada(fechas_host_validas='FECHA_CONTABLE_JORNADA')])
+    assert r['cruces_host_credibanco_diagnosticos'][0]['estado']=='FECHA_HOST_NO_COINCIDE'
+
+
+def test_catalogo_real_tiene_todas_las_reglas_y_l8_aprobados():
+    from app.repositories.cierre_credibanco import _cargar_catalogo
+    cat=_cargar_catalogo()
+    assert cat['aprobacion_l8']['estado']=='APROBADA'
+    l8=control_l8({'estado':'CALCULADO_SIN_ESCALA_HOMOLOGADA','valor':'40'},
+                  {'estado':'CALCULADO_COMPONENTE_G','valor':'100'},cat['aprobacion_l8'])
+    assert l8['l8']=='60'
+    for regla in cat['reglas_cruce']:
+        assert regla['estado']=='APROBADA' and regla['version'] and regla['evidencia_aprobacion']
+        assert regla['fechas_host_validas']=='FECHA_CONTABLE_JORNADA'
+
+
+def test_regla_302_compara_i57_de_la_plantilla_contra_ha32():
+    from app.repositories.cierre_credibanco import _cargar_catalogo
+    regla=next(r for r in _cargar_catalogo()['reglas_cruce'] if r['id_regla']=='CB-F2-302-CANJE-CREDITO')
+    def fila_canje(concepto, interc, total):
+        return dict(id_archivo=2,tipo_archivo='CANT',fecha_contable='2026-10-23',cuenta=concepto,
+                    cuentas_comisiones='',tx='02',cod_error='00',cantidad=1,total_valor=Decimal(total),
+                    total_intercambio=Decimal(interc),total_comision=None,nulos_total=0,nulos_interc=0,nulos_comision=1)
+    canjes=[fila_canje('017-CANJE RECIBIDO TARJETA CREDITO','1000','1010'),
+            fila_canje('017-CANJE RECIBIDO TARJETA CREDITO PAGOS','300','305'),
+            fila_canje('017-ORIGINAL REEMBOLSOS CREDITO','40','50')]
+    hosts=[dict(id_archivo=7,tx_host='HA32',cuenta='299095302',centro='0017',concepto=None,
+                fecha_contable='2026-10-23',cantidad=1,incompletos=0,debe=Decimal('700'),haber=Decimal('50'))]
+    r=construir_cierre(jornada={'id_jornada':2590,'fecha_contable':'2026-10-23'},archivos=metadata(),
+          canje=canjes,depo=[],carta=[],host=hosts,reglas_cruce=[regla])
+    assert r['plantilla_maestra']['controles']['I57_CUENTA_302']['valor']=='650'
+    x=r['cruces_host_credibanco_diagnosticos'][0]
+    assert (x['valor_franquicia'],x['valor_host'],x['diferencia'],x['estado'])==('650','650','0','COINCIDE')
+    assert x['fuente_host']=='HA32' and x['aprobada'] is True and x['archivos_origen']==[1,2]
+
+
+def test_regla_plantilla_sin_caet_cant_no_calcula():
+    from app.repositories.cierre_credibanco import _cargar_catalogo
+    regla=next(r for r in _cargar_catalogo()['reglas_cruce'] if r['id_regla']=='CB-F2-302-CANJE-CREDITO')
+    r=construir_cierre(jornada={'id_jornada':2590,'fecha_contable':'2026-10-23'},
+          archivos=metadata(faltantes=('CAET',)),canje=[],depo=[],carta=[],host=[],reglas_cruce=[regla])
+    assert r['cruces_host_credibanco_diagnosticos'][0]['estado']=='FUENTES_NO_DISPONIBLES'

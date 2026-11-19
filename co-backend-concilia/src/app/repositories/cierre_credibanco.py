@@ -70,24 +70,27 @@ class CierreCredibancoRepository:
 
             if c_ids:
                 cur.execute(
-                    """SELECT id_archivo, tipo_archivo, cuenta, cuentas_comisiones, tx, cod_error,
+                    """SELECT id_archivo, tipo_archivo, cuenta, cuentas_comisiones, cuenta_880, tx, cod_error,
                               COUNT(*)::integer AS cantidad,
                               COUNT(*) FILTER (WHERE comision_op_exitosas IS NULL)::integer AS nulos_comision,
                               SUM(comision_op_exitosas) AS total_comision,
                               COUNT(*) FILTER (WHERE vl_total IS NULL)::integer AS nulos_total,
                               COUNT(*) FILTER (WHERE vl_interc IS NULL)::integer AS nulos_interc,
                               SUM(vl_total) AS total_valor, SUM(vl_interc) AS total_intercambio,
+                              SUM(tii) AS total_tii,
                               MIN(numero_linea) AS primera_linea, MAX(numero_linea) AS ultima_linea
                        FROM (
-                           SELECT id_archivo, 'CAET' AS tipo_archivo, cuenta, cuentas_comisiones, tx, cod_error,
-                                  comision_op_exitosas, vl_total, vl_interc, numero_linea
+                           SELECT id_archivo, 'CAET' AS tipo_archivo, cuenta, cuentas_comisiones, cuenta_880, tx, cod_error,
+                                  comision_op_exitosas, vl_total, vl_interc,
+                                  tii_recibida_emisor_visa_op_rever_ventas AS tii, numero_linea
                            FROM CON_CANJE_RESULTADO WHERE id_archivo = ANY(%(ids)s)
                            UNION ALL
-                           SELECT id_archivo, 'CANT' AS tipo_archivo, cuenta, cuentas_comisiones, tx, cod_error,
-                                  comision_op_exitosas, vl_total, vl_interc, numero_linea
+                           SELECT id_archivo, 'CANT' AS tipo_archivo, cuenta, cuentas_comisiones, cuenta_880, tx, cod_error,
+                                  comision_op_exitosas, vl_total, vl_interc,
+                                  tii_recibida_emisor_visa_op_rever_ventas AS tii, numero_linea
                            FROM CON_CANT_RESULTADO WHERE id_archivo = ANY(%(ids)s)
                        ) d
-                       GROUP BY id_archivo, tipo_archivo, cuenta, cuentas_comisiones, tx, cod_error
+                       GROUP BY id_archivo, tipo_archivo, cuenta, cuentas_comisiones, cuenta_880, tx, cod_error
                        ORDER BY id_archivo, cuenta, tx""",
                     {"ids": c_ids},
                 )
@@ -118,8 +121,14 @@ class CierreCredibancoRepository:
                     """SELECT id_archivo, seccion, motivo_codigo, es_control, lado, concepto,
                               COUNT(*)::integer AS cantidad,
                               SUM(valor_principal) AS valor_principal,
+                              SUM(valor_proceso) AS valor_proceso,
+                              SUM(valor_financiacion) AS valor_financiacion,
+                              SUM(valor_fotocopias) AS valor_fotocopias,
                               SUM(valor_red) AS valor_red,
                               SUM(valor_total) AS valor_total,
+                              COUNT(*) FILTER (WHERE valor_proceso IS NULL)::integer AS nulos_proceso,
+                              COUNT(*) FILTER (WHERE valor_financiacion IS NULL)::integer AS nulos_financiacion,
+                              COUNT(*) FILTER (WHERE valor_fotocopias IS NULL)::integer AS nulos_fotocopias,
                               COUNT(*) FILTER (WHERE valor_principal IS NULL)::integer AS nulos_principal,
                               COUNT(*) FILTER (WHERE valor_red IS NULL)::integer AS nulos_red,
                               COUNT(*) FILTER (WHERE valor_total IS NULL)::integer AS nulos_total,

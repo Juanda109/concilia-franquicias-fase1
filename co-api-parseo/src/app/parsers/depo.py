@@ -25,13 +25,25 @@ def _tasa_intercambio(row):
  mapeo): TIPO_MOVIMIENTO='26' invierte el signo, el resto no."""
  diff=_num(row["VALOR_TOTAL"])-_num(row["VALOR_INTERCAMBIO_2"])
  return -diff if row["TIPO_MOVIMIENTO"]=="26" else diff
+INDICADORES_CNB=frozenset({"010","011","012","110","111","112"})
+# Hoja "bines amex" de ESTRUCTURA DEPOSITOS_CREDIBANCO_OK.xlsx.
+BINES_AMEX_NACIONAL=frozenset({377813,377814,377815,377816,377843,377844,377845,377847})
+def _amex_nacional(linea):
+ """Columna "amex nacional" de la hoja Revision campos:
+ =IF(AND(MID(A,59,1)="0",MID(A,60,1)="3"),
+     IF(ISNA(VLOOKUP(MID(A,60,6)*1,'bines amex'!A:A,1,0)),"AMEX INTERNACIONAL","AMEX NACIONAL"),"")"""
+ if linea[58:59]!="0" or linea[59:60]!="3": return ""
+ bin_txt=linea[59:65]
+ # MID(...)*1 no numerico da #VALUE!, e ISNA(#VALUE!) es FALSO en Excel.
+ if not bin_txt.isdigit(): return "AMEX NACIONAL"
+ return "AMEX NACIONAL" if int(bin_txt) in BINES_AMEX_NACIONAL else "AMEX INTERNACIONAL"
 def _persiste(row):
- """DEPO-F1-001 — filtro de persistencia. Solo se implementan las reglas
- 1, 2 y 5 (confirmadas); las reglas 3 (INDICADOR_CNB) y 4 (CLASIFICACION_AMEX)
- quedan PENDIENTES por falta de definición/catálogo — un registro que solo
- calificara por esas dos reglas no se persiste todavía con esta versión."""
+ """DEPO-F1-001 — filtro de persistencia, en el orden de la especificacion
+ integral (seccion 3.1)."""
  if row["TIPO_MOVIMIENTO"]=="05": return False                       # regla 1
  if row["TIPO_MOVIMIENTO"] in ("02","06","26","42"): return True      # regla 2
+ if row["INDICADOR_CASH_BACK"] in INDICADORES_CNB: return True        # regla 3
+ if row["AMEX_NACIONAL"]=="AMEX INTERNACIONAL": return True           # regla 4
  if row["TASA_DE_INTERCAMBIO"]!=0: return True                        # regla 5
  return False
 class DEPOParser(Parser):
@@ -47,6 +59,7 @@ class DEPOParser(Parser):
    for f in NUMERIC_FIELDS:
     if row[f]=="":row[f]=None
    row["TASA_DE_INTERCAMBIO"]=_tasa_intercambio(row)
+   row["AMEX_NACIONAL"]=_amex_nacional(padded)
    if _persiste(row):
     r.records.append(row)
    else:
