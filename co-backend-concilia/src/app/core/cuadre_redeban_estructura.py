@@ -13,11 +13,13 @@ cada cuenta salen del inventario de consultas Host (cuentas_redeban_host.json).
 from __future__ import annotations
 
 import re
-from decimal import Decimal, InvalidOperation
-from typing import Any, Mapping, Sequence
+from decimal import Decimal
+from typing import Mapping, Sequence
 
-CERO = Decimal(0)
-FUENTES_HOST = ("HA22", "HA26", "HA32")
+from app.core.host_por_cuenta import (CERO, FUENTES_HOST, Celda, a_decimal as _dec, agrupar_host,
+                                      comparar_fuente as _comparar_fuente,
+                                      estado_cuenta as _estado_cuenta, texto as _txt)
+
 MEDIDA_POR_INDICE = {
     2: "DEBITO_CANTIDAD", 3: "DEBITO_VALOR", 4: "DEBITO_COMISION_INTERCAMBIO",
     5: "DEBITO_COMISION_ADMIN", 6: "DEBITO_NETO", 7: "CREDITO_CANTIDAD", 8: "CREDITO_VALOR",
@@ -25,25 +27,6 @@ MEDIDA_POR_INDICE = {
 }
 SIN_CUENTA = ("", "None", "N/A")
 _RE_NIVEL_1 = re.compile(r"^\d+\.\d+$")
-
-Celda = tuple  # (valor: Decimal | None, estado: str)
-
-
-def _dec(valor: Any) -> Celda:
-    """R04/R05: ausente o no convertible no se calcula."""
-    if valor is None or valor == "":
-        return None, "VALOR_AUSENTE"
-    if isinstance(valor, bool):
-        return None, "VALOR_INVALIDO"
-    try:
-        numero = Decimal(str(valor))
-    except (InvalidOperation, ValueError):
-        return None, "VALOR_INVALIDO"
-    return (numero, "CALCULADO") if numero.is_finite() else (None, "VALOR_INVALIDO")
-
-
-def _txt(valor: Decimal | None) -> str | None:
-    return None if valor is None else str(valor)
 
 
 class IndicePmd:
@@ -118,63 +101,6 @@ def _incompleta(fila: dict) -> bool:
 def _con_movimiento(fila: dict) -> bool:
     """Movimiento monetario; Q/R (cantidades) se repiten en las filas A/B/C del mismo codigo."""
     return any(fila[c] is not None and Decimal(fila[c]) != 0 for c in ("debito", "credito"))
-
-
-def agrupar_host(host_filas: Sequence[Mapping], fecha_contable: str) -> tuple[dict, int]:
-    """Debe/haber por (cuenta, fuente) del dia de la jornada; nunca suma fuentes entre si."""
-    grupos: dict[tuple[str, str], dict] = {}
-    otra_fecha = 0
-    for h in host_filas:
-        if str(h.get("fecha_contable")) != fecha_contable:
-            otra_fecha += 1
-            continue
-        g = grupos.setdefault((str(h["cuenta"]).strip(), h["tx_host"]),
-                              {"debe": CERO, "haber": CERO, "movimientos": 0, "incompletos": 0, "archivos": set()})
-        g["movimientos"] += 1
-        g["archivos"].add(h.get("id_archivo"))
-        debe, haber = _dec(h.get("debe")), _dec(h.get("haber"))
-        if debe[0] is None or haber[0] is None:
-            g["incompletos"] += 1
-            continue
-        g["debe"] += debe[0]
-        g["haber"] += haber[0]
-    return grupos, otra_fecha
-
-
-def _comparar_fuente(neto_pmd: Decimal | None, fuente: str, cuenta: str, grupos: dict,
-                     procesadas: set[str], obligatoria: bool) -> dict:
-    if fuente not in procesadas:
-        return {"obligatoria": obligatoria, "estado": "INSUMO_FALTANTE", "debe": None, "haber": None,
-                "neto": None, "movimientos": None, "diferencia": None, "archivos": []}
-    g = grupos.get((cuenta, fuente))
-    if g is None:
-        debe = haber = CERO
-        movimientos, estado = 0, "SIN_MOVIMIENTO_HOST"
-    elif g["incompletos"]:
-        return {"obligatoria": obligatoria, "estado": "DATO_INCOMPLETO", "debe": None, "haber": None,
-                "neto": None, "movimientos": g["movimientos"], "diferencia": None,
-                "archivos": sorted(x for x in g["archivos"] if x is not None)}
-    else:
-        debe, haber, movimientos, estado = g["debe"], g["haber"], g["movimientos"], "CALCULADO"
-    neto = debe - haber
-    diferencia = None if neto_pmd is None else neto_pmd - neto
-    if diferencia is not None:
-        estado = "COINCIDE" if diferencia == 0 else "CON_DIFERENCIA"
-    return {"obligatoria": obligatoria, "estado": estado, "debe": str(debe), "haber": str(haber),
-            "neto": str(neto), "movimientos": movimientos, "diferencia": _txt(diferencia),
-            "archivos": sorted(x for x in (g or {}).get("archivos", ()) if x is not None)}
-
-
-def _estado_cuenta(neto_pmd: Decimal | None, host: dict) -> str:
-    """Matriz de clasificacion monetaria (RECON-F2-005)."""
-    if neto_pmd is None:
-        return "SIN_INFORMACION"
-    obligatorias = [h for h in host.values() if h["obligatoria"]]
-    if not obligatorias:
-        return "SIN_CONSULTA_HOST"
-    if any(h["neto"] is None for h in obligatorias):
-        return "PENDIENTE_CONCILIACION"
-    return "CONCILIADO" if all(Decimal(h["diferencia"]) == 0 for h in obligatorias) else "CON_DIFERENCIA"
 
 
 def validador(evaluadas: Sequence[dict], pmd: IndicePmd) -> list[dict]:

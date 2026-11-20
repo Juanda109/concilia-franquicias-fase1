@@ -15,7 +15,7 @@ from fastapi.responses import JSONResponse
 from app.api.auth_router import router as auth_router
 from app.auth.session import COOKIE_NAME, read_session
 from app.core.auth_config import auth_settings
-from app.core.nombres_archivo import validar_nombre
+from app.core.nombres_archivo import formato_esperado, validar_nombre
 from app.repositories.database import connection
 from app.repositories.jornada import JornadaRepository
 from app.repositories.archivo import ArchivoRepository as ArchivoRepo
@@ -23,6 +23,9 @@ from app.repositories.content import ContentRepository
 from app.repositories.trazabilidad import TrazabilidadRepository
 from app.repositories.cierre_credibanco import CierreCredibancoRepository
 from app.repositories.cierre_redeban import CierreRedebanRepository
+from app.repositories.conciliacion_visa import ConciliacionVisaRepository
+from app.core.conciliacion_visa import CapturaInvalida
+from pydantic import BaseModel, Field
 from app.clients import minio_client
 from app.clients.parseo_client import parsear
 app=FastAPI(title="Concilia Franquicias Fase 1 - Back",version="2.4.0")
@@ -125,6 +128,35 @@ def cierre_redeban(id_jornada:int):
         if resultado is None: raise HTTPException(404,'JORNADA_NO_ENCONTRADA')
         return resultado
 
+@app.get('/api/v1/jornadas/{id_jornada}/conciliacion-visa')
+def conciliacion_visa(id_jornada:int):
+    """Liquidacion VISA de la Plantilla Maestra (fila 5 y filas 161-181) con
+    capturas manuales, controles VSS vs International SS y asiento vs Host -
+    ver app.core.conciliacion_visa."""
+    with connection() as c:
+        resultado=ConciliacionVisaRepository(c).ejecutar(id_jornada)
+        if resultado is None: raise HTTPException(404,'JORNADA_NO_ENCONTRADA')
+        return resultado
+
+class CapturaVisa(BaseModel):
+    # Valores como texto ("4012.35"): un float pierde precision. null borra el campo.
+    valores:dict[str,str|None]
+    observacion:str|None=Field(default=None,max_length=500)
+
+@app.post('/api/v1/jornadas/{id_jornada}/conciliacion-visa/capturas')
+def capturar_visa(id_jornada:int,captura:CapturaVisa,request:Request):
+    """Guarda las celdas que la Plantilla digita a mano (TRM, pdf, correo...).
+    Cada cambio es una version nueva; nunca se sobrescribe la anterior."""
+    with connection() as c:
+        try:
+            existe=ConciliacionVisaRepository(c).guardar_capturas(
+                id_jornada,captura.valores,request.state.usuario,captura.observacion)
+        except CapturaInvalida as e:
+            raise HTTPException(422,str(e))
+        if not existe: raise HTTPException(404,'JORNADA_NO_ENCONTRADA')
+    with connection() as c:
+        return ConciliacionVisaRepository(c).ejecutar(id_jornada)
+
 @app.get('/api/v1/archivos/{id_archivo}/errores')
 def archivo_errores(id_archivo:int):
     with connection() as c:
@@ -219,7 +251,8 @@ def cargar_archivo_original(id_jornada:int,background_tasks:BackgroundTasks,requ
         fecha_contable_iso=fecha_contable.isoformat()
         tiene_regla,coincide,fecha_archivo=validar_nombre(tipo_insumo,nombre_archivo,fecha_contable_iso)
         if tiene_regla and not coincide:
-            motivo=f'NOMBRE_ARCHIVO_INVALIDO: el archivo {nombre_archivo} no cumple la estructura esperada para {tipo_insumo}'
+            motivo=(f'NOMBRE_ARCHIVO_INVALIDO: el archivo {nombre_archivo} no cumple la estructura esperada para {tipo_insumo}. '
+                    f'Formato esperado: {formato_esperado(tipo_insumo)}')
             ArchivoRepo(c).marcar_rechazado(idArchivo,nombre_archivo,motivo)
             TrazabilidadRepository(c).add(idArchivo,estado_recepcion_anterior,'Rechazado','RECHAZO_CARGA',
                 correlation_id_actual,request.state.usuario,{'nombreArchivo':nombre_archivo,'motivo':motivo})
