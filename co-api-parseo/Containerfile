@@ -30,6 +30,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     GENAI_ENVIRONMENT=${GENAI_ENVIRONMENT} \
     PATH="/app/.venv/bin:$PATH"
 
+# pip no se usa en ejecucion (las dependencias vienen del venv del builder) y
+# trae copias propias de msgpack, setuptools, urllib3 y certifi que los
+# escaneres (Trivy) reportan como vulnerables: se retira de la imagen final.
+RUN python -m pip uninstall -y pip
+
 # Crear usuario sin privilegios
 RUN groupadd -g 10001 appgroup && \
     useradd -u 10001 -g appgroup -s /sbin/nologin -d /app appuser

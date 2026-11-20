@@ -1,13 +1,23 @@
+from typing import Annotated
 from urllib.parse import urlencode
 
 from fastapi import APIRouter, Cookie, HTTPException, Response, status
 from pydantic import BaseModel, Field
 
 from app.auth.oidc import OidcInvalid, OidcUnavailable, oidc_client
-from app.auth.session import COOKIE_NAME, create_session, read_session, revoke_session
+from app.auth.session import (
+    COOKIE_NAME,
+    create_session,
+    read_session,
+    revoke_session,
+)
 from app.core.auth_config import auth_settings
 
 router = APIRouter(prefix="/api/v0", tags=["Auth"])
+
+# Cookie de sesion opcional, declarada con Annotated en vez de un
+# Cookie() como valor por defecto (flake8-bugbear B008).
+SessionCookie = Annotated[str | None, Cookie()]
 
 
 class ExchangeRequest(BaseModel):
@@ -29,7 +39,9 @@ async def oidc_exchange(payload: ExchangeRequest, response: Response):
     except PermissionError as exc:
         raise HTTPException(status.HTTP_403_FORBIDDEN, str(exc)) from None
     except OidcUnavailable as exc:
-        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, str(exc)) from None
+        raise HTTPException(
+            status.HTTP_503_SERVICE_UNAVAILABLE, str(exc)
+        ) from None
     response.set_cookie(
         key=COOKIE_NAME,
         value=create_session(user),
@@ -46,12 +58,12 @@ async def oidc_exchange(payload: ExchangeRequest, response: Response):
 
 
 @router.get("/me")
-async def me(session_token: str | None = Cookie(default=None)):
+async def me(session_token: SessionCookie = None):
     return {"authenticated": True, **read_session(session_token)}
 
 
 @router.post("/auth/logout")
-async def logout(response: Response, session_token: str | None = Cookie(default=None)):
+async def logout(response: Response, session_token: SessionCookie = None):
     id_token = revoke_session(session_token)
     response.delete_cookie(
         key=COOKIE_NAME,
@@ -70,7 +82,9 @@ async def logout(response: Response, session_token: str | None = Cookie(default=
             metadata = await oidc_client.metadata()
         except OidcUnavailable:
             metadata = None
-        end_session_endpoint = metadata.get("end_session_endpoint") if metadata else None
+        end_session_endpoint = (
+            metadata.get("end_session_endpoint") if metadata else None
+        )
         if isinstance(end_session_endpoint, str):
             params = {
                 "id_token_hint": id_token,

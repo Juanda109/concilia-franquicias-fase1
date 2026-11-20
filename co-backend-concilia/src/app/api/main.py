@@ -1,15 +1,19 @@
-import logging,math,uuid
+import logging
+import math
+import uuid
 from datetime import date
+from typing import Annotated
 
-# Sin esto, logger.info/debug de los modulos de la app (ej. app.auth.oidc) no
-# tienen handler propio y Python los descarta silenciosamente: uvicorn solo
-# configura sus propios loggers (uvicorn, uvicorn.access, uvicorn.error), no
-# el root logger que usan getLogger(__name__) en el resto del codigo.
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+from fastapi import (
+    BackgroundTasks,
+    FastAPI,
+    File,
+    Form,
+    Header,
+    HTTPException,
+    Request,
+    UploadFile,
 )
-from fastapi import FastAPI,HTTPException,Header,UploadFile,File,Form,BackgroundTasks,Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from app.api.auth_router import router as auth_router
@@ -28,7 +32,20 @@ from app.core.conciliacion_visa import CapturaInvalida
 from pydantic import BaseModel, Field
 from app.clients import minio_client
 from app.clients.parseo_client import parsear
-app=FastAPI(title="Concilia Franquicias Fase 1 - Back",version="2.4.0")
+
+# Sin esto, logger.info/debug de los modulos de la app (ej. app.auth.oidc) no
+# tienen handler propio y Python los descarta silenciosamente: uvicorn solo
+# configura sus propios loggers (uvicorn, uvicorn.access, uvicorn.error), no
+# el root logger que usan getLogger(__name__) en el resto del codigo.
+# Va despues de los imports (E402); ningun modulo importado emite logs al
+# importarse, asi que no se pierde nada.
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+)
+logger = logging.getLogger(__name__)
+
+app = FastAPI(title="Concilia Franquicias Fase 1 - Back", version="2.4.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[auth_settings.frontend_origin],
@@ -37,6 +54,7 @@ app.add_middleware(
     allow_headers=["Content-Type", "X-Correlation-Id"],
 )
 app.include_router(auth_router)
+
 
 @app.middleware("http")
 async def protect_api(request: Request, call_next):
@@ -54,165 +72,200 @@ async def protect_api(request: Request, call_next):
                 return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
     return await call_next(request)
 
-ESTADO_RECEPCION_MAP={"Recibido":"RECIBIDO","No recibido":"NO_RECIBIDO","Rechazado":"RECHAZADO"}
-ESTADO_PROCESAMIENTO_MAP={"Pendiente":"PENDIENTE","Procesando":"PROCESANDO","Procesado":"PROCESADO","Error":"ERROR"}
+ESTADO_RECEPCION_MAP = {"Recibido": "RECIBIDO", "No recibido": "NO_RECIBIDO", "Rechazado": "RECHAZADO"}
+ESTADO_PROCESAMIENTO_MAP = {"Pendiente": "PENDIENTE", "Procesando": "PROCESANDO", "Procesado": "PROCESADO", "Error": "ERROR"}
 
-def _insumo_contrato(i:dict)->dict:
-    return {**i,"estadoRecepcion":ESTADO_RECEPCION_MAP.get(i["estadoRecepcion"],"ESPERADO"),
-            "estadoProcesamiento":ESTADO_PROCESAMIENTO_MAP.get(i["estadoProcesamiento"],"PENDIENTE")}
 
-def _estado_jornada(insumos:list[dict])->str:
+def _insumo_contrato(i: dict) -> dict:
+    return {**i, "estadoRecepcion": ESTADO_RECEPCION_MAP.get(i["estadoRecepcion"], "ESPERADO"),
+            "estadoProcesamiento": ESTADO_PROCESAMIENTO_MAP.get(i["estadoProcesamiento"], "PENDIENTE")}
+
+
+def _estado_jornada(insumos: list[dict]) -> str:
     """insumos ya en los enums del contrato (ver _insumo_contrato)."""
-    if any(i["estadoProcesamiento"]=="ERROR" for i in insumos): return "ERROR"
-    esperados=len(insumos)
-    procesados=sum(1 for i in insumos if i["estadoProcesamiento"]=="PROCESADO")
-    if esperados and procesados>=esperados: return "COMPLETA"
-    if any(i["estadoProcesamiento"]=="PROCESANDO" for i in insumos): return "EN_PROCESO"
-    recibidos=sum(1 for i in insumos if i["estadoRecepcion"]=="RECIBIDO")
-    if recibidos>0: return "CON_NOVEDAD"
+    if any(i["estadoProcesamiento"] == "ERROR" for i in insumos):
+        return "ERROR"
+    esperados = len(insumos)
+    procesados = sum(1 for i in insumos if i["estadoProcesamiento"] == "PROCESADO")
+    if esperados and procesados >= esperados:
+        return "COMPLETA"
+    if any(i["estadoProcesamiento"] == "PROCESANDO" for i in insumos):
+        return "EN_PROCESO"
+    recibidos = sum(1 for i in insumos if i["estadoRecepcion"] == "RECIBIDO")
+    if recibidos > 0:
+        return "CON_NOVEDAD"
     return "PENDIENTE"
+
 
 @app.get('/health')
 def health():
-    return {'status':'UP'}
+    return {'status': 'UP'}
 
-def _detalle_jornada(c,id_jornada:int,fecha_contable:date)->dict:
+
+def _detalle_jornada(c, id_jornada: int, fecha_contable: date) -> dict:
     ArchivoRepo(c).ensure_insumos(id_jornada)
-    insumos=[_insumo_contrato(i) for i in ArchivoRepo(c).listar_insumos(id_jornada)]
+    insumos = [_insumo_contrato(i) for i in ArchivoRepo(c).listar_insumos(id_jornada)]
     return {
-        "idJornada":id_jornada,"fechaContable":fecha_contable.isoformat(),"estado":_estado_jornada(insumos),
-        "archivosEsperados":len(insumos),
-        "archivosRecibidos":sum(1 for i in insumos if i["estadoRecepcion"]=="RECIBIDO"),
-        "archivosProcesados":sum(1 for i in insumos if i["estadoProcesamiento"]=="PROCESADO"),
-        "archivosConError":sum(1 for i in insumos if i["estadoProcesamiento"]=="ERROR"),
-        "insumos":insumos,
+        "idJornada": id_jornada, "fechaContable": fecha_contable.isoformat(), "estado": _estado_jornada(insumos),
+        "archivosEsperados": len(insumos),
+        "archivosRecibidos": sum(1 for i in insumos if i["estadoRecepcion"] == "RECIBIDO"),
+        "archivosProcesados": sum(1 for i in insumos if i["estadoProcesamiento"] == "PROCESADO"),
+        "archivosConError": sum(1 for i in insumos if i["estadoProcesamiento"] == "ERROR"),
+        "insumos": insumos,
     }
 
+
 @app.get("/api/v1/jornadas")
-def jornadas(fechaContable:str):
+def jornadas(fechaContable: str):
     """La fecha contable ya no se deriva de una fecha de conciliación - el
     calendario del frontend selecciona la fecha contable directamente, 1:1
     con la jornada (ver JornadaRepository.get_or_create)."""
-    try: fecha=date.fromisoformat(fechaContable)
-    except ValueError: raise HTTPException(400,'FECHA_INVALIDA')
+    try:
+        fecha = date.fromisoformat(fechaContable)
+    except ValueError:
+        raise HTTPException(400, 'FECHA_INVALIDA')
     with connection() as c:
-        id_jornada=JornadaRepository(c).get_or_create(fecha)
-        return _detalle_jornada(c,id_jornada,fecha)
+        id_jornada = JornadaRepository(c).get_or_create(fecha)
+        return _detalle_jornada(c, id_jornada, fecha)
+
 
 @app.get("/api/v1/jornadas/{id_jornada}")
-def jornada_detalle(id_jornada:int):
+def jornada_detalle(id_jornada: int):
     with connection() as c:
-        resumen=JornadaRepository(c).resumen(id_jornada)
-        if not resumen: raise HTTPException(404,'JORNADA_NO_ENCONTRADA')
-        _,fecha_contable=resumen
-        return _detalle_jornada(c,id_jornada,fecha_contable)
+        resumen = JornadaRepository(c).resumen(id_jornada)
+        if not resumen:
+            raise HTTPException(404, 'JORNADA_NO_ENCONTRADA')
+        _, fecha_contable = resumen
+        return _detalle_jornada(c, id_jornada, fecha_contable)
+
 
 @app.get('/api/v1/jornadas/{id_jornada}/cierre-credibanco')
-def cierre_credibanco(id_jornada:int):
+def cierre_credibanco(id_jornada: int):
     """Diagnostico trazable F2 Credibanco (CAET/CANT, DEPO, CARTA_COMPENSACION
     vs HA22/HA26/HA32) - ver app.core.cierre_credibanco_v67.construir_cierre.
     Nunca certifica una conciliacion contable por si mismo: requiere reglas de
     cruce aprobadas por negocio en app/catalogos/cierre_credibanco_v67.json."""
     with connection() as c:
-        resultado=CierreCredibancoRepository(c).ejecutar(id_jornada)
-        if resultado is None: raise HTTPException(404,'JORNADA_NO_ENCONTRADA')
+        resultado = CierreCredibancoRepository(c).ejecutar(id_jornada)
+        if resultado is None:
+            raise HTTPException(404, 'JORNADA_NO_ENCONTRADA')
         return resultado
 
+
 @app.get('/api/v1/jornadas/{id_jornada}/cierre-redeban')
-def cierre_redeban(id_jornada:int):
+def cierre_redeban(id_jornada: int):
     """Cuadre Redeban: PMD homologado a cuenta con la hoja ESTRUCTURA de la
     plantilla de cuadre, comparado contra HA22/HA26/HA32 por separado - ver
     app.core.cuadre_redeban_estructura."""
     with connection() as c:
-        resultado=CierreRedebanRepository(c).ejecutar(id_jornada)
-        if resultado is None: raise HTTPException(404,'JORNADA_NO_ENCONTRADA')
+        resultado = CierreRedebanRepository(c).ejecutar(id_jornada)
+        if resultado is None:
+            raise HTTPException(404, 'JORNADA_NO_ENCONTRADA')
         return resultado
 
+
 @app.get('/api/v1/jornadas/{id_jornada}/conciliacion-visa')
-def conciliacion_visa(id_jornada:int):
+def conciliacion_visa(id_jornada: int):
     """Liquidacion VISA de la Plantilla Maestra (fila 5 y filas 161-181) con
     capturas manuales, controles VSS vs International SS y asiento vs Host -
     ver app.core.conciliacion_visa."""
     with connection() as c:
-        resultado=ConciliacionVisaRepository(c).ejecutar(id_jornada)
-        if resultado is None: raise HTTPException(404,'JORNADA_NO_ENCONTRADA')
+        resultado = ConciliacionVisaRepository(c).ejecutar(id_jornada)
+        if resultado is None:
+            raise HTTPException(404, 'JORNADA_NO_ENCONTRADA')
         return resultado
+
 
 class CapturaVisa(BaseModel):
     # Valores como texto ("4012.35"): un float pierde precision. null borra el campo.
-    valores:dict[str,str|None]
-    observacion:str|None=Field(default=None,max_length=500)
+    valores: dict[str, str | None]
+    observacion: str | None = Field(default=None, max_length=500)
+
 
 @app.post('/api/v1/jornadas/{id_jornada}/conciliacion-visa/capturas')
-def capturar_visa(id_jornada:int,captura:CapturaVisa,request:Request):
+def capturar_visa(id_jornada: int, captura: CapturaVisa, request: Request):
     """Guarda las celdas que la Plantilla digita a mano (TRM, pdf, correo...).
     Cada cambio es una version nueva; nunca se sobrescribe la anterior."""
     with connection() as c:
         try:
-            existe=ConciliacionVisaRepository(c).guardar_capturas(
-                id_jornada,captura.valores,request.state.usuario,captura.observacion)
+            existe = ConciliacionVisaRepository(c).guardar_capturas(
+                id_jornada, captura.valores, request.state.usuario, captura.observacion)
         except CapturaInvalida as e:
-            raise HTTPException(422,str(e))
-        if not existe: raise HTTPException(404,'JORNADA_NO_ENCONTRADA')
+            raise HTTPException(422, str(e))
+        if not existe:
+            raise HTTPException(404, 'JORNADA_NO_ENCONTRADA')
     with connection() as c:
         return ConciliacionVisaRepository(c).ejecutar(id_jornada)
 
+
 @app.get('/api/v1/archivos/{id_archivo}/errores')
-def archivo_errores(id_archivo:int):
+def archivo_errores(id_archivo: int):
     with connection() as c:
-        row=c.execute('''SELECT a.NOMBRE_ARCHIVO,a.MOTIVO_ESTADO,i.TIPO_INSUMO
- FROM CON_ARCHIVO_CARGA a JOIN CON_INSUMO_ESPERADO i ON i.ID_INSUMO=a.ID_INSUMO WHERE a.ID_ARCHIVO=%s''',(id_archivo,)).fetchone()
-        if not row: raise HTTPException(404,'ARCHIVO_NO_ENCONTRADO')
-        nombre_archivo,motivo_estado,tipo_insumo=row
-    return {'idArchivo':id_archivo,'nombreArchivo':nombre_archivo,'tipoInsumo':tipo_insumo,
-            'motivoEstado':motivo_estado}
+        row = c.execute('''SELECT a.NOMBRE_ARCHIVO,a.MOTIVO_ESTADO,i.TIPO_INSUMO
+ FROM CON_ARCHIVO_CARGA a JOIN CON_INSUMO_ESPERADO i ON i.ID_INSUMO=a.ID_INSUMO WHERE a.ID_ARCHIVO=%s''', (id_archivo,)).fetchone()
+        if not row:
+            raise HTTPException(404, 'ARCHIVO_NO_ENCONTRADO')
+        nombre_archivo, motivo_estado, tipo_insumo = row
+    return {'idArchivo': id_archivo, 'nombreArchivo': nombre_archivo, 'tipoInsumo': tipo_insumo,
+            'motivoEstado': motivo_estado}
+
 
 @app.get('/api/v1/archivos/{id_archivo}/contenido')
-def contenido(id_archivo:int,page:int=0,pageSize:int=30):
-    if page<0 or pageSize<1 or pageSize>100:
-        raise HTTPException(400,'PAGINACION_INVALIDA')
+def contenido(id_archivo: int, page: int = 0, pageSize: int = 30):
+    if page < 0 or pageSize < 1 or pageSize > 100:
+        raise HTTPException(400, 'PAGINACION_INVALIDA')
     with connection() as c:
-        row=c.execute('''SELECT a.ESTADO_RECEPCION,a.ESTADO_PROCESAMIENTO,a.NOMBRE_ARCHIVO,a.CORRELATION_ID,a.MOTIVO_ESTADO,i.TIPO_INSUMO
- FROM CON_ARCHIVO_CARGA a JOIN CON_INSUMO_ESPERADO i ON i.ID_INSUMO=a.ID_INSUMO WHERE a.ID_ARCHIVO=%s''',(id_archivo,)).fetchone()
-        if not row: raise HTTPException(404,'ARCHIVO_NO_ENCONTRADO')
-        estado_recepcion,estado_procesamiento,nombre_archivo,correlation_id,motivo_estado,tipo_insumo=row
+        row = c.execute('''SELECT a.ESTADO_RECEPCION,a.ESTADO_PROCESAMIENTO,a.NOMBRE_ARCHIVO,a.CORRELATION_ID,a.MOTIVO_ESTADO,i.TIPO_INSUMO
+ FROM CON_ARCHIVO_CARGA a JOIN CON_INSUMO_ESPERADO i ON i.ID_INSUMO=a.ID_INSUMO WHERE a.ID_ARCHIVO=%s''', (id_archivo,)).fetchone()
+        if not row:
+            raise HTTPException(404, 'ARCHIVO_NO_ENCONTRADO')
+        estado_recepcion, estado_procesamiento, nombre_archivo, correlation_id, motivo_estado, tipo_insumo = row
         # "Procesando" se permite a propósito: deja ver en vivo lo que ya se
         # insertó (DELETE+INSERT incremental en parseo) mientras el archivo
         # sigue cargando, no solo cuando ya terminó. En Error/Rechazado no hay
         # contenido tabular, pero igual se deja "ver detalle" para mostrar el
         # motivo guardado (ver _acciones_permitidas) en vez de un 409.
-        disponible=estado_procesamiento in ('Procesado','Procesando','Error') or estado_recepcion=='Rechazado'
-        if not disponible: raise HTTPException(409,'ARCHIVO_NO_DISPONIBLE')
-        if estado_procesamiento in ('Procesado','Procesando'):
-            items,total,headers=ContentRepository(c).page(tipo_insumo,id_archivo,page,pageSize)
+        disponible = estado_procesamiento in ('Procesado', 'Procesando', 'Error') or estado_recepcion == 'Rechazado'
+        if not disponible:
+            raise HTTPException(409, 'ARCHIVO_NO_DISPONIBLE')
+        if estado_procesamiento in ('Procesado', 'Procesando'):
+            items, total, headers = ContentRepository(c).page(tipo_insumo, id_archivo, page, pageSize)
         else:
-            items,total,headers=[],0,[]
+            items, total, headers = [], 0, []
     return {
-        'idArchivo':id_archivo,'tipoInsumo':tipo_insumo,'nombreArchivo':nombre_archivo,
-        'estadoRecepcion':ESTADO_RECEPCION_MAP.get(estado_recepcion,'ESPERADO'),
-        'estadoProcesamiento':ESTADO_PROCESAMIENTO_MAP.get(estado_procesamiento,'PENDIENTE'),
-        'correlationId':correlation_id,'headers':headers,'items':items,'motivoEstado':motivo_estado,
-        'pagination':{'page':page,'pageSize':pageSize,'totalItems':total,'totalPages':math.ceil(total/pageSize) if total else 0},
+        'idArchivo': id_archivo, 'tipoInsumo': tipo_insumo, 'nombreArchivo': nombre_archivo,
+        'estadoRecepcion': ESTADO_RECEPCION_MAP.get(estado_recepcion, 'ESPERADO'),
+        'estadoProcesamiento': ESTADO_PROCESAMIENTO_MAP.get(estado_procesamiento, 'PENDIENTE'),
+        'correlationId': correlation_id, 'headers': headers, 'items': items, 'motivoEstado': motivo_estado,
+        'pagination': {'page': page, 'pageSize': pageSize, 'totalItems': total, 'totalPages': math.ceil(total / pageSize) if total else 0},
     }
 
-@app.delete('/api/v1/archivos/{id_archivo}')
-def eliminar_archivo(id_archivo:int,request:Request):
-    with connection() as c:
-        datos,error=ArchivoRepo(c).obtener_para_eliminar(id_archivo)
-        if error=='ARCHIVO_NO_ENCONTRADO': raise HTTPException(404,error)
-        if error=='ELIMINACION_NO_PERMITIDA': raise HTTPException(409,error)
-        if datos['nombreArchivo']:
-            _,fecha_contable=JornadaRepository(c).resumen(datos['idJornada'])
-            minio_key=f"{fecha_contable.isoformat()}/{datos['tipoInsumo']}/{id_archivo}_{datos['nombreArchivo']}"
-            try: minio_client.eliminar(minio_key)
-            except Exception: pass  # un rechazo al subir nunca llega a crear el objeto real
-        ContentRepository(c).delete(datos['tipoInsumo'],id_archivo)
-        ArchivoRepo(c).eliminar_carga(id_archivo)
-        TrazabilidadRepository(c).add(id_archivo,datos['estadoRecepcion'],'No recibido','ELIMINACION_ARCHIVO',
-            datos['correlationId'],request.state.usuario,{'nombreArchivoEliminado':datos['nombreArchivo']})
-    return {'idArchivo':id_archivo,'estado':'ELIMINADO'}
 
-def _procesar_en_segundo_plano(id_archivo:int,tipo_insumo:str,minio_key:str,correlation_id:str):
+@app.delete('/api/v1/archivos/{id_archivo}')
+def eliminar_archivo(id_archivo: int, request: Request):
+    with connection() as c:
+        datos, error = ArchivoRepo(c).obtener_para_eliminar(id_archivo)
+        if error == 'ARCHIVO_NO_ENCONTRADO':
+            raise HTTPException(404, error)
+        if error == 'ELIMINACION_NO_PERMITIDA':
+            raise HTTPException(409, error)
+        if datos['nombreArchivo']:
+            _, fecha_contable = JornadaRepository(c).resumen(datos['idJornada'])
+            minio_key = f"{fecha_contable.isoformat()}/{datos['tipoInsumo']}/{id_archivo}_{datos['nombreArchivo']}"
+            # Un rechazo al subir nunca llega a crear el objeto real, asi que
+            # una falla aqui no impide eliminar la carga; se deja en el log.
+            try:
+                minio_client.eliminar(minio_key)
+            except Exception as exc:
+                logger.warning('No se pudo eliminar %s del storage: %s', minio_key, exc)
+        ContentRepository(c).delete(datos['tipoInsumo'], id_archivo)
+        ArchivoRepo(c).eliminar_carga(id_archivo)
+        TrazabilidadRepository(c).add(id_archivo, datos['estadoRecepcion'], 'No recibido', 'ELIMINACION_ARCHIVO',
+                                      datos['correlationId'], request.state.usuario, {'nombreArchivoEliminado': datos['nombreArchivo']})
+    return {'idArchivo': id_archivo, 'estado': 'ELIMINADO'}
+
+
+def _procesar_en_segundo_plano(id_archivo: int, tipo_insumo: str, minio_key: str, correlation_id: str):
     """El parseo puede tardar minutos en archivos grandes (inserta registro a
     registro); parseo va marcando ESTADO_PROCESAMIENTO/REGISTROS_PROCESADOS por
     su cuenta a medida que avanza (ver ParseoOrchestrator), y el front hace
@@ -224,60 +277,70 @@ def _procesar_en_segundo_plano(id_archivo:int,tipo_insumo:str,minio_key:str,corr
     (ver orchestrator.py) -> el cuerpo trae estadoProcesamiento="Error" pero
     la fila se queda en "Procesando" si no se revisa esto explícitamente."""
     try:
-        resultado=parsear(id_archivo,tipo_insumo,minio_key,correlation_id)
-        if resultado.get('estadoProcesamiento')=='Error':
-            motivo='; '.join(e.get('mensaje','') for e in resultado.get('errores',[])) or 'Error de procesamiento'
+        resultado = parsear(id_archivo, tipo_insumo, minio_key, correlation_id)
+        if resultado.get('estadoProcesamiento') == 'Error':
+            motivo = '; '.join(e.get('mensaje', '') for e in resultado.get('errores', [])) or 'Error de procesamiento'
             with connection() as c:
-                ArchivoRepo(c).update_state(id_archivo,'ESTADO_PROCESAMIENTO','Error',motivo)
+                ArchivoRepo(c).update_state(id_archivo, 'ESTADO_PROCESAMIENTO', 'Error', motivo)
     except HTTPException as exc:
         with connection() as c:
-            ArchivoRepo(c).update_state(id_archivo,'ESTADO_PROCESAMIENTO','Error',str(exc.detail))
+            ArchivoRepo(c).update_state(id_archivo, 'ESTADO_PROCESAMIENTO', 'Error', str(exc.detail))
+
 
 @app.post('/api/v1/jornadas/{id_jornada}/archivos')
-def cargar_archivo_original(id_jornada:int,background_tasks:BackgroundTasks,request:Request,idArchivo:int=Form(...),archivo:UploadFile=File(...),
-                             x_correlation_id:str|None=Header(None,alias='X-Correlation-Id')):
+def cargar_archivo_original(
+        id_jornada: int,
+        background_tasks: BackgroundTasks,
+        request: Request,
+        idArchivo: Annotated[int, Form()],
+        archivo: Annotated[UploadFile, File()],
+        x_correlation_id: Annotated[
+            str | None, Header(alias='X-Correlation-Id')] = None):
     """Carga manual del archivo original esperado (CARGAR_ARCHIVO_ORIGINAL):
     idArchivo identifica el insumo esperado -placeholder ya creado al resolver
     la jornada, ver ArchivoRepository.ensure_insumos- dentro de idJornada."""
     with connection() as c:
-        resumen=JornadaRepository(c).resumen(id_jornada)
-        if not resumen: raise HTTPException(404,'JORNADA_NO_ENCONTRADA')
-        _,fecha_contable=resumen
-        tipo_insumo,correlation_id_actual,estado_recepcion_anterior,error=ArchivoRepo(c).obtener_para_carga(idArchivo,id_jornada)
-        if error=='ARCHIVO_NO_ENCONTRADO' or error=='ARCHIVO_NO_PERTENECE_A_JORNADA': raise HTTPException(404,error)
-        if error=='CARGA_NO_PERMITIDA': raise HTTPException(409,error)
+        resumen = JornadaRepository(c).resumen(id_jornada)
+        if not resumen:
+            raise HTTPException(404, 'JORNADA_NO_ENCONTRADA')
+        _, fecha_contable = resumen
+        tipo_insumo, correlation_id_actual, estado_recepcion_anterior, error = ArchivoRepo(c).obtener_para_carga(idArchivo, id_jornada)
+        if error == 'ARCHIVO_NO_ENCONTRADO' or error == 'ARCHIVO_NO_PERTENECE_A_JORNADA':
+            raise HTTPException(404, error)
+        if error == 'CARGA_NO_PERMITIDA':
+            raise HTTPException(409, error)
 
-        nombre_archivo=archivo.filename or f'{tipo_insumo}.dat'
-        fecha_contable_iso=fecha_contable.isoformat()
-        tiene_regla,coincide,fecha_archivo=validar_nombre(tipo_insumo,nombre_archivo,fecha_contable_iso)
+        nombre_archivo = archivo.filename or f'{tipo_insumo}.dat'
+        fecha_contable_iso = fecha_contable.isoformat()
+        tiene_regla, coincide, fecha_archivo = validar_nombre(tipo_insumo, nombre_archivo, fecha_contable_iso)
         if tiene_regla and not coincide:
-            motivo=(f'NOMBRE_ARCHIVO_INVALIDO: el archivo {nombre_archivo} no cumple la estructura esperada para {tipo_insumo}. '
-                    f'Formato esperado: {formato_esperado(tipo_insumo)}')
-            ArchivoRepo(c).marcar_rechazado(idArchivo,nombre_archivo,motivo)
-            TrazabilidadRepository(c).add(idArchivo,estado_recepcion_anterior,'Rechazado','RECHAZO_CARGA',
-                correlation_id_actual,request.state.usuario,{'nombreArchivo':nombre_archivo,'motivo':motivo})
+            motivo = (f'NOMBRE_ARCHIVO_INVALIDO: el archivo {nombre_archivo} no cumple la estructura esperada para {tipo_insumo}. '
+                      f'Formato esperado: {formato_esperado(tipo_insumo)}')
+            ArchivoRepo(c).marcar_rechazado(idArchivo, nombre_archivo, motivo)
+            TrazabilidadRepository(c).add(idArchivo, estado_recepcion_anterior, 'Rechazado', 'RECHAZO_CARGA',
+                                          correlation_id_actual, request.state.usuario, {'nombreArchivo': nombre_archivo, 'motivo': motivo})
             c.commit()  # sin esto, el rollback automatico de "with connection()" al
             # propagar el HTTPException deshace tambien el UPDATE/INSERT de arriba
-            raise HTTPException(400,motivo)
-        if fecha_archivo and fecha_archivo!=fecha_contable_iso:
-            motivo=f'FECHA_NO_COINCIDE_CON_ARCHIVO: el archivo {nombre_archivo} corresponde a {fecha_archivo}, no a {fecha_contable_iso}'
-            ArchivoRepo(c).marcar_rechazado(idArchivo,nombre_archivo,motivo)
-            TrazabilidadRepository(c).add(idArchivo,estado_recepcion_anterior,'Rechazado','RECHAZO_CARGA',
-                correlation_id_actual,request.state.usuario,{'nombreArchivo':nombre_archivo,'motivo':motivo})
+            raise HTTPException(400, motivo)
+        if fecha_archivo and fecha_archivo != fecha_contable_iso:
+            motivo = f'FECHA_NO_COINCIDE_CON_ARCHIVO: el archivo {nombre_archivo} corresponde a {fecha_archivo}, no a {fecha_contable_iso}'
+            ArchivoRepo(c).marcar_rechazado(idArchivo, nombre_archivo, motivo)
+            TrazabilidadRepository(c).add(idArchivo, estado_recepcion_anterior, 'Rechazado', 'RECHAZO_CARGA',
+                                          correlation_id_actual, request.state.usuario, {'nombreArchivo': nombre_archivo, 'motivo': motivo})
             c.commit()
-            raise HTTPException(409,motivo)
+            raise HTTPException(409, motivo)
 
-        correlation_id=x_correlation_id or correlation_id_actual
-        ArchivoRepo(c).marcar_recibido(idArchivo,nombre_archivo,correlation_id)
-        TrazabilidadRepository(c).add(idArchivo,estado_recepcion_anterior,'Recibido','CARGA_ARCHIVO',
-            correlation_id,request.state.usuario,{'nombreArchivo':nombre_archivo})
+        correlation_id = x_correlation_id or correlation_id_actual
+        ArchivoRepo(c).marcar_recibido(idArchivo, nombre_archivo, correlation_id)
+        TrazabilidadRepository(c).add(idArchivo, estado_recepcion_anterior, 'Recibido', 'CARGA_ARCHIVO',
+                                      correlation_id, request.state.usuario, {'nombreArchivo': nombre_archivo})
 
-    minio_key=f"{fecha_contable_iso}/{tipo_insumo}/{idArchivo}_{nombre_archivo}"
-    minio_client.subir(minio_key,archivo.file.read())
+    minio_key = f"{fecha_contable_iso}/{tipo_insumo}/{idArchivo}_{nombre_archivo}"
+    minio_client.subir(minio_key, archivo.file.read())
 
-    background_tasks.add_task(_procesar_en_segundo_plano,idArchivo,tipo_insumo,minio_key,correlation_id)
+    background_tasks.add_task(_procesar_en_segundo_plano, idArchivo, tipo_insumo, minio_key, correlation_id)
 
     return {
-        "idSolicitud":str(uuid.uuid4()),"idJornada":id_jornada,"idArchivo":idArchivo,
-        "estado":"ACEPTADO","mensaje":"Archivo original aceptado para procesamiento.",
+        "idSolicitud": str(uuid.uuid4()), "idJornada": id_jornada, "idArchivo": idArchivo,
+        "estado": "ACEPTADO", "mensaje": "Archivo original aceptado para procesamiento.",
     }

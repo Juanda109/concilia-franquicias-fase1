@@ -205,3 +205,6 @@ td{padding:9px 8px;border-bottom:1px solid #edf0f2;white-space:nowrap}
   .drawer{width:100vw}
   .flow,.lifecycle,.aiAutoFlow{grid-template-columns:1fr 1fr}
 }
+
+/* Texto solo para lectores de pantalla (accesibilidad) */
+.srOnly{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}

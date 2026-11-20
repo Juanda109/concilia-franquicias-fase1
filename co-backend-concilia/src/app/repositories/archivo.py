@@ -1,5 +1,7 @@
 import uuid
 
+from psycopg import sql
+
 
 def _acciones_permitidas(estado_recepcion, estado_procesamiento):
     acciones = []
@@ -34,10 +36,14 @@ class ArchivoRepository:
         allowed = {"ESTADO_RECEPCION", "ESTADO_PROCESAMIENTO"}
         if field not in allowed:
             raise ValueError(field)
-        self.conn.execute(
-            f"UPDATE CON_ARCHIVO_CARGA SET {field}=%s,MOTIVO_ESTADO=%s,"
-            f"FECHA_CAMBIO_ESTADO=CURRENT_TIMESTAMP WHERE ID_ARCHIVO=%s",
-            (value, motivo, id_archivo))
+        # La columna se compone con sql.Identifier (no con f-string) ademas de
+        # validarse contra la lista blanca; en minuscula porque las tablas se
+        # crearon sin comillas y Postgres guarda los nombres en minuscula.
+        consulta = sql.SQL(
+            "UPDATE CON_ARCHIVO_CARGA SET {}=%s,MOTIVO_ESTADO=%s,"
+            "FECHA_CAMBIO_ESTADO=CURRENT_TIMESTAMP WHERE ID_ARCHIVO=%s"
+        ).format(sql.Identifier(field.lower()))
+        self.conn.execute(consulta, (value, motivo, id_archivo))
 
     def get_or_create(self, id_jornada, id_insumo, nombre_archivo, correlation_id):
         row = self.conn.execute(

@@ -24,7 +24,7 @@ function clearOidcReturn() {
 
 function base64Url(bytes) {
   return btoa(String.fromCharCode(...bytes))
-    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, ''); // en base64 '=' solo aparece como relleno final
 }
 
 async function redirectToLogin() {
@@ -144,8 +144,8 @@ function showApplication(user) {
   el('appRoot').hidden = false;
   if (appStarted) return;
   appStarted = true;
-  checkHealth();
-  cargarPorFechaContable();
+  void checkHealth();
+  void cargarPorFechaContable();
 }
 
 el('authRetry').addEventListener('click', () => { void redirectToLogin(); });
@@ -448,7 +448,7 @@ function abrirDetalle(idArchivo, origen = 'insumos') {
   document.querySelectorAll('.panel').forEach((p) => p.classList.remove('active'));
   el('detalleInsumo').classList.add('active');
   window.scrollTo(0, 0);
-  cargarContenidoDetalle();
+  void cargarContenidoDetalle();
 }
 
 function volverAInsumos() {
@@ -561,7 +561,7 @@ function renderDetallePagina(d) {
 
 function cambiarPaginaDetalle(delta) {
   detallePagina += delta;
-  cargarContenidoDetalle();
+  void cargarContenidoDetalle();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -580,18 +580,34 @@ function mensajeErrorCarga(detalle) {
   // El backend a veces manda solo el código ("CARGA_NO_PERMITIDA") y a veces
   // "CODIGO: resto del mensaje" (ej. FECHA_NO_COINCIDE_CON_ARCHIVO) — hay que
   // detectar ambas formas antes de intentar traducir.
-  const m = /^([A-Z_]+):\s*(.*)$/.exec(detalle || '');
-  const codigo = m ? m[1] : (detalle || '').trim();
-  const resto = m ? m[2] : detalle;
+  // Se separa con indexOf en vez de un regex con \s* seguido de .* (backtracking
+  // super-lineal señalado por SonarQube).
+  const texto = detalle || '';
+  const sep = texto.indexOf(':');
+  const prefijo = sep > 0 ? texto.slice(0, sep) : '';
+  const conCodigo = /^[A-Z_]+$/.test(prefijo);
+  const codigo = conCodigo ? prefijo : texto.trim();
+  const resto = conCodigo ? texto.slice(sep + 1).trimStart() : detalle;
   if (codigo === 'FECHA_NO_COINCIDE_CON_ARCHIVO') {
     const mm = /el archivo (.+) corresponde a (\d{4}-\d{2}-\d{2}), no a (\d{4}-\d{2}-\d{2})/.exec(resto);
     if (mm) return `El archivo «${mm[1]}» corresponde al ${fechaDDMMAAAA(mm[2])}, pero esta jornada es del ${fechaDDMMAAAA(mm[3])}.`;
   }
   if (codigo === 'NOMBRE_ARCHIVO_INVALIDO') {
-    const mm = /el archivo (.+) no cumple la estructura esperada para ([^.]+)\.?(?:\s*Formato esperado:\s*(.+))?$/.exec(resto);
-    if (mm) {
-      const base = `El nombre «${mm[1]}» no tiene la estructura que se espera para ${mm[2]}.`;
-      return mm[3] ? `${base} Formato esperado: ${mm[3]}` : base;
+    // "el archivo X no cumple la estructura esperada para TIPO. Formato esperado: F"
+    // Se parte con indexOf (sin regex) para evitar backtracking super-lineal.
+    const INICIO = 'el archivo ';
+    const MARCA = ' no cumple la estructura esperada para ';
+    const FORMATO = 'Formato esperado:';
+    const i = resto.indexOf(MARCA);
+    if (resto.startsWith(INICIO) && i > INICIO.length) {
+      const nombre = resto.slice(INICIO.length, i);
+      let cola = resto.slice(i + MARCA.length);
+      let formato = '';
+      const j = cola.indexOf(FORMATO);
+      if (j >= 0) { formato = cola.slice(j + FORMATO.length).trim(); cola = cola.slice(0, j); }
+      const tipo = cola.split('.')[0].trim();
+      const base = `El nombre «${nombre}» no tiene la estructura que se espera para ${tipo}.`;
+      return formato ? `${base} Formato esperado: ${formato}` : base;
     }
   }
   if (codigo === 'CARGA_NO_PERMITIDA') return 'Este insumo ya no admite carga manual en este momento.';
@@ -667,12 +683,12 @@ function iniciarPolling(idArchivo) {
     }
   };
   pollers.set(idArchivo, setInterval(tick, 1000));
-  tick();
+  void tick();
 }
 
 el('uploadFileHidden').addEventListener('change', (e) => {
   const file = e.target.files[0];
-  if (file && pendingIdArchivoUpload) subirArchivo(pendingIdArchivoUpload, file);
+  if (file && pendingIdArchivoUpload) void subirArchivo(pendingIdArchivoUpload, file);
   pendingIdArchivoUpload = null;
 });
 
@@ -688,7 +704,7 @@ fechaInput.addEventListener('change', () => {
     toast('No se pueden consultar fechas futuras.', true);
     return;
   }
-  cargarPorFechaContable();
+  void cargarPorFechaContable();
 });
 
 // ---- Navegación de pestañas (Insumos / Conciliación / Agente IA) ----
@@ -1825,4 +1841,4 @@ window.addEventListener('pageshow', (event) => {
   if (event.persisted) window.location.reload();
 });
 
-bootstrapAuth();
+void bootstrapAuth();

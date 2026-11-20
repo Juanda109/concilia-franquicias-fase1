@@ -1,3 +1,5 @@
+from psycopg import sql
+
 TABLES={
  'HA22':'CON_HA22_RESULTADO','HA26':'CON_HA26_RESULTADO','HA32':'CON_HA32_RESULTADO',
  'CAET':'CON_CANJE_RESULTADO','CANT':'CON_CANT_RESULTADO','DEPO':'CON_DEPOSITO_RESULTADO',
@@ -6,6 +8,11 @@ TABLES={
 }
 
 HEADER_OVERRIDES={'NUMERO_LINEA':'Número Línea'}
+
+def _tabla(table):
+ """Nombre de tabla como identificador SQL (no texto interpolado). Solo
+ llegan valores de TABLES; en minuscula porque se crearon sin comillas."""
+ return sql.Identifier(table.lower())
 
 def _label(col_upper):
  return HEADER_OVERRIDES.get(col_upper,col_upper.replace('_',' ').title())
@@ -34,11 +41,11 @@ class ContentRepository:
             return rows,total,headers
         table=TABLES.get(tipo)
         if not table: raise KeyError(tipo)
-        cur=self.conn.execute(f'SELECT * FROM {table} WHERE ID_ARCHIVO=%s ORDER BY NUMERO_LINEA NULLS LAST LIMIT %s OFFSET %s',(id_archivo,size,page*size))
+        cur=self.conn.execute(sql.SQL('SELECT * FROM {} WHERE ID_ARCHIVO=%s ORDER BY NUMERO_LINEA NULLS LAST LIMIT %s OFFSET %s').format(_tabla(table)),(id_archivo,size,page*size))
         all_cols=[c.name for c in cur.description]
         visibles,headers=_headers(all_cols)
         rows=self._rows(cur,all_cols,visibles)
-        total=self.conn.execute(f'SELECT COUNT(*) FROM {table} WHERE ID_ARCHIVO=%s',(id_archivo,)).fetchone()[0]
+        total=self.conn.execute(sql.SQL('SELECT COUNT(*) FROM {} WHERE ID_ARCHIVO=%s').format(_tabla(table)),(id_archivo,)).fetchone()[0]
         return rows,total,headers
     def delete(self,tipo,id_archivo):
         if tipo=='VSS':
@@ -52,4 +59,4 @@ class ContentRepository:
         # que borrar, y ELIMINAR_ARCHIVO puede llegar a mostrarse para
         # cualquier insumo que se haya intentado cargar.
         if not table: return
-        self.conn.execute(f'DELETE FROM {table} WHERE ID_ARCHIVO=%s',(id_archivo,))
+        self.conn.execute(sql.SQL('DELETE FROM {} WHERE ID_ARCHIVO=%s').format(_tabla(table)),(id_archivo,))

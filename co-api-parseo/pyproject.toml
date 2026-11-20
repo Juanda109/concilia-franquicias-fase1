@@ -12,5 +12,11 @@ dependencies = [
     "xlrd>=2.0,<3",
     "pydantic>=2.9,<3",
     "minio>=7.2,<8",
-    "pypdf>=5,<6",
+    # >=6.21.4: corrige CVE-2026-102993..103000, -115572/80/85 y -119203.
+    "pypdf>=6.21.4,<7",
 ]
+
+# Las pruebas usan assert por diseno (pytest); B101 solo aplica al codigo de
+# la aplicacion. Se lee con: bandit -c pyproject.toml -r .
+[tool.bandit]
+exclude_dirs = ["tests", ".venv"]

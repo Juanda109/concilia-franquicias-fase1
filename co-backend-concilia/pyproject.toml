@@ -16,6 +16,11 @@ dependencies = [
     "pydantic-settings>=2,<3",
 ]
 
+# Las pruebas usan assert por diseno (pytest); B101 solo aplica al codigo de
+# la aplicacion. Se lee con: bandit -c pyproject.toml -r .
+[tool.bandit]
+exclude_dirs = ["tests", ".venv"]
+
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
