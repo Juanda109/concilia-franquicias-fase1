@@ -35,6 +35,24 @@ _SQL_ARCHIVOS = """SELECT i.TIPO_INSUMO AS tipo, a.ID_ARCHIVO AS id_archivo
                    ORDER BY a.ID_ARCHIVO"""
 
 
+# Movimientos Host centro 17 de las cuentas pedidas; cada fuente queda marcada en tx_host.
+SQL_HOST_POR_CUENTA = """SELECT id_archivo, tx_host, cuenta, fecha_contable, debe, haber
+                         FROM (
+                             SELECT id_archivo, 'HA22' AS tx_host, nucta AS cuenta, cedestin AS centro,
+                                    fecon AS fecha_contable, debe, haber
+                             FROM CON_HA22_RESULTADO WHERE id_archivo = ANY(%(ids)s)
+                             UNION ALL
+                             SELECT id_archivo, 'HA26', nucta, cedestin, fecon, debe, haber
+                             FROM CON_HA26_RESULTADO WHERE id_archivo = ANY(%(ids)s)
+                             UNION ALL
+                             SELECT id_archivo, 'HA32', nucta, cedestin, fecont, debe, haber
+                             FROM CON_HA32_RESULTADO WHERE id_archivo = ANY(%(ids)s)
+                         ) h
+                         WHERE cuenta = ANY(%(cuentas)s)
+                           -- CEDESTIN llega con punto final en algunos HA22/26/32 ("17." en vez de "17")
+                           AND TRIM(TRAILING '.' FROM centro) IN ('17', '0017')"""
+
+
 class CierreRedebanRepository:
     def __init__(self, conn):
         self.conn = conn
@@ -98,24 +116,7 @@ class CierreRedebanRepository:
             ids_host = [i for t in ("HA22", "HA26", "HA32") for i in archivos.get(t, [])]
             host_filas: list[dict] = []
             if ids_host:
-                cur.execute(
-                    """SELECT id_archivo, tx_host, cuenta, fecha_contable, debe, haber
-                       FROM (
-                           SELECT id_archivo, 'HA22' AS tx_host, nucta AS cuenta, cedestin AS centro,
-                                  fecon AS fecha_contable, debe, haber
-                           FROM CON_HA22_RESULTADO WHERE id_archivo = ANY(%(ids)s)
-                           UNION ALL
-                           SELECT id_archivo, 'HA26', nucta, cedestin, fecon, debe, haber
-                           FROM CON_HA26_RESULTADO WHERE id_archivo = ANY(%(ids)s)
-                           UNION ALL
-                           SELECT id_archivo, 'HA32', nucta, cedestin, fecont, debe, haber
-                           FROM CON_HA32_RESULTADO WHERE id_archivo = ANY(%(ids)s)
-                       ) h
-                       WHERE cuenta = ANY(%(cuentas)s)
-                         -- CEDESTIN llega con punto final en algunos HA22/26/32 ("17." en vez de "17")
-                         AND TRIM(TRAILING '.' FROM centro) IN ('17', '0017')""",
-                    {"ids": ids_host, "cuentas": cuentas},
-                )
+                cur.execute(SQL_HOST_POR_CUENTA, {"ids": ids_host, "cuentas": cuentas})
                 host_filas = cur.fetchall()
 
         return construir_cuadre_redeban(

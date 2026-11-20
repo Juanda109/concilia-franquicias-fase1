@@ -610,8 +610,11 @@ function mensajeErrorCarga(detalle) {
     if (mm) return `El archivo «${mm[1]}» corresponde al ${fechaDDMMAAAA(mm[2])}, pero esta jornada es del ${fechaDDMMAAAA(mm[3])}.`;
   }
   if (codigo === 'NOMBRE_ARCHIVO_INVALIDO') {
-    const mm = /el archivo (.+) no cumple la estructura esperada para (.+)/.exec(resto);
-    if (mm) return `El nombre «${mm[1]}» no tiene la estructura que se espera para ${mm[2]}.`;
+    const mm = /el archivo (.+) no cumple la estructura esperada para ([^.]+)\.?(?:\s*Formato esperado:\s*(.+))?$/.exec(resto);
+    if (mm) {
+      const base = `El nombre «${mm[1]}» no tiene la estructura que se espera para ${mm[2]}.`;
+      return mm[3] ? `${base} Formato esperado: ${mm[3]}` : base;
+    }
   }
   if (codigo === 'CARGA_NO_PERMITIDA') return 'Este insumo ya no admite carga manual en este momento.';
   if (['ARCHIVO_NO_PERTENECE_A_JORNADA', 'ARCHIVO_NO_ENCONTRADO', 'JORNADA_NO_ENCONTRADA'].includes(codigo)) {
@@ -792,7 +795,7 @@ function go(id, btn) {
   document.querySelectorAll('.nav button').forEach((b) => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
   window.scrollTo(0, 0);
-  if (id === 'conciliacion') { void cargarCierreCredibanco(); void cargarCierreRedeban(); }
+  if (id === 'conciliacion') { void cargarCierreCredibanco(); void cargarCierreRedeban(); void cargarConciliacionVisa(); }
 }
 
 // ---- Conciliación: diagnóstico real Credibanco F2 (ver cierre-credibanco) ----
@@ -1543,6 +1546,258 @@ function renderRedebanValidador() {
     ${pagerRedeban(pg, 'Niveles', 'btnRedebanValidadorAnterior', 'btnRedebanValidadorSiguiente')}`;
   el('btnRedebanValidadorAnterior')?.addEventListener('click', () => { redebanValidadorPagina -= 1; renderRedebanValidador(); });
   el('btnRedebanValidadorSiguiente')?.addEventListener('click', () => { redebanValidadorPagina += 1; renderRedebanValidador(); });
+}
+
+// ---- Conciliación VISA: liquidación de la Plantilla Maestra (ver conciliacion-visa) ----
+// Fila 5 y filas 161-181 de la Plantilla: la TRM, el valor del pdf, el total del
+// correo, etc. se digitan a mano (aquí se capturan y quedan versionados); el resto
+// son las mismas fórmulas. El asiento resultante se compara contra Host por cuenta
+// y fuente, sin sumar fuentes.
+let ultimaConciliacionVisa = null;
+
+const ESTADO_VISA_LABEL = {
+  LIQUIDACION_CALCULADA: 'Liquidación calculada',
+  CAPTURA_PENDIENTE: 'Captura pendiente',
+  COINCIDE: 'Coincide',
+  CON_DIFERENCIA: 'Con diferencia',
+  SIN_LINEA_ISS: 'Sin línea en el PDF',
+  INSUMO_FALTANTE: 'Insumo faltante',
+  DATO_INCOMPLETO: 'Dato incompleto',
+  CUADRA: 'Cuadra',
+  SIN_CAPTURA_CARTA: 'Falta capturar carta (L162)',
+  FALTA_TRM: 'Falta TRM',
+  CAPTURADO: 'Capturado',
+  SIN_CAPTURA: 'Sin captura (vale 0)',
+  CALCULADO: 'Calculado',
+  ...ESTADO_REDEBAN_LABEL,
+};
+
+function tagVisa(estado) {
+  const e = String(estado || '');
+  const tipo = /^(CONCILIADO|CUADRA|COINCIDE|CALCULADO|CAPTURADO|LIQUIDACION_CALCULADA)$/.test(e) ? 'ok'
+    : /^(SIN_CONSULTA_HOST|SIN_MOVIMIENTO|SIN_CAPTURA$)/.test(e) ? 'info' : 'warn';
+  return `<span class="tag ${tipo}" title="${esc(e)}">${esc(ESTADO_VISA_LABEL[e] || e || '—')}</span>`;
+}
+
+function numVisa(v, decimales = 2) {
+  if (v === null || v === undefined || v === '') return '—';
+  const n = Number(v);
+  if (Number.isNaN(n)) return '—';
+  return n.toLocaleString('es-CO', { minimumFractionDigits: decimales, maximumFractionDigits: decimales });
+}
+
+// Referencias de los insumos para ayudar a digitar cada celda; nunca se copian solas.
+// Guía por campo: de dónde sale el valor, cómo va el signo y un ejemplo.
+// Los signos siguen la convención de la columna M de la plantilla
+// (positivo = débito, negativo = crédito); pendientes de confirmar con Operaciones.
+const AYUDA_CAPTURA_VISA = {
+  M169: { donde: 'TRM que viene en el correo de VISA del día.', ejemplo: '4012.3456', signo: 'siempre positiva, hasta 4 decimales' },
+  L170: { donde: 'Neto del PDF International SS para BBVA Colombia (FTSRE 1000804671).', ejemplo: '363512.54', signo: 'positivo si VISA abona a BBVA (CR), negativo si cobra (DB)' },
+  L169: { donde: 'Total en USD del correo de VISA.', ejemplo: '0.00' },
+  L172: { donde: 'Valor TII del archivo GOF, en USD.', ejemplo: '0.00' },
+  N179: { donde: 'Controversia (dispute) en USD del correo; cuenta 196095001815.', ejemplo: '223.56' },
+  N180: { donde: 'Segunda controversia (dispute) en USD, si la hay; cuenta 196095001815.', ejemplo: '15.52' },
+  M177: { donde: 'Valor en pesos de la cuenta 196095001829.', ejemplo: '-1458000000', signo: 'negativo si en la plantilla va a crédito' },
+  L162: { donde: 'Valor en pesos de la carta (canje internacional).', ejemplo: '0.00' },
+};
+
+function referenciaCapturaVisa(campo, d) {
+  if (campo === 'L170') {
+    const iss = (d.iss || []).map((f) => `${esc(f.ftsre)} ${esc(f.nombre || '')}: ${numVisa(f.monto_neto)} ${esc(f.naturaleza || '')}`);
+    const vss = ((d.vss || {}).liquidaciones || []).map((l) => `VSS-115 ${esc(l.entidad || '')}: ${numVisa(l.neto)}`);
+    return [...iss, ...vss].join('<br>') || '—';
+  }
+  if (campo === 'N179' || campo === 'N180') {
+    const disputas = ((d.vss || {}).vss120 || []).filter((x) => /^DISPUTE/.test(x.concepto || ''));
+    return disputas.map((x) => `${esc(x.concepto)} (${esc(x.moneda_clearing || '')}): ${numVisa(x.clearing)}`).join('<br>') || '—';
+  }
+  return '';
+}
+
+async function cargarConciliacionVisa() {
+  const cont = el('conciliacionVisaContent');
+  if (!cont) return;
+  if (!idJornadaActiva) {
+    cont.innerHTML = '<div class="emptyDetail">Selecciona una fecha contable en Insumos para ver la conciliación VISA de esta jornada.</div>';
+    return;
+  }
+  cont.innerHTML = '<div class="emptyDetail">Cargando conciliación VISA…</div>';
+  let r;
+  try {
+    r = await apiFetch(`${API}/jornadas/${idJornadaActiva}/conciliacion-visa`);
+  } catch (e) {
+    cont.innerHTML = `<div class="emptyDetail">No se pudo cargar la conciliación VISA: ${esc(e.message || e)}</div>`;
+    return;
+  }
+  if (!r.ok) {
+    cont.innerHTML = `<div class="emptyDetail">No se pudo cargar la conciliación VISA (HTTP ${r.status}).</div>`;
+    return;
+  }
+  ultimaConciliacionVisa = await r.json();
+  renderConciliacionVisa();
+}
+
+function renderConciliacionVisa(mensaje = '') {
+  const cont = el('conciliacionVisaContent');
+  const d = ultimaConciliacionVisa;
+  if (!cont || !d) return;
+  const liq = d.liquidacion || {};
+  const celdas = liq.celdas || {};
+  const res = d.resumen || {};
+  const valor = (c) => (celdas[c] || {}).valor;
+
+  const controles = (d.controles || []).map((c) => `<tr>
+      <td>${esc(c.entidad || '—')}</td><td class="num">${numVisa(c.vss)}</td><td class="num">${numVisa(c.iss)}</td>
+      <td class="num">${numVisa(c.diferencia)}</td><td>${tagVisa(c.estado)}</td><td>${esc(c.detalle || '')}</td></tr>`).join('');
+
+  const camposCaptura = d.campos_captura || [];
+  const faltantes = camposCaptura.filter((f) => f.requerido && (celdas[f.campo] || {}).valor == null);
+  const captura = camposCaptura.map((f) => {
+    const c = celdas[f.campo] || {};
+    const ayuda = AYUDA_CAPTURA_VISA[f.campo] || {};
+    const capturado = c.valor != null;
+    const falta = f.requerido && !capturado;
+    const vigente = capturado
+      ? `${numVisa(c.valor, f.decimales)}<br><small class="muted">v${c.version ?? '?'} · ${esc(c.usuario || '')}</small>`
+      : '<span class="muted">—</span>';
+    const estado = capturado ? '<span class="tag ok">Capturado</span>'
+      : falta ? '<span class="tag bad">Debes llenarlo</span>'
+        : '<span class="tag info">Opcional · vale 0</span>';
+    const placeholder = capturado ? 'Cambiar valor' : (ayuda.ejemplo ? `ej. ${ayuda.ejemplo}` : 'Escribe el valor');
+    const estiloFila = falta ? ' style="background:var(--rb)"' : '';
+    const estiloInput = falta ? 'width:9rem;border:2px solid var(--red)' : 'width:9rem';
+    return `<tr${estiloFila}>
+      <td><b>${esc(f.campo)}</b></td>
+      <td>${esc(f.etiqueta)}${f.requerido ? ' <b style="color:var(--red)" title="Obligatorio para calcular">*</b>' : ''}<br><small class="muted">${esc(f.plantilla)}</small></td>
+      <td>${estado}</td>
+      <td><small>${esc(ayuda.donde || '')}${ayuda.signo ? `<br><b>Signo:</b> ${esc(ayuda.signo)}` : ''}</small></td>
+      <td>${esc(f.unidad)}</td>
+      <td class="num">${vigente}</td>
+      <td><input type="text" inputmode="decimal" class="visaCapturaInput" data-campo="${esc(f.campo)}" aria-label="${esc(f.etiqueta)}${f.requerido ? ' (obligatorio)' : ''}" placeholder="${esc(placeholder)}" style="${estiloInput}"></td>
+      <td><small>${referenciaCapturaVisa(f.campo, d)}</small></td></tr>`;
+  }).join('');
+  const avisoCaptura = faltantes.length
+    ? `<div class="alert" style="margin-bottom:10px"><b>Falta llenar ${faltantes.length === 1 ? 'un campo obligatorio' : `${faltantes.length} campos obligatorios`}:</b>
+        ${faltantes.map((f) => `${esc(f.campo)} (${esc(f.etiqueta)})`).join(' y ')}.
+        <p>Escríbelos en la columna «Nuevo valor» y pulsa «Guardar captura». Sin ellos no se calcula la liquidación ni se compara con Host. Los demás campos son opcionales: si no aplican, déjalos vacíos y valen 0.</p></div>`
+    : '<div class="friendlyNote" style="margin-bottom:10px">Los campos obligatorios están completos. Puedes llenar los opcionales que apliquen o cambiar cualquier valor; cada cambio guarda una versión nueva.</div>';
+
+  const formulas = ['L171', 'N169', 'N170', 'N171', 'N172', 'F5', 'L161', 'L163'].map((k) => {
+    const c = celdas[k] || {};
+    const usd = k === 'L171';
+    return `<tr><td><b>${k}</b></td><td>${esc(c.etiqueta || '')}</td><td><code>${esc(c.formula || '')}</code></td>
+      <td class="num">${usd ? numVisa(c.valor) + ' USD' : numVisa(c.valor)}</td><td>${tagVisa(c.estado)}</td></tr>`;
+  }).join('');
+
+  const asiento = (liq.asiento || []).map((a) => `<tr>
+      <td class="num">${a.fila}</td><td><code>${esc(a.celda)}</code></td><td>${esc(a.cuenta || '—')}</td>
+      <td>${esc(a.naturaleza_plantilla || '')}</td><td class="num">${numVisa(a.valor)}</td><td>${esc(a.naturaleza || '—')}</td></tr>`).join('');
+
+  const cuentas = (d.cuentas || []).map((c) => `<tr>
+      <td>${esc(c.cuenta)}</td><td class="num">${numVisa(c.esperado)}</td>
+      ${FUENTES_REDEBAN.map((f) => {
+        const h = (c.host || {})[f] || {};
+        const marca = h.obligatoria ? ' <b title="Fuente que se consulta para esta cuenta">*</b>' : '';
+        return `<td class="num" title="${esc(h.estado || '')}">${numVisa(h.neto)}${marca}</td><td class="num">${numVisa(h.diferencia)}</td>`;
+      }).join('')}
+      <td>${tagVisa(c.estado)}</td></tr>`).join('');
+
+  const vss120 = ((d.vss || {}).vss120 || []).map((x) => `<tr><td>${esc(x.seccion || '')}</td><td>${esc(x.concepto || '')}</td>
+      <td>${esc(x.moneda_clearing || '')}</td><td class="num">${x.lineas}</td><td class="num">${numVisa(x.clearing)}</td>
+      <td class="num">${numVisa(x.credito)}</td><td class="num">${numVisa(x.debito)}</td></tr>`).join('');
+
+  const avisos = (d.advertencias || []).map((a) => `<p class="filterHint">⚠ ${esc(a)}</p>`).join('');
+  const pendientes = (d.pendientes || []).map((p) => `<li>${esc(p)}</li>`).join('');
+  const validacion = liq.validacion_canje_internacional || {};
+
+  cont.innerHTML = `
+    <div class="explain">Liquidación VISA de la Plantilla Maestra (fila 5 y filas 161-181). Las celdas que la plantilla digita a mano se capturan abajo y quedan versionadas; el resto son las mismas fórmulas. El asiento se compara contra Host por cuenta, HA22, HA26 y HA32 por separado (positivo = débito). <b>*</b> marca la fuente que se consulta para esa cuenta.</div>
+    <div class="flow summaryFlow">
+      <div class="fc"><small>ESTADO</small><b>${tagVisa(d.estado)}</b></div>
+      <div class="fc"><small>TRM (M169)</small><b>${numVisa(valor('M169'), 4)}</b></div>
+      <div class="fc"><small>COMPENSACIÓN VISA (F5)</small><b>${numVisa(valor('F5'))}</b></div>
+      <div class="fc"><small>DIF. EN CAMBIO (M181)</small><b>${numVisa(valor('M181'))}</b></div>
+      <div class="fc"><small>CUENTAS CONCILIADAS</small><b>${res.CONCILIADO ?? 0} de ${res.cuentas ?? 0}</b></div>
+    </div>
+    ${avisos ? `<div class="card section"><div class="title">Avisos</div>${avisos}</div>` : ''}
+    <div class="card section">
+      <div class="title">Control VSS vs International SS</div>
+      <div class="tableScroll"><table class="reconTable"><thead><tr><th>Entidad (FTSRE)</th><th>Neto VSS-115 (USD)</th><th>PDF International SS (USD)</th><th>Diferencia</th><th>Estado</th><th>Detalle</th></tr></thead>
+      <tbody>${controles}</tbody></table></div>
+    </div>
+    <div class="card section">
+      <div class="title">Captura manual · valores que debes digitar <span class="muted">(${camposCaptura.filter((f) => (celdas[f.campo] || {}).valor != null).length} de ${camposCaptura.length} con valor)</span></div>
+      ${avisoCaptura}
+      <div class="tableScroll"><table class="reconTable"><thead><tr><th>Celda</th><th>Concepto</th><th>Estado</th><th>De dónde sale</th><th>Unidad</th><th>Vigente</th><th>Nuevo valor</th><th>Referencia de los insumos</th></tr></thead>
+      <tbody>${captura}</tbody></table></div>
+      <p class="filterHint"><b style="color:var(--red)">*</b> Obligatorio. Usa punto como separador decimal (ej. 4012.3456) y signo menos para valores negativos (ej. -500000); las comas de miles se ignoran. La referencia de los insumos es solo para comparar: no se copia sola.</p>
+      <div class="actionbar">
+        <input type="text" id="visaObservacion" maxlength="500" placeholder="Observación (opcional)" aria-label="Observación de la captura" style="flex:1;min-width:12rem">
+        <button type="button" class="btn primary" id="btnGuardarCapturaVisa">Guardar captura</button>
+      </div>
+      <div id="visaCapturaMensaje" role="status" aria-live="polite" class="muted">${mensaje}</div>
+    </div>
+    <div class="card section">
+      <div class="title">Liquidación · ${tagVisa(validacion.estado)} <span class="muted">validación canje internacional L163 = ${numVisa(validacion.valor)}</span></div>
+      <div class="tableScroll"><table class="reconTable"><thead><tr><th>Celda</th><th>Concepto</th><th>Fórmula</th><th>Valor (COP)</th><th>Estado</th></tr></thead>
+      <tbody>${formulas}</tbody></table></div>
+    </div>
+    <div class="card section">
+      <div class="title">Asiento propuesto (columna M)</div>
+      <div class="tableScroll"><table class="reconTable"><thead><tr><th>Fila</th><th>Celda</th><th>Cuenta</th><th>Plantilla</th><th>Valor (COP)</th><th>Naturaleza</th></tr></thead>
+      <tbody>${asiento}</tbody></table></div>
+    </div>
+    <div class="card section">
+      <div class="title">Asiento vs Host por cuenta</div>
+      <div class="tableScroll"><table class="reconTable"><thead><tr><th>Cuenta</th><th>Esperado</th><th>HA22 Neto</th><th>HA22 Dif.</th><th>HA26 Neto</th><th>HA26 Dif.</th><th>HA32 Neto</th><th>HA32 Dif.</th><th>Estado</th></tr></thead>
+      <tbody>${cuentas}</tbody></table></div>
+    </div>
+    <details class="card section">
+      <summary style="cursor:pointer"><b>VSS-120 por concepto</b> <span class="muted">(referencia)</span></summary>
+      <div class="tableScroll"><table class="reconTable"><thead><tr><th>Sección</th><th>Concepto</th><th>Moneda clearing</th><th>Líneas</th><th>Clearing</th><th>Crédito</th><th>Débito</th></tr></thead>
+      <tbody>${vss120 || '<tr><td colspan="7" class="muted">Sin VSS-120 procesado.</td></tr>'}</tbody></table></div>
+    </details>
+    ${pendientes ? `<div class="card section"><div class="title">Pendiente</div><ul>${pendientes}</ul></div>` : ''}`;
+
+  el('btnGuardarCapturaVisa')?.addEventListener('click', () => { void guardarCapturaVisa(); });
+}
+
+async function guardarCapturaVisa() {
+  const valores = {};
+  document.querySelectorAll('.visaCapturaInput').forEach((i) => {
+    const v = i.value.trim();
+    if (v !== '') valores[i.dataset.campo] = v;
+  });
+  const msg = el('visaCapturaMensaje');
+  if (!Object.keys(valores).length) {
+    if (msg) msg.textContent = 'No hay valores nuevos para guardar.';
+    return;
+  }
+  const boton = el('btnGuardarCapturaVisa');
+  if (boton) boton.disabled = true;
+  if (msg) msg.textContent = 'Guardando…';
+  const observacion = (el('visaObservacion')?.value || '').trim() || null;
+  let r;
+  try {
+    r = await apiFetch(`${API}/jornadas/${idJornadaActiva}/conciliacion-visa/capturas`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ valores, observacion }),
+    });
+  } catch (e) {
+    if (msg) msg.textContent = `No se pudo guardar: ${e.message || e}`;
+    if (boton) boton.disabled = false;
+    return;
+  }
+  if (!r.ok) {
+    let detalle = `HTTP ${r.status}`;
+    try { const j = await r.json(); detalle = typeof j.detail === 'string' ? j.detail : JSON.stringify(j.detail); } catch { /* sin cuerpo */ }
+    if (msg) msg.textContent = `No se pudo guardar: ${detalle}`;
+    if (boton) boton.disabled = false;
+    return;
+  }
+  ultimaConciliacionVisa = await r.json();
+  renderConciliacionVisa(`Captura guardada (${Object.keys(valores).join(', ')}).`);
 }
 
 // ---- Agente IA (storyboard de UX, ver aviso en la pantalla — no hay IA real conectada) ----
