@@ -7,7 +7,10 @@ class AuthSettings(BaseSettings):
 
     app_env: str = "okd"
     auth_enabled: bool = True
-    oidc_client_id: str = "1c29829d-3ddd-4110-8d7f-2eb8466645fd"
+    # Sin valor por defecto: cambia por ambiente y llega del Secret
+    # concilia-oidc. Antes traia el client de desarrollo fijo, y un ambiente
+    # sin la variable entraba en silencio con ese client.
+    oidc_client_id: str = ""
     oidc_client_secret: SecretStr | None = None
     oidc_discovery_url: str = (
         "https://preidp.work.global.platform.bbva.com/oidc/.well-known/openid-configuration"
@@ -43,6 +46,8 @@ class AuthSettings(BaseSettings):
             if self.app_env != "local":
                 raise ValueError("AUTH_ENABLED=false solo se permite con APP_ENV=local")
             return self
+        if not self.oidc_client_id.strip():
+            raise ValueError("OIDC_CLIENT_ID es obligatorio")
         if not self.oidc_client_secret or not self.oidc_client_secret.get_secret_value():
             raise ValueError("OIDC_CLIENT_SECRET es obligatorio")
         if not self.allowed_roles:

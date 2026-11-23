@@ -1,7 +1,10 @@
+// Valor por defecto de la imagen: SIN client_id a proposito. En OKD este
+// archivo se reemplaza al arrancar el pod (docker-entrypoint.d/
+// 40-concilia-config.sh) con OIDC_CLIENT_ID del Secret concilia-oidc y las
+// URLs del ConfigMap concilia-config. Si esas variables faltan, el front
+// muestra "La configuración de autenticación está incompleta." en vez de
+// entrar con el client de otro ambiente.
 window.AppConfig = {
   USE_NAUTILUS_AUTH: true,
   USE_PKCE: true,
-  clientId: '1c29829d-3ddd-4110-8d7f-2eb8466645fd',
-  authEndpoint: 'https://preidp.work.global.platform.bbva.com/oidc/authorize',
-  redirectUri: 'https://co-ccrcs-frontend-concilia-ccrcs-genai-dev.apps.work.ocp.co.igrupobbva/',
 };

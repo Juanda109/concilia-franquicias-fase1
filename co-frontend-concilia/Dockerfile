@@ -8,6 +8,12 @@ RUN adduser -D -u 10001 -G root appuser
 COPY public/ /usr/share/nginx/html/
 COPY nginx.container.conf /etc/nginx/conf.d/default.conf
 
+# Genera config.js al arrancar con OIDC_CLIENT_ID (Secret concilia-oidc) y las
+# URLs del ambiente; la imagen no lleva el client_id fijo. La imagen oficial
+# de nginx ejecuta los .sh de /docker-entrypoint.d/ antes de iniciar.
+COPY docker-entrypoint.d/40-concilia-config.sh /docker-entrypoint.d/40-concilia-config.sh
+RUN chmod 755 /docker-entrypoint.d/40-concilia-config.sh
+
 # 2. Modificar la ruta del PID hacia /tmp (donde cualquier usuario tiene permisos de escritura)
 # y comentar la directiva 'user' para evitar advertencias
 RUN sed -i 's|/var/run/nginx.pid|/tmp/nginx.pid|g' /etc/nginx/nginx.conf \

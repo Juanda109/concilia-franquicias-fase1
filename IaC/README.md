@@ -47,11 +47,25 @@ Crear el Secret en el namespace (no se versiona con valores reales):
 
 ```
 oc create secret generic concilia-oidc \
+  --from-literal=OIDC_CLIENT_ID='<client_id del client OIDC del ambiente>' \
   --from-literal=OIDC_CLIENT_SECRET='<secreto real del client OIDC>'
 ```
 
+`OIDC_CLIENT_ID` cambia por ambiente (dev/QA/prod), por eso va en este Secret
+y no en el ConfigMap ni en el código. Lo usan dos componentes:
+
+- `co-backend-concilia` (vía `envFrom`): sin él no arranca.
+- `co-frontend-concilia` (vía `secretKeyRef`): al arrancar el pod genera
+  `config.js` con este valor más `OIDC_AUTH_ENDPOINT` y `OIDC_REDIRECT_URI`
+  del ConfigMap `concilia-config` (script
+  `co-frontend-concilia/docker-entrypoint.d/40-concilia-config.sh`). La imagen
+  ya no trae el client_id, así que la misma imagen sirve para todos los
+  ambientes. Sin la variable, el front muestra "La configuración de
+  autenticación está incompleta." en vez de entrar con el client de otro
+  ambiente.
+
 `OIDC_CLIENT_SECRET` es el secreto real del client registrado en Nauthilus
-para este `client_id`. La sesión propia ya no usa una clave de firma: se
+para ese `client_id`. La sesión propia ya no usa una clave de firma: se
 administra desde la tabla `CON_SESION_ACTIVA` en la base de datos (ver
 `co-backend-concilia/README.md`), así que no hace falta ningún secreto
 adicional para que las réplicas compartan sesión.
@@ -61,6 +75,7 @@ Tras crear o actualizar el Secret, forzar que el Deployment lo recoja
 
 ```
 oc rollout restart deployment/co-backend-concilia
+oc rollout restart deployment/co-frontend-concilia
 ```
 
 ## MinIO / AIStor (Secrets `minio-secret` y `minio-license`)
