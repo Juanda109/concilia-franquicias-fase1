@@ -18,7 +18,7 @@ from fastapi.responses import JSONResponse
 from app.api.auth_router import router as auth_router
 from app.auth.session import COOKIE_NAME, read_session
 from app.core.auth_config import auth_settings
-from app.core.nombres_archivo import formato_esperado, validar_nombre
+from app.core.nombres_archivo import fecha_esperada_archivo, formato_esperado, validar_nombre
 from app.repositories.database import connection
 from app.repositories.jornada import JornadaRepository
 from app.repositories.archivo import ArchivoRepository as ArchivoRepo
@@ -283,7 +283,11 @@ def cargar_archivo_original(id_jornada:int,background_tasks:BackgroundTasks,requ
 
         nombre_archivo=archivo.filename or f'{tipo_insumo}.dat'
         fecha_contable_iso=fecha_contable.isoformat()
-        tiene_regla,coincide,fecha_archivo=validar_nombre(tipo_insumo,nombre_archivo,fecha_contable_iso)
+        # PMD y VSS traen la fecha del dia anterior a la jornada (ver DESFASE_DIAS).
+        # Se pasa la fecha esperada tambien a validar_nombre para que el año de
+        # "VSS BBVA 31 DICIEMBRE.txt" salga bien en la jornada del 1 de enero.
+        fecha_esperada_iso=fecha_esperada_archivo(tipo_insumo,fecha_contable_iso)
+        tiene_regla,coincide,fecha_archivo=validar_nombre(tipo_insumo,nombre_archivo,fecha_esperada_iso)
         if tiene_regla and not coincide:
             motivo=(f'NOMBRE_ARCHIVO_INVALIDO: el archivo {nombre_archivo} no cumple la estructura esperada para {tipo_insumo}. '
                     f'Formato esperado: {formato_esperado(tipo_insumo)}')
@@ -293,8 +297,9 @@ def cargar_archivo_original(id_jornada:int,background_tasks:BackgroundTasks,requ
             c.commit()  # sin esto, el rollback automatico de "with connection()" al
             # propagar el HTTPException deshace tambien el UPDATE/INSERT de arriba
             raise HTTPException(400,motivo)
-        if fecha_archivo and fecha_archivo!=fecha_contable_iso:
-            motivo=f'FECHA_NO_COINCIDE_CON_ARCHIVO: el archivo {nombre_archivo} corresponde a {fecha_archivo}, no a {fecha_contable_iso}'
+        if fecha_archivo and fecha_archivo!=fecha_esperada_iso:
+            motivo=(f'FECHA_NO_COINCIDE_CON_ARCHIVO: el archivo {nombre_archivo} corresponde a {fecha_archivo}, '
+                    f'no a {fecha_esperada_iso} (jornada {fecha_contable_iso})')
             ArchivoRepo(c).marcar_rechazado(idArchivo,nombre_archivo,motivo)
             TrazabilidadRepository(c).add(idArchivo,estado_recepcion_anterior,'Rechazado','RECHAZO_CARGA',
                 correlation_id_actual,request.state.usuario,{'nombreArchivo':nombre_archivo,'motivo':motivo})
