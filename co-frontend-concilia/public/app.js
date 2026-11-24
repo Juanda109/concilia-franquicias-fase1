@@ -218,6 +218,11 @@ const ESTADO_LABEL = {
   PENDIENTE: 'Pendiente', PROCESANDO: 'Procesando', ESPERADO: 'Esperado', EN_PROCESO: 'En proceso',
   ERROR: 'Error',
 };
+// Nombre para mostrar de cada fuente (franquicia). El codigo no cambia.
+const NOMBRE_FUENTE = { VISA: 'VISA INTERNACIONAL' };
+function nombreFuente(fuente) {
+  return NOMBRE_FUENTE[fuente] ?? fuente;
+}
 // Nombre para mostrar de cada insumo. El codigo (tipoInsumo) no cambia:
 // lo usan la base de datos, el parseo y la validacion de nombres de archivo.
 const NOMBRE_INSUMO = {
@@ -414,7 +419,7 @@ function renderTablaInsumos(insumos) {
     return `
     <tr data-id="${a.idArchivo}">
       <td>${a.idArchivo}</td>
-      <td>${a.fuente}</td>
+      <td>${nombreFuente(a.fuente)}</td>
       <td>${nombreInsumo(a.tipoInsumo)}</td>
       <td>${a.nombreArchivo ?? '-'}</td>
       <td>${celdaRegistros(a)}</td>
@@ -1562,7 +1567,7 @@ function renderRedebanValidador() {
   el('btnRedebanValidadorSiguiente')?.addEventListener('click', () => { redebanValidadorPagina += 1; renderRedebanValidador(); });
 }
 
-// ---- Conciliación VISA: liquidación de la Plantilla Maestra (ver conciliacion-visa) ----
+// ---- Conciliación VISA Internacional: liquidación de la Plantilla Maestra (ver conciliacion-visa) ----
 // Fila 5 y filas 161-181 de la Plantilla: la TRM, el valor del pdf, el total del
 // correo, etc. se digitan a mano (aquí se capturan y quedan versionados); el resto
 // son las mismas fórmulas. El asiento resultante se compara contra Host por cuenta
@@ -1632,19 +1637,19 @@ async function cargarConciliacionVisa() {
   const cont = el('conciliacionVisaContent');
   if (!cont) return;
   if (!idJornadaActiva) {
-    cont.innerHTML = '<div class="emptyDetail">Selecciona una fecha contable en Insumos para ver la conciliación VISA de esta jornada.</div>';
+    cont.innerHTML = '<div class="emptyDetail">Selecciona una fecha contable en Insumos para ver la conciliación VISA Internacional de esta jornada.</div>';
     return;
   }
-  cont.innerHTML = '<div class="emptyDetail">Cargando conciliación VISA…</div>';
+  cont.innerHTML = '<div class="emptyDetail">Cargando conciliación VISA Internacional…</div>';
   let r;
   try {
     r = await apiFetch(`${API}/jornadas/${idJornadaActiva}/conciliacion-visa`);
   } catch (e) {
-    cont.innerHTML = `<div class="emptyDetail">No se pudo cargar la conciliación VISA: ${esc(e.message || e)}</div>`;
+    cont.innerHTML = `<div class="emptyDetail">No se pudo cargar la conciliación VISA Internacional: ${esc(e.message || e)}</div>`;
     return;
   }
   if (!r.ok) {
-    cont.innerHTML = `<div class="emptyDetail">No se pudo cargar la conciliación VISA (HTTP ${r.status}).</div>`;
+    cont.innerHTML = `<div class="emptyDetail">No se pudo cargar la conciliación VISA Internacional (HTTP ${r.status}).</div>`;
     return;
   }
   ultimaConciliacionVisa = await r.json();
@@ -1725,7 +1730,7 @@ function renderConciliacionVisa(mensaje = '') {
   const validacion = liq.validacion_canje_internacional || {};
 
   cont.innerHTML = `
-    <div class="explain">Liquidación VISA de la Plantilla Maestra (fila 5 y filas 161-181). Las celdas que la plantilla digita a mano se capturan abajo y quedan versionadas; el resto son las mismas fórmulas. El asiento se compara contra Host por cuenta, HA22, HA26 y HA32 por separado (positivo = débito). <b>*</b> marca la fuente que se consulta para esa cuenta.</div>
+    <div class="explain">Liquidación VISA Internacional de la Plantilla Maestra (fila 5 y filas 161-181). Las celdas que la plantilla digita a mano se capturan abajo y quedan versionadas; el resto son las mismas fórmulas. El asiento se compara contra Host por cuenta, HA22, HA26 y HA32 por separado (positivo = débito). <b>*</b> marca la fuente que se consulta para esa cuenta.</div>
     <div class="flow summaryFlow">
       <div class="fc"><small>ESTADO</small><b>${tagVisa(d.estado)}</b></div>
       <div class="fc"><small>TRM (M169)</small><b>${numVisa(valor('M169'), 4)}</b></div>
