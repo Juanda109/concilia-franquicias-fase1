@@ -217,8 +217,8 @@ function nombreFuente(fuente) {
 // Nombre para mostrar de cada insumo. El codigo (tipoInsumo) no cambia:
 // lo usan la base de datos, el parseo y la validacion de nombres de archivo.
 const NOMBRE_INSUMO = {
-  ISS: 'Visa Internacional Posición Neta',
-  VSS: 'Visa Internacional VSS',
+  ISS: 'Posición Neta',
+  VSS: 'VSS',
 };
 function nombreInsumo(tipo) {
   return NOMBRE_INSUMO[tipo] ?? tipo;
