@@ -1,5 +1,5 @@
 import re
-from datetime import date
+from datetime import date, timedelta
 
 # Estructura fija por tipo de insumo; lo único que cambia día a día es la
 # fecha embebida en el nombre. Un tipo puede aceptar varias estructuras
@@ -35,11 +35,25 @@ PATRONES={
  # dos, pero también llegan con uno.
  "ISS":[(re.compile(r'^International\s+SS_Data_(\d{4}-\d{2}-\d{2})\.pdf$',re.I),'ISO',
          'International SS_Data_AAAA-MM-DD.pdf (ej. International SS_Data_2026-11-10.pdf)')],
- "VSS":[(re.compile(r'^VSS BBVA (\d{2})([A-Z]{3})(\d{2})\.TXT$',re.I),'DDMMMAA',
-         'VSS BBVA DDMMMAA.txt (ej. VSS BBVA 10NOV26.txt)'),
-        (re.compile(r'^VSS BBVA (\d{2}) ([A-Z]+)\.TXT$',re.I),'DDMES_ES',
-         'VSS BBVA DD MES.txt, con el mes completo en español (ej. VSS BBVA 10 NOVIEMBRE.txt)')],
+ # El dia puede venir con uno o dos digitos ("VSS BBVA 9 NOVIEMBRE.txt",
+ # "VSS BBVA 09NOV26.txt").
+ "VSS":[(re.compile(r'^VSS BBVA (\d{1,2})([A-Z]{3})(\d{2})\.TXT$',re.I),'DDMMMAA',
+         'VSS BBVA DDMMMAA.txt (ej. VSS BBVA 10NOV26.txt o VSS BBVA 9NOV26.txt)'),
+        (re.compile(r'^VSS BBVA (\d{1,2}) ([A-Z]+)\.TXT$',re.I),'DDMES_ES',
+         'VSS BBVA DD MES.txt, con el mes completo en español (ej. VSS BBVA 10 NOVIEMBRE.txt o VSS BBVA 9 NOVIEMBRE.txt)')],
 }
+
+# Insumos cuyo archivo trae la fecha del dia anterior a la fecha contable de
+# la jornada (dia calendario): para la jornada del 11/11 llega
+# PMDGeneralEntidad20261110.xls y VSS BBVA 10NOV26.txt. Los demas tipos traen
+# la misma fecha de la jornada.
+DESFASE_DIAS={"PMD":1,"VSS":1}
+
+def fecha_esperada_archivo(tipo_insumo:str,fecha_contable_iso:str)->str:
+ """Fecha que debe traer el nombre del archivo para la jornada dada."""
+ dias=DESFASE_DIAS.get(tipo_insumo,0)
+ if not dias: return fecha_contable_iso
+ return (date.fromisoformat(fecha_contable_iso)-timedelta(days=dias)).isoformat()
 
 def formato_esperado(tipo_insumo:str)->str|None:
  """Texto con las estructuras aceptadas para el tipo, para mostrar al usuario."""

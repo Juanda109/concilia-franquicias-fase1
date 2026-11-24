@@ -1,4 +1,4 @@
-from app.core.nombres_archivo import formato_esperado, validar_nombre
+from app.core.nombres_archivo import fecha_esperada_archivo, formato_esperado, validar_nombre
 
 
 def test_vss_formato_nuevo_ddmmmaa_trae_fecha_completa():
@@ -36,3 +36,27 @@ def test_iss_acepta_uno_o_dos_espacios():
 
 def test_tipos_sin_regla_no_validan():
     assert validar_nombre("MEP", "cualquier cosa.xls") == (False, True, None)
+
+
+def test_pmd_y_vss_esperan_el_dia_anterior():
+    assert fecha_esperada_archivo("PMD", "2026-11-11") == "2026-11-10"
+    assert fecha_esperada_archivo("VSS", "2026-11-11") == "2026-11-10"
+    # cambio de mes y de año
+    assert fecha_esperada_archivo("PMD", "2026-12-01") == "2026-11-30"
+    assert fecha_esperada_archivo("VSS", "2027-01-01") == "2026-12-31"
+    # el resto de insumos sigue con la fecha de la jornada
+    for tipo in ["HA22", "HA26", "HA32", "CAET", "CANT", "DEPO", "CARTA_COMPENSACION", "ISS", "MEP"]:
+        assert fecha_esperada_archivo(tipo, "2026-11-11") == "2026-11-11"
+
+
+def test_vss_sin_anio_toma_el_anio_de_la_fecha_esperada():
+    # jornada 1/1/2027 -> se espera el VSS del 31/12/2026
+    esperada = fecha_esperada_archivo("VSS", "2027-01-01")
+    assert validar_nombre("VSS", "VSS BBVA 31 DICIEMBRE.txt", esperada) == (True, True, "2026-12-31")
+
+
+def test_vss_dia_de_un_digito():
+    assert validar_nombre("VSS", "VSS BBVA 9 NOVIEMBRE.txt", "2026-11-09") == (True, True, "2026-11-09")
+    assert validar_nombre("VSS", "VSS BBVA 09 NOVIEMBRE.txt", "2026-11-09") == (True, True, "2026-11-09")
+    assert validar_nombre("VSS", "VSS BBVA 9NOV26.txt", "2026-11-09") == (True, True, "2026-11-09")
+    assert validar_nombre("VSS", "VSS BBVA 09NOV26.txt", "2026-11-09") == (True, True, "2026-11-09")

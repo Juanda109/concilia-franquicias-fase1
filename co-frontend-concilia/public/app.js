@@ -209,6 +209,15 @@ const ESTADO_LABEL = {
   PENDIENTE: 'Pendiente', PROCESANDO: 'Procesando', ESPERADO: 'Esperado', EN_PROCESO: 'En proceso',
   ERROR: 'Error',
 };
+// Nombre para mostrar de cada insumo. El codigo (tipoInsumo) no cambia:
+// lo usan la base de datos, el parseo y la validacion de nombres de archivo.
+const NOMBRE_INSUMO = {
+  ISS: 'Visa Internacional Posición Neta',
+  VSS: 'Visa Internacional VSS',
+};
+function nombreInsumo(tipo) {
+  return NOMBRE_INSUMO[tipo] ?? tipo;
+}
 function badge(estado) {
   if (!estado) return '<span class="badge info">-</span>';
   return `<span class="badge ${BADGE_CLASS[estado] ?? 'info'}">${ESTADO_LABEL[estado] ?? estado}</span>`;
@@ -251,7 +260,7 @@ function mostrarModalError({ titulo, tipoInsumo, nombreArchivo, motivo }) {
   const subtitulo = el('erroresProcesamientoSubtitulo');
   if (tipoInsumo || nombreArchivo) {
     subtitulo.hidden = false;
-    el('erroresProcesamientoTipo').textContent = tipoInsumo ?? '';
+    el('erroresProcesamientoTipo').textContent = nombreInsumo(tipoInsumo) ?? '';
     el('erroresProcesamientoNombre').textContent = nombreArchivo ?? '';
   } else {
     subtitulo.hidden = true;
@@ -387,7 +396,7 @@ function renderTablaInsumos(insumos) {
     <tr data-id="${a.idArchivo}">
       <td>${a.idArchivo}</td>
       <td>${a.fuente}</td>
-      <td>${a.tipoInsumo}</td>
+      <td>${nombreInsumo(a.tipoInsumo)}</td>
       <td>${a.nombreArchivo ?? '-'}</td>
       <td>${celdaRegistros(a)}</td>
       <td>${badge(a.estadoRecepcion)}</td>
@@ -494,7 +503,7 @@ function renderDetallePagina(d) {
       <div class="detailPageHead">
         <div>
           <h1>${d.nombreArchivo ?? '(sin nombre)'}</h1>
-          <div class="sub">${d.tipoInsumo}</div>
+          <div class="sub">${nombreInsumo(d.tipoInsumo)}</div>
         </div>
         <div class="detailStatus">${badge(esRechazo ? d.estadoRecepcion : d.estadoProcesamiento)}</div>
       </div>
@@ -536,7 +545,7 @@ function renderDetallePagina(d) {
     <div class="detailPageHead">
       <div>
         <h1>${d.nombreArchivo ?? '(sin nombre)'}</h1>
-        <div class="sub">${d.tipoInsumo}</div>
+        <div class="sub">${nombreInsumo(d.tipoInsumo)}</div>
       </div>
       <div class="detailStatus">${badge(d.estadoProcesamiento)}</div>
     </div>
@@ -550,7 +559,7 @@ function renderDetallePagina(d) {
     <div class="card detailTableCard section">
       <div class="detailTableTop">
         <div class="title">Contenido del archivo</div>
-        <div class="detailCount">${totalItems} registros · ${d.tipoInsumo}</div>
+        <div class="detailCount">${totalItems} registros · ${nombreInsumo(d.tipoInsumo)}</div>
       </div>
       ${contenidoHtml}
     </div>`;
@@ -589,7 +598,12 @@ function mensajeErrorCarga(detalle) {
   const codigo = conCodigo ? prefijo : texto.trim();
   const resto = conCodigo ? texto.slice(sep + 1).trimStart() : detalle;
   if (codigo === 'FECHA_NO_COINCIDE_CON_ARCHIVO') {
-    const mm = /el archivo (.+) corresponde a (\d{4}-\d{2}-\d{2}), no a (\d{4}-\d{2}-\d{2})/.exec(resto);
+    // PMD y VSS traen la fecha del dia anterior: el backend agrega
+    // "(jornada AAAA-MM-DD)" cuando la fecha esperada no es la de la jornada.
+    const mm = /el archivo (.+) corresponde a (\d{4}-\d{2}-\d{2}), no a (\d{4}-\d{2}-\d{2})(?: \(jornada (\d{4}-\d{2}-\d{2})\))?/.exec(resto);
+    if (mm && mm[4] && mm[4] !== mm[3]) {
+      return `El archivo «${mm[1]}» corresponde al ${fechaDDMMAAAA(mm[2])}. Para la jornada del ${fechaDDMMAAAA(mm[4])} se espera el archivo del ${fechaDDMMAAAA(mm[3])}.`;
+    }
     if (mm) return `El archivo «${mm[1]}» corresponde al ${fechaDDMMAAAA(mm[2])}, pero esta jornada es del ${fechaDDMMAAAA(mm[3])}.`;
   }
   if (codigo === 'NOMBRE_ARCHIVO_INVALIDO') {
@@ -606,7 +620,7 @@ function mensajeErrorCarga(detalle) {
       const j = cola.indexOf(FORMATO);
       if (j >= 0) { formato = cola.slice(j + FORMATO.length).trim(); cola = cola.slice(0, j); }
       const tipo = cola.split('.')[0].trim();
-      const base = `El nombre «${nombre}» no tiene la estructura que se espera para ${tipo}.`;
+      const base = `El nombre «${nombre}» no tiene la estructura que se espera para ${nombreInsumo(tipo)}.`;
       return formato ? `${base} Formato esperado: ${formato}` : base;
     }
   }
@@ -668,13 +682,13 @@ function iniciarPolling(idArchivo) {
       const a = d.insumos.find((x) => x.idArchivo === idArchivo);
       if (!a) return;
       resultado.innerHTML = `
-        <div class="progressMeta"><b>${a.nombreArchivo ?? a.tipoInsumo}</b><span>${badge(a.estadoProcesamiento)}</span></div>
+        <div class="progressMeta"><b>${a.nombreArchivo ?? nombreInsumo(a.tipoInsumo)}</b><span>${badge(a.estadoProcesamiento)}</span></div>
         ${celdaRegistros(a)}`;
       if (detalleIdArchivo === idArchivo) await cargarContenidoDetalle();
       if (a.estadoProcesamiento === 'PROCESADO' || a.estadoProcesamiento === 'ERROR') {
         clearInterval(pollers.get(idArchivo));
         pollers.delete(idArchivo);
-        if (a.estadoProcesamiento === 'PROCESADO') toast(`${a.tipoInsumo} cargado: ${a.totalRegistros ?? '-'} registros`);
+        if (a.estadoProcesamiento === 'PROCESADO') toast(`${nombreInsumo(a.tipoInsumo)} cargado: ${a.totalRegistros ?? '-'} registros`);
         else void mostrarErroresProcesamiento(idArchivo, a.tipoInsumo, a.nombreArchivo);
       }
     } catch (e) {

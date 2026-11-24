@@ -144,7 +144,11 @@ class ArchivoRepository:
         # Limpia totales/motivo de un intento anterior (reintento tras error): sin
         # esto, la barra de progreso arrancaria mostrando los numeros del intento
         # viejo hasta que parseo vuelva a llamar set_total/set_progreso.
+        # ESTADO_PROCESAMIENTO vuelve a 'Pendiente': tras un rechazo quedaba en
+        # 'Error' hasta que arrancaba el procesamiento, y la pantalla, que
+        # consulta el estado justo despues de la carga, mostraba "No se pudo
+        # procesar el archivo" aunque el archivo terminara Procesado.
         self.conn.execute("""UPDATE CON_ARCHIVO_CARGA SET NOMBRE_ARCHIVO=%s,ESTADO_RECEPCION='Recibido',
- TOTAL_REGISTROS=NULL,REGISTROS_PROCESADOS=0,MOTIVO_ESTADO=NULL,
+ ESTADO_PROCESAMIENTO='Pendiente',TOTAL_REGISTROS=NULL,REGISTROS_PROCESADOS=0,MOTIVO_ESTADO=NULL,
  CORRELATION_ID=%s,FECHA_CAMBIO_ESTADO=CURRENT_TIMESTAMP WHERE ID_ARCHIVO=%s""",
             (nombre_archivo, correlation_id, id_archivo))
