@@ -41,7 +41,7 @@ spec:
                 topologyKey: kubernetes.io/hostname
       containers:
         - name: co-frontend-concilia
-          image: 'artifactory.globaldevtools.bbva.com:443/co-genai-public-cloud-docker-local/ccrcs-genai/co-frontend-concilia:v1.17'
+          image: 'artifactory.globaldevtools.bbva.com:443/co-genai-public-cloud-docker-local/ccrcs-genai/co-frontend-concilia:v1.18'
           imagePullPolicy: Always
           # Datos de Nauthilus por ambiente: el contenedor genera config.js al
           # arrancar (docker-entrypoint.d/40-concilia-config.sh). El client_id
