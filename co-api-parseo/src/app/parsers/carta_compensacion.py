@@ -31,6 +31,11 @@ RE_SUBTOTAL_NO_GRAVADO=re.compile(r'SUBTOTAL\s+NO\s+GRAVADO.*?:\s*('+NUM+r')',re
 RE_SUBTOTAL_GRAVADO=re.compile(r'SUBTOTAL\s+GRAVADO.*?:\s*('+NUM+r')',re.I)
 RE_CONCEPTO_228=re.compile(r'^\s*(.+?)\s*:?\s*(?:A\s+(FAVOR|CARGO)\s+)?('+NUM+r')\s*$',re.I)
 RE_SOLO_SEPARADOR=re.compile(r'^[\s\-]*$')
+# Hoja "CAI 160 A" (CAI0160A): listado sumario por codigo de transaccion, una
+# pagina por BIN. Linea de codigo: " 04  ORIGINAL PAGOS   17  114,681,486 ... 114.681.486"
+# El ultimo numero es el VALOR TOTAL del bloque CONSOLIDADO (neto, "-" al final si es negativo).
+RE_CAI160_CODIGO=re.compile(r'^\s*0*(\d{1,2})\s+([A-Z][A-Z .\-]*?[A-Z.])\s{2,}(.*\S)\s*$')
+RE_CAI160_BIN=re.compile(r'^\s*(\d{6})\s+(\S.*?)\s*$')
 
 MARCADORES_PRESENTACION=[
  'FECHA DE IMPRESION','CAI0224A','CAI0228A','CARTA DE COMPENSACION','INFORME COMPLEMENTARIO',
@@ -66,6 +71,11 @@ class CartaCompensacionParser(Parser):
   self._parse_224(wb[self.sheet_224],r,_descarta,posicion_neta_224)
   posicion_neta_228=[]
   self._parse_228(wb[self.sheet_228],r,_descarta,posicion_neta_228)
+  hoja_160=next((h for h in wb.sheetnames if re.sub(r'\s+','',h).upper()=='CAI160A'),None)
+  if hoja_160:
+   self._parse_cai160(wb[hoja_160],r,_descarta)
+  else:
+   r.controls.append({"codigo":"HOJA_CAI160_NO_ENCONTRADA","obtenido":0})
 
   if len(posicion_neta_224)==1 and len(posicion_neta_228)==1:
    v224,v228=posicion_neta_224[0],posicion_neta_228[0]
@@ -188,6 +198,48 @@ class CartaCompensacionParser(Parser):
    fila.update(valor_principal=nums[0],valor_proceso=nums[1],valor_financiacion=nums[2],valor_fotocopias=nums[3],
     valor_red=nums[4],valor_total=nums[5])
   r.records.append(fila)
+
+ def _parse_cai160(self,ws,r,_descarta):
+  """Valor total consolidado por BIN y codigo de transaccion (filas 6, 16-23,
+  26 y 29 del cuadre canje enviado). Se guarda un registro por BIN y codigo con
+  movimiento; el codigo 99 (TOTALES por BIN) queda como control."""
+  bin_actual=None; esperando_bin=False; n_codigos=0
+  suma_bin={}; total_bin={}
+  for n in range(1,ws.max_row+1):
+   line=str(ws.cell(n,1).value or "")
+   if not line.strip(): continue
+   if 'ENTIDAD FINANCIERA' in line.upper():
+    esperando_bin=True; continue
+   if esperando_bin:
+    m=RE_CAI160_BIN.match(line)
+    if m:
+     nombre_bin=re.sub(r'\s+',' ',m.group(2)).strip()
+     bin_actual=f"{m.group(1)} {nombre_bin}"
+     esperando_bin=False; continue
+   m=RE_CAI160_CODIGO.match(line)
+   if not m or bin_actual is None: continue
+   codigo=m.group(1).zfill(2); descripcion=re.sub(r'\s+',' ',m.group(2)).strip()
+   vals=_tokens(m.group(3))
+   if not vals: continue
+   total=_num(vals[-1])
+   if codigo=='99':
+    total_bin[bin_actual]=total
+    r.records.append({"numero_linea":n,"seccion":"CAI0160A","motivo_codigo":"CAI160_TOTALES","es_control":True,
+     "lado":None,"concepto":f"99 TOTALES - BIN {bin_actual}","valor_total":total})
+    continue
+   n_codigos+=1
+   suma_bin[bin_actual]=suma_bin.get(bin_actual,0)+(total or 0)
+   if not total:
+    _descarta("CAI160_SIN_MOVIMIENTO"); continue
+   r.records.append({"numero_linea":n,"seccion":"CAI0160A","motivo_codigo":f"CAI160_{codigo}","es_control":False,
+    "lado":None,"concepto":f"{codigo} {descripcion} - BIN {bin_actual}","valor_total":total})
+  r.controls.append({"codigo":"CAI160_LINEAS_CODIGO","obtenido":n_codigos})
+  # Control: en cada BIN la suma de los codigos debe dar su linea 99 TOTALES.
+  descuadres=[b for b,t in total_bin.items() if round(suma_bin.get(b,0)-(t or 0),2)!=0]
+  if descuadres:
+   r.errors.append(RecordError(None,None,"DESCUADRE_CAI160",f"Suma de codigos distinta a 99 TOTALES en BIN: {', '.join(descuadres)}"))
+  else:
+   r.controls.append({"codigo":"CUADRE_CAI160_POR_BIN","obtenido":len(total_bin),"estado":"OK"})
 
  def _parse_228(self,ws,r,_descarta,posicion_neta_228):
   for n in range(1,ws.max_row+1):

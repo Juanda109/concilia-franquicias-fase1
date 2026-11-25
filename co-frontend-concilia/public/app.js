@@ -477,7 +477,8 @@ function abrirDetalle(idArchivo, origen = 'insumos') {
   detalleOrigenPanel = origen;
   if (origen === 'insumos') insumosScrollY = window.scrollY;
   const link = el('btnVolverInsumos');
-  if (link) link.textContent = origen === 'conciliacion' ? '← Volver a Conciliación' : '← Volver a Insumos';
+  const VOLVER_A = { conciliacion: '← Volver a Conciliación', detalleCuentaCredibanco: '← Volver al detalle de la cuenta' };
+  if (link) link.textContent = VOLVER_A[origen] || '← Volver a Insumos';
   document.querySelectorAll('.panel').forEach((p) => p.classList.remove('active'));
   el('detalleInsumo').classList.add('active');
   window.scrollTo(0, 0);
@@ -814,7 +815,7 @@ function go(id, btn) {
   document.querySelectorAll('.nav button').forEach((b) => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
   window.scrollTo(0, 0);
-  if (id === 'conciliacion') { void cargarCierreCredibanco(); void cargarCierreRedeban(); void cargarConciliacionVisa(); }
+  if (id === 'conciliacion') entrarAConciliacion();
 }
 
 // ---- Conciliación: diagnóstico real Credibanco F2 (ver cierre-credibanco) ----
@@ -868,14 +869,17 @@ function labelEstadoConciliacion(estado) {
 }
 
 let ultimoCierreCredibanco = null;
+let cuentasHostObservadas = 0;
 
-// Tarjeta "FECHA CONTABLE" en Conciliación: solo muestra la jornada activa
-// (idJornadaActiva, compartida con Insumos) - no se selecciona desde acá,
-// la fecha se elige en Insumos y esta vista solo la refleja.
+// ---- Conciliación: refleja solo la fecha contable elegida en Insumos ----
+// No se elige fecha desde acá: la jornada es siempre la activa de Insumos.
+let idJornadaConciliacion = null;
+let fechaConciliacion = null;
+
 function renderFechasConciliacion() {
   const host = el('reconFechasContables');
   if (!host) return;
-  const activa = jornadaActual && jornadaActual.idJornada === idJornadaActiva ? jornadaActual : null;
+  const activa = jornadaActual && jornadaActual.idJornada === idJornadaConciliacion ? jornadaActual : null;
   if (!activa) {
     host.innerHTML = '<span class="reconDateEmpty">Sin fecha contable seleccionada en Insumos.</span>';
     return;
@@ -884,8 +888,34 @@ function renderFechasConciliacion() {
     <span class="fechaChip reconDateChip active" aria-disabled="true">
       <small>FECHA CONTABLE</small><b>${esc(activa.fechaContable)}</b>
       <span class="reconDateState">${esc(ESTADO_LABEL[activa.estado] ?? activa.estado)}</span>
-      <span class="reconDateId">Jornada ${activa.idJornada}</span>
+      <span class="reconDateId">Jornada ${Number(activa.idJornada)}</span>
     </span>`;
+}
+
+function entrarAConciliacion() {
+  idJornadaConciliacion = idJornadaActiva;
+  fechaConciliacion = jornadaActual?.fechaContable ?? null;
+  void cargarConciliacion();
+}
+
+let cargaConciliacionSeq = 0;
+async function cargarConciliacion() {
+  const seq = ++cargaConciliacionSeq;
+  if (idJornadaConciliacion) {
+    el('reconJornada').textContent = `Fecha contable: ${fechaConciliacion} · Jornada ${idJornadaConciliacion}`;
+  } else {
+    el('reconJornada').textContent = 'Seleccione una fecha contable en Insumos.';
+  }
+  renderFechasConciliacion();
+  const traz = el('reconTrazabilidad');
+  if (traz) { traz.hidden = true; traz.replaceChildren(); }
+  el('reconKpis').innerHTML = '';
+  el('reconResultados').innerHTML = idJornadaConciliacion
+    ? '<div class="emptyDetail">Cargando conciliación…</div>'
+    : '<div class="emptyDetail">Selecciona una fecha contable en Insumos para ver la conciliación de esta jornada.</div>';
+  await Promise.allSettled([cargarCierreCredibanco(), cargarCierreRedeban(), cargarConciliacionVisa()]);
+  if (seq !== cargaConciliacionSeq) return; // llegó otra consulta mientras tanto
+  renderReporteUnificado();
 }
 
 function celdaFuente(fuentes, tx, campo) {
@@ -958,84 +988,407 @@ function totalPorConceptoDepo(depo, concepto) {
 // sale de un campo que cierre_credibanco_v67 realmente calcula (nunca de un
 // endpoint v72/reporte-maestro-diagnostico descartado ni de datos QA
 // inventados).
-function construirFilasResultado(d) {
-  const cruces = d.cruces_host_credibanco_diagnosticos || [];
+// ---- Resultados de conciliación unificados (Credibanco + Redeban + VISA) ----
+// Una sola tabla, como la maqueta v3.0. Cada franquicia sale de su propio
+// endpoint (cierre-credibanco, cierre-redeban, conciliacion-visa); acá solo se
+// llevan a una fila común, sin recalcular importes ni diferencias.
+const FUENTES_HOST = ['HA22', 'HA26', 'HA32'];
+const GRUPOS_ESTADO = {
+  CONCILIADO: ['Conciliado', 'ok'],
+  CON_DIFERENCIA: ['Con diferencia', 'warn'],
+  PENDIENTE: ['Pendiente de conciliación', 'info'],
+  SIN_INFORMACION: ['Sin información suficiente', 'info'],
+  NO_APLICA: ['No aplica', 'info'],
+};
+
+function grupoEstado(e) {
+  const s = String(e || '');
+  if (/^(COINCIDE|CONCILIADO|CUADRA)$/.test(s)) return 'CONCILIADO';
+  if (/^(CON_DIFERENCIA|DESCUADRE)$/.test(s)) return 'CON_DIFERENCIA';
+  if (s === 'SIN_CONSULTA_HOST') return 'NO_APLICA';
+  if (/^(SIN_INFORMACION|FUENTES_NO_DISPONIBLES|DATO_INCOMPLETO|SIN_MOVIMIENTOS_FRANQUICIA|IMPORTES_FRANQUICIA_INCOMPLETOS|INSUMO_FALTANTE|SIN_FILAS_ESTRUCTURA|FECHA_HOST_NO_COINCIDE)$/.test(s)) return 'SIN_INFORMACION';
+  return 'PENDIENTE';
+}
+
+function labelEstadoOrigen(e) {
+  return ESTADO_CONCILIACION_LABEL[e] || ESTADO_VISA_LABEL[e] || e || '—';
+}
+
+const TAG_SIN_APROBAR = ' <span class="tag warn" title="La regla no tiene version+evidencia_aprobacion firmadas; este valor es un calculo provisional.">⚠ sin aprobar</span>';
+const money = (v) => (v != null ? fmtMoney(v) : '—');
+
+function hostDesdeCredibanco(fuentes, fuenteRegla) {
+  const h = {};
+  for (const tx of FUENTES_HOST) {
+    const f = fuentes[tx];
+    h[tx] = f
+      ? { debe: f.debe, haber: f.haber, neto: f.neto_debe_menos_haber, movimientos: f.cantidad ?? null, archivos: f.archivos || [], consulta: tx === fuenteRegla, estado: f.estado }
+      : { debe: null, haber: null, neto: null, movimientos: null, archivos: [], consulta: tx === fuenteRegla };
+  }
+  return h;
+}
+
+// Redeban y VISA traen la misma forma por cuenta: host[HA22|HA26|HA32] con
+// debe/haber/neto/diferencia y "obligatoria" = la fuente que se compara.
+function hostDesdeCuadre(host) {
+  const h = {};
+  for (const tx of FUENTES_HOST) {
+    const f = (host || {})[tx] || {};
+    h[tx] = { debe: f.debe ?? null, haber: f.haber ?? null, neto: f.neto ?? null, movimientos: f.movimientos ?? null, archivos: f.archivos || [], consulta: !!f.obligatoria, estado: f.estado, diferencia: f.diferencia ?? null };
+  }
+  return h;
+}
+
+function filasCredibanco(d) {
+  if (!d) return [];
   const hostPorCuenta = new Map();
   for (const h of d.host_por_cuenta_y_fuente || []) {
     if (!hostPorCuenta.has(h.cuenta)) hostPorCuenta.set(h.cuenta, {});
     hostPorCuenta.get(h.cuenta)[h.fuente] = h;
   }
-  return cruces.map((c) => {
-    const concepto = CONCEPTO_REGLA[c.id_regla] || '—';
-    let cantidad = '—';
-    let interc = '—';
-    let total = '—';
-    if (c.insumo === 'CANT' || c.insumo === 'CAET') {
-      const t = totalPorConceptoCanje(d.totales_diagnosticos, concepto);
-      if (t) {
-        cantidad = t.B;
-        interc = t.C != null ? fmtMoney(t.C) : '—';
-        total = t.D != null ? fmtMoney(t.D) : '—';
-      }
-    } else if (c.insumo === 'DEPO') {
-      const t = totalPorConceptoDepo(d.depo_agregados_crudos, concepto);
-      if (t) {
-        cantidad = t.cantidad;
-        interc = t.interc != null ? fmtMoney(t.interc) : '—';
-        total = t.total != null ? fmtMoney(t.total) : '—';
-      }
-    }
-    const fuentes = hostPorCuenta.get(c.cuenta_host) || {};
-    const idArchivo = (fuentes.HA22 || fuentes.HA26 || fuentes.HA32)?.archivos?.[0];
-    const cuentaJs = esc(JSON.stringify(c.cuenta_host || ''));
-    const accion = idArchivo != null
-      ? `<button type="button" class="btn" onclick="abrirDetalle(${Number(idArchivo)},'conciliacion')">Ver evidencia</button>`
-      : `<button type="button" class="btn" onclick="abrirDetalleCuentaCredibanco(${cuentaJs})">Ver detalle</button>`;
-    return `<tr data-cuenta="${esc(c.cuenta_host || '')}" data-concepto="${esc(concepto)}" data-estado="${esc(c.estado || '')}" data-franquicia="CREDIBANCO">
-      <td>CREDIBANCO</td>
-      <td><a href="#" onclick="abrirDetalleCuentaCredibanco(${cuentaJs});return false;">${esc(c.cuenta_host || '—')}</a></td>
-      <td>${esc(concepto)}</td>
-      <td class="num">${cantidad}</td>
-      <td class="num">${interc}</td>
-      <td class="num">${total}</td>
-      <td class="num">${c.valor_franquicia != null ? fmtMoney(c.valor_franquicia) : '—'}</td>
-      <td class="num">${celdaFuente(fuentes, 'HA22', 'debe')}</td>
-      <td class="num">${celdaFuente(fuentes, 'HA22', 'haber')}</td>
-      <td class="num">${celdaFuente(fuentes, 'HA22', 'neto_debe_menos_haber')}</td>
-      <td class="num">${celdaFuente(fuentes, 'HA26', 'debe')}</td>
-      <td class="num">${celdaFuente(fuentes, 'HA26', 'haber')}</td>
-      <td class="num">${celdaFuente(fuentes, 'HA26', 'neto_debe_menos_haber')}</td>
-      <td class="num">${celdaFuente(fuentes, 'HA32', 'debe')}</td>
-      <td class="num">${celdaFuente(fuentes, 'HA32', 'haber')}</td>
-      <td class="num">${celdaFuente(fuentes, 'HA32', 'neto_debe_menos_haber')}</td>
-      <td class="num">${c.valor_host != null ? fmtMoney(c.valor_host) : '—'}</td>
-      <td class="num">${c.diferencia != null ? fmtMoney(c.diferencia) : '—'}</td>
-      <td><span class="tag ${badgeFor(c.estado)}" title="${esc(c.estado || '')}">${esc(labelEstadoConciliacion(c.estado))}</span>${c.diferencia != null && c.aprobada === false ? ' <span class="tag warn" title="La regla no tiene version+evidencia_aprobacion firmadas; este valor es un calculo provisional.">⚠ sin aprobar</span>' : ''}</td>
-      <td>${accion}</td>
-    </tr>`;
-  }).join('');
-}
-
-function filterResultadoRows() {
-  const q = (el('reconQ')?.value || '').toLowerCase();
-  const fr = el('reconFr')?.value || '';
-  const st = el('reconSt')?.value || '';
-  document.querySelectorAll('#reconBody tr').forEach((r) => {
-    const okq = !q || (r.dataset.cuenta || '').toLowerCase().includes(q) || (r.dataset.concepto || '').toLowerCase().includes(q);
-    const okfr = !fr || r.dataset.franquicia === fr;
-    const okst = !st || r.dataset.estado === st;
-    r.style.display = okq && okfr && okst ? 'table-row' : 'none';
+  return (d.cruces_host_credibanco_diagnosticos || []).map((c) => {
+    const concepto = CONCEPTO_REGLA[c.id_regla] || null;
+    let total = null;
+    if (c.insumo === 'CANT' || c.insumo === 'CAET') total = totalPorConceptoCanje(d.totales_diagnosticos, concepto)?.D ?? null;
+    else if (c.insumo === 'DEPO') total = totalPorConceptoDepo(d.depo_agregados_crudos, concepto)?.total ?? null;
+    return {
+      franquicia: 'CREDIBANCO',
+      cuenta: c.cuenta_host || '',
+      concepto,
+      vlTotal: total,
+      valorIntercambio: c.valor_franquicia ?? null,
+      valorFranquicia: c.valor_franquicia ?? null,
+      host: hostDesdeCredibanco(hostPorCuenta.get(c.cuenta_host) || {}, c.fuente_host),
+      totalRechazos: null,
+      valorHost: c.valor_host ?? null,
+      diferencia: c.diferencia ?? null,
+      estado: c.estado || '',
+      aprobada: c.aprobada,
+      cruce: c,
+    };
   });
 }
 
+function filasCuadre(franquicia, cuentas, concepto) {
+  return (cuentas || []).map((c) => {
+    const host = hostDesdeCuadre(c.host);
+    const consultada = FUENTES_HOST.find((tx) => host[tx].consulta);
+    const valor = c.neto_pmd ?? c.esperado ?? null;
+    return {
+      franquicia,
+      cuenta: c.cuenta,
+      concepto: concepto(c),
+      vlTotal: valor,
+      valorIntercambio: null,
+      valorFranquicia: valor,
+      host,
+      totalRechazos: null,
+      valorHost: consultada ? host[consultada].neto : null,
+      diferencia: consultada ? host[consultada].diferencia : null,
+      estado: c.estado || '',
+      aprobada: true,
+      origen: c,
+    };
+  });
+}
+
+function construirFilasReporte() {
+  const filas = filasCredibanco(ultimoCierreCredibanco);
+  const rd = ultimoCierreRedeban;
+  if (rd && rd.estado !== 'INSUMO_PMD_FALTANTE') {
+    // Las cuentas sin fuente Host definida ("No aplica") van al final, para
+    // que las que sí tienen resultado queden arriba (orden estable).
+    const redeban = filasCuadre('REDEBAN', rd.cuentas, (c) => `${(c.operaciones || []).length} operaciones PMD`);
+    filas.push(...redeban.filter((f) => grupoEstado(f.estado) !== 'NO_APLICA'),
+      ...redeban.filter((f) => grupoEstado(f.estado) === 'NO_APLICA'));
+  }
+  const vd = ultimaConciliacionVisa;
+  if (vd) {
+    const liq = vd.liquidacion || {};
+    const asiento = new Map((liq.asiento || []).map((a) => [a.cuenta, a]));
+    filas.push(...filasCuadre('VISA', vd.cuentas, (c) => {
+      const a = asiento.get(c.cuenta);
+      return a ? ((liq.celdas || {})[a.celda]?.etiqueta || `Asiento ${a.celda}`) : null;
+    }));
+  }
+  return filas;
+}
+
+let filasReporte = [];
+
+// "resumida": 11 columnas, solo netos (maqueta v3.0).
+// "detallada": Debe/Haber/Neto por fuente Host y el valor Host comparado.
+const VISTAS_RESULTADO = ['resumida', 'detallada'];
+let vistaResultado = 'resumida';
+try {
+  const guardada = localStorage.getItem('concilia.vistaResultado');
+  if (VISTAS_RESULTADO.includes(guardada)) vistaResultado = guardada;
+} catch { /* sin almacenamiento: se usa la vista por defecto */ }
+
+const COLUMNAS_RESULTADO = {
+  resumida: ['Franquicia', 'Cuenta', 'VL Total', 'Valor intercambio', 'HA22 Neto', 'HA26 Neto', 'HA32 Neto',
+    'Total rechazos', 'Diferencia', 'Estado conciliación', 'Acción'],
+  detallada: ['Franquicia', 'Cuenta', 'VL Total', 'Valor intercambio', 'HA22 Debe', 'HA22 Haber', 'HA22 Neto',
+    'HA26 Debe', 'HA26 Haber', 'HA26 Neto', 'HA32 Debe', 'HA32 Haber', 'HA32 Neto', 'Valor Host',
+    'Total rechazos', 'Diferencia', 'Estado conciliación', 'Acción'],
+};
+
+// Sin movimientos Host en esa fuente se muestra "—" (no hay dato), no 0.
+function sinDatoHost(h) {
+  return !h || h.neto == null || (h.movimientos === 0 && !(h.archivos || []).length);
+}
+
+function celdaHost(f, tx, campo) {
+  const h = f.host[tx];
+  const txt = sinDatoHost(h) ? '—' : money(h[campo]);
+  if (h?.consulta && campo === 'neto') {
+    return `<td class="num"><span class="fuenteConsulta" title="Fuente Host que se compara para esta cuenta">${txt}</span></td>`;
+  }
+  return `<td class="num">${txt}</td>`;
+}
+
+function estadoHtml(f) {
+  const [txt, cls] = GRUPOS_ESTADO[grupoEstado(f.estado)];
+  const origen = labelEstadoOrigen(f.estado);
+  const sub = origen && origen !== txt && origen !== '—' ? `<span class="reconCuentaSub">${esc(origen)}</span>` : '';
+  return `<span class="tag ${cls}" title="${esc(f.estado)}">${esc(txt)}</span>${f.diferencia != null && f.aprobada === false ? TAG_SIN_APROBAR : ''}${sub}`;
+}
+
+function filaReporteHtml(f, i, vista) {
+  const cuenta = `<a href="#" onclick="abrirDetalleCuenta(${i});return false;">${esc(f.cuenta || '—')}</a>${f.concepto ? `<span class="reconCuentaSub">${esc(f.concepto)}</span>` : ''}`;
+  const host = vista === 'resumida'
+    ? FUENTES_HOST.map((tx) => celdaHost(f, tx, 'neto')).join('')
+    : FUENTES_HOST.map((tx) => celdaHost(f, tx, 'debe') + celdaHost(f, tx, 'haber') + celdaHost(f, tx, 'neto')).join('')
+      + `<td class="num">${money(f.valorHost)}</td>`;
+  const texto = `${f.cuenta} ${f.concepto || ''}`.toLowerCase();
+  return `<tr data-i="${i}" data-franquicia="${esc(f.franquicia)}" data-grupo="${grupoEstado(f.estado)}" data-texto="${esc(texto)}">
+      <td>${esc(f.franquicia)}</td><td>${cuenta}</td>
+      <td class="num">${money(f.vlTotal)}</td><td class="num">${money(f.valorIntercambio)}</td>${host}
+      <td class="num">${money(f.totalRechazos)}</td><td class="num">${money(f.diferencia)}</td><td>${estadoHtml(f)}</td>
+      <td><div class="actionbar" style="margin:0;flex-wrap:nowrap">
+        <button type="button" class="btn" onclick="abrirDetalleCuenta(${i})">Detalle</button>
+        <button type="button" class="btn" onclick="analizarConIA(${i})">Análisis IA</button>
+      </div></td></tr>`;
+}
+
+function trmCardHtml() {
+  const vd = ultimaConciliacionVisa;
+  if (!vd) return '';
+  const m = (vd.liquidacion?.celdas || {}).M169 || {};
+  const vigente = m.valor != null
+    ? `TRM vigente: <b>${numVisa(m.valor, 4)}</b>`
+    : 'Sin TRM capturada: la liquidación VISA no se calcula hasta confirmarla.';
+  return `<div class="trmCard">
+      <div><h4>TRM de la jornada</h4><div class="muted" style="font-size:9px">${vigente}</div></div>
+      <input type="text" inputmode="decimal" id="trmJornadaInput" placeholder="ej. 4012.3456" aria-label="TRM de la jornada">
+      <button type="button" class="btn" id="btnConfirmarTrm">Confirmar TRM</button>
+      <span id="trmMensaje" class="muted" role="status" aria-live="polite" style="font-size:9px"></span>
+    </div>`;
+}
+
+async function confirmarTrm() {
+  const v = (el('trmJornadaInput')?.value || '').trim();
+  const msg = el('trmMensaje');
+  if (!v) { msg.textContent = 'Escribe la TRM (ej. 4012.3456).'; return; }
+  const boton = el('btnConfirmarTrm');
+  boton.disabled = true;
+  msg.textContent = 'Guardando…';
+  let r;
+  try {
+    r = await apiFetch(`${API}/jornadas/${idJornadaConciliacion}/conciliacion-visa/capturas`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ valores: { M169: v }, observacion: 'TRM confirmada desde Resultados de conciliación' }),
+    });
+  } catch (e) {
+    msg.textContent = `No se pudo guardar: ${e.message || e}`;
+    boton.disabled = false;
+    return;
+  }
+  if (!r.ok) {
+    let detalle = `HTTP ${r.status}`;
+    try { const j = await r.json(); detalle = typeof j.detail === 'string' ? j.detail : JSON.stringify(j.detail); } catch { /* sin cuerpo */ }
+    msg.textContent = `No se pudo guardar: ${detalle}`;
+    boton.disabled = false;
+    return;
+  }
+  ultimaConciliacionVisa = await r.json();
+  renderConciliacionVisa('TRM guardada desde Resultados de conciliación.');
+  renderReporteUnificado();
+  toast('TRM confirmada.');
+}
+
+function renderReporteUnificado() {
+  filasReporte = construirFilasReporte();
+  const kp = el('reconKpis');
+  const res = el('reconResultados');
+  if (!kp || !res) return;
+  if (!idJornadaConciliacion) {
+    kp.innerHTML = '';
+    res.innerHTML = '<div class="emptyDetail">Selecciona una fecha contable en Insumos para ver la conciliación de esta jornada.</div>';
+    return;
+  }
+  const porGrupo = (g) => filasReporte.filter((f) => grupoEstado(f.estado) === g).length;
+  // "Incorporados maestro": filas con al menos un movimiento Host cargado.
+  const incorporados = filasReporte.filter((f) => FUENTES_HOST.some((tx) => !sinDatoHost(f.host[tx]))).length;
+  kp.innerHTML = `<div class="flow summaryFlow">
+      <div class="fc"><small>CUENTAS / CRUCES</small><b>${filasReporte.length}</b></div>
+      <div class="fc"><small>CONCILIADOS</small><b>${porGrupo('CONCILIADO')}</b></div>
+      <div class="fc"><small>DIFERENCIAS</small><b>${porGrupo('CON_DIFERENCIA')}</b></div>
+      <div class="fc"><small>INCORPORADOS MAESTRO</small><b>${incorporados}</b></div>
+    </div>`;
+  const previos = { q: el('reconQ')?.value || '', fr: el('reconFr')?.value || '', st: el('reconSt')?.value || '' };
+  const opcionesEstado = Object.entries(GRUPOS_ESTADO).map(([k, [t]]) => `<option value="${k}">${t}</option>`).join('');
+  res.innerHTML = `
+    <div class="toolbar section">
+      <input id="reconQ" class="search" oninput="filterResultadoRows()" placeholder="Buscar cuenta o concepto..." aria-label="Buscar cuenta o concepto">
+      <select id="reconFr" class="select" onchange="filterResultadoRows()" aria-label="Filtrar por franquicia">
+        <option value="">Todas las franquicias</option>
+        <option value="CREDIBANCO">Credibanco</option>
+        <option value="REDEBAN">Redeban</option>
+        <option value="VISA">Visa</option>
+      </select>
+      <select id="reconSt" class="select" onchange="filterResultadoRows()" aria-label="Filtrar por estado">
+        <option value="">Todos los estados</option>${opcionesEstado}
+      </select>
+    </div>
+    <div class="reconTitleRow">
+      <h3>Resultados de conciliación</h3>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <span class="reconMeta" id="reconMetaTotal"></span>
+        <button type="button" class="btn" id="btnVerPlantillaMaestra" onclick="abrirPlantillaMaestra()">Ver Plantilla Maestra</button>
+        <div class="actionbar" role="group" aria-label="Vista de la tabla" style="margin-top:0">
+          <button type="button" class="btn" data-vista-resultado="resumida" onclick="cambiarVistaResultado('resumida')">Vista resumida</button>
+          <button type="button" class="btn" data-vista-resultado="detallada" onclick="cambiarVistaResultado('detallada')">Vista detallada</button>
+        </div>
+      </div>
+    </div>
+    ${trmCardHtml()}
+    <div class="card" style="padding:0"><div class="tableScroll"><table class="reconTable"><thead id="reconHead"></thead><tbody id="reconBody"></tbody></table></div></div>
+    <p class="filterHint">VL Total: valor de origen de la franquicia (Credibanco: total del concepto; Redeban: neto PMD; Visa: valor esperado del asiento). Valor intercambio: valor de la franquicia que compara la regla Credibanco. Subrayado: la fuente Host que se compara para esa cuenta; HA22, HA26 y HA32 no se suman entre sí. —: no disponible / sin movimientos Host. Total rechazos: sin fuente calculada todavía.</p>
+    <div class="actionbar" style="justify-content:flex-end">
+      <button type="button" class="btn" onclick="exportarResultadosCsv()">Exportar CSV</button>
+      <button type="button" class="btn" onclick="toggleTrazabilidadHost()">Ver trazabilidad Host (${cuentasHostObservadas})</button>
+    </div>`;
+  el('reconQ').value = previos.q;
+  el('reconFr').value = previos.fr;
+  el('reconSt').value = previos.st;
+  el('btnConfirmarTrm')?.addEventListener('click', () => { void confirmarTrm(); });
+  renderTablaResultado();
+}
+
+function renderTablaResultado() {
+  const head = el('reconHead');
+  const body = el('reconBody');
+  if (!head || !body) return;
+  const cols = COLUMNAS_RESULTADO[vistaResultado];
+  head.innerHTML = `<tr>${cols.map((c) => `<th>${esc(c)}</th>`).join('')}</tr>`;
+  body.innerHTML = filasReporte.length
+    ? filasReporte.map((f, i) => filaReporteHtml(f, i, vistaResultado)).join('')
+    : `<tr><td colspan="${cols.length}" class="muted">Sin resultados para esta jornada (faltan insumos procesados).</td></tr>`;
+  document.querySelectorAll('[data-vista-resultado]').forEach((b) => {
+    const activa = b.dataset.vistaResultado === vistaResultado;
+    b.classList.toggle('primary', activa);
+    b.setAttribute('aria-pressed', String(activa));
+  });
+  filterResultadoRows();
+}
+
+function cambiarVistaResultado(vista) {
+  if (!VISTAS_RESULTADO.includes(vista)) return;
+  vistaResultado = vista;
+  try { localStorage.setItem('concilia.vistaResultado', vista); } catch { /* opcional */ }
+  renderTablaResultado();
+}
+
+function filterResultadoRows() {
+  const q = (el('reconQ')?.value || '').toLowerCase().trim();
+  const fr = el('reconFr')?.value || '';
+  const st = el('reconSt')?.value || '';
+  let visibles = 0;
+  let conciliadas = 0;
+  let diferencias = 0;
+  document.querySelectorAll('#reconBody tr[data-i]').forEach((r) => {
+    const ver = (!q || (r.dataset.texto || '').includes(q)) && (!fr || r.dataset.franquicia === fr) && (!st || r.dataset.grupo === st);
+    r.style.display = ver ? '' : 'none';
+    if (!ver) return;
+    visibles += 1;
+    if (r.dataset.grupo === 'CONCILIADO') conciliadas += 1;
+    if (r.dataset.grupo === 'CON_DIFERENCIA') diferencias += 1;
+  });
+  const meta = el('reconMetaTotal');
+  if (meta) meta.textContent = `${visibles} cuentas · ${conciliadas} conciliadas · ${diferencias} con diferencia`;
+}
+
+// CSV para Excel en español: separador ";", coma decimal y BOM UTF-8.
+// Exporta la vista activa y solo las filas que dejan ver los filtros.
+function celdaCsv(v) {
+  if (v == null || v === '') return '';
+  let s = String(v);
+  if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`; // evita que Excel lo tome como fórmula
+  return /[;"\n\r]/.test(s) ? `"${s.replaceAll('"', '""')}"` : s;
+}
+function numeroCsv(v) {
+  if (v == null || v === '') return '';
+  const n = Number(v);
+  return Number.isFinite(n) ? String(n).replace('.', ',') : '';
+}
+
+function textoEstadoCsv(estado) {
+  const grupo = GRUPOS_ESTADO[grupoEstado(estado)][0];
+  const origen = labelEstadoOrigen(estado);
+  return origen === grupo || origen === '—' ? grupo : `${grupo} (${origen})`;
+}
+
+function exportarResultadosCsv() {
+  const visibles = [...document.querySelectorAll('#reconBody tr[data-i]')]
+    .filter((r) => r.style.display !== 'none')
+    .map((r) => filasReporte[Number(r.dataset.i)]);
+  if (!visibles.length) { toast('No hay filas para exportar.'); return; }
+  const host = (f, tx, campo) => (sinDatoHost(f.host[tx]) ? '' : numeroCsv(f.host[tx][campo]));
+  const cols = ['Franquicia', 'Cuenta', 'Concepto', ...COLUMNAS_RESULTADO[vistaResultado].slice(2).filter((c) => c !== 'Acción')];
+  const filas = visibles.map((f) => {
+    const hostCols = vistaResultado === 'resumida'
+      ? FUENTES_HOST.map((tx) => host(f, tx, 'neto'))
+      : [...FUENTES_HOST.flatMap((tx) => [host(f, tx, 'debe'), host(f, tx, 'haber'), host(f, tx, 'neto')]), numeroCsv(f.valorHost)];
+    return [celdaCsv(f.franquicia), celdaCsv(f.cuenta), celdaCsv(f.concepto), numeroCsv(f.vlTotal), numeroCsv(f.valorIntercambio),
+      ...hostCols, numeroCsv(f.totalRechazos), numeroCsv(f.diferencia),
+      celdaCsv(textoEstadoCsv(f.estado))].join(';');
+  });
+  const csv = [cols.map(celdaCsv).join(';'), ...filas].join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = `Conciliacion_${fechaConciliacion || 'sin_fecha'}_${vistaResultado}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  toast(`Exportadas ${visibles.length} filas (${vistaResultado}).`);
+}
+
+// "Ver trazabilidad Host": muestra debajo de los resultados la tabla de
+// cuentas Host observadas (se arma oculta en el diagnóstico Credibanco).
 function toggleTrazabilidadHost() {
+  const destino = el('reconTrazabilidad');
+  if (!destino) return;
+  if (!destino.hidden) { destino.hidden = true; return; }
   const card = el('trazabilidadHostCard');
-  const btn = el('btnTrazabilidadHost');
-  if (!card || !btn) return;
-  const mostrar = card.style.display === 'none';
-  card.style.display = mostrar ? '' : 'none';
-  btn.textContent = btn.textContent.replace(mostrar ? 'Ver' : 'Ocultar', mostrar ? 'Ocultar' : 'Ver');
-  if (mostrar) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (!card) { toast('Sin diagnóstico Credibanco para esta jornada.', true); return; }
+  destino.replaceChildren(card);
+  destino.hidden = false;
+  destino.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// "Análisis IA": abre el Agente IA (vista previa, no funcional) con los
+// valores reales de la fila.
+function analizarConIA(i) {
+  const f = filasReporte[i];
+  if (!f) return;
+  go('ia', document.querySelectorAll('.nav button')[2]);
+  el('aiCaseTitle').textContent = `Caso · ${f.franquicia} / Cuenta ${f.cuenta}`;
+  el('aiValFranquicia').textContent = money(f.valorFranquicia);
+  el('aiValHost').textContent = money(f.valorHost);
+  el('caseDiff').textContent = money(f.diferencia);
 }
 
 function filterCruceRows() {
@@ -1048,21 +1401,36 @@ function filterCruceRows() {
   });
 }
 
-// Página completa de detalle por cuenta, con la misma estructura en dos
-// bloques que usaba gustavo-dev para esta vista ("A. Contabilidad interna ·
-// Host" / "B. Insumos externos"), pero construida solo con lo que
-// cierre_credibanco_v67 realmente calcula - nunca atribuye un total global
-// de CAET/CANT/DEPO a una cuenta sin que el motor mismo lo haya candidateado.
+// Página completa de detalle por cuenta (maqueta v3.0): A. Contabilidad
+// interna · Host, B. Insumos externos, C. Resultado de conciliación y
+// Evidencias de origen. Sirve para las tres franquicias.
 let detalleCuentaOrigenScrollY = 0;
 
-function abrirDetalleCuentaCredibanco(cuenta) {
-  const cont = el('detalleCuentaCredibancoContent');
-  if (!cont) return;
+function mostrarPanelDetalleCuenta() {
   detalleCuentaOrigenScrollY = window.scrollY;
   document.querySelectorAll('.panel').forEach((p) => p.classList.remove('active'));
   el('detalleCuentaCredibanco').classList.add('active');
   window.scrollTo(0, 0);
-  renderDetalleCuentaCredibanco(cuenta);
+}
+
+function abrirDetalleCuenta(i) {
+  const f = filasReporte[i];
+  if (!f) return;
+  mostrarPanelDetalleCuenta();
+  renderDetalleCuenta(f);
+}
+
+// Desde la tabla de cuentas Host observadas (diagnóstico Credibanco): usa la
+// fila del reporte si la cuenta tiene regla; si no, solo el lado Host.
+function abrirDetalleCuentaCredibanco(cuenta) {
+  const i = filasReporte.findIndex((f) => f.franquicia === 'CREDIBANCO' && f.cuenta === cuenta);
+  if (i >= 0) { abrirDetalleCuenta(i); return; }
+  const fuentes = {};
+  for (const h of ultimoCierreCredibanco?.host_por_cuenta_y_fuente || []) {
+    if (h.cuenta === cuenta) fuentes[h.fuente] = h;
+  }
+  mostrarPanelDetalleCuenta();
+  renderDetalleCuenta({ franquicia: 'CREDIBANCO', cuenta, concepto: null, host: hostDesdeCredibanco(fuentes, null), cruce: null });
 }
 
 function volverAConciliacion() {
@@ -1072,96 +1440,215 @@ function volverAConciliacion() {
 }
 el('btnVolverConciliacion')?.addEventListener('click', volverAConciliacion);
 
-function renderDetalleCuentaCredibanco(cuenta) {
-  const cont = el('detalleCuentaCredibancoContent');
-  const d = ultimoCierreCredibanco;
-  if (!cont || !d) return;
-
-  const filasHost = (d.host_por_cuenta_y_fuente || []).filter((h) => h.cuenta === cuenta);
-  // Una cuenta puede tener varias reglas (p. ej. 838: consignados vs Debe y reversiones vs Haber).
-  const crucesCuenta = (d.cruces_host_credibanco_diagnosticos || []).filter((c) => c.cuenta_host === cuenta);
-  const cruce = crucesCuenta[0] || null;
-
-  const filasHostHtml = filasHost
-    .map((f) => {
-      const idArchivo = (f.archivos || [])[0];
-      const accion = idArchivo != null
-        ? `<button type="button" class="btn" onclick="abrirDetalle(${Number(idArchivo)},'conciliacion')">Ver evidencia</button>`
-        : '—';
-      return `<tr><td>${esc(f.fuente)}</td><td>${idArchivo ?? '—'}</td><td class="num">${f.cantidad ?? '—'}</td><td class="num">${fmtMoney(f.debe)}</td><td class="num">${fmtMoney(f.haber)}</td><td class="num">${fmtMoney(f.neto_debe_menos_haber)}</td><td><span class="tag ${badgeFor(f.estado)}">${esc(f.estado)}</span></td><td>${accion}</td></tr>`;
-    })
-    .join('');
-
-  const cruceHtml = crucesCuenta.length
-    ? crucesCuenta.map((c) => `<div class="explain"><b>Regla de cruce:</b> ${esc(c.id_regla)} (${esc(c.insumo)}) · <span class="tag ${badgeFor(c.estado)}" title="${esc(c.estado || '')}">${esc(labelEstadoConciliacion(c.estado))}</span>${c.valor_franquicia != null ? ` · Franquicia: ${fmtMoney(c.valor_franquicia)} · Diferencia: ${fmtMoney(c.diferencia)}` : ''}${c.diferencia != null && c.aprobada === false ? ' <span class="tag warn" title="La regla no tiene version+evidencia_aprobacion firmadas; este valor es un calculo provisional.">⚠ sin aprobar</span>' : ''}</div>`).join('')
-    : '<div class="explain">Sin regla de cruce aprobada para esta cuenta todavía.</div>';
-
-  // Seccion B: nunca se filtra un total global de CAET/CANT por cuenta (el
-  // motor no hace esa atribucion sin regla aprobada), salvo DEPO, donde
-  // agrupar_depo() ya calcula una cuenta_host_candidata explicita por fila.
-  let seccionB;
+// Sección B Credibanco: nunca se atribuye un total global de CAET/CANT a una
+// cuenta (el motor no lo hace sin regla aprobada), salvo DEPO, donde
+// agrupar_depo() ya calcula una cuenta_host_candidata explícita por fila.
+function seccionBCredibanco(d, cuenta, cruce) {
   if (cruce && (cruce.insumo === 'CAET' || cruce.insumo === 'CANT')) {
-    const filas = d.totales_diagnosticos || [];
-    const filasHtml = filas
-      .map((t) => `<tr><td>${esc(t.A)}</td><td>${esc((t.insumos || []).join(', '))}</td><td class="num">${t.B ?? '—'}</td><td class="num">${t.C != null ? fmtMoney(t.C) : '—'}</td><td class="num">${t.D != null ? fmtMoney(t.D) : '—'}</td></tr>`)
+    const filasHtml = (d.totales_diagnosticos || [])
+      .map((t) => `<tr><td>${esc(t.A)}</td><td>${esc((t.insumos || []).join(', '))}</td><td class="num">${t.B ?? '—'}</td><td class="num">${money(t.C)}</td><td class="num">${money(t.D)}</td></tr>`)
       .join('');
-    seccionB = `
+    return `
       <h3>B. Insumos externos · CAET/CANT</h3>
-      <p class="friendlyNote">Totales globales de origen por concepto persistido (ver "Totales diagnósticos"). No atribuidos automáticamente a esta cuenta: la regla de cruce arriba es la única atribución aprobable, y sigue pendiente. No sumar CAET y CANT entre sí.</p>
+      <p class="friendlyNote">Totales globales de origen por concepto persistido. No atribuidos automáticamente a esta cuenta: la regla de cruce es la única atribución aprobable. No sumar CAET y CANT entre sí.</p>
       <div class="tableScroll"><table class="reconTable"><thead><tr><th>Concepto</th><th>Insumo</th><th>Cantidad</th><th>VL Interc</th><th>VL Total</th></tr></thead>
       <tbody>${filasHtml || '<tr><td colspan="5" class="muted">Sin totales disponibles.</td></tr>'}</tbody></table></div>`;
-  } else if (cruce && cruce.insumo === 'PLANTILLA') {
+  }
+  if (cruce && cruce.insumo === 'PLANTILLA') {
     const p = d.plantilla_maestra || {};
     const recibido = (p.bloques || []).find((b) => b.codigo === 'TOTAL_CANJE_RECIBIDO') || { filas: [] };
     const i57 = (p.controles || {}).I57_CUENTA_302 || {};
     const filasHtml = recibido.filas
       .filter((f) => f.fila >= 57 && f.fila <= 62)
-      .map((f) => `<tr><td class="num">${f.fila}</td><td>${esc(f.concepto)}</td><td class="num">${f.debito != null ? fmtMoney(f.debito) : '—'}</td><td class="num">${f.credito != null ? fmtMoney(f.credito) : '—'}</td><td><span class="tag ${badgeForPlantilla(f.estado)}" title="${esc(f.formula_excel || '')}">${esc(f.estado)}</span></td></tr>`)
+      .map((f) => `<tr><td class="num">${f.fila}</td><td>${esc(f.concepto)}</td><td class="num">${money(f.debito)}</td><td class="num">${money(f.credito)}</td><td><span class="tag ${badgeForPlantilla(f.estado)}" title="${esc(f.formula_excel || '')}">${esc(f.estado)}</span></td></tr>`)
       .join('');
-    seccionB = `
-      <h3>B. Plantilla Maestra · filas 57 a 62</h3>
-      <p class="friendlyNote">Neto I57 = F57 − G58 − G59 − G61 − G60 + F62 = <b>${i57.valor != null ? fmtMoney(i57.valor) : '—'}</b>. Es el valor de franquicia que se compara contra HA32 de esta cuenta (nota de la Plantilla: "VALI CTA 302 HA 32").</p>
+    return `
+      <h3>B. Insumos externos · Plantilla Maestra filas 57 a 62</h3>
+      <p class="friendlyNote">Neto I57 = F57 − G58 − G59 − G61 − G60 + F62 = <b>${money(i57.valor)}</b>. Es el valor de franquicia que se compara contra HA32 de esta cuenta (nota de la Plantilla: "VALI CTA 302 HA 32").</p>
       <div class="tableScroll"><table class="reconTable"><thead><tr><th>Fila</th><th>Concepto</th><th>Débito</th><th>Crédito</th><th>Estado</th></tr></thead>
       <tbody>${filasHtml || '<tr><td colspan="5" class="muted">Sin filas de la Plantilla.</td></tr>'}</tbody></table></div>`;
-  } else if (cruce && cruce.insumo === 'DEPO') {
-    const filas = (d.depo_agregados_crudos || []).filter((x) => x.cuenta_host_candidata === cuenta);
-    const filasHtml = filas
-      .map((x) => `<tr><td>${esc(x.concepto || x.concepto_persistido || '—')}</td><td class="num">${x.cantidad ?? '—'}</td><td class="num">${x.valor_total_crudo != null ? fmtMoney(x.valor_total_crudo) : '—'}</td><td class="num">${x.valor_intercambio_crudo != null ? fmtMoney(x.valor_intercambio_crudo) : '—'}</td><td><span class="tag ${badgeFor(x.estado)}">${esc(x.estado)}</span></td></tr>`)
+  }
+  if (cruce && cruce.insumo === 'DEPO') {
+    const filasHtml = (d.depo_agregados_crudos || [])
+      .filter((x) => x.cuenta_host_candidata === cuenta)
+      .map((x) => `<tr><td>${esc(x.concepto || x.concepto_persistido || '—')}</td><td class="num">${x.cantidad ?? '—'}</td><td class="num">${money(x.valor_total_crudo)}</td><td class="num">${money(x.valor_intercambio_crudo)}</td><td><span class="tag ${badgeFor(x.estado)}">${esc(x.estado)}</span></td></tr>`)
       .join('');
-    seccionB = `
+    return `
       <h3>B. Insumos externos · DEPO</h3>
       <p class="friendlyNote">Filas de DEPO cuya cuenta candidata (calculada por el motor a partir del concepto AU) coincide con esta cuenta. Candidato, no homologación aprobada.</p>
       <div class="tableScroll"><table class="reconTable"><thead><tr><th>Concepto</th><th>Cantidad</th><th>Valor total crudo</th><th>Valor intercambio crudo</th><th>Estado</th></tr></thead>
       <tbody>${filasHtml || '<tr><td colspan="5" class="muted">Sin filas DEPO candidateadas a esta cuenta.</td></tr>'}</tbody></table></div>`;
-  } else {
-    seccionB = '<h3>B. Insumos externos</h3><p class="muted">Sin regla de cruce asociada a esta cuenta; no hay insumo externo que mostrar aquí todavía.</p>';
   }
+  return '<h3>B. Insumos externos · CREDIBANCO</h3><p class="muted">Sin regla de cruce asociada a esta cuenta; no hay insumo externo que mostrar aquí todavía.</p>';
+}
 
+function seccionBRedeban(f) {
+  const c = f.origen || {};
+  const ops = c.operaciones || [];
+  const filasOps = ops.map((o) => `<tr><td class="num">${o.fila}</td><td>${esc(o.codigo_pmd)}</td><td>${esc(o.nombre_operacion || '')}</td><td>${esc(o.tipo || '')}</td><td class="num">${money(o.debito)}</td><td class="num">${money(o.credito)}</td><td class="num">${money(o.neto)}</td></tr>`).join('');
+  const manual = (c.filas_captura_manual || []).length
+    ? `<p class="filterHint">Filas de captura manual en ESTRUCTURA (no calculadas): ${(c.filas_captura_manual || []).map(Number).join(', ')}.</p>` : '';
+  return `
+    <h3>B. Insumos externos · REDEBAN</h3>
+    <div class="tableScroll"><table class="reconTable"><thead><tr><th>Insumo</th><th>Débito</th><th>Crédito</th><th>Importe origen (neto)</th><th>Estado</th></tr></thead>
+    <tbody><tr><td>PMD · ${Number(c.filas_estructura || 0)} filas de ESTRUCTURA</td><td class="num">${money(c.debito)}</td><td class="num">${money(c.credito)}</td><td class="num">${money(c.neto_pmd)}</td><td>${tagRedeban(c.estado)}</td></tr></tbody></table></div>
+    ${manual}
+    <details class="section"><summary style="cursor:pointer"><b>Operaciones PMD de la cuenta</b> <span class="tag info">${ops.length}</span></summary>
+      <div class="tableScroll"><table class="reconTable"><thead><tr><th>Fila</th><th>Código PMD</th><th>Operación</th><th>Tipo</th><th>Débito</th><th>Crédito</th><th>Neto</th></tr></thead>
+      <tbody>${filasOps || '<tr><td colspan="7" class="muted">Sin operaciones PMD para esta cuenta.</td></tr>'}</tbody></table></div>
+    </details>`;
+}
+
+function seccionBVisa(f) {
+  const vd = ultimaConciliacionVisa || {};
+  const liq = vd.liquidacion || {};
+  const celdas = liq.celdas || {};
+  const filas = (liq.asiento || []).filter((a) => a.cuenta === f.cuenta).map((a) => {
+    const c = celdas[a.celda] || {};
+    return `<tr><td>Liquidación VISA · ${esc(c.etiqueta || a.celda)} (${esc(a.celda)}, fila ${Number(a.fila)})</td><td class="num">${money(a.valor)}</td><td>${esc(a.naturaleza || a.naturaleza_plantilla || '—')}</td><td>${tagVisa(c.estado)}</td></tr>`;
+  }).join('');
+  const insumos = vd.insumos || {};
+  return `
+    <h3>B. Insumos externos · VISA</h3>
+    <div class="tableScroll"><table class="reconTable"><thead><tr><th>Insumo</th><th>Importe origen</th><th>Naturaleza</th><th>Estado</th></tr></thead>
+    <tbody>${filas || '<tr><td colspan="4" class="muted">Sin asiento de liquidación para esta cuenta.</td></tr>'}</tbody></table></div>
+    <p class="filterHint">Insumos de la liquidación: VSS ${insumos.VSS ? 'procesado' : 'faltante'} · Posición Neta (International SS) ${insumos.ISS ? 'procesado' : 'faltante'}. La TRM se confirma en "TRM de la jornada", en Resultados de conciliación.</p>`;
+}
+
+// Sección C para Redeban/VISA: la diferencia la calcula el motor por fuente;
+// se muestran las tres y se resalta la que se compara.
+function resultadoCuadre(f) {
+  const consultada = FUENTES_HOST.find((tx) => f.host[tx].consulta);
+  const g = grupoEstado(f.estado);
+  const conclusiones = {
+    CONCILIADO: 'Cuenta conciliada: la fuente Host que se compara coincide con el valor de la franquicia.',
+    CON_DIFERENCIA: `Diferencia pendiente de ${money(f.diferencia)}${consultada ? ` contra ${consultada}` : ''}. No sumar fuentes Host.`,
+    NO_APLICA: 'La plantilla no define una fuente Host para comparar esta cuenta.',
+    SIN_INFORMACION: 'Sin información suficiente para conciliar esta cuenta.',
+    PENDIENTE: `Pendiente de conciliación: ${labelEstadoOrigen(f.estado)}.`,
+  };
+  const filas = FUENTES_HOST.map((tx) => {
+    const h = f.host[tx];
+    return `<tr><td>${tx}${h.consulta ? ' <span class="tag info">Se compara</span>' : ''}</td><td class="num">${money(f.valorFranquicia)}</td><td class="num">${sinDatoHost(h) ? '—' : money(h.neto)}</td><td class="num">${money(h.diferencia)}</td><td>${tagVisa(h.estado)}</td></tr>`;
+  }).join('');
+  return `
+    <h3>C. Resultado de conciliación</h3>
+    <p class="friendlyNote"><span class="tag ${GRUPOS_ESTADO[g][1]}">${esc(GRUPOS_ESTADO[g][0])}</span> ${esc(conclusiones[g])}</p>
+    <div class="tableScroll"><table class="reconTable"><thead><tr><th>Fuente Host</th><th>Valor franquicia</th><th>Neto Host</th><th>Diferencia</th><th>Estado</th></tr></thead>
+    <tbody>${filas}</tbody></table></div>
+    <p class="filterHint">Diferencia calculada por el motor para cada fuente por separado. Una diferencia no genera asientos contables automáticos.</p>`;
+}
+
+function evidenciasHtml(f, crucesCuenta) {
+  const evid = new Map();
+  const add = (id, etiqueta) => { if (id != null && !evid.has(Number(id))) evid.set(Number(id), etiqueta); };
+  for (const tx of FUENTES_HOST) (f.host[tx]?.archivos || []).forEach((id) => add(id, tx));
+  if (f.franquicia === 'CREDIBANCO') {
+    for (const c of crucesCuenta || []) (c.archivos_origen || []).forEach((id) => add(id, c.insumo));
+  } else if (f.franquicia === 'VISA') {
+    const vd = ultimaConciliacionVisa || {};
+    ((vd.vss || {}).liquidaciones || []).forEach((l) => add(l.id_archivo, 'VSS'));
+    (vd.iss || []).forEach((x) => add(x.id_archivo, 'Posición Neta'));
+  } else if (f.franquicia === 'REDEBAN' && jornadaActual?.idJornada === idJornadaConciliacion) {
+    (jornadaActual.insumos || []).filter((x) => x.tipoInsumo === 'PMD').forEach((x) => add(x.idArchivo, 'PMD'));
+  }
+  if (!evid.size) return '<p class="muted">Sin archivos de evidencia asociados a esta cuenta.</p>';
+  return `<div class="evidencias">${[...evid].map(([id, etiqueta]) => `<button type="button" class="btn" onclick="abrirDetalle(${id},'detalleCuentaCredibanco')" title="Archivo ${id}">Ver ${esc(etiqueta)}</button>`).join('')}</div>`;
+}
+
+function renderDetalleCuenta(f) {
+  const cont = el('detalleCuentaCredibancoContent');
+  if (!cont) return;
+  const filasA = FUENTES_HOST.map((tx) => {
+    const h = f.host[tx] || {};
+    const sin = sinDatoHost(h);
+    return `<tr><td>${tx}${h.consulta ? ' <span class="tag info">Se compara</span>' : ''}</td><td class="num">${sin ? '—' : money(h.debe)}</td><td class="num">${sin ? '—' : money(h.haber)}</td><td class="num">${sin ? '—' : money(h.neto)}</td><td class="num">${h.movimientos ?? '—'}</td></tr>`;
+  }).join('');
+  let seccionB;
+  let seccionC;
+  let crucesCuenta = [];
+  if (f.franquicia === 'CREDIBANCO') {
+    const d = ultimoCierreCredibanco;
+    crucesCuenta = (d?.cruces_host_credibanco_diagnosticos || []).filter((c) => c.cuenta_host === f.cuenta);
+    seccionB = d ? seccionBCredibanco(d, f.cuenta, f.cruce || crucesCuenta[0] || null) : '<h3>B. Insumos externos</h3><p class="muted">Sin diagnóstico Credibanco.</p>';
+    seccionC = renderResultadoCuenta(crucesCuenta);
+  } else if (f.franquicia === 'REDEBAN') {
+    seccionB = seccionBRedeban(f);
+    seccionC = resultadoCuadre(f);
+  } else {
+    seccionB = seccionBVisa(f);
+    seccionC = resultadoCuadre(f);
+  }
   cont.innerHTML = `
-    <div class="head"><div><h1>Detalle de conciliación · ${esc(cuenta)}</h1></div></div>
-    ${cruceHtml}
+    <div class="head"><div><h1>Detalle de conciliación · ${esc(f.cuenta)}</h1><p>${esc(f.franquicia)}${f.concepto ? ` · ${esc(f.concepto)}` : ''} · Fecha contable ${esc(fechaConciliacion || '—')}</p></div></div>
     <div class="card section">
       <h3>A. Contabilidad interna · Host</h3>
-      <p class="friendlyNote">Neto por fuente = Debe − Haber. HA22, HA26 y HA32 no se suman entre sí.</p>
-      <div class="tableScroll"><table class="reconTable"><thead><tr><th>Fuente</th><th>Archivo ID</th><th>Movimientos</th><th>Debe</th><th>Haber</th><th>Neto</th><th>Estado</th><th>Acción</th></tr></thead>
-      <tbody>${filasHostHtml || '<tr><td colspan="8" class="muted">Sin movimientos Host para esta cuenta.</td></tr>'}</tbody></table></div>
+      <p class="friendlyNote">Neto = Debe − Haber. HA22, HA26 y HA32 no se suman entre sí.</p>
+      <div class="tableScroll"><table class="reconTable"><thead><tr><th>Fuente</th><th>Debe</th><th>Haber</th><th>Neto</th><th>Movimientos</th></tr></thead>
+      <tbody>${filasA}</tbody></table></div>
     </div>
-    <div class="card section">${seccionB}</div>`;
+    <div class="card section">${seccionB}</div>
+    <div class="card section">${seccionC}</div>
+    <div class="card section"><h3>Evidencias de origen</h3>${evidenciasHtml(f, crucesCuenta)}</div>`;
+}
+
+// Sección C: resultado de cada regla de cruce de la cuenta (franquicia vs la
+// fuente Host que define la regla). Las diferencias de reglas distintas no se
+// suman: cada una compara un lado distinto (p. ej. consignados vs Debe y
+// reversiones vs Haber).
+function renderResultadoCuenta(crucesCuenta) {
+  if (!crucesCuenta.length) {
+    return '<h3>C. Resultado de conciliación</h3><p class="muted">Sin regla de cruce para esta cuenta: no hay resultado que calcular todavía.</p>';
+  }
+  const conciliadas = crucesCuenta.filter((c) => c.estado === 'COINCIDE').length;
+  const conDiferencia = crucesCuenta.filter((c) => c.estado === 'CON_DIFERENCIA').length;
+  const sinResultado = crucesCuenta.length - conciliadas - conDiferencia;
+  let conclusion;
+  let tipo;
+  if (conciliadas === crucesCuenta.length) {
+    conclusion = 'Cuenta conciliada: todas las reglas coinciden con Host (diferencia 0).';
+    tipo = 'ok';
+  } else if (conDiferencia) {
+    conclusion = `${conDiferencia} de ${crucesCuenta.length} regla(s) con diferencia. Revisar la evidencia de origen y la fuente Host de cada una.`;
+    tipo = 'warn';
+  } else {
+    conclusion = 'Sin resultado calculable: falta información o la regla no se pudo evaluar (ver estado).';
+    tipo = 'info';
+  }
+  if (sinResultado && conDiferencia) conclusion += ` ${sinResultado} regla(s) sin resultado calculable.`;
+  const archivos = (ids) => (ids || []).map((id) => `<button type="button" class="btn" onclick="abrirDetalle(${Number(id)},'detalleCuentaCredibanco')">${Number(id)}</button>`).join(' ') || '—';
+  const filas = crucesCuenta.map((c) => `<tr>
+      <td>${esc(c.id_regla)}<br><small class="muted">v${esc(c.version || '?')}</small></td>
+      <td>${esc(CONCEPTO_REGLA[c.id_regla] || '—')}</td>
+      <td>${esc(c.insumo || '—')}</td>
+      <td>${esc(c.fuente_host || '—')}</td>
+      <td class="num">${money(c.valor_franquicia)}</td>
+      <td class="num">${money(c.valor_host)}</td>
+      <td class="num">${money(c.diferencia)}</td>
+      <td><span class="tag ${badgeFor(c.estado)}" title="${esc(c.estado || '')}">${esc(labelEstadoConciliacion(c.estado))}</span>${c.diferencia != null && c.aprobada === false ? TAG_SIN_APROBAR : ''}</td>
+      <td>${archivos(c.archivos_origen)}</td>
+      <td>${archivos(c.archivo_host)}</td>
+    </tr>`).join('');
+  return `
+    <h3>C. Resultado de conciliación</h3>
+    <p class="friendlyNote"><span class="tag ${tipo}">${conciliadas} conciliada(s) · ${conDiferencia} con diferencia · ${sinResultado} sin resultado</span> ${esc(conclusion)}</p>
+    <div class="tableScroll"><table class="reconTable"><thead><tr><th>Regla</th><th>Concepto</th><th>Insumo</th><th>Fuente Host</th><th>Valor franquicia</th><th>Valor Host</th><th>Diferencia</th><th>Estado</th><th>Archivo origen</th><th>Archivo Host</th></tr></thead>
+    <tbody>${filas}</tbody></table></div>
+    <p class="filterHint">Diferencia = valor franquicia − valor Host de la fuente indicada. Las diferencias de reglas distintas no se suman entre sí. Una diferencia no genera asientos contables automáticos.</p>`;
 }
 
 async function cargarCierreCredibanco() {
   const cont = el('cierreCredibancoContent');
   if (!cont) return;
-  renderFechasConciliacion();
-  if (!idJornadaActiva) {
-    el('reconJornada').textContent = 'Seleccione una fecha contable en Insumos.';
-    cont.innerHTML = '<div class="emptyDetail">Selecciona una fecha contable en Insumos para ver el diagnóstico de esta jornada.</div>';
+  ultimoCierreCredibanco = null;
+  if (!idJornadaConciliacion) {
+    cont.innerHTML = '<div class="emptyDetail">Selecciona una fecha contable para ver el diagnóstico Credibanco de esta jornada.</div>';
     return;
   }
   cont.innerHTML = '<div class="emptyDetail">Cargando diagnóstico…</div>';
   let r;
   try {
-    r = await apiFetch(`${API}/jornadas/${idJornadaActiva}/cierre-credibanco`);
+    r = await apiFetch(`${API}/jornadas/${idJornadaConciliacion}/cierre-credibanco`);
   } catch (e) {
     cont.innerHTML = `<div class="emptyDetail">No se pudo cargar el diagnóstico: ${esc(e.message || e)}</div>`;
     return;
@@ -1172,28 +1659,13 @@ async function cargarCierreCredibanco() {
   }
   const d = await r.json();
   ultimoCierreCredibanco = d;
-  el('reconJornada').textContent = `Fecha contable: ${d.fecha_contable} · Jornada ${d.id_jornada}`;
-  const cc = d.control_canje_carta || {};
-  const l3 = cc.L3_comisiones_canje || {};
-  const l5 = cc.L5_carta_componente_G || {};
-  const l8 = cc.L8_diferencia || {};
-  const neta = d.carta_posicion_neta || {};
-
   const pendRows = (d.pendientes || [])
     .map((p) => `<tr><td>${esc(p.codigo || p.estado || '')}</td><td>${esc(p.detalle || p.mensaje || JSON.stringify(p))}</td></tr>`)
     .join('');
 
   const cruces = d.cruces_host_credibanco_diagnosticos || [];
   const filasHost = construirFilasHost(d.host_por_cuenta_y_fuente, cruces);
-  const coincidencias = cruces.filter((c) => c.estado === 'COINCIDE').length;
-  const diferencias = cruces.filter((c) => c.estado === 'CON_DIFERENCIA').length;
-
-  // "Incorporados maestro": cuentas con regla de cruce definida que ya
-  // tienen al menos un movimiento Host cargado para esta jornada (HA22/26/32)
-  // - es decir, con datos reales ya incorporados a este cuadro para poder
-  // compararse, independientemente de si la regla ya fue aprobada.
-  const incorporadosMaestro = filasHost.filter((f) => f.cruce && Object.keys(f.fuentes).length > 0).length;
-  const filasResultado = construirFilasResultado(d);
+  cuentasHostObservadas = filasHost.length;
 
   const cruceRows = filasHost
     .map((row) => {
@@ -1225,45 +1697,7 @@ async function cargarCierreCredibanco() {
     .join('');
 
   cont.innerHTML = `
-    <div class="flow summaryFlow">
-      <div class="fc"><small>POSICIÓN NETA CARTA</small><b class="tag ${badgeFor(neta.estado)}">${esc(neta.estado || '—')}</b></div>
-      <div class="fc"><small>L3 · COMISIONES CANJE</small><b>${fmtMoney(l3.valor)}</b></div>
-      <div class="fc"><small>L5 · CARTA (COMPONENTE G)</small><b>${fmtMoney(l5.valor)}</b></div>
-      <div class="fc"><small>L8 · DIFERENCIA (L5-L3-L6)</small><b>${l8.l8 !== undefined ? fmtMoney(l8.l8) : '—'}</b></div>
-    </div>
-    <div class="explain">Estado general: <span class="tag ${badgeFor(d.estado)}">${esc(d.estado || '—')}</span>. Las reglas de cruce y L8 se aplican según el catálogo aprobado; una diferencia no genera asientos contables automáticos.</div>
-    <div class="flow summaryFlow">
-      <div class="fc"><small>CUENTAS / CRUCES</small><b>${cruces.length}</b></div>
-      <div class="fc"><small>CONCILIADOS</small><b>${coincidencias}</b></div>
-      <div class="fc"><small>DIFERENCIAS</small><b>${diferencias}</b></div>
-      <div class="fc"><small>INCORPORADOS MAESTRO</small><b>${incorporadosMaestro}</b></div>
-    </div>
-    <div class="card section">
-      <div class="toolbar">
-        <input id="reconQ" class="search" onkeyup="filterResultadoRows()" placeholder="Buscar cuenta o concepto...">
-        <select id="reconFr" class="select" onchange="filterResultadoRows()">
-          <option value="">Todas las franquicias</option>
-          <option value="CREDIBANCO">Credibanco</option>
-        </select>
-        <select id="reconSt" class="select" onchange="filterResultadoRows()">
-          <option value="">Todos los estados</option>
-          <option value="COINCIDE">Conciliado</option>
-          <option value="CON_DIFERENCIA">Con diferencia</option>
-          <option value="PENDIENTE_APROBACION_REGLA">Pendiente de aprobación</option>
-        </select>
-      </div>
-      <div class="title">Resultados de conciliación <span class="muted">(${cruces.length} registros)</span></div>
-      <div class="tableScroll"><table class="reconTable"><thead><tr>
-        <th>Franquicia</th><th>Cuenta</th><th>Concepto</th><th>Cantidad*</th><th>VL Interc*</th><th>VL Total*</th><th>Valor intercambio</th>
-        <th>HA22 Debe</th><th>HA22 Haber</th><th>HA22 Neto*</th>
-        <th>HA26 Debe</th><th>HA26 Haber</th><th>HA26 Neto*</th>
-        <th>HA32 Debe</th><th>HA32 Haber</th><th>HA32 Neto*</th>
-        <th>Total Host</th><th>Diferencia</th><th>Estado conciliación</th><th>Acción</th>
-      </tr></thead><tbody id="reconBody">${filasResultado || '<tr><td colspan="20" class="muted">Sin resultados consultados.</td></tr>'}</tbody></table></div>
-      <p class="filterHint">*: diagnóstico no homologado, puede repetirse entre conceptos de una misma cuenta. —: no disponible / sin cruce homologado. Los resultados Host sin correspondencia se consultan en trazabilidad separada; no se inventan cruces ni totales.</p>
-      <div class="actionbar" style="justify-content:flex-end;margin-top:12px"><button type="button" class="btn" id="btnTrazabilidadHost" onclick="toggleTrazabilidadHost()">Ver trazabilidad Host (${filasHost.length})</button></div>
-    </div>
-    <div class="card section" id="trazabilidadHostCard" style="display:none">
+    <div class="card section" id="trazabilidadHostCard">
       <div class="title">Cuentas Host observadas <span class="muted">(${filasHost.length})</span></div>
       <div class="toolbar">
         <input id="cruceQ" class="search" onkeyup="filterCruceRows()" placeholder="Buscar cuenta..." aria-label="Buscar cuenta Host">
@@ -1291,6 +1725,7 @@ async function cargarCierreCredibanco() {
       <div class="tableScroll"><table><thead><tr><th>Código</th><th>Detalle</th></tr></thead>
       <tbody>${pendRows || '<tr><td colspan="2" class="muted">Sin pendientes.</td></tr>'}</tbody></table></div>
     </div>`;
+  renderTablaResultado();
 }
 
 // ---- Plantilla Maestra (hoja PLANTILLA (2)) reproducida por el backend ----
@@ -1352,6 +1787,201 @@ function renderPlantillaMaestra(p) {
       </details>
     </div>`;
 }
+
+// ---- Página "Plantilla Maestra": la hoja como en el Excel ----
+// Una sola tabla en orden de fila (Fila, Cuenta, Concepto, Débito, Crédito),
+// con encabezado y subtotal por bloque, las filas de captura manual en su
+// lugar, los controles de la plantilla y la liquidación VISA. Sale de los
+// mismos datos ya cargados (cierre-credibanco y conciliacion-visa).
+const ESTADO_PLANTILLA_LABEL = {
+  CALCULADO: 'Calculado',
+  SIN_DATO_EXCEL: 'Sin dato',
+  VALOR_FIJO_EXCEL: 'Valor fijo',
+  CELDA_MANUAL_VACIA: 'Captura manual',
+  SIN_MOVIMIENTO_HOST: 'Sin movimiento Host',
+};
+
+function tagPlantilla(estado, titulo = '') {
+  return `<span class="tag ${badgeForPlantilla(estado)}" title="${esc(titulo || estado || '')}">${esc(ESTADO_PLANTILLA_LABEL[estado] || estado || '—')}</span>`;
+}
+
+// La página sigue el formato de la hoja que diligencia Operaciones
+// (PLANTILLA_MAESTRA_LAYOUT, generado del Excel del 13-nov): mismas filas,
+// mismo orden, secciones y subtotales al pie con las fórmulas del Excel.
+// Cada fila calculada por el motor se ubica por cuenta + concepto (no por
+// número de fila, porque la plantilla del motor es una versión anterior).
+const normConceptoPlantilla = (s) => String(s || '').replace(/\s+/g, ' ').trim().toUpperCase();
+
+// Controles que la hoja calcula al lado de un subtotal.
+const CONTROL_SUBTOTAL_PLANTILLA = {
+  42: ['J40_VALIDACION_CANJE_ENVIADO', 'J40 · Validación canje enviado (debe dar 0)'],
+  98: ['J90_VALIDACION_CANJE_RECIBIDO_CARTA', 'J90 · Validación canje recibido vs Carta (debe dar 0)'],
+  123: ['H103_VALIDACION_DEPOSITOS', 'H103 · Validación depósitos'],
+};
+
+function ubicarFilasMotor(p, layout) {
+  const lineas = layout.filter((x) => x.tipo === 'linea');
+  const usadas = new Set();
+  const porFila = new Map();
+  const sinUbicar = [];
+  for (const f of (p.bloques || []).flatMap((b) => b.filas || [])) {
+    // Una misma cuenta + concepto puede repetirse en otra sección (p. ej. filas
+    // 25 y 89): se toma la coincidencia más cercana a la fila del motor.
+    const destino = lineas
+      .filter((x) => !usadas.has(x.fila) && (x.cuenta || '') === (f.cuenta || '')
+        && normConceptoPlantilla(x.concepto) === normConceptoPlantilla(f.concepto))
+      .sort((x, y) => Math.abs(x.fila - f.fila) - Math.abs(y.fila - f.fila))[0];
+    if (destino) { usadas.add(destino.fila); porFila.set(destino.fila, f); } else sinUbicar.push(f);
+  }
+  return { porFila, sinUbicar };
+}
+
+// Evalúa las fórmulas de subtotal del Excel: SUM(F6:F41), +F98+F56+F42, +F211-G211.
+function evaluarFormulaPlantilla(formula, valores) {
+  if (!formula) return null;
+  let expr = String(formula).replace(/^=/, '');
+  expr = expr.replace(/SUM\(([FG])(\d+):\1(\d+)\)/g, (_, col, a, b) => {
+    let t = 0;
+    for (let r = Number(a); r <= Number(b); r += 1) t += valores.get(r)?.[col] || 0;
+    return `+${t}`;
+  });
+  let total = 0;
+  const re = /([+-]?)\s*(?:([FG])(\d+)|(-?\d+(?:\.\d+)?))/g;
+  let m;
+  while ((m = re.exec(expr)) !== null) {
+    const v = m[2] ? (valores.get(Number(m[3]))?.[m[2]] || 0) : Number(m[4]);
+    total += m[1] === '-' ? -v : v;
+  }
+  return total;
+}
+
+function construirPlantillaExcel(p, vd) {
+  const layout = PLANTILLA_MAESTRA_LAYOUT.filas;
+  const { porFila, sinUbicar } = ubicarFilasMotor(p, layout);
+  const valores = new Map();
+  const f5 = (vd?.liquidacion?.celdas || {}).F5;
+  const filas = [];
+  for (const x of layout) {
+    const fila = { ...x };
+    if (x.tipo === 'linea') {
+      const m = porFila.get(x.fila);
+      if (m) {
+        Object.assign(fila, { debito: m.debito, credito: m.credito, fuente: m.fuente, estado: m.estado, formula: m.formula_excel, notaMotor: m.nota });
+      } else if (x.fila === 5 && f5) {
+        Object.assign(fila, { debito: f5.valor, credito: null, fuente: 'VISA', estado: f5.estado, formula: f5.formula });
+      }
+      valores.set(x.fila, { F: Number(fila.debito || 0), G: Number(fila.credito || 0) });
+    } else if (x.tipo === 'subtotal' || x.tipo === 'total') {
+      fila.debito = evaluarFormulaPlantilla(x.fF, valores);
+      fila.credito = evaluarFormulaPlantilla(x.fG, valores);
+      valores.set(x.fila, { F: fila.debito, G: fila.credito });
+    } else if (x.tipo === 'diferencia') {
+      fila.diferencia = evaluarFormulaPlantilla(x.fG, valores);
+    }
+    filas.push(fila);
+  }
+  return { filas, sinUbicar };
+}
+
+function filaPlantillaExcelHtml(f, p) {
+  if (f.tipo === 'titulo' || f.tipo === 'seccion') {
+    return `<tr><td colspan="8" style="background:#eef6fa"><b>${esc(f.concepto)}</b></td></tr>`;
+  }
+  if (f.tipo === 'diferencia') {
+    const ok = Math.abs(f.diferencia || 0) < 1;
+    return `<tr><td class="num">${f.fila}</td><td></td><td><b>DIFERENCIA</b> <small class="muted">(F211 − G211)</small></td><td></td><td></td>
+      <td class="num"><b>${money(f.diferencia)}</b></td><td></td><td><span class="tag ${ok ? 'ok' : 'warn'}">${ok ? 'Cuadra' : 'No cuadra'}</span></td></tr>`;
+  }
+  if (f.tipo === 'subtotal' || f.tipo === 'total') {
+    const [cod, etiqueta] = CONTROL_SUBTOTAL_PLANTILLA[f.fila] || [];
+    const c = cod ? (p.controles || {})[cod] : null;
+    const control = c
+      ? `<tr><td></td><td></td><td><i>${esc(etiqueta)}</i></td><td></td><td class="num" colspan="2"><i>${money(c.valor)}</i></td><td></td><td>${c.estado ? tagPlantilla(c.estado, c.formula_excel) : ''}</td></tr>`
+      : '';
+    const estilo = f.tipo === 'total' ? ' style="background:#f5f9ff"' : '';
+    return `<tr${estilo}><td class="num"><b>${f.fila}</b></td><td></td><td><b>${esc(f.concepto)}</b> <small class="muted" title="Fórmula del Excel">${esc(f.fF || '')}</small></td><td></td>
+      <td class="num"><b>${money(f.debito)}</b></td><td class="num"><b>${money(f.credito)}</b></td><td></td><td></td></tr>${control}`;
+  }
+  const conValor = f.fuente != null;
+  const estado = conValor
+    ? (f.fuente === 'VISA' ? tagVisa(f.estado) : tagPlantilla(f.estado, f.notaMotor ? `${f.notaMotor} · ${f.formula || ''}` : f.formula))
+    : `<span class="tag info" title="La analista la diligencia en el Excel; el sistema todavía no tiene la fuente.">Sin fuente automática</span>`;
+  return `<tr${conValor ? '' : ' class="muted"'}><td class="num">${f.fila}</td><td>${esc(f.cuenta || '')}</td>
+    <td${f.nota ? ` title="${esc(f.nota)}"` : ''}>${esc(f.concepto)}${f.nota ? ' <small class="muted">ⓘ</small>' : ''}</td><td>${esc(f.nit || '')}</td>
+    <td class="num">${conValor ? money(f.debito) : '—'}</td><td class="num">${conValor ? money(f.credito) : '—'}</td><td>${esc(f.fuente || '')}</td><td>${estado}</td></tr>`;
+}
+
+function liquidacionVisaHtml(vd) {
+  if (!vd) return '<div class="card section"><h3>Liquidación VISA</h3><p class="muted">Sin datos VISA para esta jornada.</p></div>';
+  const liq = vd.liquidacion || {};
+  const celdas = Object.entries(liq.celdas || {}).map(([celda, c]) => `<tr>
+      <td>${esc(celda)}</td><td>${esc(c.etiqueta || '')}${c.plantilla ? `<br><small class="muted">Plantilla: ${esc(c.plantilla)}</small>` : ''}</td>
+      <td><code>${esc(c.formula || '')}</code></td>
+      <td class="num">${c.valor != null ? numVisa(c.valor, celda === 'M169' ? 4 : 2) : '—'}${c.unidad ? ` <small class="muted">${esc(c.unidad)}</small>` : ''}</td>
+      <td>${tagVisa(c.estado)}</td></tr>`).join('');
+  const asiento = (liq.asiento || []).map((a) => `<tr><td class="num">${a.fila}</td><td>${esc(a.celda)}</td><td>${esc(a.cuenta || '—')}</td>
+      <td>${esc(a.naturaleza_plantilla || '')}</td><td class="num">${money(a.valor)}</td><td>${esc(a.naturaleza || '—')}</td></tr>`).join('');
+  const val = liq.validacion_canje_internacional || {};
+  return `<div class="card section">
+      <h3>Liquidación VISA (fila 5 y filas 161-181)</h3>
+      <p class="friendlyNote">Validación canje internacional ${esc(val.formula || 'L163')}: <b>${money(val.valor)}</b> ${tagVisa(val.estado)}. Las celdas de captura manual (TRM, correo, pdf…) se confirman en "TRM de la jornada".</p>
+      <div class="tableScroll"><table class="reconTable"><thead><tr><th>Celda</th><th>Concepto</th><th>Fórmula</th><th>Valor</th><th>Estado</th></tr></thead><tbody>${celdas}</tbody></table></div>
+      <h3 class="section">Asiento (columna M)</h3>
+      <div class="tableScroll"><table class="reconTable"><thead><tr><th>Fila</th><th>Celda</th><th>Cuenta</th><th>Naturaleza plantilla</th><th>Valor (COP)</th><th>Naturaleza</th></tr></thead><tbody>${asiento}</tbody></table></div>
+    </div>`;
+}
+
+function renderPaginaPlantillaMaestra() {
+  const cont = el('plantillaMaestraContent');
+  if (!cont) return;
+  const d = ultimoCierreCredibanco;
+  const p = d?.plantilla_maestra;
+  if (!p) {
+    cont.innerHTML = '<div class="emptyDetail">No hay Plantilla Maestra calculada para esta jornada (falta el diagnóstico Credibanco).</div>';
+    return;
+  }
+  const { filas, sinUbicar } = construirPlantillaExcel(p, ultimaConciliacionVisa);
+  const total = filas.find((f) => f.tipo === 'total') || {};
+  const dif = filas.find((f) => f.tipo === 'diferencia') || {};
+  const lineas = filas.filter((f) => f.tipo === 'linea');
+  const conValor = lineas.filter((f) => f.fuente != null).length;
+  const controles = Object.entries(p.controles || {}).map(([codigo, c]) => {
+    const valor = c.valor != null ? money(c.valor) : (c.debito != null ? `D ${money(c.debito)} · C ${money(c.credito)}` : '—');
+    return `<tr><td>${esc(codigo.replaceAll('_', ' '))}</td><td class="num">${valor}</td><td>${c.estado ? tagPlantilla(c.estado) : '—'}</td><td class="muted">${esc(c.nota || '')}${c.nota && c.formula_excel ? '<br>' : ''}<code>${esc(c.formula_excel || '')}</code></td></tr>`;
+  }).join('');
+  const sinUbicarHtml = sinUbicar.length
+    ? `<div class="card section"><h3>Filas del motor que no están en la plantilla actual</h3>
+        <p class="filterHint">Vienen de la versión anterior de la plantilla y no tienen fila equivalente en el Excel vigente; no entran en los totales.</p>
+        <div class="tableScroll"><table class="reconTable"><thead><tr><th>Fila (versión anterior)</th><th>Cuenta</th><th>Concepto</th><th>Débito</th><th>Crédito</th></tr></thead>
+        <tbody>${sinUbicar.map((f) => `<tr><td class="num">${f.fila}</td><td>${esc(f.cuenta)}</td><td>${esc(f.concepto)}</td><td class="num">${money(f.debito)}</td><td class="num">${money(f.credito)}</td></tr>`).join('')}</tbody></table></div></div>`
+    : '';
+  cont.innerHTML = `
+    <div class="head"><div><h1>Plantilla Maestra · Credibanco</h1><p>Fecha contable ${esc(d.fecha_contable || fechaConciliacion || '—')} · Jornada ${Number(d.id_jornada)} · Formato: ${esc(PLANTILLA_MAESTRA_LAYOUT.fuente)}</p></div></div>
+    <div class="flow summaryFlow">
+      <div class="fc"><small>TOTAL DÉBITO (F211)</small><b>${money(total.debito)}</b></div>
+      <div class="fc"><small>TOTAL CRÉDITO (G211)</small><b>${money(total.credito)}</b></div>
+      <div class="fc"><small>DIFERENCIA (F212)</small><b>${money(dif.diferencia)}</b></div>
+      <div class="fc"><small>LÍNEAS CON VALOR AUTOMÁTICO</small><b>${conValor} de ${lineas.length}</b></div>
+    </div>
+    <p class="friendlyNote">Misma hoja que diligencia Operaciones: filas, secciones y subtotales en el mismo orden, con las fórmulas del Excel. Los valores que el sistema ya calcula (Carta de Compensación, TOTALES CAET/CANT, td cuadre DEPO + HA22 y la compensación VISA) se ubican por cuenta y concepto; el resto aparece como <b>Sin fuente automática</b> y cuenta como 0 en los subtotales, por eso la diferencia todavía no es la del cuadre real. Pasa el cursor sobre ⓘ para ver de dónde sale cada fila en el Excel.</p>
+    <div class="card section" style="padding:0"><div class="tableScroll"><table class="reconTable"><thead><tr>
+      <th>Fila</th><th>Cuenta</th><th>Concepto</th><th>NIT</th><th>Débito</th><th>Crédito</th><th>Fuente</th><th>Estado</th>
+    </tr></thead><tbody>${filas.map((f) => filaPlantillaExcelHtml(f, p)).join('')}</tbody></table></div></div>
+    ${sinUbicarHtml}
+    <div class="card section"><h3>Controles de la Plantilla</h3>
+      <div class="tableScroll"><table class="reconTable"><thead><tr><th>Control</th><th>Valor</th><th>Estado</th><th>Detalle / fórmula</th></tr></thead><tbody>${controles || '<tr><td colspan="4" class="muted">Sin controles.</td></tr>'}</tbody></table></div>
+    </div>
+    ${liquidacionVisaHtml(ultimaConciliacionVisa)}`;
+}
+
+function abrirPlantillaMaestra() {
+  detalleCuentaOrigenScrollY = window.scrollY;
+  document.querySelectorAll('.panel').forEach((x) => x.classList.remove('active'));
+  el('plantillaMaestraPanel').classList.add('active');
+  window.scrollTo(0, 0);
+  renderPaginaPlantillaMaestra();
+}
+el('btnVolverDesdePlantilla')?.addEventListener('click', volverAConciliacion);
 
 // ---- Conciliación Redeban: cuadre con la hoja ESTRUCTURA (ver cierre-redeban) ----
 // Cada código de operación PMD se asigna a una cuenta con la homologación de la
@@ -1431,14 +2061,15 @@ function alertasRedeban(d) {
 async function cargarCierreRedeban() {
   const cont = el('cierreRedebanContent');
   if (!cont) return;
-  if (!idJornadaActiva) {
-    cont.innerHTML = '<div class="emptyDetail">Selecciona una fecha contable en Insumos para ver el cuadre Redeban de esta jornada.</div>';
+  ultimoCierreRedeban = null;
+  if (!idJornadaConciliacion) {
+    cont.innerHTML = '<div class="emptyDetail">Selecciona una fecha contable para ver el cuadre Redeban de esta jornada.</div>';
     return;
   }
   cont.innerHTML = '<div class="emptyDetail">Cargando cuadre Redeban…</div>';
   let r;
   try {
-    r = await apiFetch(`${API}/jornadas/${idJornadaActiva}/cierre-redeban`);
+    r = await apiFetch(`${API}/jornadas/${idJornadaConciliacion}/cierre-redeban`);
   } catch (e) {
     cont.innerHTML = `<div class="emptyDetail">No se pudo cargar el cuadre Redeban: ${esc(e.message || e)}</div>`;
     return;
@@ -1636,14 +2267,15 @@ function referenciaCapturaVisa(campo, d) {
 async function cargarConciliacionVisa() {
   const cont = el('conciliacionVisaContent');
   if (!cont) return;
-  if (!idJornadaActiva) {
-    cont.innerHTML = '<div class="emptyDetail">Selecciona una fecha contable en Insumos para ver la conciliación VISA Internacional de esta jornada.</div>';
+  ultimaConciliacionVisa = null;
+  if (!idJornadaConciliacion) {
+    cont.innerHTML = '<div class="emptyDetail">Selecciona una fecha contable para ver la conciliación VISA Internacional de esta jornada.</div>';
     return;
   }
   cont.innerHTML = '<div class="emptyDetail">Cargando conciliación VISA Internacional…</div>';
   let r;
   try {
-    r = await apiFetch(`${API}/jornadas/${idJornadaActiva}/conciliacion-visa`);
+    r = await apiFetch(`${API}/jornadas/${idJornadaConciliacion}/conciliacion-visa`);
   } catch (e) {
     cont.innerHTML = `<div class="emptyDetail">No se pudo cargar la conciliación VISA Internacional: ${esc(e.message || e)}</div>`;
     return;
@@ -1798,7 +2430,7 @@ async function guardarCapturaVisa() {
   const observacion = (el('visaObservacion')?.value || '').trim() || null;
   let r;
   try {
-    r = await apiFetch(`${API}/jornadas/${idJornadaActiva}/conciliacion-visa/capturas`, {
+    r = await apiFetch(`${API}/jornadas/${idJornadaConciliacion}/conciliacion-visa/capturas`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ valores, observacion }),
@@ -1817,6 +2449,7 @@ async function guardarCapturaVisa() {
   }
   ultimaConciliacionVisa = await r.json();
   renderConciliacionVisa(`Captura guardada (${Object.keys(valores).join(', ')}).`);
+  renderReporteUnificado();
 }
 
 // ---- Agente IA (storyboard de UX, ver aviso en la pantalla — no hay IA real conectada) ----

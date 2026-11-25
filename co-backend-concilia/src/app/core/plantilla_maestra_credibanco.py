@@ -215,7 +215,8 @@ def _bloque(codigo: str, titulo: str, fila_subtotal: int, filas: list[dict]) -> 
     debito = sum((Decimal(f["debito"]) for f in filas if f["debito"] is not None), CERO)
     credito = sum((Decimal(f["credito"]) for f in filas if f["credito"] is not None), CERO)
     sin_valor = [f["fila"] for f in filas if f["sin_valor"]]
-    manuales = [{"fila": n, "cuenta": c, "concepto": t} for n, c, t in FILAS_MANUALES[codigo]]
+    calculadas = {f["fila"] for f in filas}
+    manuales = [{"fila": n, "cuenta": c, "concepto": t} for n, c, t in FILAS_MANUALES[codigo] if n not in calculadas]
     return {
         "codigo": codigo, "titulo": titulo, "fila_subtotal": fila_subtotal,
         "filas": filas, "filas_captura_manual": manuales,
@@ -266,11 +267,88 @@ def _signo_carta(carta, prefijo: str, *, invertir: bool) -> tuple[Celda, Celda]:
     return (debito, CALCULADO), (credito, CALCULADO)
 
 
+# ------------------------------------------------ Carta: hoja CAI 160 A
+# Notas de la columna H del cuadre real ("Se extrae de la carta de
+# compensacion hoja CAI160"): el valor es la suma del VALOR TOTAL consolidado
+# del codigo de transaccion en todos los BIN. Positivo = debito, negativo =
+# credito (asi quedan pagos/reembolsos en F y devoluciones en G, como en el Excel).
+SECCION_CAI160 = "CAI0160A"
+NOTA_CAI160 = ("Carta hoja CAI 160 A, VALOR TOTAL consolidado. Columna y signo pendientes de validar "
+               "contra un cuadre y una Carta del mismo dia.")
+CUENTA_DEVOLUCION_VENTAS = "196095001859"
+CONCEPTO_DEVOLUCION_VENTAS = "017- CANJE ENV DEVOLUCION VENTAS 16-MP2 HA26"
+FILAS_DEVOLUCION_VENTAS = tuple(range(16, 24))
+
+
+def _cai160(carta: Sequence[Mapping], codigo: str) -> list[tuple[str, Decimal]]:
+    salida = []
+    for f in carta:
+        if f.get("seccion") != SECCION_CAI160 or f.get("motivo_codigo") != f"CAI160_{codigo}":
+            continue
+        valor = _dec(f.get("valor_total"), "valor_total")
+        if valor:
+            salida.append((str(f.get("concepto") or ""), valor))
+    return salida
+
+
+def _por_signo(valor: Decimal) -> dict:
+    if valor < 0:
+        return {"credito": (-valor, CALCULADO)}
+    return {"debito": (valor, CALCULADO)}
+
+
+def _filas_cai160(carta: Sequence[Mapping] | None) -> list[dict]:
+    """Filas 6, 16-23, 26 y 29 del cuadre canje enviado. Si la Carta no trae la
+    hoja CAI 160 A, no se generan y quedan como captura manual."""
+    if not carta or not any(f.get("seccion") == SECCION_CAI160 for f in carta):
+        return []
+    formula = "SUM(VALOR TOTAL consolidado, codigo {c}, todos los BIN) de CAI 160 A"
+    filas = []
+    for fila, cuenta, concepto, codigo in (
+        (6, "299095107", "017- PAGOS EFECTUADOS CENTRO 0", "04"),
+        (26, "196095001861", "017- CANJE ENV REPRESENTACION VENTAS 36 -MP2", "36"),
+        (29, "196095001221", "017- ORIGINAL REEMBOLSO", "08"),
+    ):
+        total = sum((v for _, v in _cai160(carta, codigo)), CERO)
+        filas.append(_fila(fila, cuenta, concepto, **_por_signo(total), formula=formula.format(c=codigo),
+                           fuente="CAI160", nota=NOTA_CAI160))
+    # Devolucion ventas: el Excel la digita en varias filas (16-23), una por
+    # valor; se pone una por BIN con movimiento y lo que no quepa va a la 23.
+    devoluciones = _cai160(carta, "16")
+    grupos = devoluciones[:len(FILAS_DEVOLUCION_VENTAS) - 1]
+    resto = devoluciones[len(FILAS_DEVOLUCION_VENTAS) - 1:]
+    if resto:
+        grupos.append((f"{len(resto)} BIN adicionales", sum((v for _, v in resto), CERO)))
+    for fila, (origen, valor) in zip(FILAS_DEVOLUCION_VENTAS, grupos):
+        filas.append(_fila(fila, CUENTA_DEVOLUCION_VENTAS, CONCEPTO_DEVOLUCION_VENTAS, **_por_signo(valor),
+                           formula=f"CAI 160 A codigo 16: {origen}", fuente="CAI160", nota=NOTA_CAI160))
+    return filas
+
+
+def _carta_enviado_concepto(carta: Sequence[Mapping], prefijo: str) -> Celda:
+    """Valor A FAVOR de un producto del canje enviado de la Carta (hoja 224A)."""
+    clave = _norm(prefijo)
+    total, encontrado = CERO, False
+    for f in carta:
+        if f.get("motivo_codigo") == "CONCEPTO_CANJE_ENVIADO" and _norm(f.get("concepto")).startswith(clave):
+            valor = _dec(f.get("valor_principal"), "valor_principal")
+            if valor is None:
+                return None, "DATO_INCOMPLETO"
+            total += valor
+            encontrado = True
+    return (total, CALCULADO) if encontrado else (CERO, "SIN_DATO_EXCEL_CERO")
+
+
 def _bloques_carta(carta: Sequence[Mapping] | None) -> tuple[dict, dict, dict]:
     hay = carta is not None
     favor = (lambda campo: _carta_totales(carta, "A_FAVOR", "TOTAL_CANJE_ENVIADO", campo, ("",))) if hay else (lambda campo: _faltante("CARTA"))
     sumif = '=SUMIF([1]CARTA!B,"     T O T A L E S   A   F A V O R",[1]CARTA!{c})'
+    comision_atm = _carta_enviado_concepto(carta, "COMISION INTEROPERABILI") if hay else _faltante("CARTA")
     manual = [
+        *_filas_cai160(carta),
+        _fila(9, "299095843", "017- VR. COMPENSACION BBVA", credito=comision_atm, fuente="CARTA",
+              formula="Carta 224A: COMISION INTEROPERABILI. ATM (A FAVOR)",
+              nota="Nota del cuadre: COMISION INTEROPERABILI. ATM se extrae de la carta de compensacion."),
         _fila(38, "419595021", "017- VR PROCESO CANJE NACIONAL", credito=favor("valor_proceso"),
               formula=sumif.format(c="D"), fuente="CARTA"),
         _fila(39, "519030008", "017- VR. FINANCIACION POR CANJE ENVIADO", credito=favor("valor_financiacion"),
@@ -295,6 +373,7 @@ def _bloques_carta(carta: Sequence[Mapping] | None) -> tuple[dict, dict, dict]:
               formula='F=IF(s<0,s*-1,0); G=IF(s>0,s*-1,0); s=SUMIF(CARTA!B,"VR A CARGO DOC DE",CARTA!C)', fuente="CARTA"),
     ]
     cargo = (lambda campo: _carta_totales(carta, "A_CARGO", "TOTAL_CANJE_RECIBIDO", campo, VARIANTES_TOTALES)) if hay else (lambda campo: _faltante("CARTA"))
+    manual.sort(key=lambda f: f["fila"])
     return (_bloque("CUADRE_CANJE_MANUAL", "Cuadre canje manual (enviado)", 42, manual),
             _bloque("CUADRE_CANJE_ELECTRONICO", "Cuadre canje electronico", 56, electronico),
             {"proceso": cargo("valor_proceso"), "financiacion": cargo("valor_financiacion"),
@@ -618,8 +697,10 @@ def construir_plantilla_maestra(*, carta: Sequence[Mapping] | None, canje: Seque
     def sub(bloque: dict, lado: str) -> Decimal:
         return Decimal(bloque[f"subtotal_{lado}"])
 
+    # H40 = F42 - G42 + G38 + G39 + G40 + G41: solo se devuelven los creditos de
+    # las filas 38-41 (cuotas de la Carta), no los de pagos/devoluciones (CAI160).
     h40 = sub(manual, "debito") - sub(manual, "credito") + sum(
-        (Decimal(f["credito"]) for f in manual["filas"] if f["credito"] is not None), CERO)
+        (Decimal(f["credito"]) for f in manual["filas"] if f["credito"] is not None and 38 <= f["fila"] <= 41), CERO)
     i40 = carta_cargo["principal_favor"]
     j40 = _op(lambda a, b: a + b, (h40, CALCULADO), i40)
     h90 = sub(recibido, "debito") - sub(recibido, "credito")

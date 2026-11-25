@@ -103,44 +103,42 @@
     </section>
 
     <section id="conciliacion" class="panel">
+      <div class="head">
+        <div>
+          <h1>Conciliación y Reporte Maestro</h1>
+          <p>Cruce Franquicia ↔ Host y resultado del Reporte Maestro en un solo cuadro operativo.</p>
+          <p id="reconJornada" role="status" aria-live="polite">Seleccione una fecha contable en Insumos.</p>
+        </div>
+      </div>
       <div class="card section reconDateSection">
         <div class="reconDateTop">
           <div><div class="reconDateEyebrow">FECHA CONTABLE</div><div class="reconDateSubtitle">Sincronizada con la fecha seleccionada en Insumos</div></div>
         </div>
         <div id="reconFechasContables" class="fechaChips reconDateChips" aria-label="Jornada contable activa"></div>
       </div>
-      <div class="head">
-        <div>
-          <h1>Conciliación y Reporte Maestro (Credibanco)</h1>
-          <p>Diagnóstico Credibanco F2 (CAET/CANT, DEPO, Carta de Compensación vs Host HA22/HA26/HA32) de la jornada seleccionada.</p>
-          <p id="reconJornada" role="status" aria-live="polite">Seleccione una fecha contable en Insumos.</p>
-        </div>
+      <div id="reconKpis"></div>
+      <!-- Los diagnosticos por franquicia no se muestran: se cargan ocultos
+           porque la tabla unificada, la TRM y la trazabilidad Host salen de ellos. -->
+      <div id="reconDiagnosticos" hidden>
+        <div id="cierreCredibancoContent"></div>
+        <div id="cierreRedebanContent"></div>
+        <div id="conciliacionVisaContent"></div>
       </div>
-      <div id="cierreCredibancoContent">
-        <div class="emptyDetail">Selecciona una fecha contable en Insumos para ver el diagnóstico de esta jornada.</div>
+      <div id="reconResultados">
+        <div class="emptyDetail">Selecciona una fecha contable para ver la conciliación de esta jornada.</div>
       </div>
-      <div class="head" style="margin-top:28px">
-        <div>
-          <h1>Conciliación Redeban (PMD)</h1>
-          <p>Cuadre por cuenta contable: cada operación PMD se asigna a su cuenta con la hoja ESTRUCTURA de la plantilla de cuadre Redeban y se compara contra HA22, HA26 y HA32 por separado.</p>
-        </div>
-      </div>
-      <div id="cierreRedebanContent">
-        <div class="emptyDetail">Selecciona una fecha contable en Insumos para ver el diagnóstico Redeban de esta jornada.</div>
-      </div>
-      <div class="head" style="margin-top:28px">
-        <div>
-          <h1>Conciliación VISA Internacional</h1>
-          <p>Liquidación VISA Internacional de la Plantilla Maestra: VSS contra el PDF International SS, captura de TRM y valores del correo, compensación VISA, diferencia en cambio y asiento contra HA22, HA26 y HA32 por separado.</p>
-        </div>
-      </div>
-      <div id="conciliacionVisaContent">
-        <div class="emptyDetail">Selecciona una fecha contable en Insumos para ver la conciliación VISA Internacional de esta jornada.</div>
+      <div id="reconTrazabilidad" hidden></div>
+    </section>
+
+    <section id="plantillaMaestraPanel" class="panel">
+      <button type="button" class="backLink" id="btnVolverDesdePlantilla">← Volver a Resultados de conciliación</button>
+      <div id="plantillaMaestraContent">
+        <div class="emptyDetail">Abre la Plantilla Maestra desde Conciliación.</div>
       </div>
     </section>
 
     <section id="detalleCuentaCredibanco" class="panel">
-      <button type="button" class="backLink" id="btnVolverConciliacion">← Volver a Conciliación</button>
+      <button type="button" class="backLink" id="btnVolverConciliacion">← Volver a Resultados de conciliación</button>
       <div id="detalleCuentaCredibancoContent">
         <div class="emptyDetail">Selecciona una cuenta desde Conciliación.</div>
       </div>
@@ -165,10 +163,10 @@
       </div>
 
       <div class="card">
-        <div class="title">Caso de ejemplo · Redeban / Cuenta ...829 <span id="aiState" class="tag warn">Excepción</span></div>
+        <div class="title"><span id="aiCaseTitle">Caso de ejemplo · Redeban / Cuenta ...829</span> <span id="aiState" class="tag warn">Excepción</span></div>
         <div class="flow">
-          <div class="fc"><small>VALOR FRANQUICIA</small><b>$245.900.000</b></div>
-          <div class="fc"><small>VALOR HOST</small><b>$245.911.000</b></div>
+          <div class="fc"><small>VALOR FRANQUICIA</small><b id="aiValFranquicia">$245.900.000</b></div>
+          <div class="fc"><small>VALOR HOST</small><b id="aiValHost">$245.911.000</b></div>
           <div class="fc"><small>DIFERENCIA</small><b id="caseDiff" style="color:var(--red)">$11.000</b></div>
           <div class="fc"><small>REGLAS</small><b id="ruleVersion">Versión 18</b></div>
         </div>
@@ -227,6 +225,7 @@
 </div>
 
 <script src="config.js"></script>
+<script src="plantilla_maestra_layout.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

@@ -194,3 +194,53 @@ def test_filas_de_captura_manual_se_listan_aparte():
     r = plantilla()
     manuales = {m["fila"] for m in bloque(r, "TOTAL_CANJE_RECIBIDO")["filas_captura_manual"]}
     assert {63, 64, 65, 76, 77, 78, 86, 88, 91} == manuales
+
+
+# ---------------------------------------------- CAI 160 A y comision ATM
+def cai160(codigo, bin_, valor):
+    return dict(seccion="CAI0160A", motivo_codigo=f"CAI160_{codigo}", es_control=False, lado=None,
+                concepto=f"{codigo} X - BIN {bin_}", cantidad=1, valor_total=valor)
+
+
+def test_cai160_llena_pagos_devoluciones_represent_y_reembolso():
+    carta = CARTA_20260901 + [
+        cai160("04", "404280", "100"), cai160("04", "421892", "50"),
+        cai160("16", "404280", "-30"), cai160("16", "421892", "-20"),
+        cai160("36", "404280", "-10"), cai160("08", "410164", "7"),
+    ]
+    r = plantilla(carta=carta, canje=[], l8={"l8": "1"})
+    assert fila(r, "CUADRE_CANJE_MANUAL", 6)["debito"] == "150"
+    assert [fila(r, "CUADRE_CANJE_MANUAL", n)["credito"] for n in (16, 17)] == ["30", "20"]
+    assert fila(r, "CUADRE_CANJE_MANUAL", 26)["credito"] == "10"
+    assert fila(r, "CUADRE_CANJE_MANUAL", 29)["debito"] == "7"
+    manuales = {m["fila"] for m in bloque(r, "CUADRE_CANJE_MANUAL")["filas_captura_manual"]}
+    assert not manuales & {6, 16, 17, 26, 29} and 18 in manuales
+
+
+def test_cai160_mas_de_ocho_devoluciones_acumula_el_resto_en_la_23():
+    carta = CARTA_20260901 + [cai160("16", f"40000{i}", "-1") for i in range(10)]
+    r = plantilla(carta=carta, canje=[], l8={"l8": "1"})
+    assert fila(r, "CUADRE_CANJE_MANUAL", 22)["credito"] == "1"
+    assert fila(r, "CUADRE_CANJE_MANUAL", 23)["credito"] == "3"
+
+
+def test_sin_hoja_cai160_las_filas_quedan_como_captura_manual():
+    r = plantilla(carta=CARTA_20260901, canje=[], l8={"l8": "1"})
+    manuales = {m["fila"] for m in bloque(r, "CUADRE_CANJE_MANUAL")["filas_captura_manual"]}
+    assert {6, 16, 26, 29} <= manuales
+
+
+def test_comision_interoperabilidad_atm_va_a_g9():
+    carta = CARTA_20260901 + [dict(seccion="CAI0224A", motivo_codigo="CONCEPTO_CANJE_ENVIADO", es_control=False,
+                                   lado="A_FAVOR", concepto="COMISION INTEROPERABILI. ATM", cantidad=1,
+                                   valor_principal="188550")]
+    r = plantilla(carta=carta, canje=[], l8={"l8": "1"})
+    assert fila(r, "CUADRE_CANJE_MANUAL", 9)["credito"] == "188550"
+    assert bloque(r, "CUADRE_CANJE_MANUAL")["subtotal_credito"] == str(4979354 + 188550)
+
+
+def test_h40_solo_devuelve_creditos_de_las_filas_38_a_41():
+    carta = CARTA_20260901 + [cai160("04", "404280", "1000"), cai160("16", "404280", "-200")]
+    r = plantilla(carta=carta, canje=[], l8={"l8": "1"})
+    # F42 = 1000; G42 = 200 + 4979354 (filas 38-41); H40 = 1000 - 200
+    assert r["controles"]["J40_VALIDACION_CANJE_ENVIADO"]["h40"] == "800"
