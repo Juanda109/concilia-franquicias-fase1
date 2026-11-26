@@ -1,8 +1,11 @@
+import logging
 from dataclasses import asdict
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from app.repositories.database import connection
 from app.ingestion.orchestrator import ParseoOrchestrator
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="Concilia Franquicias Fase 1 - API de Parseo", version="1.0.0"
@@ -28,11 +31,13 @@ def parse(req: ParseRequest):
             result=ParseoOrchestrator(c).execute(req.idArchivo,req.tipoInsumo,req.minioKey,req.correlationId)
         except KeyError:
             raise HTTPException(400,'PARSER_NO_IMPLEMENTADO')
-        except Exception as exc:
-            # El orquestador ya marcó ESTADO_PROCESAMIENTO='Error' en la BD antes de relanzar;
-            # aquí solo se traduce a una respuesta controlada en vez de un 500 genérico.
+        except Exception:
+            # El orquestador ya marcó ESTADO_PROCESAMIENTO='Error' en la BD (con el
+            # motivo) antes de relanzar. El detalle de la excepción va solo al log;
+            # la respuesta lleva un mensaje fijo para no exponer trazas ni SQL.
+            logger.exception("Error procesando archivo %s (correlationId=%s)",req.idArchivo,req.correlationId.replace('\r','').replace('\n',''))
             return {"estadoProcesamiento":"Error","registrosInsertados":0,
-                    "errores":[{"codigo":"ERROR_PROCESAMIENTO","mensaje":str(exc)}],"controles":[]}
+                    "errores":[{"codigo":"ERROR_PROCESAMIENTO","mensaje":"Error interno de procesamiento"}],"controles":[]}
         return {
             "estadoProcesamiento":"Error" if result.errors else "Procesado",
             "registrosInsertados":len(result.records) if not result.errors else 0,

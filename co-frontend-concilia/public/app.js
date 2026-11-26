@@ -2556,7 +2556,7 @@ function openEmailDraft() {
     <div class="emailDraft">
       <div class="subject"><b>Asunto:</b> Validación diferencia conciliación Redeban</div>
       Buenos días,<br><br>
-      Durante el proceso de conciliación identificamos una diferencia de <b>${el('caseDiff').textContent}</b> asociada a la cuenta de ejemplo.<br><br>
+      Durante el proceso de conciliación identificamos una diferencia de <b>${esc(el('caseDiff').textContent)}</b> asociada a la cuenta de ejemplo.<br><br>
       El análisis encontró un posible movimiento posterior en Host. Agradecemos validar la información correspondiente.<br><br>
       Gracias.
     </div>

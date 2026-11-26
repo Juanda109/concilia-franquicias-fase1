@@ -237,8 +237,11 @@ def eliminar_archivo(id_archivo:int,request:Request):
                 # fallar es la conexión a MinIO, y eso no debe tumbar el
                 # borrado del registro - pero sí queda logueado para no
                 # perder de vista objetos huérfanos en el bucket.
+                # Saltos de línea fuera: el nombre del archivo lo da el usuario
+                # y no debe poder fabricar líneas falsas en el log.
                 logger.warning(
-                    "No se pudo eliminar %s de MinIO", minio_key, exc_info=True
+                    "No se pudo eliminar %s de MinIO",
+                    minio_key.replace('\r', '').replace('\n', ''), exc_info=True
                 )
         ContentRepository(c).delete(datos['tipoInsumo'],id_archivo)
         ArchivoRepo(c).eliminar_carga(id_archivo)
@@ -260,9 +263,16 @@ def _procesar_en_segundo_plano(id_archivo:int,tipo_insumo:str,minio_key:str,corr
     try:
         resultado=parsear(id_archivo,tipo_insumo,minio_key,correlation_id)
         if resultado.get('estadoProcesamiento')=='Error':
-            motivo='; '.join(e.get('mensaje','') for e in resultado.get('errores',[])) or 'Error de procesamiento'
+            errores=resultado.get('errores',[])
+            motivo='; '.join(e.get('mensaje','') for e in errores) or 'Error de procesamiento'
             with connection() as c:
-                ArchivoRepo(c).update_state(id_archivo,'ESTADO_PROCESAMIENTO','Error',motivo)
+                if errores and all(e.get('codigo')=='ERROR_PROCESAMIENTO' for e in errores):
+                    # Excepción interna: parseo responde un mensaje genérico y, si
+                    # alcanzó a marcar la fila, ya dejó ahí el motivo detallado; no
+                    # se pisa, solo se cierra la fila si quedó en "Procesando".
+                    ArchivoRepo(c).marcar_error_si_en_curso(id_archivo,motivo)
+                else:
+                    ArchivoRepo(c).update_state(id_archivo,'ESTADO_PROCESAMIENTO','Error',motivo)
     except HTTPException as exc:
         with connection() as c:
             ArchivoRepo(c).update_state(id_archivo,'ESTADO_PROCESAMIENTO','Error',str(exc.detail))
