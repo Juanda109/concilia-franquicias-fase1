@@ -260,12 +260,8 @@ def eliminar_archivo(id_archivo: int, request: Request):
                 # Sin saltos de linea: el nombre del archivo lo da el usuario
                 # y no debe poder fabricar lineas falsas en el log.
                 logger.warning('No se pudo eliminar %s del storage: %s',
-                               minio_key.replace('
-', '').replace('
-', ''),
-                               str(exc).replace('
-', '').replace('
-', ''))
+                               minio_key.replace('\r', '').replace('\n', ''),
+                               str(exc).replace('\r', '').replace('\n', ''))
         ContentRepository(c).delete(datos['tipoInsumo'], id_archivo)
         ArchivoRepo(c).eliminar_carga(id_archivo)
         TrazabilidadRepository(c).add(id_archivo, datos['estadoRecepcion'], 'No recibido', 'ELIMINACION_ARCHIVO',

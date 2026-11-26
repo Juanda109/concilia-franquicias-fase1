@@ -33,9 +33,8 @@ def parse(req: ParseRequest):
             # El orquestador ya marcó ESTADO_PROCESAMIENTO='Error' en la BD (con el
             # motivo) antes de relanzar. El detalle de la excepción va solo al log;
             # la respuesta lleva un mensaje fijo para no exponer trazas ni SQL.
-            logger.exception("Error procesando archivo %s (correlationId=%s)", req.idArchivo,
-                             req.correlationId.replace('', '').replace('
-', ''))
+            logger.exception("Error procesando archivo %d (correlationId=%s)", int(req.idArchivo),
+                             req.correlationId.replace('\r', '').replace('\n', ''))
             return {"estadoProcesamiento": "Error", "registrosInsertados": 0,
                     "errores": [{"codigo": "ERROR_PROCESAMIENTO", "mensaje": "Error interno de procesamiento"}],
                     "controles": []}
