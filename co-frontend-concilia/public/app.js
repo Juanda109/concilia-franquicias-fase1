@@ -73,6 +73,36 @@ async function apiFetch(url, options = {}) {
   return response;
 }
 
+// Canjea el código de autorización en el backend. Resultado:
+//  { estado: 'SIN_RETORNO' }  -> no volvió código (login abandonado): flujo normal
+//  { estado: 'OK' }           -> sesión creada en el backend
+//  { estado: 'ERROR', mensaje } -> retorno inválido o canje rechazado
+async function canjearCodigoOidc(retorno, expectedState, verifier) {
+  if (!retorno.code) return { estado: 'SIN_RETORNO' };
+  if (retorno.state !== expectedState || (authConfig.USE_PKCE && !verifier)) {
+    return { estado: 'ERROR', mensaje: 'No se pudo validar el retorno de Nauthilus.' };
+  }
+  const error = (mensaje) => ({ estado: 'ERROR', mensaje });
+  try {
+    const response = await fetch('/api/v0/auth/oidc/exchange', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        code: retorno.code,
+        redirect_uri: authConfig.redirectUri,
+        code_verifier: verifier || null,
+      }),
+    });
+    if (response.ok) return { estado: 'OK' };
+    if (response.status === 403) return error('Tu usuario no tiene un rol GIAM autorizado para Concilia.');
+    if (response.status === 401) return error('El código de acceso venció o no pudo validarse.');
+    return error('No fue posible establecer la sesión. Inténtalo más tarde.');
+  } catch {
+    return error('No fue posible conectar con el backend.');
+  }
+}
+
 async function bootstrapAuth() {
   if (!authEnabled) { showApplication(null); return; }
   const params = new URLSearchParams(window.location.search);
@@ -83,47 +113,30 @@ async function bootstrapAuth() {
     showAuthMessage('Nauthilus no completó el inicio de sesión.');
     return;
   }
-  const code = params.get('code');
-  if (code) {
-    const expectedState = sessionStorage.getItem('oidc_state');
-    const verifier = sessionStorage.getItem('oidc_code_verifier');
+  // Si hay un retorno de Nauthilus pendiente lo decide el `oidc_state` que esta
+  // misma app guardó al iniciar el login (redirectToLogin), no la URL: un
+  // `?code=` que llegue sin login iniciado aquí se ignora y la sesión se
+  // verifica igual contra el backend. El `code` de la URL solo viaja como dato
+  // al canje; el acceso siempre depende de /api/v0/me.
+  const expectedState = sessionStorage.getItem('oidc_state');
+  const verifier = sessionStorage.getItem('oidc_code_verifier');
+  let canjeRealizado = false;
+  if (expectedState) {
     sessionStorage.removeItem('oidc_state');
     sessionStorage.removeItem('oidc_code_verifier');
-    const validState = expectedState && params.get('state') === expectedState;
+    const retorno = { code: params.get('code'), state: params.get('state') };
     clearOidcReturn();
-    if (!validState || (authConfig.USE_PKCE && !verifier)) {
-      showAuthMessage('No se pudo validar el retorno de Nauthilus.');
+    const resultado = await canjearCodigoOidc(retorno, expectedState, verifier);
+    if (resultado.estado === 'ERROR') {
+      showAuthMessage(resultado.mensaje);
       return;
     }
-    try {
-      const response = await fetch('/api/v0/auth/oidc/exchange', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
-        body: JSON.stringify({
-          code,
-          redirect_uri: authConfig.redirectUri,
-          code_verifier: verifier || null,
-        }),
-      });
-      if (!response.ok) {
-        const message = response.status === 403
-          ? 'Tu usuario no tiene un rol GIAM autorizado para Concilia.'
-          : response.status === 401
-            ? 'El código de acceso venció o no pudo validarse.'
-            : 'No fue posible establecer la sesión. Inténtalo más tarde.';
-        showAuthMessage(message);
-        return;
-      }
-    } catch {
-      showAuthMessage('No fue posible conectar con el backend.');
-      return;
-    }
+    canjeRealizado = resultado.estado === 'OK';
   }
   try {
     const response = await fetch('/api/v0/me', { credentials: 'include', cache: 'no-store' });
     if (response.status === 401) {
-      if (code) showAuthMessage('La sesión no pudo establecerse.');
+      if (canjeRealizado) showAuthMessage('La sesión no pudo establecerse.');
       else void redirectToLogin();
       return;
     }
