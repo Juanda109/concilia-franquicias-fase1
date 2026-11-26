@@ -45,6 +45,15 @@ class ArchivoRepository:
         ).format(sql.Identifier(field.lower()))
         self.conn.execute(consulta, (value, motivo, id_archivo))
 
+    def marcar_error_si_en_curso(self, id_archivo, motivo):
+        """Pasa a Error solo si la fila no quedó ya en Error (conserva el motivo
+        detallado que parseo haya escrito)."""
+        self.conn.execute(
+            "UPDATE CON_ARCHIVO_CARGA SET ESTADO_PROCESAMIENTO='Error',MOTIVO_ESTADO=%s,"
+            "FECHA_CAMBIO_ESTADO=CURRENT_TIMESTAMP "
+            "WHERE ID_ARCHIVO=%s AND ESTADO_PROCESAMIENTO IS DISTINCT FROM 'Error'",
+            (motivo, id_archivo))
+
     def get_or_create(self, id_jornada, id_insumo, nombre_archivo, correlation_id):
         row = self.conn.execute(
             "SELECT ID_ARCHIVO FROM CON_ARCHIVO_CARGA WHERE ID_JORNADA=%s AND ID_INSUMO=%s",

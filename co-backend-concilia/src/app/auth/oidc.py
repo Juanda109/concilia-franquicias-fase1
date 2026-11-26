@@ -152,7 +152,8 @@ class OidcClient:
             "OIDC exchange: POST %s client_id=%s redirect_uri=%s pkce=%s",
             metadata["token_endpoint"],
             auth_settings.oidc_client_id,
-            redirect_uri,
+            # Viene del cliente: sin saltos de línea para no falsear el log.
+            str(redirect_uri).replace("\r", "").replace("\n", ""),
             bool(code_verifier),
         )
         started = time.monotonic()

@@ -257,7 +257,15 @@ def eliminar_archivo(id_archivo: int, request: Request):
             try:
                 minio_client.eliminar(minio_key)
             except Exception as exc:
-                logger.warning('No se pudo eliminar %s del storage: %s', minio_key, exc)
+                # Sin saltos de linea: el nombre del archivo lo da el usuario
+                # y no debe poder fabricar lineas falsas en el log.
+                logger.warning('No se pudo eliminar %s del storage: %s',
+                               minio_key.replace('
+', '').replace('
+', ''),
+                               str(exc).replace('
+', '').replace('
+', ''))
         ContentRepository(c).delete(datos['tipoInsumo'], id_archivo)
         ArchivoRepo(c).eliminar_carga(id_archivo)
         TrazabilidadRepository(c).add(id_archivo, datos['estadoRecepcion'], 'No recibido', 'ELIMINACION_ARCHIVO',
@@ -279,9 +287,16 @@ def _procesar_en_segundo_plano(id_archivo: int, tipo_insumo: str, minio_key: str
     try:
         resultado = parsear(id_archivo, tipo_insumo, minio_key, correlation_id)
         if resultado.get('estadoProcesamiento') == 'Error':
-            motivo = '; '.join(e.get('mensaje', '') for e in resultado.get('errores', [])) or 'Error de procesamiento'
+            errores = resultado.get('errores', [])
+            motivo = '; '.join(e.get('mensaje', '') for e in errores) or 'Error de procesamiento'
             with connection() as c:
-                ArchivoRepo(c).update_state(id_archivo, 'ESTADO_PROCESAMIENTO', 'Error', motivo)
+                if errores and all(e.get('codigo') == 'ERROR_PROCESAMIENTO' for e in errores):
+                    # Excepcion interna: parseo responde un mensaje generico y, si
+                    # alcanzo a marcar la fila, ya dejo ahi el motivo detallado; no
+                    # se pisa, solo se cierra la fila si quedo en "Procesando".
+                    ArchivoRepo(c).marcar_error_si_en_curso(id_archivo, motivo)
+                else:
+                    ArchivoRepo(c).update_state(id_archivo, 'ESTADO_PROCESAMIENTO', 'Error', motivo)
     except HTTPException as exc:
         with connection() as c:
             ArchivoRepo(c).update_state(id_archivo, 'ESTADO_PROCESAMIENTO', 'Error', str(exc.detail))
