@@ -123,8 +123,9 @@ def _persiste(cod_error,cuenta,cuenta_880,cuenta_comision):
  if cuenta_880!="": return True,"CLASIFICACION_CUENTA_880"
  if cuenta_comision!="": return True,"CLASIFICACION_COMISION"
  if cod_error!="00" and cuenta_880=="" and cuenta_comision=="": return False,"COD_ERROR_NO_APLICABLE"
- if cuenta=="" and cuenta_880=="" and cuenta_comision=="": return False,"SIN_CLASIFICACION_FUNCIONAL"
- return False,"SIN_REGLA_FUNCIONAL_CANT"
+ # Aqui ya no queda ninguna cuenta: las reglas anteriores devolvieron todo
+ # caso con cuenta, cuenta_880 o cuenta_comision.
+ return False,"SIN_CLASIFICACION_FUNCIONAL"
 
 class CANTParser(Parser):
  tipo_insumo="CANT"
