@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: minio-data-pvc
+  name: minio-data-v2
   labels:
     app: minio
     app.kubernetes.io/part-of: document-validation
@@ -11,4 +11,4 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 50Gi
+      storage: 10Gi

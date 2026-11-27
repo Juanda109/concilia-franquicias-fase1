@@ -115,9 +115,10 @@ funciona para esta imagen puntual, a diferencia de `minio/minio` community) —
 falta fijar un tag o digest concreto en vez de `:latest`. Si el pull llegara
 a fallar por autenticación (no por timeout/DNS), puede necesitar un
 `imagePullSecret` propio para quay.io en `imagePullSecrets` del StatefulSet.
-El PVC también subió de 20Gi a 50Gi: confirmar que `cephfs-sc` permite expansión de
-volumen (`allowVolumeExpansion: true`) antes de aplicar, o la expansión del
-PVC existente puede fallar/requerir recrearlo.
+Los PVCs de MinIO y PostgreSQL se reemplazaron por versiones más pequeñas
+(`minio-data-v2` 10Gi, `postgresql-data-v2` 5Gi) y la CPU reservada bajó a
+200m: antes de aplicar seguir `migracion-pvc/README.md`, que copia los datos
+de los PVCs viejos.
 
 ## Estado
 

@@ -93,7 +93,7 @@ spec:
                 - ALL
           resources:
             requests:
-              cpu: 500m
+              cpu: 200m
               memory: 1Gi
             limits:
               cpu: "1500m"
@@ -110,7 +110,7 @@ spec:
       volumes:
         - name: minio-data
           persistentVolumeClaim:
-            claimName: minio-data-pvc
+            claimName: minio-data-v2
         - name: minio-license
           secret:
             secretName: minio-license

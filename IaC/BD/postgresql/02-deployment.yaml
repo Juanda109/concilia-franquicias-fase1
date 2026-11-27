@@ -95,7 +95,7 @@ spec:
             failureThreshold: 6
           resources:
             requests:
-              cpu: 500m
+              cpu: 200m
               memory: 1Gi
             limits:
               cpu: "2"
@@ -103,7 +103,7 @@ spec:
       volumes:
         - name: postgresql-data
           persistentVolumeClaim:
-            claimName: postgresql-data
+            claimName: postgresql-data-v2
         - name: postgresql-init
           configMap:
             name: concilia-postgres-initdb
