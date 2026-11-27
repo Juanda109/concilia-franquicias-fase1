@@ -117,8 +117,37 @@ a fallar por autenticación (no por timeout/DNS), puede necesitar un
 `imagePullSecret` propio para quay.io en `imagePullSecrets` del StatefulSet.
 Los PVCs de MinIO y PostgreSQL se reemplazaron por versiones más pequeñas
 (`minio-data-v2` 10Gi, `postgresql-data-v2` 5Gi) y la CPU reservada bajó a
-200m: antes de aplicar seguir `migracion-pvc/README.md`, que copia los datos
-de los PVCs viejos.
+200m. Kubernetes no permite reducir un PVC, por eso cambian de nombre. Los
+datos anteriores **no se migran**: el ambiente arranca en limpio. Ver
+"Cambio de PVCs (arranque en limpio)" más abajo.
+
+## Cambio de PVCs (arranque en limpio)
+
+```bash
+# 1. Detener y aplicar. Los StatefulSets pasan a usar los PVCs -v2 (vacíos).
+oc scale deployment/co-backend-concilia deployment/co-api-parseo --replicas=0
+oc scale statefulset/postgresql statefulset/minio --replicas=0
+oc delete job concilia-postgres-init --ignore-not-found   # un Job terminado no se vuelve a ejecutar
+oc apply -k IaC
+oc scale deployment/co-backend-concilia deployment/co-api-parseo --replicas=1
+
+# 2. Verificar que el Job recreó las tablas y los seeds en la base nueva:
+oc logs -f job/concilia-postgres-init        # debe terminar en "Listo."
+```
+
+3. Crear el bucket `concilia-fase1` en MinIO (consola por la Route de
+   `bucket/04-route.yaml`, o `mc mb <alias>/concilia-fase1`). La aplicación
+   no lo crea sola; sin él, las cargas de archivos fallan.
+
+4. Borrar los PVCs viejos, que ya nadie usa. Antes, confirmar con
+   `oc describe pvc <nombre>` que muestran `Used By: <none>`:
+
+```bash
+oc delete pvc postgresql-data minio-data-pvc
+# y el PVC de 10G que estaba vacío, si tampoco lo usa nadie:
+oc get pvc
+oc delete pvc <nombre-del-pvc-vacio>
+```
 
 ## Estado
 
